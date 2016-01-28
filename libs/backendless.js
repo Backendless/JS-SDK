@@ -707,7 +707,7 @@
     Backendless.DataQuery = DataQuery;
 
     function DataStore(model) {
-        this.model = model;
+        this.model = Utils.isString(model) ? function() {} : model;
         this.className = getClassName.call(model);
         if ((typeof model).toLowerCase() === "string")
             this.className = model;
@@ -787,7 +787,7 @@
             }
             else {
                 response = response.fields || response;
-                item = new _Model;
+                item = Utils.isString(_Model) ? {} : new _Model;
                 deepExtend(item, response);
                 return this._formCircDeps(item);
             }
@@ -839,7 +839,7 @@
         _formCircDeps: function (obj) {
             var circDepsIDs = {},
                 result = new obj.constructor(),
-            //result = Object.create( obj.constructor.prototype );
+                //result = Object.create( obj.constructor.prototype );
                 _formCircDepsHelper = function (obj, result) {
                     if (obj.hasOwnProperty("__subID")) {
                         circDepsIDs[obj["__subID"]] = result;
@@ -1027,9 +1027,9 @@
         },
 
         loadRelations: function (obj) {
-//                argsObj = this._buildArgsObject.apply(this, arguments);
-//                argsObj.url = obj.objectId;
-//                deepExtend(obj, this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments))));
+            //                argsObj = this._buildArgsObject.apply(this, arguments);
+            //                argsObj.url = obj.objectId;
+            //                deepExtend(obj, this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments))));
             if (!obj) {
                 throw new Error('missing object argument for method loadRelations()');
             }
@@ -1106,12 +1106,12 @@
                 }
                 if(Utils.isNumber(pageSize))
                     url += '&' + new DataStore()._extractQueryOptions({
-                        pageSize: pageSize
-                    });
+                            pageSize: pageSize
+                        });
                 if(Utils.isNumber(offset))
                     url += '&' + new DataStore()._extractQueryOptions({
-                        offset: offset
-                    });
+                            offset: offset
+                        });
 
 
                 return  Backendless._ajax({
@@ -1145,12 +1145,20 @@
                 throw new Error('Stored Procedure name is required string parameter');
         },
         of: function (model) {
+            var tableName;
             //var className = ( model.prototype && model.prototype.___class ? model.prototype.___class : getClassName.call(model) );
-            var className = getClassName.call(model);
-            var store = dataStoreCache[className];
+            if (Utils.isString(model)) {
+                if (model.toLowerCase() === 'users') {
+                    throw new Error("Table 'Users' is not accessible through this signature. Use Backendless.Data.of( BackendlessUser.class ) instead");
+                }
+                tableName = model;
+            } else {
+                tableName = getClassName.call(model);
+            }
+            var store = dataStoreCache[tableName];
             if (!store) {
                 store = new DataStore(model);
-                dataStoreCache[className] = store;
+                dataStoreCache[tableName] = store;
             }
             return store;
         },
@@ -1165,6 +1173,95 @@
                 asyncHandler: responder
             });
             return result;
+        }
+    };
+
+    function DataPermissions() {
+        this.restUrl = Backendless.appPath + '/data';
+        this.getRestUrl = function(dataObject, permissionType) {
+            return this.restUrl + '/' + encodeURIComponent(dataObject.___class) + '/permissions/' + encodeURIComponent(permissionType) + '/' + encodeURIComponent(dataObject.objectId);
+        };
+        this.sendRequest = function(userid, rolename, dataObject, permission, permissionType, async) {
+            var responder = extractResponder(arguments),
+                isAsync = responder != null,
+                data = {
+                    "permission": permission
+                };
+            if (!dataObject.___class || !dataObject.objectId) {
+                throw new Error('"dataObject.___class" and "dataObject.objectId" need to be specified');
+            }
+            if (userid) { data.user = userid; }
+            else if (rolename) { data.role = rolename; }
+            return Backendless._ajax({
+                method: 'PUT',
+                url: this.getRestUrl(dataObject, permissionType),
+                data: JSON.stringify(data),
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        }
+    }
+
+    DataPermissions.prototype = {
+        FIND: {
+            grantUser: function(userid, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'FIND', 'GRANT', Async);
+            },
+            grantRole: function(rolename, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'FIND', 'GRANT', Async);
+            },
+            grant: function(dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'FIND', 'GRANT', Async);
+            },
+            denyUser: function(userid, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'FIND', 'DENY', Async);
+            },
+            denyRole: function(rolename, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'FIND', 'DENY', Async);
+            },
+            deny: function(dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'FIND', 'DENY', Async);
+            }
+        },
+        REMOVE: {
+            grantUser: function(userid, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'REMOVE', 'GRANT', Async);
+            },
+            grantRole: function(rolename, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'REMOVE', 'GRANT', Async);
+            },
+            grant: function(dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'REMOVE', 'GRANT', Async);
+            },
+            denyUser: function(userid, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'REMOVE', 'DENY', Async);
+            },
+            denyRole: function(rolename, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'REMOVE', 'DENY', Async);
+            },
+            deny: function(dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'REMOVE', 'DENY', Async);
+            }
+        },
+        UPDATE: {
+            grantUser: function(userid, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'UPDATE', 'GRANT', Async);
+            },
+            grantRole: function(rolename, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'UPDATE', 'GRANT', Async);
+            },
+            grant: function(dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'UPDATE', 'GRANT', Async);
+            },
+            denyUser: function(userid, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'UPDATE', 'DENY', Async);
+            },
+            denyRole: function(rolename, dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'UPDATE', 'DENY', Async);
+            },
+            deny: function(dataObject, Async) {
+                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'UPDATE', 'DENY', Async);
+            }
         }
     };
 
@@ -3720,6 +3817,7 @@
         Backendless.Geo = new Geo();
         Backendless.Persistence = persistence;
         Backendless.Data = persistence;
+        Backendless.Data.Permissions = new DataPermissions();
         Backendless.Messaging = new Messaging();
         Backendless.Files = new Files();
         Backendless.Files.Permissions = new FilePermissions();
