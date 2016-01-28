@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>City Search - Backendless Geo Service Demo</title>
+    <link href="css/jquery-ui.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <script src="js/jquery-1.9.0.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="../../../backendless.js"></script>
+    <script src="js/citysearch.js"></script>
+</head>
+<body>
+<!-- HEADER -->
+<div class="navbar navbar-inverse navbar-static-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="#">Backendless Geo</a>
+        </div>
+    </div>
+</div>
+<!-- MAIN BLOCK -->
+<div class="container">
+    <!-- COORDINATES BLOCK -->
+    <div>
+        <h3>Your coordinates:</h3>
+        <div class="row">
+            <div class="span2 offset1">latitude:</div>
+            <div id="latitude">0</div>
+        </div>
+        <div class="row">
+            <div class="span2 offset1">longitude:</div>
+            <div id="longitude">0</div>
+        </div>
+    </div>
+    <br/>
+    <!-- SEARCH BLOCK -->
+    <div>
+        <h3>Search nearby cities:</h3>
+        <div class="row">
+            <div class="span2" style="text-align: right; padding-right: 5px">
+                radius (km):
+            </div>
+            <div id="radius-value">1</div>
+        </div>
+        <br/>
+        <div>
+            <div id="radius-slider"></div>
+            <div class="row">
+                <div class="span1">1</div>
+                <div class="text-right">20,000</div>
+            </div>
+            <br/>
+            <div>
+                <button id="search-button">Search</button>
+                <img id="loader" src="images/loader.gif" style="display: none">
+            </div>
+        </div>
+    </div>
+    <br/>
+    <!-- RESULT BLOCK -->
+    <div id="result-block" hidden="hidden">
+        <table class="table table-hover">
+            <thead id="thead">
+            <tr>
+                <th>City</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

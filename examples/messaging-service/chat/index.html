@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MessagingServiceDemo</title>
+
+    <link href="css/jquery-ui.css" rel="stylesheet" />
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+    <script src="js/jquery-1.9.0.js"></script>
+    <script src="js/jquery-ui.js"></script>
+
+    <script src="http://api.backendless.com/sdk/js/latest/backendless.min.js"></script>
+    <script src="js/chat.js"></script>
+
+</head>
+<body>
+<!-- HEADER -->
+<div class="navbar navbar-inverse navbar-static-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="#">Backendless Messaging</a>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN BLOCK -->
+<div class="container">
+
+    <!-- WELCOME SCREEN BLOCK -->
+    <div id="welcome-screen" class="hero-unit container" style="display: table-cell; text-align: center">
+        <h3>What is your name:</h3>
+
+        <input id="name-field" type="text" class="span3">
+        <br/><br/>
+
+        <div class="btn btn-primary btn-large" onclick="subscribe()">Start chat</div>
+    </div>
+
+    <!-- CHAT SCREEN BLOCK -->
+    <div id="chat_screen" class="hero-unit" hidden="hidden">
+        <div id="messages-history-field" style="overflow-y: auto; height:500px; background-color: #f5f5f5; padding: 10px"></div>
+        <br/>
+
+        <div class="form-inline">
+            <input id="message-field" type="text" class="input-small input-xxlarge">
+
+            <div type="submit" class="btn btn-primary" onclick="publish()">Send</div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
