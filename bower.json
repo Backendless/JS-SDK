@@ -1,0 +1,24 @@
+{
+  "name": "backendless-sdk",
+  "version": "1.0.0",
+  "homepage": "https://github.com/Backendless/JS-SDK",
+  "authors": [
+    "Sebastián Osorio <svzosorio@boolinc.co>"
+  ],
+  "main": "./libs/backendless.js",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "keywords": [
+    "backendless"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
