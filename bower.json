@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "homepage": "https://github.com/Backendless/JS-SDK",
   "authors": [
-    "Sebastián Osorio <svzosorio@boolinc.co>"
+    "Mark Piller <mark@backendless.com>"
   ],
   "main": "./libs/backendless.js",
   "moduleType": [
