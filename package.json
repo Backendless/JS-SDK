@@ -1,0 +1,23 @@
+{
+  "name": "backendless",
+  "version": "3.0.6",
+  "description": "Backendless JavaScript SDK for Node.js and the browser",
+  "main": "./libs/backendless.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Backendless/JS-SDK"
+  },
+  "bugs": {
+    "url": "http://support.backendless.com",
+    "email": "info@backendless.com"
+  },
+  "keywords": [
+    "cloud",
+    "mobile",
+    "api",
+    "baas",
+    "backendless.com"
+  ],
+  "author": "kate@backendless.com",
+  "license": "ISC"
+}
