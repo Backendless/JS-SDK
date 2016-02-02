@@ -375,7 +375,7 @@
             }
         };
         var buffer = '';
-        if (currentUser != null) {
+        if (currentUser != null && !!currentUser["user-token"]) {
             options.headers["user-token"] = currentUser["user-token"];
         }
         if (!config.isAsync) {
@@ -2948,6 +2948,11 @@
         xhr.setRequestHeader('application-id', Backendless.applicationId);
         xhr.setRequestHeader("secret-key", Backendless.secretKey);
         xhr.setRequestHeader("application-type", "JS");
+        if ((currentUser != null && currentUser["user-token"])) {
+            xhr.setRequestHeader("user-token", currentUser["user-token"]);
+        } else if (Backendless.LocalCache.exists("user-token")) {
+            xhr.setRequestHeader("user-token", Backendless.LocalCache.get("user-token"));
+        }
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
         }
@@ -3200,7 +3205,7 @@
                 oldPathName: oldPathName,
                 newName: newName
             };
-            this._doAction("rename", parameters, async);
+            return this._doAction("rename", parameters, async);
         },
         moveFile: function (sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
@@ -3209,7 +3214,7 @@
                 sourcePath: sourcePath,
                 targetPath: targetPath
             };
-            this._doAction("move", parameters, async);
+            return this._doAction("move", parameters, async);
         },
         copyFile: function (sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
@@ -3218,7 +3223,7 @@
                 sourcePath: sourcePath,
                 targetPath: targetPath
             };
-            this._doAction("copy", parameters, async);
+            return this._doAction("copy", parameters, async);
         },
         _checkPath: function (path) {
             if (!(/^\//).test(path))
@@ -3229,13 +3234,14 @@
         _doAction: function (actionType, parameters, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
-            Backendless._ajax({
+            var response = Backendless._ajax({
                 method: 'PUT',
                 url: this.restUrl + '/' + actionType,
                 data: JSON.stringify(parameters),
                 isAsync: isAsync,
                 asyncHandler: responder
             });
+            if (!isAsync) { return response; }
         },
         remove: function (fileURL, async) {
             var responder = extractResponder(arguments);
