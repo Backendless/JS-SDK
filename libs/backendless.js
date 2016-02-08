@@ -1471,6 +1471,7 @@
                 logoutUser = function () {
                     Backendless.LocalCache.remove("user-token");
                     Backendless.LocalCache.remove("current-user-id");
+                    Backendless.LocalCache.remove("stayLoggedIn");
                     currentUser = null;
                 },
                 onLogoutSuccess = function () {
@@ -1482,10 +1483,8 @@
                 onLogoutError = function (e) {
                     if (Utils.isObject(e) && [3064, 3091, 3090, 3023].indexOf(e.code) != -1) {
                         logoutUser();
-                        if (Utils.isFunction(successCallback)) {
-                            successCallback();
-                        }
-                    } else if (Utils.isFunction(errorCallback)) {
+                    }
+                    if (Utils.isFunction(errorCallback)) {
                         errorCallback(e);
                     }
                 };
@@ -1511,7 +1510,14 @@
             }
         },
         getCurrentUser: function () {
-            return currentUser ? this._getUserFromResponse(currentUser) : null;
+            if (currentUser) {
+                return this._getUserFromResponse(currentUser);
+            } else if (Backendless.LocalCache.get("stayLoggedIn")) {
+                var userId = Backendless.LocalCache.get("current-user-id");
+                return Backendless.Data.of(Backendless.User).findById(userId);
+            } else {
+                return null;
+            }
         },
         update: function (user, async) {
             //if (!(user instanceof Backendless.User)) {
@@ -3735,7 +3741,8 @@
                     Backendless._ajax({
                         method: 'PUT',
                         url: Backendless.serverURL + '/' + Backendless.appVersion + '/log',
-                        data: JSON.stringify(info)
+                        data: JSON.stringify(info),
+                        isAsync: !isBrowser()
                     });
                     this.messagesCount = 0;
                 }
