@@ -1922,6 +1922,7 @@
                         geoObject.longitude = geoCollection[i].longitude;
                         geoObject.metadata = geoCollection[i].metadata;
                         geoObject.objectId = geoCollection[i].objectId;
+                        geoObject.distance = geoCollection[i].distance;
                         data.collection.data[i] = geoObject;
                     }
                     data = self._parseResponse(data);
