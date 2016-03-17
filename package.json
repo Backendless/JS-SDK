@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "3.0.9",
+  "version": "3.0.11",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "main": "./libs/backendless.js",
   "repository": {
