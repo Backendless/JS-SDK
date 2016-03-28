@@ -1,27 +1,33 @@
-(function () {
-    NodeDevice = {
-        name: 'NODEJS',
-        platform: 'NODEJS',
-        uuid: 'someId',
-        version: '1'
-    };
+(function(factory) {
+    if (typeof exports === "object" && typeof module !== "undefined") {
+        factory(module.exports);
+    } else if (typeof define === "function" && define.amd) {
+        define(['exports'], function(exports) {
+            var f = factory(exports);
 
-    function isBrowser() {
-        return typeof window !== "undefined";// && !module && !module.exports;
-    }
-
-    if (!isBrowser()) {
-        encodeURIComponent = function (url) {
-            return escape(url);
-        }
-    }
-
-    var root = this,
-        Backendless = root.Backendless || {},
-        emptyFn = (function () {
+            //when we use SystemJS we need to return export object otherwize Backendless object
+            return System !== "undefined" ? exports : f;
         });
 
-    root.Backendless = Backendless;
+    } else {
+        factory(window || global || self || this);
+    }
+
+})(function(root) {
+    'use strict';
+
+    var NodeDevice = {
+        name    : 'NODEJS',
+        platform: 'NODEJS',
+        uuid    : 'someId',
+        version : '1'
+    };
+
+    var isBrowser = (new Function("try {return this===window;}catch(e){ return false;}"))();
+
+    var Backendless = root.Backendless = root.Backendless || {},
+        emptyFn     = (function() {
+        });
 
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function (searchElement, fromIndex) {
@@ -3844,132 +3850,139 @@
         currentUser = null;
     };
 
-    if (!isBrowser()) {
-        module.exports = Backendless;
-    }
 
-})();
+    var BackendlessGeoQuery = function() {
+        this.searchRectangle = undefined;
+        this.categories = [];
+        this.includeMetadata = true;
+        this.metadata = undefined;
+        this.condition = undefined;
+        this.relativeFindMetadata = undefined;
+        this.relativeFindPercentThreshold = undefined;
+        this.pageSize = undefined;
+        this.latitude = undefined;
+        this.longitude = undefined;
+        this.radius = undefined;
+        this.units = undefined;
+        this.degreePerPixel = undefined;
+        this.clusterGridSize = undefined;
+    };
 
-var BackendlessGeoQuery = function () {
-    this.searchRectangle = undefined;
-    this.categories = [];
-    this.includeMetadata = true;
-    this.metadata = undefined;
-    this.condition = undefined;
-    this.relativeFindMetadata = undefined;
-    this.relativeFindPercentThreshold = undefined;
-    this.pageSize = undefined;
-    this.latitude = undefined;
-    this.longitude = undefined;
-    this.radius = undefined;
-    this.units = undefined;
-    this.degreePerPixel = undefined;
-    this.clusterGridSize = undefined;
-};
+    BackendlessGeoQuery.prototype = {
+        addCategory        : function() {
+            this.categories = this.categories || [];
+            this.categories.push();
+        },
+        setClusteringParams: function(westLongitude, eastLongitude, mapWidth, clusterGridSize) {
+            clusterGridSize = clusterGridSize || 0;
+            var parsedWestLongitude   = parseFloat(westLongitude),
+                parsedEastLongitude   = parseFloat(eastLongitude),
+                parsedMapWidth        = parseInt(mapWidth),
+                parsedClusterGridSize = parseInt(clusterGridSize);
 
-BackendlessGeoQuery.prototype = {
-    addCategory: function () {
-        this.categories = this.categories || [];
-        this.categories.push();
-    },
-    setClusteringParams: function (westLongitude, eastLongitude, mapWidth, clusterGridSize) {
-        clusterGridSize = clusterGridSize || 0;
-        var parsedWestLongitude = parseFloat(westLongitude),
-            parsedEastLongitude = parseFloat(eastLongitude),
-            parsedMapWidth = parseInt(mapWidth),
-            parsedClusterGridSize = parseInt(clusterGridSize);
+            if (!isFinite(parsedWestLongitude) || parsedWestLongitude < -180 || parsedWestLongitude > 180) {
+                throw new Error("The westLongitude value must be a number in the range between -180 and 180");
+            }
 
-        if (!isFinite(parsedWestLongitude) || parsedWestLongitude < -180 || parsedWestLongitude > 180) {
-            throw new Error("The westLongitude value must be a number in the range between -180 and 180");
+            if (!isFinite(parsedEastLongitude) || parsedEastLongitude < -180 || parsedEastLongitude > 180) {
+                throw new Error("The eastLongitude value must be a number in the range between -180 and 180");
+            }
+
+            if (!isFinite(parsedMapWidth) || parsedMapWidth < 1) {
+                throw new Error("The mapWidth value must be a number greater or equal to 1");
+            }
+
+            if (!isFinite(parsedClusterGridSize) || parsedClusterGridSize < 0) {
+                throw new Error("The clusterGridSize value must be a number greater or equal to 0");
+            }
+
+            var longDiff = parsedEastLongitude - parsedWestLongitude;
+
+            (longDiff < 0) && (longDiff += 360);
+
+            this.degreePerPixel = longDiff / parsedMapWidth;
+            this.clusterGridSize = parsedClusterGridSize || null;
         }
+    };
 
-        if (!isFinite(parsedEastLongitude) || parsedEastLongitude < -180 || parsedEastLongitude > 180) {
-            throw new Error("The eastLongitude value must be a number in the range between -180 and 180");
-        }
+    var GeoPoint = function() {
+        this.___class = "GeoPoint";
+        this.categories = undefined;
+        this.latitude = undefined;
+        this.longitude = undefined;
+        this.metadata = undefined;
+        this.objectId = undefined;
+    };
 
-        if (!isFinite(parsedMapWidth) || parsedMapWidth < 1) {
-            throw new Error("The mapWidth value must be a number greater or equal to 1");
-        }
+    var GeoCluster = function() {
+        this.categories = undefined;
+        this.latitude = undefined;
+        this.longitude = undefined;
+        this.metadata = undefined;
+        this.objectId = undefined;
+        this.totalPoints = undefined;
+        this.geoQuery = undefined;
+    };
 
-        if (!isFinite(parsedClusterGridSize) || parsedClusterGridSize < 0) {
-            throw new Error("The clusterGridSize value must be a number greater or equal to 0");
-        }
+    var PublishOptionsHeaders = { //PublishOptions headers namespace helper
+        'MESSAGE_TAG'                  : 'message',
+        'IOS_ALERT_TAG'                : 'ios-alert',
+        'IOS_BADGE_TAG'                : 'ios-badge',
+        'IOS_SOUND_TAG'                : 'ios-sound',
+        'ANDROID_TICKER_TEXT_TAG'      : 'android-ticker-text',
+        'ANDROID_CONTENT_TITLE_TAG'    : 'android-content-title',
+        'ANDROID_CONTENT_TEXT_TAG'     : 'android-content-text',
+        'ANDROID_ACTION_TAG'           : 'android-action',
+        'WP_TYPE_TAG'                  : 'wp-type',
+        'WP_TITLE_TAG'                 : 'wp-title',
+        'WP_TOAST_SUBTITLE_TAG'        : 'wp-subtitle',
+        'WP_TOAST_PARAMETER_TAG'       : 'wp-parameter',
+        'WP_TILE_BACKGROUND_IMAGE'     : 'wp-backgroundImage',
+        'WP_TILE_COUNT'                : 'wp-count',
+        'WP_TILE_BACK_TITLE'           : 'wp-backTitle',
+        'WP_TILE_BACK_BACKGROUND_IMAGE': 'wp-backImage',
+        'WP_TILE_BACK_CONTENT'         : 'wp-backContent',
+        'WP_RAW_DATA'                  : 'wp-raw'
+    };
 
-        var longDiff = parsedEastLongitude - parsedWestLongitude;
+    var PublishOptions = function(args) {
+        args = args || {};
+        this.publisherId = args.publisherId || undefined;
+        this.headers = args.headers || undefined;
+        this.subtopic = args.subtopic || undefined;
+    };
 
-        (longDiff < 0) && (longDiff += 360);
+    var DeliveryOptions = function(args) {
+        args = args || {};
+        this.pushPolicy = args.pushPolicy || undefined;
+        this.pushBroadcast = args.pushBroadcast || undefined;
+        this.pushSinglecast = args.pushSinglecast || undefined;
+        this.publishAt = args.publishAt || undefined;
+        this.repeatEvery = args.repeatEvery || undefined;
+        this.repeatExpiresAt = args.repeatExpiresAt || undefined;
+    };
 
-        this.degreePerPixel = longDiff / parsedMapWidth;
-        this.clusterGridSize = parsedClusterGridSize || null;
-    }
-};
+    var Bodyparts = function(args) {
+        args = args || {};
+        this.textmessage = args.textmessage || undefined;
+        this.htmlmessage = args.htmlmessage || undefined;
+    };
 
-var GeoPoint = function () {
-    this.___class = "GeoPoint";
-    this.categories = undefined;
-    this.latitude = undefined;
-    this.longitude = undefined;
-    this.metadata = undefined;
-    this.objectId = undefined;
-};
+    var SubscriptionOptions = function(args) {
+        args = args || {};
+        this.subscriberId = args.subscriberId || undefined;
+        this.subtopic = args.subtopic || undefined;
+        this.selector = args.selector || undefined;
+    };
 
-var GeoCluster = function () {
-    this.categories = undefined;
-    this.latitude = undefined;
-    this.longitude = undefined;
-    this.metadata = undefined;
-    this.objectId = undefined;
-    this.totalPoints = undefined;
-    this.geoQuery = undefined;
-};
+    root.GeoPoint = Backendless.GeoPoint = GeoPoint;
+    root.Bodyparts = Backendless.Bodyparts = Bodyparts;
+    root.GeoCluster = Backendless.GeoCluster = GeoCluster;
+    root.PublishOptions = Backendless.PublishOptions = PublishOptions;
+    root.DeliveryOptions = Backendless.DeliveryOptions = DeliveryOptions;
+    root.SubscriptionOptions = Backendless.SubscriptionOptions = SubscriptionOptions;
+    root.BackendlessGeoQuery = Backendless.BackendlessGeoQuery = BackendlessGeoQuery;
+    root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders = PublishOptionsHeaders;
 
-var PublishOptionsHeaders = { //PublishOptions headers namespace helper
-    'MESSAGE_TAG': 'message',
-    'IOS_ALERT_TAG': 'ios-alert',
-    'IOS_BADGE_TAG': 'ios-badge',
-    'IOS_SOUND_TAG': 'ios-sound',
-    'ANDROID_TICKER_TEXT_TAG': 'android-ticker-text',
-    'ANDROID_CONTENT_TITLE_TAG': 'android-content-title',
-    'ANDROID_CONTENT_TEXT_TAG': 'android-content-text',
-    'ANDROID_ACTION_TAG': 'android-action',
-    'WP_TYPE_TAG': 'wp-type',
-    'WP_TITLE_TAG': 'wp-title',
-    'WP_TOAST_SUBTITLE_TAG': 'wp-subtitle',
-    'WP_TOAST_PARAMETER_TAG': 'wp-parameter',
-    'WP_TILE_BACKGROUND_IMAGE': 'wp-backgroundImage',
-    'WP_TILE_COUNT': 'wp-count',
-    'WP_TILE_BACK_TITLE': 'wp-backTitle',
-    'WP_TILE_BACK_BACKGROUND_IMAGE': 'wp-backImage',
-    'WP_TILE_BACK_CONTENT': 'wp-backContent',
-    'WP_RAW_DATA': 'wp-raw'
-};
-
-var PublishOptions = function (args) {
-    args = args || {};
-    this.publisherId = args.publisherId || undefined;
-    this.headers = args.headers || undefined;
-    this.subtopic = args.subtopic || undefined;
-};
-
-var DeliveryOptions = function (args) {
-    args = args || {};
-    this.pushPolicy = args.pushPolicy || undefined;
-    this.pushBroadcast = args.pushBroadcast || undefined;
-    this.pushSinglecast = args.pushSinglecast || undefined;
-    this.publishAt = args.publishAt || undefined;
-    this.repeatEvery = args.repeatEvery || undefined;
-    this.repeatExpiresAt = args.repeatExpiresAt || undefined;
-};
-
-var Bodyparts = function (args) {
-    args = args || {};
-    this.textmessage = args.textmessage || undefined;
-    this.htmlmessage = args.htmlmessage || undefined;
-};
-
-var SubscriptionOptions = function (args) {
-    args = args || {};
-    this.subscriberId = args.subscriberId || undefined;
-    this.subtopic = args.subtopic || undefined;
-    this.selector = args.selector || undefined;
-};
+    return Backendless;
+});
