@@ -465,7 +465,7 @@
     };
 
     function extendCollection(collection, dataMapper) {
-        if (collection.nextPage !== undefined) {
+        if (collection.nextPage != null) {
             if (collection.nextPage && collection.nextPage.split("/")[1] == Backendless.appVersion) {
                 collection.nextPage = Backendless.serverURL + collection.nextPage;
             }
