@@ -1,3 +1,7 @@
+/**
+ * @global
+ * @namespace Backendless
+ */
 declare module Backendless {
     var VERSION:string;
     var serverURL:string;
@@ -10,6 +14,12 @@ declare module Backendless {
         browser:string;
         version:string;
     };
+
+    /**
+     * @dictionary
+     */
+    var PublishOptionsHeaders:{ [key: string]: string; };
+
 
     /**
      * @public
@@ -128,104 +138,97 @@ declare module Backendless {
 
         addProperty(prop:string):void;
     }
-}
 
-/**
- * @public
- * @class GeoPoint
- */
-declare class GeoPoint {
-    ___class:string;
-    objectId:string;
-    latitude:number;
-    longitude:number;
-    categories:string|string[];
-    metadata:Object;
-}
+    /**
+     * @class Backendless.GeoPoint
+     * @constructor
+     */
+    class GeoPoint {
+        ___class:string;
+        objectId:string;
+        latitude:number;
+        longitude:number;
+        categories:string|string[];
+        metadata:Object;
+    }
 
-/**
- * @public
- * @class GeoCluster
- * @extends GeoPoint
- */
-declare class GeoCluster extends GeoPoint {
-    totalPoints:number;
-    geoQuery:BackendlessGeoQuery |BackendlessRectangleGeoQueryI| BackendlessCircleGeoQueryI;
-}
+    /**
+     * @class Backendless.GeoCluster
+     * @extends GeoPoint
+     */
+    class GeoCluster extends GeoPoint {
+        totalPoints:number;
+        geoQuery:GeoQuery | BackendlessRectangleGeoQuery | BackendlessCircleGeoQuery;
+    }
 
-/**
- * @public
- * @class BackendlessGeoQuery
- */
-declare class BackendlessGeoQuery implements BackendlessGeoQueryI {
-    categories:string|string[];
-    includeMetadata:boolean;
-    metadata:Object;
-    condition:string;
-    relativeFindMetadata:Object;
-    relativeFindPercentThreshold:number;
-    pageSize:number;
-    offset:number;
-}
+    /**
+     * @class Backendless.GeoQuery
+     */
+    class GeoQuery implements BackendlessGeoQuery {
+        categories:string|string[];
+        includeMetadata:boolean;
+        metadata:Object;
+        condition:string;
+        relativeFindMetadata:Object;
+        relativeFindPercentThreshold:number;
+        pageSize:number;
+        offset:number;
+    }
 
-/**
- * @public
- * @dictionary
- */
-declare var PublishOptionsHeaders:{ [key: string]: string; };
+    /**
+     * @public
+     * @class Backendless.PublishOptions
+     * @constructor
+     */
+    class PublishOptions {
+        publisherId:string;
+        headers:Object;
+        subtopic:string;
 
-/**
- * @public
- * @class PublishOptions
- * @constructor
- */
-declare class PublishOptions {
-    publisherId:string;
-    headers:Object;
-    subtopic:string;
+        constructor(args?:Object);
+    }
 
-    constructor(args?:Object);
-}
+    /**
+     * @public
+     * @class Backendless.DeliveryOptions
+     * @constructor
+     */
+    class DeliveryOptions {
+        pushPolicy:string;
+        pushBroadcast:number;
+        pushSinglecast:string[];
+        publishAt:number;
+        repeatEvery:number;
+        repeatExpiresAt:number;
 
-/**
- * @public
- * @class DeliveryOptions
- * @constructor
- */
-declare class DeliveryOptions {
-    pushPolicy:string;
-    pushBroadcast:number;
-    pushSinglecast:string[];
-    publishAt:number;
-    repeatEvery:number;
-    repeatExpiresAt:number;
+        constructor(args?:Object);
+    }
 
-    constructor(args?:Object);
-}
+    /**
+     * @public
+     * @class Backendless.Bodyparts
+     * @constructor
+     */
+    class Bodyparts {
+        textmessage:string;
+        htmlmessage:string;
 
-/**
- * @public
- * @class Bodyparts
- * @constructor
- */
-declare class Bodyparts {
-    textmessage:string;
-    htmlmessage:string;
+        constructor(args?:Object);
+    }
 
-    constructor(args?:Object);
-}
+    /**
+     * @public
+     * @class Backendless.SubscriptionOptions
+     * @constructor
+     */
+    class SubscriptionOptions {
+        subscriberId:string;
+        subtopic:string;
+        selector:string;
 
-/**
- * @public
- * @class SubscriptionOptions
- * @constructor
- */
-declare class SubscriptionOptions {
-    subscriberId:string;
-    subtopic:string;
-    selector:string;
+        constructor(args?:Object);
+    }
 
-    constructor(args?:Object);
 }
 
 /**
@@ -488,22 +491,22 @@ class BackendlessGeo {
     UNITS:Object;
     EARTH_RADIUS:number;
 
-    addPoint(point:GeoPoint):GeoPoint;
-    addPoint(point:GeoPoint, async:Backendless.Async):XMLHttpRequest;
+    addPoint(point:Backendless.GeoPoint):Backendless.GeoPoint;
+    addPoint(point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
 
     find(query:BackendlessGeoQuery):BackendlessGeoCollectionResult;
     find(query:BackendlessGeoQuery, async:Backendless.Async):XMLHttpRequest;
 
     deletePoint(pointId:string):string;
-    deletePoint(point:GeoPoint):string;
+    deletePoint(point:Backendless.GeoPoint):string;
     deletePoint(pointId:string, async:Backendless.Async):XMLHttpRequest;
-    deletePoint(point:GeoPoint, async:Backendless.Async):XMLHttpRequest;
+    deletePoint(point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
 
-    loadMetadata(point:GeoPoint|GeoCluster):Object;
-    loadMetadata(point:GeoPoint|GeoCluster, async:Backendless.Async):XMLHttpRequest;
+    loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster):Object;
+    loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
 
-    getClusterPoints(cluster:GeoCluster):BackendlessGeoCollectionResult;
-    getClusterPoints(cluster:GeoCluster, async:Backendless.Async):XMLHttpRequest;
+    getClusterPoints(cluster:Backendless.GeoCluster):BackendlessGeoCollectionResult;
+    getClusterPoints(cluster:Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
 
     getFencePoints(fenceName:string, query:BackendlessGeoQuery):BackendlessGeoCollectionResult;
     getFencePoints(fenceName:string, query:BackendlessGeoQuery, async:Backendless.Async):XMLHttpRequest;
@@ -520,18 +523,18 @@ class BackendlessGeo {
     getCategories():BackendlessGeoCategory[];
     getCategories(async:Backendless.Async):XMLHttpRequest;
 
-    runOnStayAction(fenceName:string, point:GeoPoint):Object;
-    runOnStayAction(fenceName:string, point:GeoPoint, async:Backendless.Async):XMLHttpRequest;
+    runOnStayAction(fenceName:string, point:Backendless.GeoPoint):Object;
+    runOnStayAction(fenceName:string, point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
 
-    runOnExitAction(fenceName:string, point:GeoPoint):Object;
-    runOnExitAction(fenceName:string, point:GeoPoint, async:Backendless.Async):XMLHttpRequest;
+    runOnExitAction(fenceName:string, point:Backendless.GeoPoint):Object;
+    runOnExitAction(fenceName:string, point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
 
-    runOnEnterAction(fenceName:string, point:GeoPoint):Object;
-    runOnEnterAction(fenceName:string, point:GeoPoint, async:Backendless.Async):XMLHttpRequest;
+    runOnEnterAction(fenceName:string, point:Backendless.GeoPoint):Object;
+    runOnEnterAction(fenceName:string, point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
 
     startGeofenceMonitoringWithInAppCallback(fenceName:string, inAppCallback:BackendlessGeofenceMonitoringCallbacks, async?:Backendless.Async):void;
 
-    startGeofenceMonitoringWithRemoteCallback(fenceName:string, point:GeoPoint, async?:Backendless.Async):void;
+    startGeofenceMonitoringWithRemoteCallback(fenceName:string, point:Backendless.GeoPoint, async?:Backendless.Async):void;
 
     stopGeofenceMonitoring(fenceName:string):void;
 }
@@ -545,14 +548,14 @@ class BackendlessMessaging {
     restUrl:string;
     channelProperties:Object;
 
-    subscribe(channelName:string, subscriptionCallback:()=>void, subscriptionOptions:SubscriptionOptions):BackendlessSubscription;
-    subscribe(channelName:string, subscriptionCallback:()=>void, subscriptionOptions:SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
+    subscribe(channelName:string, subscriptionCallback:()=>void, subscriptionOptions:Backendless.SubscriptionOptions):BackendlessSubscription;
+    subscribe(channelName:string, subscriptionCallback:()=>void, subscriptionOptions:Backendless.SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
 
-    publish(channelName:string, message:string|Object, publishOptions:PublishOptions, deliveryOptions:DeliveryOptions):Object;
-    publish(channelName:string, message:string|Object, publishOptions:PublishOptions, deliveryOptions:DeliveryOptions, async:Backendless.Async):XMLHttpRequest;
+    publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
+    publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions, async:Backendless.Async):XMLHttpRequest;
 
-    sendEmail(subject:string, bodyParts:Bodyparts, recipients:string[], attachments:string[]):Object;
-    sendEmail(subject:string, bodyParts:Bodyparts, recipients:string[], attachments:string[], async:Backendless.Async):XMLHttpRequest;
+    sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Object;
+    sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[], async:Backendless.Async):XMLHttpRequest;
 
     cancel(messageId:string):boolean;
     cancel(messageId:string, async:Backendless.Async):XMLHttpRequest;
@@ -904,7 +907,7 @@ interface BackendlessSubscription {
     cancelSubscription():void;
 }
 
-interface BackendlessGeoQueryI {
+interface BackendlessGeoQuery {
     categories?:string|string[];
     includeMetadata?:boolean;
     metadata?:Object;
@@ -915,11 +918,11 @@ interface BackendlessGeoQueryI {
     offset?:number;
 }
 
-interface BackendlessRectangleGeoQueryI extends BackendlessGeoQueryI {
+interface BackendlessRectangleGeoQuery extends BackendlessGeoQuery {
     searchRectangle:number[];
 }
 
-interface BackendlessCircleGeoQueryI extends BackendlessGeoQueryI {
+interface BackendlessCircleGeoQuery extends BackendlessGeoQuery {
     latitude:number;
     longitude:number;
     radius:number;
@@ -934,5 +937,5 @@ interface BackendlessCollectionResult {
 }
 
 interface BackendlessGeoCollectionResult extends BackendlessCollectionResult {
-    data:Array<GeoPoint|GeoCluster>;
+    data:Array<Backendless.GeoPoint|Backendless.GeoCluster>;
 }

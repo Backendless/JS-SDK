@@ -1,16 +1,23 @@
 (function(factory) {
-    if (typeof exports === "object" && typeof module !== "undefined") {
-        factory(module.exports);
-    } else if (typeof define === "function" && define.amd) {
-        define(['exports'], function(exports) {
-            var f = factory(exports);
+    var root = (typeof self == 'object' && self.self === self && self) ||
+      (typeof global == 'object' && global.global === global && global);
 
-            //when we use SystemJS we need to return export object otherwize Backendless object
-            return System !== "undefined" ? exports : f;
+    if (typeof define === "function" && define.amd) {
+        define([], function() {
+            var Backendless = root.Backendless = factory(root);
+
+            //when we use System.js we need to return export object otherwize Backendless object
+            if (typeof System !== "undefined") {
+                return {Backendless:Backendless};
+            }
+
+            return Backendless;
         });
 
+    } else if (typeof exports === "object" && typeof module !== "undefined") {
+        module.exports = root.Backendless = factory(root);
     } else {
-        factory(window || global || self || this);
+        root.Backendless = factory(root);
     }
 
 })(function(root) {
@@ -25,9 +32,16 @@
 
     var isBrowser = (new Function("try {return this===window;}catch(e){ return false;}"))();
 
-    var Backendless = root.Backendless = root.Backendless || {},
+    var previousBackendless = root.Backendless;
+
+    var Backendless = {},
         emptyFn     = (function() {
         });
+
+    Backendless.noConflict = function() {
+        root.Backendless = previousBackendless;
+        return this;
+    };
 
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function(searchElement, fromIndex) {
@@ -678,22 +692,6 @@
     }
 
     Backendless.Async = Async;
-
-    function DataQuery() {
-        this.properties = [];
-        this.condition = null;
-        this.options = null;
-        this.url = null;
-    }
-
-    DataQuery.prototype = {
-        addProperty: function(prop) {
-            this.properties = this.properties || [];
-            this.properties.push(prop);
-        }
-    };
-
-    Backendless.DataQuery = DataQuery;
 
     function DataStore(model) {
         this.model = Utils.isString(model) ? function() {
@@ -1914,7 +1912,7 @@
                 isAsync   = false;
             if (geoObject.objectId) {
                 if (geoObject instanceof GeoCluster) {
-                    if (geoObject.geoQuery instanceof BackendlessGeoQuery) {
+                    if (geoObject.geoQuery instanceof GeoQuery) {
                         url += geoObject.objectId + '/metadata?';
                         for (var prop in geoObject.geoQuery) {
                             {
@@ -1956,7 +1954,7 @@
                 isAsync   = false;
             if (geoObject.objectId) {
                 if (geoObject instanceof GeoCluster) {
-                    if (geoObject.geoQuery instanceof BackendlessGeoQuery) {
+                    if (geoObject.geoQuery instanceof GeoQuery) {
                         url += geoObject.objectId + '/points?';
                         for (var prop in geoObject.geoQuery) {
                             {
@@ -2093,12 +2091,12 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
         getFencePoints: function(geoFenceName, query, async) {
-            query = query || new BackendlessGeoQuery();
+            query = query || new GeoQuery();
             if (!Utils.isString(geoFenceName)) {
                 throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
             }
-            if (!(query instanceof BackendlessGeoQuery)) {
-                throw new Error("Invalid geo query. Query should be instance of BackendlessGeoQuery");
+            if (!(query instanceof GeoQuery)) {
+                throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
             }
             query["geoFence"] = geoFenceName;
             query["url"] = this.restUrl;
@@ -3815,8 +3813,21 @@
         currentUser = null;
     };
 
+    var DataQuery = function () {
+        this.properties = [];
+        this.condition = null;
+        this.options = null;
+        this.url = null;
+    }
 
-    var BackendlessGeoQuery = function() {
+    DataQuery.prototype = {
+        addProperty: function(prop) {
+            this.properties = this.properties || [];
+            this.properties.push(prop);
+        }
+    };
+
+    var GeoQuery = function() {
         this.searchRectangle = undefined;
         this.categories = [];
         this.includeMetadata = true;
@@ -3833,7 +3844,7 @@
         this.clusterGridSize = undefined;
     };
 
-    BackendlessGeoQuery.prototype = {
+    GeoQuery.prototype = {
         addCategory        : function() {
             this.categories = this.categories || [];
             this.categories.push();
@@ -3940,14 +3951,39 @@
         this.selector = args.selector || undefined;
     };
 
-    root.GeoPoint = Backendless.GeoPoint = GeoPoint;
-    root.Bodyparts = Backendless.Bodyparts = Bodyparts;
-    root.GeoCluster = Backendless.GeoCluster = GeoCluster;
-    root.PublishOptions = Backendless.PublishOptions = PublishOptions;
-    root.DeliveryOptions = Backendless.DeliveryOptions = DeliveryOptions;
-    root.SubscriptionOptions = Backendless.SubscriptionOptions = SubscriptionOptions;
-    root.BackendlessGeoQuery = Backendless.BackendlessGeoQuery = BackendlessGeoQuery;
-    root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders = PublishOptionsHeaders;
+    Backendless.DataQuery = DataQuery;
+    Backendless.GeoQuery = GeoQuery;
+    Backendless.GeoPoint = GeoPoint;
+    Backendless.GeoCluster = GeoCluster;
+    Backendless.Bodyparts = Bodyparts;
+    Backendless.PublishOptions = PublishOptions;
+    Backendless.DeliveryOptions = DeliveryOptions;
+    Backendless.SubscriptionOptions = SubscriptionOptions;
+    Backendless.PublishOptionsHeaders = PublishOptionsHeaders;
+
+    /** @deprecated */
+    root.GeoPoint = Backendless.GeoPoint;
+
+    /** @deprecated */
+    root.GeoCluster = Backendless.GeoCluster;
+
+    /** @deprecated */
+    root.BackendlessGeoQuery = Backendless.GeoQuery;
+
+    /** @deprecated */
+    root.Bodyparts = Backendless.Bodyparts;
+
+    /** @deprecated */
+    root.PublishOptions = Backendless.PublishOptions;
+
+    /** @deprecated */
+    root.DeliveryOptions = Backendless.DeliveryOptions;
+
+    /** @deprecated */
+    root.SubscriptionOptions = Backendless.SubscriptionOptions;
+
+    /** @deprecated */
+    root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders;
 
     return Backendless;
 });

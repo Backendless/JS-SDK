@@ -383,26 +383,26 @@ function testUserService() {
 }
 
 function testGoeService() {
-    var newGeoPoint:GeoPoint = new GeoPoint();
+    var newGeoPoint:Backendless.GeoPoint = new Backendless.GeoPoint();
     newGeoPoint.latitude = 20;
     newGeoPoint.longitude = 30;
     newGeoPoint.categories = ["c"];
     newGeoPoint.metadata = {"owner": "XXX"};
 
-    var existPoint:GeoPoint = new GeoPoint();
+    var existPoint:Backendless.GeoPoint = new Backendless.GeoPoint();
     newGeoPoint.___class = 'c';
     newGeoPoint.objectId = 'id';
     newGeoPoint.latitude = 20;
     newGeoPoint.longitude = 30;
 
-    var geoClaster:GeoCluster = new GeoCluster();
+    var geoClaster:Backendless.GeoCluster = new Backendless.GeoCluster();
 
     geoClaster.___class = 'geo';
     geoClaster.objectId = 'id';
     geoClaster.latitude = 20;
     geoClaster.longitude = 30;
     geoClaster.totalPoints = 10;
-    geoClaster.geoQuery = new BackendlessGeoQuery();
+    geoClaster.geoQuery = new Backendless.GeoQuery();
 
     var bool:boolean = true;
     var errorStr:string = 'str';
@@ -419,9 +419,9 @@ function testGoeService() {
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
     });
 
-    var baseGeoQuery:BackendlessGeoQuery = new BackendlessGeoQuery();
-    var rectangleGeoQuery:BackendlessRectangleGeoQueryI = {searchRectangle: [1, 2, 3, 4]};
-    var circleGeoQuery:BackendlessCircleGeoQueryI = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
+    var baseGeoQuery:BackendlessGeoQuery = new Backendless.GeoQuery();
+    var rectangleGeoQuery:BackendlessRectangleGeoQuery = {searchRectangle: [1, 2, 3, 4]};
+    var circleGeoQuery:BackendlessCircleGeoQuery = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
     var categories:string|string[] = baseGeoQuery.categories;
     var includeMetadata:boolean = baseGeoQuery.includeMetadata;
     var metadata:Object = baseGeoQuery.metadata;
@@ -511,15 +511,15 @@ function testMessaging() {
     var resultObj:Object;
     var resultBool:boolean = true;
     var resultXHR:XMLHttpRequest;
-    var bodyParts:Bodyparts = new Bodyparts();
+    var bodyParts:Backendless.Bodyparts = new Backendless.Bodyparts();
     var recipients:string[] = ['str'];
     var attachments:string[] = ['str'];
     var channels:string[] = ['str'];
     var expiration:number|Date = 123;
-    var publishOptions:PublishOptions = new PublishOptions();
-    var deliveryOptions:DeliveryOptions = new DeliveryOptions();
+    var publishOptions:Backendless.PublishOptions = new Backendless.PublishOptions();
+    var deliveryOptions:Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
     var subscription:BackendlessSubscription;
-    var subscriptionOptions:SubscriptionOptions = new SubscriptionOptions();
+    var subscriptionOptions:Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
     var subscriptionCallback:Function = function () {
     };
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
