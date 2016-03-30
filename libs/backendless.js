@@ -3692,11 +3692,16 @@
             return this.loggers[loggerName];
         },
         flush                : function() {
+            var async = extractResponder(arguments);
+            
             Backendless._ajax({
-                method: 'PUT',
-                url   : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
-                data  : JSON.stringify(this.logInfo)
+                method      : 'PUT',
+                isAsync     : !!async,
+                asyncHandler: async,
+                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
+                data        : JSON.stringify(this.logInfo)
             });
+            
             this.flushInterval && clearTimeout(this.flushInterval);
             this.logInfo = [];
             this.messagesCount = 0;
