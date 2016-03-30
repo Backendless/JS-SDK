@@ -113,17 +113,24 @@
     });
 
     Utils.addEvent = function(evnt, elem, func) {
-        if (elem.addEventListener)
+        if (elem.addEventListener) {
             elem.addEventListener(evnt, func, false);
-        else if (elem.attachEvent)
+        }
+        else if (elem.attachEvent) {
             elem.attachEvent("on" + evnt, func);
-        else
+        }
+        else {
             elem[evnt] = func;
+        }
     };
 
     Utils.isEmpty = function(obj) {
-        if (obj == null) return true;
-        if (Utils.isArray(obj) || Utils.isString(obj)) return obj.length === 0;
+        if (obj == null)  {
+            return true;
+        }
+        if (Utils.isArray(obj) || Utils.isString(obj)) {
+            return obj.length === 0;
+        }
         for (var key in obj) {
             if (obj.hasOwnProperty(key) && obj[key] !== undefined && obj[key] !== null) {
                 return false;
@@ -133,11 +140,11 @@
     };
 
     Utils.removeEvent = function(evnt, elem) {
-        if (elem.removeEventListener)
+        if (elem.removeEventListener) {
             elem.removeEventListener(evnt, null, false);
-        else if (elem.detachEvent)
+        } else if (elem.detachEvent) {
             elem.detachEvent("on" + evnt, null);
-        else {
+        } else {
             elem[evnt] = null;
         }
     };
@@ -148,7 +155,9 @@
                 XMLHttpRequest.prototype.sendAsBinary = function(text) {
                     var data = new ArrayBuffer(text.length);
                     var ui8a = new Uint8Array(data, 0);
-                    for (var i = 0; i < text.length; i++) ui8a[i] = (text.charCodeAt(i) & 0xff);
+                    for (var i = 0; i < text.length; i++) {
+                        ui8a[i] = (text.charCodeAt(i) & 0xff);
+                    }
                     this.send(ui8a);
                 };
             }
@@ -381,15 +390,16 @@
             config.asyncHandler.fault || (config.asyncHandler.fault = function() {});
             config.asyncHandler.fault(e);
         });
-        req.write(config.data, "utf8");
+        req.write(config.data);
         return req.end();
     };
 
     Backendless._ajax = isBrowser ? Backendless._ajax_for_browser : Backendless._ajax_for_nodejs;
 
     var getClassName = function() {
-        if (this.prototype && this.prototype.___class)
+        if (this.prototype && this.prototype.___class) {
             return this.prototype.___class;
+        }
 
         if (Utils.isFunction(this) && this.name) {
             return this.name;
@@ -411,7 +421,7 @@
     var classWrapper = function(obj) {
         var wrapper = function(obj) {
             var wrapperName = null,
-                wrapperFunc = null;
+                Wrapper = null;
             for (var property in obj) {
                 if (obj.hasOwnProperty(property)) {
                     if (property === "___class") {
@@ -422,8 +432,8 @@
             }
             if (wrapperName) {
                 try {
-                    wrapperFunc = eval(wrapperName);
-                    obj = deepExtend(new wrapperFunc(), obj);
+                    Wrapper = eval(wrapperName);
+                    obj = deepExtend(new Wrapper(), obj);
                 } catch (e) {
                 }
             }
@@ -694,8 +704,9 @@
         this.model = Utils.isString(model) ? function() {
         } : model;
         this.className = getClassName.call(model);
-        if ((typeof model).toLowerCase() === "string")
+        if ((typeof model).toLowerCase() === "string") {
             this.className = model;
+        }
         if (!this.className) {
             throw 'Class name should be specified';
         }
@@ -750,8 +761,9 @@
             response = response.fields || response;
             item = new _Model();
 
-            if (!isBrowser)
+            if (!isBrowser) {
                 response = JSON.parse(response);
+            }
 
             extendCollection(response, this);
             deepExtend(item, response);
@@ -768,7 +780,7 @@
                     arr[i] = item;
                 }
                 extendCollection(collection, this);
-                return collection;
+                return this._formCircDeps(collection);
             }
             else {
                 response = response.fields || response;
@@ -799,7 +811,7 @@
         _replCircDeps       : function(obj) {
             var objMap = [obj];
             var pos;
-            var GenID = function() {
+            var genID = function() {
                 for (var b = '', a = b; a++ < 36; b += a * 51 && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
                 }
                 return b;
@@ -808,7 +820,7 @@
                 for (var prop in obj) {
                     if (obj.hasOwnProperty(prop) && typeof obj[prop] == "object" && obj[prop] != null) {
                         if ((pos = objMap.indexOf(obj[prop])) != -1) {
-                            objMap[pos]["__subID"] = objMap[pos]["__subID"] || GenID();
+                            objMap[pos]["__subID"] = objMap[pos]["__subID"] || genID();
                             obj[prop] = {"__originSubID": objMap[pos]["__subID"]};
                         } else if (Utils.isDate(obj[prop])) {
                             obj[prop] = obj[prop].getTime();
@@ -1071,22 +1083,25 @@
             if (Utils.isString(viewName)) {
                 var url = Backendless.appPath + '/data/' + viewName;
 
-                if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async))
+                if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
                     url += '?';
+                }
                 if (Utils.isString(whereClause)) {
                     url += 'where=' + whereClause;
                 } else {
                     pageSize = whereClause;
                     offset = pageSize;
                 }
-                if (Utils.isNumber(pageSize))
+                if (Utils.isNumber(pageSize)) {
                     url += '&' + new DataStore()._extractQueryOptions({
                             pageSize: pageSize
                         });
-                if (Utils.isNumber(offset))
+                }
+                if (Utils.isNumber(offset)) {
                     url += '&' + new DataStore()._extractQueryOptions({
                             offset: offset
                         });
+                }
 
                 return Backendless._ajax({
                     method      : 'GET',
@@ -1094,8 +1109,9 @@
                     isAsync     : isAsync,
                     asyncHandler: responder
                 });
-            } else
+            } else {
                 throw new Error('View name is required string parameter');
+            }
         },
         callStoredProcedure: function(spName, argumentValues, async) {
             var responder = extractResponder(arguments),
@@ -1105,8 +1121,9 @@
                 var url  = Backendless.appPath + '/data/' + spName,
                     data = {};
 
-                if (Utils.isObject(argumentValues))
+                if (Utils.isObject(argumentValues)) {
                     data = JSON.stringify(argumentValues);
+                }
 
                 return Backendless._ajax({
                     method      : 'POST',
@@ -1115,8 +1132,9 @@
                     isAsync     : isAsync,
                     asyncHandler: responder
                 });
-            } else
+            } else {
                 throw new Error('Stored Procedure name is required string parameter');
+            }
         },
         of: function(model) {
             var tableName;
@@ -1175,7 +1193,7 @@
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-        }
+        };
     }
 
     DataPermissions.prototype = {
@@ -1256,7 +1274,7 @@
         _wrapAsync: function(async) {
             var me   = this, success = function(data) {
                 try {
-                    data = JSON.parse(data)
+                    data = JSON.parse(data);
                 }
                 catch (e) {
                 }
@@ -1268,7 +1286,7 @@
             return new Async(success, error);
         },
         _parseResponse: function(data) {
-            var user = new Backendless.User;
+            var user = new Backendless.User();
             deepExtend(user, data);
             return user;
         },
@@ -1370,8 +1388,9 @@
                 asyncHandler: responder,
                 data        : JSON.stringify(data)
             });
-            if (isAsync)
+            if (isAsync) {
                 return result;
+            }
 
             currentUser = this._parseResponse(result);
 
@@ -1393,7 +1412,7 @@
                     newUser[i] = user[i];
                 }
             }
-            return newUser
+            return newUser;
         },
         loggedInUser: function() {
             return Backendless.LocalCache.get("current-user-id");
@@ -1428,6 +1447,7 @@
                 isAsync         = responder != null,
                 errorCallback   = isAsync ? responder.fault : null,
                 successCallback = isAsync ? responder.success : null,
+                result = {},
                 logoutUser      = function() {
                     Backendless.LocalCache.remove("user-token");
                     Backendless.LocalCache.remove("current-user-id");
@@ -1453,7 +1473,7 @@
                 responder.success = onLogoutSuccess;
             }
             try {
-                var result = Backendless._ajax({
+                result = Backendless._ajax({
                     method      : 'GET',
                     url         : this.restUrl + '/logout',
                     isAsync     : isAsync,
@@ -1535,8 +1555,8 @@
                     container.appendChild(client);
                     client.onload = function() {
                         container.style.cursor = 'default';
-                    }
-                }
+                    };
+                };
             } else {
                 container = window.open('', socialType + ' authorization',
                     'height=250,width=450,scrollbars=0,toolbar=0,menubar=0,location=0,resizable=0,status=0,titlebar=0',
@@ -1557,8 +1577,8 @@
                     container.location.href = url;
                     container.onload = function() {
                         container.document.getElementsByTagName("html")[0].style.cursor = 'default';
-                    }
-                }
+                    };
+                };
             }
         },
         _loginSocial: function(socialType, fieldsMapping, permissions, callback, container) {
@@ -1574,8 +1594,9 @@
                 if (e.origin == Backendless.serverURL) {
                     var result = JSON.parse(e.data);
 
-                    if (result.fault)
+                    if (result.fault) {
                         responder.fault(result.fault);
+                    }
                     else {
                         currentUser = this.Backendless.UserService._parseResponse(result);
                         responder.success(this.Backendless.UserService._getUserFromResponse(currentUser));
@@ -1594,10 +1615,12 @@
             });
 
             var request = fieldsMapping || permissions ? {} : null;
-            if (fieldsMapping)
+            if (fieldsMapping) {
                 request.fieldsMapping = fieldsMapping;
-            if (permissions)
+            }
+            if (permissions) {
                 request.permissions = permissions;
+            }
 
             Backendless._ajax({
                 method      : 'POST',
@@ -1608,22 +1631,25 @@
             });
         },
         loginWithFacebookSdk: function(fieldsMapping, async) {
-            if (!FB)
+            if (!FB) {
                 throw new Error("Facebook SDK not found");
+            }
 
             var me = this;
             FB.getLoginStatus(function(response) {
-                if (response.status === 'connected')
+                if (response.status === 'connected') {
                     me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, async);
-                else
+                } else {
                     FB.login(function(response) {
                         me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, async);
                     });
+                }
             });
         },
         loginWithGooglePlusSdk: function(fieldsMapping, async) {
-            if (!gapi)
+            if (!gapi) {
                 throw new Error("Google Plus SDK not found");
+            }
 
             var me = this;
             gapi.auth.authorize({
@@ -1635,8 +1661,9 @@
             });
         },
         _sendSocialLoginRequest: function(context, response, socialType, fieldsMapping, async) {
-            if (fieldsMapping)
+            if (fieldsMapping) {
                 response["fieldsMapping"] = fieldsMapping;
+            }
 
             var interimCallback = new Backendless.Async(function(r) {
                 currentUser = context._parseResponse(r);
@@ -1669,7 +1696,7 @@
                             method: 'GET',
                             url   : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken
                         });
-                        return (result) ? true : false
+                        return !!result;
                     } catch (e) {
                         return false;
                     }
@@ -1683,7 +1710,7 @@
                 }
             } else {
                 var user = Backendless.UserService.getCurrentUser();
-                return (user) ? true : false;
+                return !!user;
             }
         }
     };
@@ -1802,6 +1829,7 @@
             geopoint.categories = Utils.isArray(geopoint.categories) ? geopoint.categories : [geopoint.categories];
 
             var responder = extractResponder(arguments);
+            var isAsync = responder != null;
             var responderOverride = function(async) {
                 var success = function(data) {
                     var geoObject = data.geopoint;
@@ -1821,9 +1849,6 @@
                 return new Async(success, error);
             };
 
-            if (responder != null) {
-                var isAsync = true;
-            }
             responder = responderOverride(responder);
 
             return Backendless._ajax({
@@ -1851,7 +1876,7 @@
                 url += query.searchRectangle ? '/rect?' : '/points?';
                 url += query.units ? 'units=' + query.units : '';
                 for (var prop in query) {
-                    if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != undefined) {
+                    if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
                         url += '&' + this._findHelpers[prop](query[prop]);
                     }
                 }
@@ -1913,7 +1938,7 @@
                         url += geoObject.objectId + '/metadata?';
                         for (var prop in geoObject.geoQuery) {
                             {
-                                if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != undefined) {
+                                if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != null) {
                                     url += '&' + this._findHelpers[prop](geoObject.geoQuery[prop]);
                                 }
                             }
@@ -1955,7 +1980,7 @@
                         url += geoObject.objectId + '/points?';
                         for (var prop in geoObject.geoQuery) {
                             {
-                                if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != undefined) {
+                                if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != null) {
                                     url += '&' + this._findHelpers[prop](geoObject.geoQuery[prop]);
                                 }
                             }
@@ -2046,8 +2071,9 @@
             }
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+            var result = {};
             try {
-                var result = Backendless._ajax({
+                result = Backendless._ajax({
                     method      : 'DELETE',
                     url         : this.restUrl + '/categories/' + name,
                     isAsync     : isAsync,
@@ -2057,7 +2083,7 @@
                 if (e.statusCode == 404) {
                     result = false;
                 } else {
-                    throw e
+                    throw e;
                 }
             }
 
@@ -2070,9 +2096,10 @@
             }
             var pointId   = Utils.isString(point) ? point : point.objectId,
                 responder = extractResponder(arguments),
-                isAsync   = responder != null;
+                isAsync   = responder != null,
+                result = {};
             try {
-                var result = Backendless._ajax({
+                result = Backendless._ajax({
                     method      : 'DELETE',
                     url         : this.restUrl + '/points/' + pointId,
                     isAsync     : isAsync,
@@ -2082,7 +2109,7 @@
                 if (e.statusCode == 404) {
                     result = false;
                 } else {
-                    throw e
+                    throw e;
                 }
             }
             return (typeof result.result === 'undefined') ? result : result.result;
@@ -2104,7 +2131,7 @@
                 throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
             }
             if (geoPoint && !(geoPoint instanceof Backendless.Async) && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
-                throw new Error("Method argument must be a valid instance of GeoPoint persisted on the server")
+                throw new Error("Method argument must be a valid instance of GeoPoint persisted on the server");
             }
             var responder = extractResponder(arguments),
                 isAsync   = responder != null,
@@ -2147,7 +2174,7 @@
             while (degree < 0) {
                 degree += 360;
             }
-            return degree == 0 ? 180 : degree % 360 - 180;
+            return degree === 0 ? 180 : degree % 360 - 180;
         },
         _countLittleRadius: function(latitude) {
             var h = Math.abs(latitude) / 180 * this.EARTH_RADIUS;
@@ -2208,19 +2235,25 @@
                 var deltaLon = geoPoints[i].latitude - geoPoints[i - 1].latitude;
 
                 if (deltaLon < 0 && deltaLon > -180 || deltaLon > 270) {
-                    if (deltaLon > 270)
+                    if (deltaLon > 270) {
                         deltaLon -= 360;
+                    }
+
                     lon += deltaLon;
 
-                    if (lon < minLon)
+                    if (lon < minLon) {
                         minLon = lon;
+                    }
                 } else if (deltaLon > 0 && deltaLon <= 180 || deltaLon <= -270) {
-                    if (deltaLon <= -270)
+                    if (deltaLon <= -270) {
                         deltaLon += 360;
+                    }
+
                     lon += deltaLon;
 
-                    if (lon > maxLon)
+                    if (lon > maxLon) {
                         maxLon = lon;
+                    }
                 }
             }
             nwLon += minLon;
@@ -2299,11 +2332,11 @@
             return count % 2 == 1;
         },
         _isPointInFence: function(geoPoint, geoFence) {
-            return this._isPointInRectangular(geoPoint, geoFence.nwPoint, geoFence.sePoint)
-                || geoFence.type == 'CIRCLE' && this._isPointInCircle(geoPoint, geoFence.nodes[0],
+            return this._isPointInRectangular(geoPoint, geoFence.nwPoint, geoFence.sePoint) ||
+                geoFence.type == 'CIRCLE' && this._isPointInCircle(geoPoint, geoFence.nodes[0],
                     this._distance(geoFence.nodes[0].latitude, geoFence.nodes[0].longitude, geoFence.nodes[1].latitude,
-                        geoFence.nodes[1].longitude))
-                || geoFence.type == 'SHAPE' && this._isPointInShape(geoPoint, geoFence.nodes);
+                        geoFence.nodes[1].longitude)) ||
+                geoFence.type == 'SHAPE' && this._isPointInShape(geoPoint, geoFence.nodes);
         },
         _typesMapper: {
             'RECT'  : function(fence) {
@@ -2372,7 +2405,7 @@
                                 coords.latitude, coords.longitude);
                             if (duration > -1) {
                                 (function(k, coords, duration) {
-                                    return timeoutFuncInApp(k, coords, duration)
+                                    return timeoutFuncInApp(k, coords, duration);
                                 })(k, coords, duration);
                             } else {
                                 GeoFenceCallback['onstay'](self._trackedFences[k].geofenceName,
@@ -2390,7 +2423,7 @@
                             self._runFenceAction(rule, self._trackedFences[k].geofenceName, geoPoint, async);
                             if (duration > -1) {
                                 (function(k, coords, duration, geoPoint) {
-                                    return timeoutFuncRemote(k, coords, duration, geoPoint)
+                                    return timeoutFuncRemote(k, coords, duration, geoPoint);
                                 })(k, coords, duration, geoPoint);
                             } else {
                                 self._runFenceAction('onstay', self._trackedFences[k].geofenceName, geoPoint, async);
@@ -2407,7 +2440,9 @@
             var check = false;
             (function(a) {
                 if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,
-                        4)))check = true
+                        4))) {
+                    check = true;
+                }
             })(navigator.userAgent || navigator.vendor || window.opera);
             return check;
         },
@@ -2415,8 +2450,10 @@
         _lastResults    : {},
         _startMonitoring: function(geofenceName, secondParam, async) {
             var self = this;
-            if (secondParam instanceof GeoPoint)
-                var isGeoPoint = true;
+            var isGeoPoint = false;
+            if (secondParam instanceof GeoPoint) {
+                isGeoPoint = true;
+            }
             var fences = this._getFences(geofenceName);
             for (var ii = 0; ii < fences.length; ii++) {
                 if (!_containsByPropName(self._trackedFences, fences[ii], "geofenceName")) {
@@ -2680,8 +2717,9 @@
             this.proxy = new PollingProxy(url);
             var self = this;
             this.proxy.on('messageReceived', function(data) {
-                if (data.messages.length)
+                if (data.messages.length) {
                     self.responder(data);
+                }
             });
         }
     };
@@ -2750,13 +2788,15 @@
                 message: message
             };
             if (publishOptions) {
-                if (!(publishOptions instanceof PublishOptions))
+                if (!(publishOptions instanceof PublishOptions)) {
                     throw "Use PublishOption as publishOptions argument";
+                }
                 deepExtend(data, publishOptions);
             }
             if (deliveryTarget) {
-                if (!(deliveryTarget instanceof DeliveryOptions))
+                if (!(deliveryTarget instanceof DeliveryOptions)) {
                     throw "Use DeliveryOptions as deliveryTarget argument";
+                }
                 deepExtend(data, deliveryTarget);
             }
 
@@ -2940,7 +2980,7 @@
             xhr.setRequestHeader("uiState", UIState);
         }
         var asyncHandler = this.asyncHandler;
-        if (asyncHandler)
+        if (asyncHandler) {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
@@ -2950,6 +2990,8 @@
                     }
                 }
             };
+        }
+
         xhr.sendAsBinary(builder);
 
         if (asyncHandler) {
@@ -2985,7 +3027,7 @@
             xhr.setRequestHeader("uiState", UIState);
         }
         var asyncHandler = this.asyncHandler;
-        if (asyncHandler)
+        if (asyncHandler) {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
@@ -2995,6 +3037,7 @@
                     }
                 }
             };
+        }
         xhr.send(e.target.result.split(',')[1]);
 
         if (asyncHandler) {
@@ -3061,10 +3104,12 @@
 
     Files.prototype = {
         saveFile  : function(path, fileName, fileContent, overwrite, async) {
-            if (!path || !Utils.isString(path))
+            if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
-            if (!fileName || !Utils.isString(path))
+            }
+            if (!fileName || !Utils.isString(path)) {
                 throw new Error('Missing value for the "fileName" argument. The argument must contain a string value');
+            }
             if (overwrite instanceof Backendless.Async) {
                 async = overwrite;
                 overwrite = null;
@@ -3099,10 +3144,10 @@
         upload    : function(files, path, overwrite, async) {
             files = files.files || files;
             var baseUrl = this.restUrl + '/' + path + '/';
-
-            if (Utils.isBoolean(overwrite))
-                var overwriting = "?overwrite=" + overwrite;
-
+            var overwriting = '';
+            if (Utils.isBoolean(overwrite)) {
+                overwriting = "?overwrite=" + overwrite;
+            }
             if (isBrowser) {
                 if (window.File && window.FileList) {
                     if (files instanceof File) {
@@ -3113,7 +3158,7 @@
                         try {
                             var reader = new FileReader();
                             reader.fileName = encodeURIComponent(files[i].name).replace(/'/g, "%27").replace(/"/g, "%22");
-                            reader.uploadPath = baseUrl + reader.fileName + (overwriting ? overwriting : '');
+                            reader.uploadPath = baseUrl + reader.fileName + overwriting;
                             reader.onloadend = send;
                             reader.asyncHandler = async;
                             reader.onerror = function(evn) {
@@ -3146,7 +3191,7 @@
                     if (index) {
                         fileName = fileName.substring(index + 1);
                     }
-                    form.action = baseUrl + fileName + (overwriting ? overwriting : '');
+                    form.action = baseUrl + fileName + overwriting;
                     form.submit();
                 }
             }
@@ -3160,13 +3205,13 @@
                 url       = this.restUrl + '/' + path;
 
             if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
-                url += "?"
+                url += "?";
             }
             if (Utils.isString(pattern)) {
-                url += ("pattern=" + pattern)
+                url += ("pattern=" + pattern);
             }
             if (Utils.isBoolean(recursively)) {
-                url += ("&sub=" + recursively)
+                url += ("&sub=" + recursively);
             }
             if (Utils.isNumber(pagesize)) {
                 url += "&pagesize=" + pagesize;
@@ -3209,8 +3254,9 @@
             return this._doAction("copy", parameters, async);
         },
         _checkPath: function(path) {
-            if (!(/^\//).test(path))
+            if (!(/^\//).test(path)) {
                 path = "/" + path;
+            }
 
             return path;
         },
@@ -3231,7 +3277,7 @@
         remove    : function(fileURL, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
-            var url = fileURL.indexOf("http://") == 0 || fileURL.indexOf("https://") == 0 ? fileURL : this.restUrl + '/' + fileURL;
+            var url = fileURL.indexOf("http://") === 0 || fileURL.indexOf("https://") === 0 ? fileURL : this.restUrl + '/' + fileURL;
             Backendless._ajax({
                 method      : 'DELETE',
                 url         : url,
@@ -3397,13 +3443,14 @@
             return response;
         },
         put             : function(key, value, timeToLive, async) {
-            if (!Utils.isString(key))
+            if (!Utils.isString(key)) {
                 throw new Error('You can use only String as key to put into Cache');
+            }
             if (!(timeToLive instanceof Backendless.Async)) {
                 if (typeof timeToLive == 'object' && !arguments[3]) {
                     async = timeToLive;
                     timeToLive = null;
-                } else if (typeof timeToLive != ('number' || 'string') && timeToLive !== undefined) {
+                } else if (typeof timeToLive != ('number' || 'string') && timeToLive != null) {
                     throw new Error('You can use only String as timeToLive attribute to put into Cache');
                 }
             } else {
@@ -3465,8 +3512,9 @@
             }
         },
         cacheMethod     : function(method, key, contain, async) {
-            if (!Utils.isString(key))
+            if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
+            }
             var responder = extractResponder(arguments), isAsync = false;
             if (responder != null) {
                 isAsync = true;
@@ -3480,11 +3528,12 @@
             });
         },
         contains        : function(key, async) {
-            return this.cacheMethod('GET', key, true, async)
+            return this.cacheMethod('GET', key, true, async);
         },
         get             : function(key, async) {
-            if (!Utils.isString(key))
+            if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
+            }
             var responder = extractResponder(arguments), isAsync = false;
             if (responder != null) {
                 isAsync = true;
@@ -3547,10 +3596,12 @@
             return this;
         },
         counterNameValidation   : function(counterName) {
-            if (!counterName)
+            if (!counterName) {
                 throw new Error('Missing value for the "counterName" argument. The argument must contain a string value.');
-            if (!Utils.isString(counterName))
+            }
+            if (!Utils.isString(counterName)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string values');
+            }
             this.name = counterName;
         },
         implementMethod         : function(method, urlPart, async) {
@@ -3601,10 +3652,12 @@
             });
         },
         implementMethodWithValue: function(urlPart, value, async) {
-            if (!value)
+            if (!value) {
                 throw new Error('Missing value for the "value" argument. The argument must contain a numeric value.');
-            if (!Utils.isNumber(value))
+            }
+            if (!Utils.isNumber(value)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only numeric values');
+            }
             var responder = extractResponder(arguments), isAsync = false;
             if (responder != null) {
                 isAsync = true;
@@ -3627,10 +3680,12 @@
         },
         compareAndSet           : function(counterName, expected, updated, async) {
             this.counterNameValidation(counterName, async);
-            if (!expected || !updated)
+            if (!expected || !updated) {
                 throw new Error('Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values');
-            if (!Utils.isNumber(expected) || !Utils.isNumber(updated))
+            }
+            if (!Utils.isNumber(expected) || !Utils.isNumber(updated)) {
                 throw new Error('Missing value for the "expected" and/or "updated" arguments. The arguments must contain a numeric value');
+            }
             var responder = extractResponder(arguments), isAsync = false;
             if (responder != null) {
                 isAsync = true;
@@ -3778,7 +3833,7 @@
                 data        : JSON.stringify(parameters),
                 isAsync     : isAsync,
                 asyncHandler: responder
-            })
+            });
         }
     };
 
