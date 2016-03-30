@@ -391,6 +391,10 @@
         if (this.prototype && this.prototype.___class)
             return this.prototype.___class;
 
+        if (Utils.isFunction(this) && this.name) {
+            return this.name;
+        }
+
         var instStringified = (Utils.isFunction(this) ? this.toString() : this.constructor.toString()),
             results         = instStringified.match(/function\s+(\w+)/);
         return (results && results.length > 1) ? results[1] : '';
