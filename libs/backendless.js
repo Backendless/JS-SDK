@@ -3692,38 +3692,28 @@
             return this.loggers[loggerName];
         },
         flush                : function() {
-            var async = extractResponder(arguments);
-            
-            Backendless._ajax({
-                method      : 'PUT',
-                isAsync     : !!async,
-                asyncHandler: async,
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
-                data        : JSON.stringify(this.logInfo)
-            });
-            
-            this.flushInterval && clearTimeout(this.flushInterval);
-            this.logInfo = [];
-            this.messagesCount = 0;
+            if (this.logInfo.length) {
+                var async = extractResponder(arguments);
+
+                Backendless._ajax({
+                    method      : 'PUT',
+                    isAsync     : !!async,
+                    asyncHandler: async,
+                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
+                    data        : JSON.stringify(this.logInfo)
+                });
+
+                this.flushInterval && clearTimeout(this.flushInterval);
+                this.logInfo = [];
+                this.messagesCount = 0;
+            }
         },
         sendRequest          : function() {
-            var self = this;
-            function request(info, time) {
-                function sendAjax() {
-                    Backendless._ajax({
-                        method : 'PUT',
-                        url    : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
-                        data   : JSON.stringify(info),
-                        isAsync: !isBrowser
-                    });
-                    self.messagesCount = 0;
-                }
-
-                self.flushInterval = setTimeout(sendAjax, time * 1000);
-            }
-
-            request(this.logInfo, this.timeFrequency);
-            this.logInfo = [];
+            var logging = this;
+            
+            this.flushInterval = setTimeout(function() {
+                logging.flush();
+            }, this.timeFrequency * 1000);
         },
         checkMessagesLen     : function() {
             if (this.messagesCount > (this.numOfMessages - 1)) {
