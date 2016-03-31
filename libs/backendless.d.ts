@@ -50,9 +50,6 @@ declare module Backendless {
 
     /**
      * @namespace Backendless.Data
-     * @deprecated
-     *
-     * use {@link Backendless.Persistence}
      **/
     var Data:BackendlessPersistence;
 
@@ -124,6 +121,9 @@ declare module Backendless {
      */
     class User {
         ___class:string;
+        username:string;
+        password:string;
+        email:string;
     }
 
     /**
