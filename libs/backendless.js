@@ -1,6 +1,6 @@
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
-      (typeof global == 'object' && global.global === global && global);
+        (typeof global == 'object' && global.global === global && global);
 
     if (typeof define === "function" && define.amd) {
         define([], function() {
@@ -101,6 +101,7 @@
             browser[matched.browser] = true;
             browser.version = matched.version;
         }
+
         return browser;
     })();
 
@@ -108,7 +109,14 @@
     var getNow = function() {
         return new Date().getTime();
     };
+
+    var promisesEnabled = false;
+
     Backendless.browser = browser;
+    Backendless.enablePromises = enablePromises;
+    Backendless.promisesEnabled = function() {
+        return promisesEnabled;
+    };
 
     var Utils = Backendless.Utils = {
         isObject  : function(obj) {
@@ -159,6 +167,7 @@
                 return false;
             }
         }
+
         return true;
     };
 
@@ -226,6 +235,7 @@
                 },
                 fromCacheOrRemote : function(config) {
                     var cachedResult = Backendless.LocalCache.get(config.url.replace(/([^A-Za-z0-9])/g, ''));
+
                     if (cachedResult) {
                         config.isAsync && config.asyncHandler.success(cachedResult);
                         return cachedResult;
@@ -243,7 +253,9 @@
                             message   : 'error: cannot find data in Backendless.LocalCache',
                             statusCode: 404
                         };
+
                     result.remote = sendRequest(config);
+
                     if (cachedResult) {
                         config.isAsync && config.asyncHandler.success(cachedResult);
                         result.local = cachedResult;
@@ -254,53 +266,64 @@
                             throw cacheError;
                         }
                     }
+
                     return result;
                 }
             },
             sendRequest       = function(config) {
-                var xhr           = new XMLHttpRequest(),
-                    contentType   = config.data ? 'application/json' : 'application/x-www-form-urlencoded',
-                    response,
-                    parseResponse = function(xhr) {
-                        var result = true;
-                        if (xhr.responseText) {
-                            try {
-                                result = JSON.parse(xhr.responseText);
-                            } catch (e) {
-                                result = xhr.responseText;
-                            }
-                        }
-                        return result;
-                    },
-                    badResponse   = function(xhr) {
-                        var result = {};
+                var xhr         = new XMLHttpRequest(),
+                    contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded',
+                    response;
+
+                var parseResponse = function(xhr) {
+                    var result = true;
+
+                    if (xhr.responseText) {
                         try {
                             result = JSON.parse(xhr.responseText);
                         } catch (e) {
-                            result.message = xhr.responseText;
+                            result = xhr.responseText;
                         }
-                        result.statusCode = xhr.status;
-                        result.message = result.message || 'unknown error occurred';
-                        return result;
-                    },
-                    cacheHandler  = function(response) {
-                        response = cloneObject(response);
-                        if (config.method == 'GET' && config.cacheActive) {
-                            response.cachePolicy = config.cachePolicy;
-                            Backendless.LocalCache.set(config.urlBlueprint, response);
-                        } else if (Backendless.LocalCache.exists(config.urlBlueprint)) {
-                            if (response === true || config.method == 'DELETE') {
-                                response = undefined;
-                            } else {
-                                response.cachePolicy = Backendless.LocalCache.getCachePolicy(config.urlBlueprint);
-                            }
-                            '___class' in response && delete response['___class'];  // this issue must be fixed on server side
-                            Backendless.LocalCache.set(config.urlBlueprint, response);
+                    }
+
+                    return result;
+                };
+
+                var badResponse = function(xhr) {
+                    var result = {};
+
+                    try {
+                        result = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        result.message = xhr.responseText;
+                    }
+
+                    result.statusCode = xhr.status;
+                    result.message = result.message || 'unknown error occurred';
+
+                    return result;
+                };
+
+                var cacheHandler = function(response) {
+                    response = cloneObject(response);
+                    if (config.method == 'GET' && config.cacheActive) {
+                        response.cachePolicy = config.cachePolicy;
+                        Backendless.LocalCache.set(config.urlBlueprint, response);
+                    } else if (Backendless.LocalCache.exists(config.urlBlueprint)) {
+                        if (response === true || config.method == 'DELETE') {
+                            response = undefined;
+                        } else {
+                            response.cachePolicy = Backendless.LocalCache.getCachePolicy(config.urlBlueprint);
                         }
-                    },
-                    checkInCache  = function() {
-                        return config.cacheActive && config.cachePolicy.policy == 'fromRemoteOrCache' && Backendless.LocalCache.exists(config.urlBlueprint);
-                    };
+                        '___class' in response && delete response['___class'];  // this issue must be fixed on server side
+
+                        Backendless.LocalCache.set(config.urlBlueprint, response);
+                    }
+                };
+
+                var checkInCache = function() {
+                    return config.cacheActive && config.cachePolicy.policy == 'fromRemoteOrCache' && Backendless.LocalCache.exists(config.urlBlueprint);
+                };
 
                 xhr.open(config.method, config.url, config.isAsync);
                 xhr.setRequestHeader('Content-Type', contentType);
@@ -333,6 +356,7 @@
                         }
                     };
                 }
+
                 xhr.send(config.data);
 
                 if (config.isAsync) {
@@ -357,22 +381,26 @@
         try {
             return cacheMethods[config.cachePolicy.policy].call(this, config);
         } catch (error) {
-            console.log('error: ' + error.message);
             throw error;
         }
     };
 
     Backendless._ajax_for_nodejs = function(config) {
         config.data = config.data || "";
+
         if (typeof config.data !== "string") {
             config.data = JSON.stringify(config.data);
         }
+
         config.asyncHandler = config.asyncHandler || {};
         config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
+
         var protocol = config.url.substr(0, config.url.indexOf('/', 8)).substr(0, config.url.indexOf(":"));
+
         var uri  = config.url.substr(0, config.url.indexOf('/', 8)).substr(config.url.indexOf("/") + 2),
             host = uri.substr(0, (uri.indexOf(":") == -1 ? uri.length : uri.indexOf(":"))),
             port = uri.indexOf(":") != -1 ? parseInt(uri.substr(uri.indexOf(":") + 1)) : (protocol == "http" ? 80 : 443);
+
         var options = {
             host   : host,
             port   : port,
@@ -386,15 +414,19 @@
                 "application-type": "JS"
             }
         };
+
         var buffer = '';
+
         if (currentUser != null && !!currentUser["user-token"]) {
             options.headers["user-token"] = currentUser["user-token"];
         }
+
         if (!config.isAsync) {
             throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
         }
 
         var httpx = require(protocol);
+
         var req = httpx.request(options, function(res) {
             res.setEncoding('utf8');
             res.on('data', function(chunk) {
@@ -413,7 +445,9 @@
             config.asyncHandler.fault || (config.asyncHandler.fault = function() {});
             config.asyncHandler.fault(e);
         });
+
         req.write(config.data);
+
         return req.end();
     };
 
@@ -430,6 +464,7 @@
 
         var instStringified = (Utils.isFunction(this) ? this.toString() : this.constructor.toString()),
             results         = instStringified.match(/function\s+(\w+)/);
+
         return (results && results.length > 1) ? results[1] : '';
     };
 
@@ -438,6 +473,7 @@
         for (i = 0, len = arr.length; i < len; ++i) {
             props.push(encodeURIComponent(arr[i]));
         }
+
         return props.join(',');
     };
 
@@ -445,6 +481,7 @@
         var wrapper = function(obj) {
             var wrapperName = null,
                 Wrapper = null;
+
             for (var property in obj) {
                 if (obj.hasOwnProperty(property)) {
                     if (property === "___class") {
@@ -453,6 +490,7 @@
                     }
                 }
             }
+
             if (wrapperName) {
                 try {
                     Wrapper = eval(wrapperName);
@@ -460,8 +498,10 @@
                 } catch (e) {
                 }
             }
+
             return obj;
         };
+
         if (Utils.isObject(obj) && obj != null) {
             if (Utils.isArray(obj)) {
                 for (var i = obj.length; i--;) {
@@ -471,6 +511,7 @@
                 obj = wrapper(obj);
             }
         }
+
         return obj;
     };
 
@@ -484,6 +525,7 @@
                 }
             }
         }
+
         return destination;
     };
 
@@ -498,6 +540,7 @@
                 return args[i];
             }
         }
+
         return null;
     };
 
@@ -506,24 +549,33 @@
             if (collection.nextPage && collection.nextPage.split("/")[1] == Backendless.appVersion) {
                 collection.nextPage = Backendless.serverURL + collection.nextPage;
             }
+
             collection._nextPage = collection.nextPage;
+
             collection.nextPage = function(async) {
                 return dataMapper._load(this._nextPage, async);
             };
+
+            if (promisesEnabled) {
+                collection.nextPage = promisify(collection.nextPage);
+            }
+
             collection.getPage = function(offset, pageSize, async) {
                 var nextPage = this._nextPage.replace(/offset=\d+/ig, 'offset=' + offset);
+
                 if (!(pageSize instanceof Async)) {
                     nextPage = nextPage.replace(/pagesize=\d+/ig, 'pageSize=' + pageSize);
                 }
                 async = extractResponder(arguments);
+
                 return dataMapper._load(nextPage, async);
             };
+
             collection.dataMapper = dataMapper;
         }
     }
 
     function Async(successCallback, faultCallback, context) {
-
         if (!(faultCallback instanceof Function)) {
             context = faultCallback;
             faultCallback = emptyFn;
@@ -541,6 +593,7 @@
         var store            = {},
             localStorageName = 'localStorage',
             storage;
+
         store.enabled = false;
         store.exists = function(key) {
         };
@@ -571,6 +624,7 @@
                 return value || undefined;
             }
         };
+
         function isLocalStorageSupported() {
             try {
                 if (isBrowser && (localStorageName in window && window[localStorageName])) {
@@ -587,6 +641,7 @@
 
         if (isLocalStorageSupported()) {
             storage = window[localStorageName];
+
             var createBndlsStorage = function() {
                 if (!('Backendless' in storage)) {
                     storage.setItem('Backendless', store.serialize({}));
@@ -600,6 +655,7 @@
                         result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive'];
                     }
                 }
+
                 return result;
             };
 
@@ -613,17 +669,21 @@
 
             createBndlsStorage();
             store.enabled = true;
+
             store.exists = function(key) {
                 return store.get(key) !== undefined;
             };
+
             store.set = function(key, val) {
                 if (val === undefined) {
                     return store.remove(key);
                 }
+
                 createBndlsStorage();
                 var backendlessObj = store.deserialize(storage.getItem('Backendless'));
                 addTimestamp(val);
                 backendlessObj[key] = val;
+
                 try {
                     storage.setItem('Backendless', store.serialize(backendlessObj));
                 } catch (e) {
@@ -631,41 +691,54 @@
                     backendlessObj[key] = val;
                     storage.setItem('Backendless', store.serialize(backendlessObj));
                 }
+
                 return val;
             };
+
             store.get = function(key) {
                 createBndlsStorage();
                 var backendlessObj = store.deserialize(storage.getItem('Backendless')),
                     obj            = backendlessObj[key],
                     result         = obj;
+
                 if (expired(obj)) {
                     delete backendlessObj[key];
                     storage.setItem('Backendless', store.serialize(backendlessObj));
                     result = undefined;
                 }
+
                 if (result && result['cachePolicy']) {
                     delete result['cachePolicy'];
                 }
+
                 return result;
             };
+
             store.remove = function(key) {
                 var result;
                 createBndlsStorage();
                 key = key.replace(/([^A-Za-z0-9-])/g, '');
                 var backendlessObj = store.deserialize(storage.getItem('Backendless'));
+
                 if (backendlessObj.hasOwnProperty(key)) {
                     result = delete backendlessObj[key];
                 }
+
                 storage.setItem('Backendless', store.serialize(backendlessObj));
+
                 return result;
             };
+
             store.clear = function() {
                 storage.setItem('Backendless', store.serialize({}));
             };
+
             store.getAll = function() {
                 createBndlsStorage();
-                var backendlessObj = store.deserialize(storage.getItem('Backendless')),
-                    ret            = {};
+
+                var backendlessObj = store.deserialize(storage.getItem('Backendless'));
+                var ret = {};
+
                 for (var prop in backendlessObj) {
                     if (backendlessObj.hasOwnProperty(prop)) {
                         ret[prop] = backendlessObj[prop];
@@ -674,12 +747,15 @@
                         }
                     }
                 }
+
                 return ret;
             };
+
             store.flushExpired = function() {
                 createBndlsStorage();
                 var backendlessObj = store.deserialize(storage.getItem('Backendless')),
                     obj;
+
                 for (var prop in backendlessObj) {
                     if (backendlessObj.hasOwnProperty(prop)) {
                         obj = backendlessObj[prop];
@@ -690,17 +766,21 @@
                     }
                 }
             };
+
             store.getCachePolicy = function(key) {
                 createBndlsStorage();
-                var backendlessObj = store.deserialize(storage.getItem('Backendless')),
-                    obj            = backendlessObj[key];
+                var backendlessObj = store.deserialize(storage.getItem('Backendless'));
+                var obj = backendlessObj[key];
+
                 return obj ? obj['cachePolicy'] : undefined;
             };
         }
+
         return store;
     }
 
     Backendless.LocalCache = setCache();
+
     if (Backendless.LocalCache.enabled) {
         Backendless.LocalCache.flushExpired();
     }
@@ -710,31 +790,40 @@
     function DataStore(model) {
         this.model = Utils.isString(model) ? function() {
         } : model;
+
         this.className = getClassName.call(model);
+
         if ((typeof model).toLowerCase() === "string") {
             this.className = model;
         }
+
         if (!this.className) {
             throw 'Class name should be specified';
         }
+
         this.restUrl = Backendless.appPath + '/data/' + this.className;
     }
 
     DataStore.prototype = {
         _extractQueryOptions: function(options) {
             var params = [];
+
             if (typeof options.pageSize != 'undefined') {
                 if (options.pageSize < 1 || options.pageSize > 100) {
                     throw new Error('PageSize can not be less then 1 or greater than 100');
                 }
+
                 params.push('pageSize=' + encodeURIComponent(options.pageSize));
             }
+
             if (typeof options.offset != 'undefined') {
                 if (options.offset < 0) {
                     throw new Error('Offset can not be less then 0');
                 }
+
                 params.push('offset=' + encodeURIComponent(options.offset));
             }
+
             if (options.sortBy) {
                 if (Utils.isString(options.sortBy)) {
                     params.push('sortBy=' + encodeURIComponent(options.sortBy));
@@ -742,25 +831,34 @@
                     params.push('sortBy=' + encodeArrayToUriComponent(options.sortBy));
                 }
             }
+
             if (options.relationsDepth) {
                 if (Utils.isNumber(options.relationsDepth)) {
                     params.push('relationsDepth=' + Math.floor(options.relationsDepth));
                 }
             }
+
             if (options.relations) {
                 if (Utils.isArray(options.relations)) {
                     params.push('loadRelations=' + (options.relations.length ? encodeArrayToUriComponent(options.relations) : "*"));
                 }
             }
+
             return params.join('&');
         },
+
         _wrapAsync: function(async) {
-            var me   = this, success = function(data) {
+            var me = this;
+
+            var success = function(data) {
                 data = me._parseResponse(data);
                 async.success(data);
-            }, error = function(data) {
+            };
+
+            var error = function(data) {
                 async.fault(data);
             };
+
             return new Async(success, error);
         },
         _wrapFindAsync: function(async) {
@@ -790,30 +888,37 @@
             deepExtend(item, response);
             return this._formCircDeps(item);
         },
+
         _parseFindResponse: function(response) {
             var i, len, _Model = this.model, item;
+
             if (response.data) {
                 var collection = response, arr = collection.data;
+
                 for (i = 0, len = arr.length; i < len; ++i) {
                     arr[i] = arr[i].fields || arr[i];
                     item = new _Model();
                     deepExtend(item, arr[i]);
                     arr[i] = item;
                 }
+
                 extendCollection(collection, this);
+
                 return this._formCircDeps(collection);
             }
             else {
                 response = response.fields || response;
                 item = Utils.isString(_Model) ? {} : new _Model();
                 deepExtend(item, response);
+
                 return this._formCircDeps(item);
             }
-
         },
+
         _load: function(url, async) {
             if (url) {
                 var responder = extractResponder(arguments), isAsync = false;
+
                 if (responder != null) {
                     isAsync = true;
                     responder = this._wrapAsync(responder);
@@ -829,14 +934,17 @@
                 return isAsync ? result : this._parseResponse(result);
             }
         },
+
         _replCircDeps       : function(obj) {
             var objMap = [obj];
             var pos;
+
             var genID = function() {
                 for (var b = '', a = b; a++ < 36; b += a * 51 && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
                 }
                 return b;
             };
+
             var _replCircDepsHelper = function(obj) {
                 for (var prop in obj) {
                     if (obj.hasOwnProperty(prop) && typeof obj[prop] == "object" && obj[prop] != null) {
@@ -852,8 +960,10 @@
                     }
                 }
             };
+
             _replCircDepsHelper(obj);
         },
+
         _formCircDeps: function(obj) {
             var circDepsIDs         = {},
                 result              = new obj.constructor(),
@@ -862,6 +972,7 @@
                         circDepsIDs[obj["__subID"]] = result;
                         delete obj["__subID"];
                     }
+
                     for (var prop in obj) {
                         if (obj.hasOwnProperty(prop)) {
                             if (typeof obj[prop] == "object" && obj[prop] != null) {
@@ -877,9 +988,11 @@
                         }
                     }
                 };
+
             _formCircDepsHelper(obj, result);
             return result;
         },
+
         save: function(obj, async) {
             this._replCircDeps(obj);
             var responder = extractResponder(arguments),
@@ -887,10 +1000,12 @@
                 method    = 'PUT',
                 url       = this.restUrl,
                 objRef    = obj;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             var result = Backendless._ajax({
                 method      : method,
                 url         : url,
@@ -898,21 +1013,28 @@
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+
             if (!isAsync) {
                 deepExtend(objRef, this._parseResponse(result));
             }
-            return isAsync ? result : this._parseResponse(result);
+
+            return isAsync ? result : objRef;
         },
+
         remove: function(objId, async) {
             if (!Utils.isObject(objId) && !Utils.isString(objId)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
+
             var responder = extractResponder(arguments), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             var result;
+
             if (Utils.isString(objId) || objId.objectId) {
                 objId = objId.objectId || objId;
                 result = Backendless._ajax({
@@ -930,8 +1052,10 @@
                     asyncHandler: responder
                 });
             }
+
             return isAsync ? result : this._parseResponse(result);
         },
+
         find: function(dataQuery) {
             dataQuery = dataQuery || {};
             var props,
@@ -942,12 +1066,15 @@
                 responder = extractResponder(arguments),
                 isAsync   = responder != null,
                 result;
+
             if (dataQuery.properties && dataQuery.properties.length) {
                 props = 'props=' + encodeArrayToUriComponent(dataQuery.properties);
             }
+
             if (dataQuery.condition) {
                 whereClause = 'where=' + encodeURIComponent(dataQuery.condition);
             }
+
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
@@ -956,12 +1083,15 @@
             whereClause && query.push(whereClause);
             props && query.push(props);
             query = query.join('&');
+
             if (dataQuery.url) {
                 url += '/' + dataQuery.url;
             }
+
             if (query) {
                 url += '?' + query;
             }
+
             result = Backendless._ajax({
                 method      : 'GET',
                 url         : url,
@@ -969,8 +1099,10 @@
                 asyncHandler: responder,
                 cachePolicy : dataQuery.cachePolicy
             });
+
             return isAsync ? result : this._parseFindResponse(result);
         },
+
         _buildArgsObject: function() {
             var args = {},
                 i    = arguments.length,
@@ -998,15 +1130,19 @@
                         break;
                 }
             }
+
             return args;
         },
+
         findById: function() {
             var argsObj;
+
             if (Utils.isString(arguments[0])) {
                 argsObj = this._buildArgsObject.apply(this, arguments);
                 if (!(argsObj.url)) {
                     throw new Error('missing argument "object ID" for method findById()');
                 }
+
                 return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
@@ -1014,11 +1150,15 @@
                     url       = this.restUrl,
                     isAsync   = responder != null,
                     send      = "/pk?";
+
                 for (var key in argsObj) {
                     send += key + '=' + argsObj[key] + '&';
                 }
+
                 responder != null && (responder = this._wrapAsync(responder));
+
                 var result;
+
                 if (getClassName.call(arguments[0]) == 'Object') {
                     result = Backendless._ajax({
                         method      : 'GET',
@@ -1035,20 +1175,25 @@
                         asyncHandler: responder
                     });
                 }
+
                 return isAsync ? result : this._parseResponse(result);
             } else {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
         },
+
         loadRelations: function(obj) {
             if (!obj) {
                 throw new Error('missing object argument for method loadRelations()');
             }
+
             if (!Utils.isObject(obj)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only object values');
             }
+
             var argsObj = arguments[0];
             var url = this.restUrl + '/relations';
+
             if (arguments[1]) {
                 if (Utils.isArray(arguments[1])) {
                     if (arguments[1][0] == '*') {
@@ -1060,25 +1205,33 @@
                     throw new Error('Invalid value for the "options" argument. The argument must contain only array values');
                 }
             }
+
             var result = Backendless._ajax({
                 method: 'PUT',
                 url   : url,
                 data  : JSON.stringify(argsObj)
             });
+
             deepExtend(obj, result);
         },
+
         findFirst: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'first';
+
             return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
+
         findLast: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'last';
+
             return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         }
     };
+
     var dataStoreCache = {};
+
     var persistence = {
         save: function(className, obj, async) {
             var responder = extractResponder(arguments), isAsync = false;
@@ -1093,6 +1246,7 @@
                     asyncHandler: responder
                 });
             }
+
             if (Utils.isObject(className)) {
                 return new DataStore(className).save(className, obj, async);
             }
@@ -1172,6 +1326,7 @@
                 store = new DataStore(model);
                 dataStoreCache[tableName] = store;
             }
+
             return store;
         },
         describe: function(className, async) {
@@ -1189,24 +1344,28 @@
 
     function DataPermissions() {
         this.restUrl = Backendless.appPath + '/data';
+
         this.getRestUrl = function(dataObject, permissionType) {
             return this.restUrl + '/' + encodeURIComponent(dataObject.___class) + '/permissions/' + encodeURIComponent(permissionType) + '/' + encodeURIComponent(dataObject.objectId);
         };
+
         this.sendRequest = function(userid, rolename, dataObject, permission, permissionType, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null,
                 data      = {
                     "permission": permission
                 };
+
             if (!dataObject.___class || !dataObject.objectId) {
                 throw new Error('"dataObject.___class" and "dataObject.objectId" need to be specified');
             }
+
             if (userid) {
                 data.user = userid;
-            }
-            else if (rolename) {
+            } else if (rolename) {
                 data.role = rolename;
             }
+
             return Backendless._ajax({
                 method      : 'PUT',
                 url         : this.getRestUrl(dataObject, permissionType),
@@ -1288,35 +1447,42 @@
     Backendless.User = User;
 
     var currentUser = null;
+
     var UserService = function() {
         this.restUrl = Backendless.appPath + '/users';
     };
+
     UserService.prototype = {
         _wrapAsync: function(async) {
             var me   = this, success = function(data) {
                 try {
                     data = JSON.parse(data);
-                }
-                catch (e) {
+                } catch (e) {
                 }
                 currentUser = me._parseResponse(data);
                 async.success(me._getUserFromResponse(currentUser));
             }, error = function(data) {
                 async.fault(data);
             };
+
             return new Async(success, error);
         },
+
         _parseResponse: function(data) {
             var user = new Backendless.User();
             deepExtend(user, data);
+
             return user;
         },
+
         register: function(user, async) {
             if (!(user instanceof Backendless.User)) {
                 throw new Error('Only Backendless.User accepted');
             }
+
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+
             if (responder) {
                 responder = this._wrapAsync(responder);
             }
@@ -1328,26 +1494,33 @@
                 asyncHandler: responder,
                 data        : JSON.stringify(user)
             });
+
             return isAsync ? result : this._parseResponse(result);
         },
+
         getUserRoles: function(async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+
             if (responder) {
                 responder = this._wrapAsync(responder);
             }
+
             var result = Backendless._ajax({
                 method      : 'GET',
                 url         : this.restUrl + '/userroles',
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+
             return isAsync ? result : this._parseResponse(result);
         },
+
         roleHelper: function(username, rolename, async, operation) {
             if (!username) {
                 throw new Error('Username can not be empty');
             }
+
             if (!rolename) {
                 throw new Error('Rolename can not be empty');
             }
@@ -1372,25 +1545,32 @@
                 data        : JSON.stringify(data)
             });
         },
+
         assignRole: function(username, rolename, async) {
             return this.roleHelper(username, rolename, async, 'assignRole');
         },
+
         unassignRole: function(username, rolename, async) {
             return this.roleHelper(username, rolename, async, 'unassignRole');
         },
+
         login: function(username, password, stayLoggedIn, async) {
             if (!username) {
                 throw new Error('Username can not be empty');
             }
+
             if (!password) {
                 throw new Error('Password can not be empty');
             }
+
             Backendless.LocalCache.remove("user-token");
             Backendless.LocalCache.remove("current-user-id");
             Backendless.LocalCache.set("stayLoggedIn", false);
+
             if (Utils.isBoolean(stayLoggedIn)) {
                 Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
             }
+
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -1402,6 +1582,7 @@
                 login   : username,
                 password: password
             };
+
             var result = Backendless._ajax({
                 method      : 'POST',
                 url         : this.restUrl + '/login',
@@ -1409,6 +1590,7 @@
                 asyncHandler: responder,
                 data        : JSON.stringify(data)
             });
+
             if (isAsync) {
                 return result;
             }
@@ -1416,12 +1598,13 @@
             currentUser = this._parseResponse(result);
 
             return this._getUserFromResponse(currentUser);
-
         },
+
         _getUserFromResponse: function(user) {
             Backendless.LocalCache.set("current-user-id", user.objectId);
 
             var newUser = new Backendless.User();
+
             for (var i in user) {
                 if (user.hasOwnProperty(i)) {
                     if (i == 'user-token') {
@@ -1433,11 +1616,14 @@
                     newUser[i] = user[i];
                 }
             }
+
             return newUser;
         },
+
         loggedInUser: function() {
             return Backendless.LocalCache.get("current-user-id");
         },
+
         describeUserClass: function(async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
@@ -1449,6 +1635,7 @@
                 asyncHandler: responder
             });
         },
+
         restorePassword: function(emailAddress, async) {
             if (!emailAddress) {
                 throw 'Username can not be empty';
@@ -1463,24 +1650,28 @@
                 asyncHandler: responder
             });
         },
+
         logout: function(async) {
             var responder       = extractResponder(arguments),
                 isAsync         = responder != null,
                 errorCallback   = isAsync ? responder.fault : null,
                 successCallback = isAsync ? responder.success : null,
                 result = {},
+
                 logoutUser      = function() {
                     Backendless.LocalCache.remove("user-token");
                     Backendless.LocalCache.remove("current-user-id");
                     Backendless.LocalCache.remove("stayLoggedIn");
                     currentUser = null;
                 },
+
                 onLogoutSuccess = function() {
                     logoutUser();
                     if (Utils.isFunction(successCallback)) {
                         successCallback();
                     }
                 },
+
                 onLogoutError   = function(e) {
                     if (Utils.isObject(e) && [3064, 3091, 3090, 3023].indexOf(e.code) != -1) {
                         logoutUser();
@@ -1489,10 +1680,12 @@
                         errorCallback(e);
                     }
                 };
+
             if (responder) {
                 responder.fault = onLogoutError;
                 responder.success = onLogoutSuccess;
             }
+
             try {
                 result = Backendless._ajax({
                     method      : 'GET',
@@ -1503,13 +1696,14 @@
             } catch (e) {
                 onLogoutError(e);
             }
+
             if (isAsync) {
                 return result;
-            }
-            else {
+            } else {
                 logoutUser();
             }
         },
+
         getCurrentUser: function() {
             if (currentUser) {
                 return this._getUserFromResponse(currentUser);
@@ -1520,12 +1714,15 @@
                 return null;
             }
         },
+
         update: function(user, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+
             if (responder) {
                 responder = this._wrapAsync(responder);
             }
+
             var result = Backendless._ajax({
                 method      : 'PUT',
                 url         : this.restUrl + '/' + user.objectId,
@@ -1533,17 +1730,22 @@
                 asyncHandler: responder,
                 data        : JSON.stringify(user)
             });
+
             return isAsync ? result : this._parseResponse(result);
         },
+
         loginWithFacebook      : function(facebookFieldsMapping, permissions, callback, container) {
             this._loginSocial('Facebook', facebookFieldsMapping, permissions, callback, container);
         },
+
         loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, callback, container) {
             this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, callback, container);
         },
+
         loginWithTwitter       : function(twitterFieldsMapping, callback) {
             this._loginSocial('Twitter', twitterFieldsMapping, null, callback, null);
         },
+
         _socialContainer       : function(socialType, container) {
             var loadingMsg;
 
@@ -1602,8 +1804,8 @@
                 };
             }
         },
-        _loginSocial: function(socialType, fieldsMapping, permissions, callback, container) {
 
+        _loginSocial: function(socialType, fieldsMapping, permissions, callback, container) {
             var socialContainer = new this._socialContainer(socialType, container);
 
             var responder = extractResponder(arguments);
@@ -1617,8 +1819,7 @@
 
                     if (result.fault) {
                         responder.fault(result.fault);
-                    }
-                    else {
+                    } else {
                         currentUser = this.Backendless.UserService._parseResponse(result);
                         responder.success(this.Backendless.UserService._getUserFromResponse(currentUser));
                     }
@@ -1636,9 +1837,11 @@
             });
 
             var request = fieldsMapping || permissions ? {} : null;
+
             if (fieldsMapping) {
                 request.fieldsMapping = fieldsMapping;
             }
+
             if (permissions) {
                 request.permissions = permissions;
             }
@@ -1651,6 +1854,7 @@
                 data        : JSON.stringify(request)
             });
         },
+
         loginWithFacebookSdk: function(fieldsMapping, async) {
             if (!FB) {
                 throw new Error("Facebook SDK not found");
@@ -1667,12 +1871,14 @@
                 }
             });
         },
+
         loginWithGooglePlusSdk: function(fieldsMapping, async) {
             if (!gapi) {
                 throw new Error("Google Plus SDK not found");
             }
 
             var me = this;
+
             gapi.auth.authorize({
                 client_id: fieldsMapping.client_id,
                 scope    : "https://www.googleapis.com/auth/plus.login"
@@ -1681,6 +1887,7 @@
                 me._sendSocialLoginRequest(me, response, "googleplus", fieldsMapping, async);
             });
         },
+
         _sendSocialLoginRequest: function(context, response, socialType, fieldsMapping, async) {
             if (fieldsMapping) {
                 response["fieldsMapping"] = fieldsMapping;
@@ -1701,16 +1908,17 @@
                 data        : JSON.stringify(response)
             });
         },
+
         isValidLogin: function(async) {
-            var userToken = "",
-                cache     = Backendless.LocalCache;
+            var userToken = Backendless.LocalCache.get("user-token");
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+
             if (responder) {
                 responder = this._wrapAsync(responder);
             }
-            if (cache.get("user-token")) {
-                userToken = cache.get("user-token");
+
+            if (userToken) {
                 if (!async) {
                     try {
                         var result = Backendless._ajax({
@@ -1731,6 +1939,7 @@
                 }
             } else {
                 var user = Backendless.UserService.getCurrentUser();
+
                 return !!user;
             }
         }
@@ -1749,6 +1958,7 @@
             YARDS     : 'YARDS',
             FEET      : 'FEET'
         },
+
         _wrapAsync      : function(async) {
             var me   = this, success = function(data) {
                 data = me._parseResponse(data);
@@ -1756,13 +1966,17 @@
             }, error = function(data) {
                 async.fault(data);
             };
+
             return new Async(success, error);
         },
+
         _parseResponse  : function(data) {
             var collection = data.collection;
             extendCollection(collection, this);
+
             return collection;
         },
+
         _load           : function(url, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null;
@@ -1776,6 +1990,7 @@
 
             return isAsync ? result : this._parseResponse(result);
         },
+
         _findHelpers    : {
             'searchRectangle': function(arg) {
                 var rect = [
@@ -1842,6 +2057,7 @@
                 return 'geoFence=' + arg;
             }
         },
+
         addPoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
@@ -1867,6 +2083,7 @@
                 var error = function(data) {
                     async.fault(data);
                 };
+
                 return new Async(success, error);
             };
 
@@ -1880,20 +2097,19 @@
                 asyncHandler: responder
             });
         },
+
         findUtil        : function(query, async) {
             var url       = query["url"],
                 responder = extractResponder(arguments),
                 isAsync   = false;
+
             if (query.searchRectangle && query.radius) {
                 throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
-            }
-            else if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
+            } else if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
                 throw new Error("Latitude and longitude should be provided to search in radius");
-            }
-            else if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
+            } else if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
                 throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
-            }
-            else {
+            } else {
                 url += query.searchRectangle ? '/rect?' : '/points?';
                 url += query.units ? 'units=' + query.units : '';
                 for (var prop in query) {
@@ -1902,19 +2118,21 @@
                     }
                 }
             }
+
             url = url.replace(/\?&/g, '?');
             var self = this;
+
             var responderOverride = function(async) {
                 var success = function(data) {
                     var geoCollection = data.collection.data;
+
                     for (var i = 0; i < geoCollection.length; i++) {
                         var geoObject = null;
                         if (geoCollection[i].hasOwnProperty('totalPoints')) {
                             geoObject = new GeoCluster();
                             geoObject.totalPoints = geoCollection[i].totalPoints;
                             geoObject.geoQuery = query;
-                        }
-                        else {
+                        } else {
                             geoObject = new GeoPoint();
                         }
                         geoObject.categories = geoCollection[i].categories;
@@ -1925,30 +2143,40 @@
                         geoObject.distance = geoCollection[i].distance;
                         data.collection.data[i] = geoObject;
                     }
+
                     data = self._parseResponse(data);
                     async.success(data);
                 };
+
                 var error = function(data) {
                     async.fault(data);
                 };
+
                 return new Async(success, error);
             };
+
             if (responder != null) {
                 isAsync = true;
             }
+
             responder = responderOverride(responder);
+
             var result = Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+
             return isAsync ? result : this._parseResponse(result);
         },
+
         find            : function(query, async) {
             query["url"] = this.restUrl;
+
             return this.findUtil(query, async);
         },
+
         loadMetadata    : function(geoObject, async) {
             var url       = this.restUrl + '/points/',
                 responder = extractResponder(arguments),
@@ -1957,26 +2185,21 @@
                 if (geoObject instanceof GeoCluster) {
                     if (geoObject.geoQuery instanceof GeoQuery) {
                         url += geoObject.objectId + '/metadata?';
+
                         for (var prop in geoObject.geoQuery) {
-                            {
-                                if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != null) {
-                                    url += '&' + this._findHelpers[prop](geoObject.geoQuery[prop]);
-                                }
+                            if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != null) {
+                                url += '&' + this._findHelpers[prop](geoObject.geoQuery[prop]);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         throw new Error("Invalid GeoCluster object. Make sure to obtain an instance of GeoCluster using the Backendless.Geo.find API");
                     }
-                }
-                else if (geoObject instanceof GeoPoint) {
+                } else if (geoObject instanceof GeoPoint) {
                     url += geoObject.objectId + '/metadata';
-                }
-                else {
+                } else {
                     throw new Error("Method argument must be a valid instance of GeoPoint or GeoCluster persisted on the server");
                 }
-            }
-            else {
+            } else {
                 throw new Error("Method argument must be a valid instance of GeoPoint or GeoCluster persisted on the server");
             }
 
@@ -1991,34 +2214,33 @@
                 asyncHandler: responder
             });
         },
+
         getClusterPoints: function(geoObject, async) {
             var url       = this.restUrl + '/clusters/',
                 responder = extractResponder(arguments),
                 isAsync   = false;
+
             if (geoObject.objectId) {
                 if (geoObject instanceof GeoCluster) {
                     if (geoObject.geoQuery instanceof GeoQuery) {
                         url += geoObject.objectId + '/points?';
                         for (var prop in geoObject.geoQuery) {
-                            {
-                                if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != null) {
-                                    url += '&' + this._findHelpers[prop](geoObject.geoQuery[prop]);
-                                }
+                            if (geoObject.geoQuery.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != null) {
+                                url += '&' + this._findHelpers[prop](geoObject.geoQuery[prop]);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         throw new Error("Invalid GeoCluster object. Make sure to obtain an instance of GeoCluster using the Backendless.Geo.find API");
                     }
-                }
-                else {
+                } else {
                     throw new Error("Method argument must be a valid instance of GeoCluster persisted on the server");
                 }
-            }
-            else {
+            } else {
                 throw new Error("Method argument must be a valid instance of GeoCluster persisted on the server");
             }
+
             var self = this;
+
             var responderOverride = function(async) {
                 var success = function(data) {
                     var geoCollection = data.collection.data;
@@ -2035,35 +2257,45 @@
                     data = self._parseResponse(data);
                     async.success(data);
                 };
+
                 var error = function(data) {
                     async.fault(data);
                 };
+
                 return new Async(success, error);
             };
+
             if (responder != null) {
                 isAsync = true;
             }
+
             responder = responderOverride(responder);
+
             var result = Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+
             return isAsync ? result : this._parseResponse(result);
         },
+
         relativeFind: function(query, async) {
             if (!(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
                 throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata");
             } else {
                 query["url"] = this.restUrl + "/relative";
+
                 return this.findUtil(query, async);
             }
         },
+
         addCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
+
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2076,9 +2308,11 @@
 
             return (typeof result.result === 'undefined') ? result : result.result;
         },
+
         getCategories: function(async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+
             return Backendless._ajax({
                 method      : 'GET',
                 url         : this.restUrl + '/categories',
@@ -2086,13 +2320,16 @@
                 asyncHandler: responder
             });
         },
+
         deleteCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
+
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var result = {};
+
             try {
                 result = Backendless._ajax({
                     method      : 'DELETE',
@@ -2115,10 +2352,12 @@
             if (!point || Utils.isFunction(point)) {
                 throw new Error('Point argument name is required, must be string (object Id), or point object');
             }
+
             var pointId   = Utils.isString(point) ? point : point.objectId,
                 responder = extractResponder(arguments),
                 isAsync   = responder != null,
                 result = {};
+
             try {
                 result = Backendless._ajax({
                     method      : 'DELETE',
@@ -2133,8 +2372,10 @@
                     throw e;
                 }
             }
+
             return (typeof result.result === 'undefined') ? result : result.result;
         },
+
         getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
             if (!Utils.isString(geoFenceName)) {
@@ -2143,17 +2384,22 @@
             if (!(query instanceof GeoQuery)) {
                 throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
             }
+
             query["geoFence"] = geoFenceName;
             query["url"] = this.restUrl;
+
             return this.findUtil(query, async);
         },
+
         _runFenceAction: function(action, geoFenceName, geoPoint, async) {
             if (!Utils.isString(geoFenceName)) {
                 throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
             }
+
             if (geoPoint && !(geoPoint instanceof Backendless.Async) && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
                 throw new Error("Method argument must be a valid instance of GeoPoint persisted on the server");
             }
+
             var responder = extractResponder(arguments),
                 isAsync   = responder != null,
                 data      = {
@@ -2162,54 +2408,69 @@
                     isAsync     : isAsync,
                     asyncHandler: responder
                 };
+
             if (geoPoint) {
                 data.data = JSON.stringify(geoPoint);
             }
+
             return Backendless._ajax(data);
         },
+
         runOnStayAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onstay', geoFenceName, geoPoint, async);
         },
+
         runOnExitAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onexit', geoFenceName, geoPoint, async);
         },
+
         runOnEnterAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onenter', geoFenceName, geoPoint, async);
         },
+
         _getFences: function(geoFence) {
             return Backendless._ajax({
                 method: 'GET',
                 url   : this.restUrl + '/fences' + ((geoFence) ? '?geoFence=' + geoFence : '')
             });
         },
+
         EARTH_RADIUS: 6378100.0,
+
         _distance: function(lat1, lon1, lat2, lon2) {
             var deltaLon = lon1 - lon2;
             deltaLon = (deltaLon * Math.PI) / 180;
             lat1 = (lat1 * Math.PI) / 180;
             lat2 = (lat2 * Math.PI) / 180;
+
             return this.EARTH_RADIUS * Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(deltaLon));
         },
+
         _updateDegree: function(degree) {
             degree += 180;
             while (degree < 0) {
                 degree += 360;
             }
+
             return degree === 0 ? 180 : degree % 360 - 180;
         },
+
         _countLittleRadius: function(latitude) {
             var h = Math.abs(latitude) / 180 * this.EARTH_RADIUS;
             var diametre = 2 * this.EARTH_RADIUS;
             var l_2 = (Math.pow(diametre, 2) - diametre * Math.sqrt(Math.pow(diametre, 2) - 4 * Math.pow(h, 2))) / 2;
             return diametre / 2 - Math.sqrt(l_2 - Math.pow(h, 2));
         },
+
         _isDefiniteRect: function(nwPoint, sePoint) {
             return nwPoint != null && sePoint != null;
         },
+
         _getOutRectangle: function() {
             return (arguments.length == 1) ? this._getOutRectangleNodes(arguments[1]) : this._getOutRectangleCircle(arguments[0],
                 arguments[1]);
         },
+
         _getOutRectangleCircle: function(center, bounded) {
             var radius = this._distance(center.latitude, center.longitude, bounded.latitude, bounded.longitude);
             var boundLat = center.latitude + (180 * radius) / (Math.PI * this.EARTH_RADIUS) * (center.latitude > 0 ? 1 : -1);
@@ -2219,7 +2480,6 @@
             if (littleRadius > radius) {
                 westLong = center.longitude - (180 * radius) / littleRadius;
                 eastLong = 2 * center.longitude - westLong;
-
                 westLong = this._updateDegree(westLong);
                 eastLong = eastLong % 360 == 180 ? 180 : this._updateDegree(eastLong);
             } else {
@@ -2237,6 +2497,7 @@
 
             return [Math.min(northLat, 90), westLong, Math.max(southLat, -90), eastLong];
         },
+
         _getOutRectangleNodes: function(geoPoints) {
             var nwLat = geoPoints[0].latitude;
             var nwLon = geoPoints[0].longitude;
@@ -2277,6 +2538,7 @@
                     }
                 }
             }
+
             nwLon += minLon;
             seLon += maxLon;
 
@@ -2290,8 +2552,10 @@
 
             return [nwLat, nwLon, seLat, seLon];
         },
+
         _getPointPosition: function(point, first, second) {
             var delta = second.longitude - first.longitude;
+
             if (delta < 0 && delta > -180 || delta > 180) {
                 var tmp = first;
                 first = second;
@@ -2303,9 +2567,11 @@
             }
 
             var x = point.longitude - first.longitude;
+
             if (x < 0 && x > -180 || x > 180) {
                 x = (x - 360) % 360;
             }
+
             var x2 = (second.longitude - first.longitude + 360) % 360;
             var result = x2 * (point.latitude - first.latitude) / (second.latitude - first.latitude) - x;
 
@@ -2315,20 +2581,24 @@
 
             return 'NO_INTERSECT';
         },
+
         _isPointInRectangular: function(currentPosition, nwPoint, sePoint) {
             if (currentPosition.latitude > nwPoint.latitude || currentPosition.latitude < sePoint.latitude) {
                 return false;
             }
+
             if (nwPoint.longitude > sePoint.longitude) {
                 return currentPosition.longitude >= nwPoint.longitude || currentPosition.longitude <= sePoint.longitude;
             } else {
                 return currentPosition.longitude >= nwPoint.longitude && currentPosition.longitude <= sePoint.longitude;
             }
         },
+
         _isPointInCircle: function(currentPosition, center, radius) {
             return this._distance(currentPosition.latitude, currentPosition.longitude, center.latitude,
                     center.longitude) <= radius;
         },
+
         _isPointInShape: function(point, shape) {
             var count = 0;
 
@@ -2350,8 +2620,10 @@
                         break;
                 }
             }
+
             return count % 2 == 1;
         },
+
         _isPointInFence: function(geoPoint, geoFence) {
             return this._isPointInRectangular(geoPoint, geoFence.nwPoint, geoFence.sePoint) ||
                 geoFence.type == 'CIRCLE' && this._isPointInCircle(geoPoint, geoFence.nodes[0],
@@ -2359,6 +2631,7 @@
                         geoFence.nodes[1].longitude)) ||
                 geoFence.type == 'SHAPE' && this._isPointInShape(geoPoint, geoFence.nodes);
         },
+
         _typesMapper: {
             'RECT'  : function(fence) {
                 fence.nwPoint = fence.nodes[0];
@@ -2387,23 +2660,28 @@
                 };
             }
         },
+
         _maxDuration  : 5000,
         _timers       : {},
-        _checkPosition: function(geofenceName, coords, fences, geoPoint, GeoFenceCallback,
-            lastResults, async) {
+
+        _checkPosition: function(geofenceName, coords, fences, geoPoint, GeoFenceCallback, lastResults, async) {
             var self = this;
+
             for (var k = 0; k < self._trackedFences.length; k++) {
                 var isInFence = self._isDefiniteRect(self._trackedFences[k].nwPoint,
-                            self._trackedFences[k].sePoint) && self._isPointInFence(coords, self._trackedFences[k]),
-                    rule      = null;
+                        self._trackedFences[k].sePoint) && self._isPointInFence(coords, self._trackedFences[k]);
+                var rule = null;
+
                 if (isInFence != lastResults[self._trackedFences[k].geofenceName]) {
                     if (lastResults[self._trackedFences[k].geofenceName]) {
                         rule = 'onexit';
                     } else {
                         rule = 'onenter';
                     }
+
                     lastResults[self._trackedFences[k].geofenceName] = isInFence;
                 }
+
                 if (rule) {
                     var duration          = self._trackedFences[k].onStayDuration * 1000,
                         timeoutFuncInApp  = function(savedK, savedCoords, duration) {
@@ -2411,19 +2689,24 @@
                                 GeoFenceCallback['onstay'](self._trackedFences[savedK].geofenceName,
                                     self._trackedFences[savedK].objectId, savedCoords.latitude, savedCoords.longitude);
                             };
+
                             self._timers[self._trackedFences[savedK].geofenceName] = setTimeout(callBack, duration);
                         },
+
                         timeoutFuncRemote = function(savedK, savedCoords, duration, geoPoint) {
                             var callBack = function() {
                                 self._runFenceAction('onstay', self._trackedFences[savedK].geofenceName, geoPoint,
                                     async);
                             };
+
                             self._timers[self._trackedFences[savedK].geofenceName] = setTimeout(callBack, duration);
                         };
+
                     if (GeoFenceCallback) {
                         if (rule == 'onenter') {
                             GeoFenceCallback[rule](self._trackedFences[k].geofenceName, self._trackedFences[k].objectId,
                                 coords.latitude, coords.longitude);
+
                             if (duration > -1) {
                                 (function(k, coords, duration) {
                                     return timeoutFuncInApp(k, coords, duration);
@@ -2440,8 +2723,10 @@
                     } else if (geoPoint) {
                         geoPoint.latitude = coords.latitude;
                         geoPoint.longitude = coords.longitude;
+
                         if (rule == 'onenter') {
                             self._runFenceAction(rule, self._trackedFences[k].geofenceName, geoPoint, async);
+
                             if (duration > -1) {
                                 (function(k, coords, duration, geoPoint) {
                                     return timeoutFuncRemote(k, coords, duration, geoPoint);
@@ -2457,6 +2742,7 @@
                 }
             }
         },
+
         _mobilecheck: function() {
             var check = false;
             (function(a) {
@@ -2465,17 +2751,23 @@
                     check = true;
                 }
             })(navigator.userAgent || navigator.vendor || window.opera);
+
             return check;
         },
+
         _trackedFences  : [],
         _lastResults    : {},
+
         _startMonitoring: function(geofenceName, secondParam, async) {
             var self = this;
             var isGeoPoint = false;
+
             if (secondParam instanceof GeoPoint) {
                 isGeoPoint = true;
             }
+
             var fences = this._getFences(geofenceName);
+
             for (var ii = 0; ii < fences.length; ii++) {
                 if (!_containsByPropName(self._trackedFences, fences[ii], "geofenceName")) {
                     self._typesMapper[fences[ii].type](fences[ii], self);
@@ -2494,6 +2786,7 @@
                         break;
                     }
                 }
+
                 return result;
             }
 
@@ -2525,12 +2818,15 @@
                 }
             }
         },
+
         startGeofenceMonitoringWithInAppCallback : function(geofenceName, inAppCallback, async) {
             this._startMonitoring(geofenceName, inAppCallback, async);
         },
+
         startGeofenceMonitoringWithRemoteCallback: function(geofenceName, geoPoint, async) {
             this._startMonitoring(geofenceName, geoPoint, async);
         },
+
         stopGeofenceMonitoring: function(geofenceName) {
             var self = this;
             //removed = [];
@@ -2565,9 +2861,11 @@
             if (!eventName) {
                 throw new Error('Event name not specified');
             }
+
             if (!handler) {
                 throw new Error('Handler not specified');
             }
+
             this.eventHandlers[eventName] = this.eventHandlers[eventName] || [];
             this.eventHandlers[eventName].push(handler);
         },
@@ -2597,16 +2895,21 @@
         onMessage: function(data) {
             clearTimeout(this.timeout);
             var self = this;
+
             this.timer = setTimeout(function() {
                 self.poll();
             }, this.interval);
+
             this.fireEvent('messageReceived', data);
         },
+
         poll     : function() {
             var self = this;
+
             this.timeout = setTimeout(function() {
                 self.onTimeout();
             }, 30 * 1000);
+
             this.xhr = Backendless._ajax({
                 method      : 'GET',
                 url         : this.restUrl,
@@ -2614,21 +2917,26 @@
                 asyncHandler: this.responder
             });
         },
+
         close    : function() {
             clearTimeout(this.timer);
             clearTimeout(this.timeout);
             this.needReconnect = false;
             this.xhr && this.xhr.abort();
         },
+
         onTimeout: function() {
             this.xhr && this.xhr.abort();
         },
+
         onError  : function() {
             clearTimeout(this.timer);
             clearTimeout(this.timeout);
+
             if (this.needReconnect) {
                 var self = this;
                 this.xhr = null;
+
                 this.timer = setTimeout(function() {
                     self.poll();
                 }, this.interval);
@@ -2639,6 +2947,7 @@
     function SocketProxy(url) {
         var self = this;
         this.reconnectWithPolling = true;
+
         try {
             var socket = this.socket = new WebSocket(url);
             socket.onopen = function() {
@@ -2654,8 +2963,7 @@
             socket.onmessage = function(event) {
                 return self.onMessage(event);
             };
-        }
-        catch (e) {
+        } catch (e) {
             setTimeout(function() {
                 self.onSocketClose();
             }, 100);
@@ -2663,20 +2971,24 @@
     }
 
     SocketProxy.prototype = new Proxy();
+
     deepExtend(SocketProxy.prototype, {
         onMessage    : function() {
             this.fireEvent('messageReceived', data);
         },
+
         onSocketClose: function(data) {
             if (this.reconnectWithPolling) {
                 this.fireEvent('socketClose', data);
             }
         },
+
         close        : function() {
             this.reconnectWithPolling = false;
             this.socket.close();
         }
     });
+
     function Subscription(config) {
         this.channelName = config.channelName;
         this.options = config.options;
@@ -2692,12 +3004,14 @@
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var self = this;
+
             var _async = new Async(function(data) {
                 self.subscriptionId = data.subscriptionId;
                 self._startSubscription();
             }, function(e) {
                 responder.fault(e);
             });
+
             var subscription = Backendless._ajax({
                 method      : 'POST',
                 url         : this.restUrl + '/subscribe',
@@ -2711,32 +3025,38 @@
                 this._startSubscription();
             }
         },
+
         _startSubscription: function() {
             var self = this;
+
             if (WebSocket) {
                 var url = this.channelProperties['websocket'] + '/' + this.subscriptionId;
                 this.proxy = new SocketProxy(url);
+
                 this.proxy.on('socketClose', function() {
                     self._switchToPolling();
                 });
+
                 this.proxy.on('messageReceived', function() {
                     self.responder();
                 });
-            }
-            else {
+            } else {
                 this._switchToPolling();
             }
 
             this._startSubscription = emptyFn;
         },
+
         cancelSubscription: function() {
             this.proxy && this.proxy.close();
             this._startSubscription = emptyFn;
         },
+
         _switchToPolling  : function() {
             var url = this.restUrl + '/' + this.subscriptionId;
             this.proxy = new PollingProxy(url);
             var self = this;
+
             this.proxy.on('messageReceived', function(data) {
                 if (data.messages.length) {
                     self.responder(data);
@@ -2756,26 +3076,33 @@
             var isAsync = responder != null;
 
             var props = this.channelProperties[channelName];
+
             if (props) {
                 if (isAsync) {
                     async.success(props);
                 }
+
                 return props;
             }
+
             var result = Backendless._ajax({
                 method      : 'GET',
                 url         : this.restUrl + '/' + channelName + '/properties',
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+
             this.channelProperties[channelName] = result;
+
             return result;
         },
         subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+
             if (isAsync) {
                 var that = this;
+
                 var callback = new Async(function(props) {
                     async.success(new Subscription({
                         channelName      : channelName,
@@ -2788,10 +3115,11 @@
                 }, function(data) {
                     responder.fault(data);
                 });
+
                 this._getProperties(channelName, callback);
-            }
-            else {
+            } else {
                 var props = this._getProperties(channelName);
+
                 return new Subscription({
                     channelName      : channelName,
                     options          : subscriptionOptions,
@@ -2808,16 +3136,20 @@
             var data = {
                 message: message
             };
+
             if (publishOptions) {
                 if (!(publishOptions instanceof PublishOptions)) {
                     throw "Use PublishOption as publishOptions argument";
                 }
+
                 deepExtend(data, publishOptions);
             }
+
             if (deliveryTarget) {
                 if (!(deliveryTarget instanceof DeliveryOptions)) {
                     throw "Use DeliveryOptions as deliveryTarget argument";
                 }
+
                 deepExtend(data, deliveryTarget);
             }
 
@@ -2833,21 +3165,25 @@
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var data = {};
+
             if (subject && !Utils.isEmpty(subject) && Utils.isString(subject)) {
                 data.subject = subject;
             } else {
                 throw "Subject is required parameter and must be a nonempty string";
             }
+
             if ((bodyParts instanceof Bodyparts) && !Utils.isEmpty(bodyParts)) {
                 data.bodyparts = bodyParts;
             } else {
                 throw "Use Bodyparts as bodyParts argument, must contain at least one property";
             }
+
             if (recipients && Utils.isArray(recipients) && !Utils.isEmpty(recipients)) {
                 data.to = recipients;
             } else {
                 throw "Recipients is required parameter, must be a nonempty array";
             }
+
             if (attachments) {
                 if (Utils.isArray(attachments)) {
                     if (!Utils.isEmpty(attachments)) {
@@ -2866,8 +3202,10 @@
                 data        : JSON.stringify(data)
             });
         },
+
         cancel          : function(messageId, async) {
             var isAsync = async != null;
+
             return Backendless._ajax({
                 method      : 'DELETE',
                 url         : this.restUrl + '/' + messageId,
@@ -2875,28 +3213,35 @@
                 asyncHandler: new Async(emptyFn)
             });
         },
+
         registerDevice  : function(channels, expiration, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var device = isBrowser ? window.device : NodeDevice;
+
             var data = {
                 deviceToken: null, //This value will set in callback
                 deviceId   : device.uuid,
                 os         : device.platform,
                 osVersion  : device.version
             };
+
             if (Utils.isArray(channels)) {
                 data.channels = channels;
             }
+
             for (var i = 0, len = arguments.length; i < len; ++i) {
                 var val = arguments[i];
                 if (Utils.isNumber(val) || val instanceof Date) {
                     data.expiration = (val instanceof Date) ? val.getTime() / 1000 : val;
                 }
             }
+
             var url = this.restUrl + '/registrations';
+
             var success = function(deviceToken) {
                 data.deviceToken = deviceToken;
+
                 Backendless._ajax({
                     method      : 'POST',
                     url         : url,
@@ -2905,15 +3250,19 @@
                     asyncHandler: responder
                 });
             };
+
             var fail = function(status) {
                 console.warn(JSON.stringify(['failed to register ', status]));
             };
+
             var config = {
                 projectid: "http://backendless.com",
                 appid    : Backendless.applicationId
             };
+
             cordova.exec(success, fail, "PushNotification", "registerDevice", [config]);
         },
+
         getRegistrations: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = extractResponder(arguments);
@@ -2926,6 +3275,7 @@
                 asyncHandler: responder
             });
         },
+
         unregisterDevice: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = extractResponder(arguments);
@@ -2937,12 +3287,13 @@
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+
             try {
                 cordova.exec(emptyFn, emptyFn, "PushNotification", "unregisterDevice", []);
-            }
-            catch (e) {
+            } catch (e) {
                 console.log(e.message);
             }
+
             return result;
         }
     };
@@ -2969,6 +3320,7 @@
         builder += boundary;
         builder += dashdash;
         builder += crlf;
+
         return builder;
     }
 
@@ -2992,15 +3344,19 @@
         xhr.setRequestHeader('application-id', Backendless.applicationId);
         xhr.setRequestHeader("secret-key", Backendless.secretKey);
         xhr.setRequestHeader("application-type", "JS");
+
         if ((currentUser != null && currentUser["user-token"])) {
             xhr.setRequestHeader("user-token", currentUser["user-token"]);
         } else if (Backendless.LocalCache.exists("user-token")) {
             xhr.setRequestHeader("user-token", Backendless.LocalCache.get("user-token"));
         }
+
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
         }
+
         var asyncHandler = this.asyncHandler;
+
         if (asyncHandler) {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
@@ -3018,6 +3374,7 @@
         if (asyncHandler) {
             return xhr;
         }
+
         if (xhr.status >= 200 && xhr.status < 300) {
             return xhr.responseText ? JSON.parse(xhr.responseText) : true;
         } else {
@@ -3044,10 +3401,13 @@
         xhr.setRequestHeader('application-id', Backendless.applicationId);
         xhr.setRequestHeader("secret-key", Backendless.secretKey);
         xhr.setRequestHeader("application-type", "JS");
+
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
         }
+
         var asyncHandler = this.asyncHandler;
+
         if (asyncHandler) {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
@@ -3059,11 +3419,13 @@
                 }
             };
         }
+
         xhr.send(e.target.result.split(',')[1]);
 
         if (asyncHandler) {
             return xhr;
         }
+
         if (xhr.status >= 200 && xhr.status < 300) {
             return xhr.responseText ? JSON.parse(xhr.responseText) : true;
         } else {
@@ -3079,36 +3441,48 @@
         grantUser  : function(userid, url, permissionType, async) {
             this.varType = 'user';
             this.id = userid;
+
             return this.grant(url, permissionType, async);
         },
+
         grantRole  : function(rolename, url, permissionType, async) {
             this.varType = 'role';
             this.id = rolename;
+
             return this.grant(url, permissionType, async);
         },
+
         grant      : function(url, permissionType, async) {
             return this.sendRequest('GRANT', url, permissionType, async);
         },
+
         denyUser   : function(rolename, url, permissionType, async) {
             this.varType = 'role';
             this.id = rolename;
+
             return this.deny(url, permissionType, async);
         },
+
         denyRole   : function(rolename, url, permissionType, async) {
             this.varType = 'role';
             this.id = rolename;
+
             return this.deny(url, permissionType, async);
         },
+
         deny       : function(url, permissionType, async) {
             return this.sendRequest('DENY', url, permissionType, async);
         },
+
         sendRequest: function(type, url, permissionType, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null,
                 data      = {
                     "permission": permissionType
                 };
+
             data[this.varType] = this.id || "*";
+
             return Backendless._ajax({
                 method      : 'PUT',
                 url         : this.restUrl + '/' + type + '/' + encodeURIComponent(url),
@@ -3128,53 +3502,67 @@
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
+
             if (!fileName || !Utils.isString(path)) {
                 throw new Error('Missing value for the "fileName" argument. The argument must contain a string value');
             }
+
             if (overwrite instanceof Backendless.Async) {
                 async = overwrite;
                 overwrite = null;
             }
+
             if (!(fileContent instanceof File)) {
                 fileContent = new Blob([fileContent]);
             }
+
             if (fileContent.size > 2800000) {
                 throw new Error('File Content size must be less than 2,800,000 bytes');
             }
+
             var baseUrl = this.restUrl + '/binary/' + path + ((Utils.isString(fileName)) ? '/' + fileName : '') + ((overwrite) ? '?overwrite=true' : '');
+
             try {
                 var reader = new FileReader();
                 reader.fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
                 reader.uploadPath = baseUrl;
                 reader.onloadend = sendEncoded;
+
                 if (async) {
                     reader.asyncHandler = async;
                 }
+
                 reader.onerror = function(evn) {
                     async.fault(evn);
                 };
+
                 reader.readAsDataURL(fileContent);
+
                 if (!async) {
                     return true;
                 }
-
             } catch (err) {
                 console.log(err);
             }
         },
+
         upload    : function(files, path, overwrite, async) {
             files = files.files || files;
             var baseUrl = this.restUrl + '/' + path + '/';
             var overwriting = '';
+
             if (Utils.isBoolean(overwrite)) {
                 overwriting = "?overwrite=" + overwrite;
             }
+
             if (isBrowser) {
                 if (window.File && window.FileList) {
                     if (files instanceof File) {
                         files = [files];
                     }
+
                     var filesError = 0;
+
                     for (var i = 0, len = files.length; i < len; i++) {
                         try {
                             var reader = new FileReader();
@@ -3187,8 +3575,7 @@
                             };
                             reader.readAsBinaryString(files[i]);
 
-                        }
-                        catch (err) {
+                        } catch (err) {
                             filesError++;
                         }
                     }
@@ -3215,11 +3602,11 @@
                     form.action = baseUrl + fileName + overwriting;
                     form.submit();
                 }
-            }
-            else {
+            } else {
                 throw "Upload File not supported with NodeJS";
             }
         },
+
         listing   : function(path, pattern, recursively, pagesize, offset, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null,
@@ -3228,15 +3615,19 @@
             if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
                 url += "?";
             }
+
             if (Utils.isString(pattern)) {
                 url += ("pattern=" + pattern);
             }
+
             if (Utils.isBoolean(recursively)) {
                 url += ("&sub=" + recursively);
             }
+
             if (Utils.isNumber(pagesize)) {
                 url += "&pagesize=" + pagesize;
             }
+
             if (Utils.isNumber(offset)) {
                 url += "&offset=" + offset;
             }
@@ -3248,32 +3639,42 @@
                 asyncHandler: responder
             });
         },
+
         renameFile: function(oldPathName, newName, async) {
             this._checkPath(oldPathName);
+
             var parameters = {
                 oldPathName: oldPathName,
                 newName    : newName
             };
+
             return this._doAction("rename", parameters, async);
         },
+
         moveFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
+
             var parameters = {
                 sourcePath: sourcePath,
                 targetPath: targetPath
             };
+
             return this._doAction("move", parameters, async);
         },
+
         copyFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
+
             var parameters = {
                 sourcePath: sourcePath,
                 targetPath: targetPath
             };
+
             return this._doAction("copy", parameters, async);
         },
+
         _checkPath: function(path) {
             if (!(/^\//).test(path)) {
                 path = "/" + path;
@@ -3281,24 +3682,25 @@
 
             return path;
         },
+
         _doAction : function(actionType, parameters, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
-            var response = Backendless._ajax({
+
+            return Backendless._ajax({
                 method      : 'PUT',
                 url         : this.restUrl + '/' + actionType,
                 data        : JSON.stringify(parameters),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-            if (!isAsync) {
-                return response;
-            }
         },
+
         remove    : function(fileURL, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var url = fileURL.indexOf("http://") === 0 || fileURL.indexOf("https://") === 0 ? fileURL : this.restUrl + '/' + fileURL;
+
             Backendless._ajax({
                 method      : 'DELETE',
                 url         : url,
@@ -3306,13 +3708,16 @@
                 asyncHandler: responder
             });
         },
+
         exists    : function(path, async) {
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
+
             var responder = extractResponder(arguments),
                 isAsync   = responder != null,
                 url       = this.restUrl + '/exists/' + path;
+
             return Backendless._ajax({
                 method      : 'GET',
                 url         : url,
@@ -3324,7 +3729,8 @@
         removeDirectory: function(path, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
-            Backendless._ajax({
+
+            return Backendless._ajax({
                 method      : 'DELETE',
                 url         : this.restUrl + '/' + path,
                 isAsync     : isAsync,
@@ -3343,6 +3749,7 @@
         }, error    = function(data) {
             async.fault(data);
         };
+
         return new Async(success, error);
     };
 
@@ -3350,16 +3757,20 @@
         if (arguments.length < 3) {
             throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
         }
+
         for (var i = arguments.length - 2; i >= 0; i--) {
             if (!arguments[i] || !Utils.isString(arguments[i])) {
                 throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
             }
         }
+
         var responder = extractResponder(arguments),
             isAsync   = responder != null;
+
         if (responder) {
             responder = this._wrapAsync(responder);
         }
+
         return Backendless._ajax({
             method      : 'GET',
             url         : this.restUrl + '/validate/' + packageName + '/inapp/' + productId + '/purchases/' + token,
@@ -3372,16 +3783,20 @@
         if (arguments.length < 3) {
             throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
         }
+
         for (var i = arguments.length - 2; i >= 0; i--) {
             if (!arguments[i] || !Utils.isString(arguments[i])) {
                 throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
             }
         }
+
         var responder = extractResponder(arguments),
             isAsync   = responder != null;
+
         if (responder) {
             responder = this._wrapAsync(responder);
         }
+
         return Backendless._ajax({
             method      : 'POST',
             url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token + '/cancel',
@@ -3394,16 +3809,20 @@
         if (arguments.length < 3) {
             throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
         }
+
         for (var i = arguments.length - 2; i >= 0; i--) {
             if (!arguments[i] || !Utils.isString(arguments[i])) {
                 throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
             }
         }
+
         var responder = extractResponder(arguments),
             isAsync   = responder != null;
+
         if (responder) {
             responder = this._wrapAsync(responder);
         }
+
         return Backendless._ajax({
             method      : 'GET',
             url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token,
@@ -3422,6 +3841,7 @@
         }, error    = function(data) {
             async.fault(data);
         };
+
         return new Async(success, error);
     };
 
@@ -3429,13 +3849,18 @@
         if (!eventname || !Utils.isString(eventname)) {
             throw new Error('Event Name must be provided and must be not an empty STRING!');
         }
+
         eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
+
         var responder = extractResponder(arguments),
             isAsync   = responder != null;
+
         if (responder) {
             responder = this._wrapAsync(responder);
         }
+
         eventArgs = eventArgs instanceof Backendless.Async ? {} : eventArgs;
+
         return Backendless._ajax({
             method      : 'POST',
             url         : this.restUrl + '/' + eventname,
@@ -3460,13 +3885,16 @@
             };
             return new Async(success, error);
         },
+
         _parseResponse  : function(response) {
             return response;
         },
+
         put             : function(key, value, timeToLive, async) {
             if (!Utils.isString(key)) {
                 throw new Error('You can use only String as key to put into Cache');
             }
+
             if (!(timeToLive instanceof Backendless.Async)) {
                 if (typeof timeToLive == 'object' && !arguments[3]) {
                     async = timeToLive;
@@ -3478,14 +3906,18 @@
                 async = timeToLive;
                 timeToLive = null;
             }
+
             if (Utils.isObject(value) && value.constructor !== Object) {
                 value.___class = value.___class || getClassName.call(value);
             }
+
             var responder = extractResponder([async]), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             return Backendless._ajax({
                 method      : 'PUT',
                 url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
@@ -3494,6 +3926,7 @@
                 asyncHandler: responder
             });
         },
+
         expireIn        : function(key, seconds, async) {
             if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
                 seconds = (Utils.isDate(seconds)) ? seconds.getTime() : seconds;
@@ -3502,6 +3935,7 @@
                     isAsync = true;
                     responder = this._wrapAsync(responder);
                 }
+
                 return Backendless._ajax({
                     method      : 'PUT',
                     url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + '/expireIn?timeout=' + seconds,
@@ -3513,6 +3947,7 @@
                 throw new Error('The "key" argument must be String. The "seconds" argument can be either Number or Date');
             }
         },
+
         expireAt        : function(key, timestamp, async) {
             if (Utils.isString(key) && (Utils.isNumber(timestamp) || Utils.isDate(timestamp)) && timestamp) {
                 timestamp = (Utils.isDate(timestamp)) ? timestamp.getTime() : timestamp;
@@ -3521,6 +3956,7 @@
                     isAsync = true;
                     responder = this._wrapAsync(responder);
                 }
+
                 return Backendless._ajax({
                     method      : 'PUT',
                     url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + '/expireAt?timestamp=' + timestamp,
@@ -3532,15 +3968,19 @@
                 throw new Error('You can use only String as key while expire in Cache. Second attribute must be declared and must be a Number or Date type');
             }
         },
+
         cacheMethod     : function(method, key, contain, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
+
             var responder = extractResponder(arguments), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             return Backendless._ajax({
                 method      : method,
                 url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + (contain ? '/check' : ''),
@@ -3548,24 +3988,30 @@
                 asyncHandler: responder
             });
         },
+
         contains        : function(key, async) {
             return this.cacheMethod('GET', key, true, async);
         },
+
         get             : function(key, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
+
             var responder = extractResponder(arguments), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             var result = Backendless._ajax({
                 method      : 'GET',
                 url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+
             if (Utils.isObject(result)) {
                 if (result.___class) {
                     var object;
@@ -3583,19 +4029,22 @@
                 return result;
             }
         },
+
         remove          : function(key, async) {
             return this.cacheMethod('DELETE', key, false, async);
         },
+
         setObjectFactory: function(objectName, factoryMethod) {
             FactoryMethods[objectName] = factoryMethod;
         }
     };
 
-    var Counters       = function() {
-        },
-        AtomicInstance = function(counterName) {
-            this.name = counterName;
-        };
+    var Counters = function() {
+    };
+
+    var AtomicInstance = function(counterName) {
+        this.name = counterName;
+    };
 
     Counters.prototype = {
         _wrapAsync              : function(async) {
@@ -3605,32 +4054,42 @@
             }, error = function(data) {
                 async.fault(data);
             };
+
             return new Async(success, error);
         },
+
         _parseResponse          : function(response) {
             return response;
         },
+
         of                      : function(counterName) {
             return new AtomicInstance(counterName);
         },
+
         getConstructor          : function() {
             return this;
         },
+
         counterNameValidation   : function(counterName) {
             if (!counterName) {
                 throw new Error('Missing value for the "counterName" argument. The argument must contain a string value.');
             }
+
             if (!Utils.isString(counterName)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string values');
             }
+
             this.name = counterName;
         },
+
         implementMethod         : function(method, urlPart, async) {
             var responder = extractResponder(arguments), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             return Backendless._ajax({
                 method      : method,
                 url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + urlPart,
@@ -3638,33 +4097,47 @@
                 asyncHandler: responder
             });
         },
+
         incrementAndGet         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
+
             return this.implementMethod('PUT', '/increment/get', async);
         },
+
         getAndIncrement         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
+
             return this.implementMethod('PUT', '/get/increment', async);
         },
+
         decrementAndGet         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
+
             return this.implementMethod('PUT', '/decrement/get', async);
         },
+
         getAndDecrement         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
+
             return this.implementMethod('PUT', '/get/decrement', async);
         },
+
         reset                   : function(counterName, async) {
             this.counterNameValidation(counterName, async);
+
             return this.implementMethod('PUT', '/reset', async);
         },
+
         get                     : function(counterName, async) {
             this.counterNameValidation(counterName, async);
+
             var responder = extractResponder(arguments), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             return Backendless._ajax({
                 method      : 'GET',
                 url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name,
@@ -3672,18 +4145,23 @@
                 asyncHandler: responder
             });
         },
+
         implementMethodWithValue: function(urlPart, value, async) {
             if (!value) {
                 throw new Error('Missing value for the "value" argument. The argument must contain a numeric value.');
             }
+
             if (!Utils.isNumber(value)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only numeric values');
             }
+
             var responder = extractResponder(arguments), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             return Backendless._ajax({
                 method      : 'PUT',
                 url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + urlPart + ((value) ? value : ''),
@@ -3691,27 +4169,37 @@
                 asyncHandler: responder
             });
         },
+
         addAndGet               : function(counterName, value, async) {
             this.counterNameValidation(counterName, async);
+
             return this.implementMethodWithValue('/get/incrementby?value=', value, async);
         },
+
         getAndAdd               : function(counterName, value, async) {
             this.counterNameValidation(counterName, async);
+
             return this.implementMethodWithValue('/incrementby/get?value=', value, async);
         },
+
         compareAndSet           : function(counterName, expected, updated, async) {
             this.counterNameValidation(counterName, async);
+
             if (!expected || !updated) {
                 throw new Error('Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values');
             }
+
             if (!Utils.isNumber(expected) || !Utils.isNumber(updated)) {
                 throw new Error('Missing value for the "expected" and/or "updated" arguments. The arguments must contain a numeric value');
             }
+
             var responder = extractResponder(arguments), isAsync = false;
+
             if (responder != null) {
                 isAsync = true;
                 responder = this._wrapAsync(responder);
             }
+
             return Backendless._ajax({
                 method      : 'PUT',
                 url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
@@ -3762,11 +4250,14 @@
             if (!Utils.isString(loggerName)) {
                 throw new Error("Invalid 'loggerName' value. LoggerName must be a string value");
             }
+
             if (!this.loggers[loggerName]) {
                 this.loggers[loggerName] = new Logging(loggerName);
             }
+
             return this.loggers[loggerName];
         },
+
         flush                : function() {
             if (this.logInfo.length) {
                 var async = extractResponder(arguments);
@@ -3784,18 +4275,21 @@
                 this.messagesCount = 0;
             }
         },
+
         sendRequest          : function() {
             var logging = this;
-            
+
             this.flushInterval = setTimeout(function() {
                 logging.flush();
             }, this.timeFrequency * 1000);
         },
+
         checkMessagesLen     : function() {
             if (this.messagesCount > (this.numOfMessages - 1)) {
                 this.sendRequest();
             }
         },
+
         setLogReportingPolicy: function(numOfMessages, timeFrequency) {
             this.numOfMessages = numOfMessages;
             this.timeFrequency = timeFrequency;
@@ -3858,6 +4352,98 @@
         }
     };
 
+    function promisify(fn) {
+        return function() {
+            var context = this;
+            var args = [].slice.call(arguments);
+
+            return new Promise(function(resolve, reject)  {
+                args.push(new Async(resolve, reject, context));
+                fn.apply(context, args);
+            });
+        }
+    }
+
+    function promisifyPack(data) {
+        var obj = data[0];
+        var methods = data[1];
+
+        methods.forEach(function(name) {
+            obj[name] = promisify(obj[name]);
+        });
+    }
+
+    function enablePromises() {
+        if (promisesEnabled) {
+            return;
+        }
+
+        if (typeof Promise === 'undefined') {
+            throw new Error('Promises are not supported by your browser. ' +
+                'Please use "Backendless.Async" to make async requests, ' +
+                'or upgrade to a modern browser.\nSee ' + 'http://caniuse.com/#feat=promises');
+        }
+
+        promisesEnabled = true;
+
+        [
+            [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
+            [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
+            [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
+            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory']],
+            [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
+            [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
+            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations']],
+            [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
+            [persistence, ['describe', 'getView', 'callStoredProcedure']],
+            [FilePermissions.prototype, ['sendRequest']],
+            [CustomServices.prototype, ['invoke']],
+            [Events.prototype, ['dispatch']],
+            [PollingProxy.prototype, ['poll']],
+            [Backendless.Logging, ['flush']],
+            [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
+                'getRegistrations', 'unregisterDevice']],
+            [Geo.prototype, ['addPoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
+                'getCategories', 'deleteCategory', 'deletePoint']],
+            [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
+                 'restorePassword', 'logout', 'update', 'isValidLogin']]
+        ].forEach(promisifyPack);
+
+        UserService.prototype.getCurrentUser = function() {
+            if (currentUser) {
+                return Promise.resolve(currentUser);
+            } else if (Backendless.LocalCache.get("stayLoggedIn")) {
+                var userId = Backendless.LocalCache.get("current-user-id");
+                return Backendless.Data.of(Backendless.User).findById(userId);
+            } else {
+                return Promise.resolve(null);
+            }
+        };
+
+        UserService.prototype.isValidLogin = function() {
+            var userToken = Backendless.LocalCache.get("user-token");
+
+            if (userToken) {
+                return new Promise(function(resolve, reject) {
+                    return Backendless._ajax({
+                        method: 'GET',
+                        url: Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
+                        isAsync: true,
+                        asyncHandler: new Async(resolve, reject)
+                    });
+                });
+            }
+
+            return Backendless.UserService.getCurrentUser()
+                .then(function(user) {
+                    return Promise.resolve(!!user);
+                })
+                .catch(function() {
+                    return Promise.resolve(false);
+                });
+        };
+    }
+
     Backendless.initApp = function(appId, secretKey, appVersion) {
         Backendless.applicationId = appId;
         Backendless.secretKey = secretKey;
@@ -3886,7 +4472,7 @@
         this.condition = null;
         this.options = null;
         this.url = null;
-    }
+    };
 
     DataQuery.prototype = {
         addProperty: function(prop) {
@@ -3917,6 +4503,7 @@
             this.categories = this.categories || [];
             this.categories.push();
         },
+
         setClusteringParams: function(westLongitude, eastLongitude, mapWidth, clusterGridSize) {
             clusterGridSize = clusterGridSize || 0;
             var parsedWestLongitude   = parseFloat(westLongitude),
