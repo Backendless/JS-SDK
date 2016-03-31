@@ -553,6 +553,10 @@
                 return dataMapper._load(this._nextPage, async);
             };
 
+            if (promisesEnabled) {
+                collection.nextPage = promisify(collection, 'nextPage');
+            }
+
             collection.getPage = function(offset, pageSize, async) {
                 var nextPage = this._nextPage.replace(/offset=\d+/ig, 'offset=' + offset);
 
@@ -4331,22 +4335,26 @@
         }
     };
 
-    function promisify(data) {
+    function promisify(obj, method) {
+        var fn = obj[method];
+
+        obj[method] = function() {
+            var context = this;
+            var args = [].slice.call(arguments);
+
+            return new Promise(function(resolve, reject)  {
+                args.push(new Async(resolve, reject, context));
+                fn.apply(context, args);
+            });
+        };
+    }
+
+    function promisifyPack(data) {
         var obj = data[0];
         var methods = data[1];
 
         methods.forEach(function(name) {
-            var fn = obj[name];
-
-            obj[name] = function() {
-                var context = this;
-                var args = [].slice.call(arguments);
-
-                return new Promise(function(resolve, reject)  {
-                    args.push(new Async(resolve, reject, context));
-                    fn.apply(context, args);
-                });
-            };
+            promisify(obj, name);
         });
     }
 
