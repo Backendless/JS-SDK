@@ -110,10 +110,13 @@
         return new Date().getTime();
     };
 
+    var promisesEnabled = false;
+
     Backendless.browser = browser;
     Backendless.enablePromises = enablePromises;
-
-    var promisesEnabled = false;
+    Backendless.promisesEnabled = function() {
+        return promisesEnabled;
+    };
 
     var Utils = Backendless.Utils = {
         isObject  : function(obj) {
@@ -554,7 +557,7 @@
             };
 
             if (promisesEnabled) {
-                collection.nextPage = promisify(collection, 'nextPage');
+                collection.nextPage = promisify(collection.nextPage);
             }
 
             collection.getPage = function(offset, pageSize, async) {
@@ -4335,10 +4338,8 @@
         }
     };
 
-    function promisify(obj, method) {
-        var fn = obj[method];
-
-        obj[method] = function() {
+    function promisify(fn) {
+        return function() {
             var context = this;
             var args = [].slice.call(arguments);
 
@@ -4346,7 +4347,7 @@
                 args.push(new Async(resolve, reject, context));
                 fn.apply(context, args);
             });
-        };
+        }
     }
 
     function promisifyPack(data) {
@@ -4354,7 +4355,7 @@
         var methods = data[1];
 
         methods.forEach(function(name) {
-            promisify(obj, name);
+            obj[name] = promisify(obj[name]);
         });
     }
 
@@ -4371,7 +4372,7 @@
 
         promisesEnabled = true;
 
-        var toPromisify = [
+        [
             [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
             [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
             [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
@@ -4386,24 +4387,13 @@
             [Events.prototype, ['dispatch']],
             [PollingProxy.prototype, ['poll']],
             [Backendless.Logging, ['flush']],
-            [
-                Messaging.prototype,
-                ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                 'getRegistrations', 'unregisterDevice']
-            ],
-            [
-                Geo.prototype,
-                ['addPoint', 'findUtil', 'loadMetadata', 'getClusterPoints',
-                 'addCategory', 'getCategories', 'deleteCategory', 'deletePoint']
-            ],
-            [
-                UserService.prototype,
-                ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                 'restorePassword', 'logout', 'update', 'isValidLogin']
-            ]
-        ];
-
-        toPromisify.forEach(promisify);
+            [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
+                'getRegistrations', 'unregisterDevice']],
+            [Geo.prototype, ['addPoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
+                'getCategories', 'deleteCategory', 'deletePoint']],
+            [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
+                 'restorePassword', 'logout', 'update', 'isValidLogin']]
+        ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
             if (currentUser) {
@@ -4418,29 +4408,25 @@
 
         UserService.prototype.isValidLogin = function() {
             var userToken = Backendless.LocalCache.get("user-token");
-            var responder = extractResponder(arguments);
-            var isAsync = responder != null;
-
-            if (responder) {
-                responder = this._wrapAsync(responder);
-            }
 
             if (userToken) {
-                return Backendless._ajax({
-                    method      : 'GET',
-                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
-                    isAsync     : isAsync,
-                    asyncHandler: responder
-                });
-            } else {
-                return Backendless.UserService.getCurrentUser()
-                    .then(function(user) {
-                        return Promise.resolve(!!user);
-                    })
-                    .catch(function() {
-                        return Promise.resolve(false);
+                return new Promise(function(resolve, reject) {
+                    return Backendless._ajax({
+                        method: 'GET',
+                        url: Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
+                        isAsync: true,
+                        asyncHandler: new Async(resolve, reject)
                     });
+                });
             }
+
+            return Backendless.UserService.getCurrentUser()
+                .then(function(user) {
+                    return Promise.resolve(!!user);
+                })
+                .catch(function() {
+                    return Promise.resolve(false);
+                });
         };
     }
 
