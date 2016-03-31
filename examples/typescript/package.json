@@ -1,0 +1,17 @@
+{
+  "name": "backendless-typescrip",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm run tsc:w\"",
+    "tsc:w": "tsc -w",
+    "tsc": "tsc"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "backendless": "^3.0.13"
+  },
+  "devDependencies": {
+    "concurrently": "^2.0.0",
+    "typescript": "^1.8.9"
+  }
+}
