@@ -763,6 +763,20 @@
             };
             return new Async(success, error);
         },
+        _wrapFindAsync: function(async) {
+            var me   = this;
+
+            var success = function(data) {
+                data = me._parseFindResponse(data);
+                async.success(data);
+            };
+
+            var error = function(data) {
+                async.fault(data);
+            };
+
+            return new Async(success, error);
+        },
         _parseResponse: function(response) {
             var _Model = this.model, item;
             response = response.fields || response;
@@ -937,7 +951,7 @@
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
-            responder != null && (responder = this._wrapAsync(responder));
+            responder != null && (responder = this._wrapFindAsync(responder));
             options && query.push(options);
             whereClause && query.push(whereClause);
             props && query.push(props);
