@@ -113,7 +113,7 @@
     Backendless.browser = browser;
     Backendless.enablePromises = enablePromises;
 
-    var isPromisesEnabled = false;
+    var promisesEnabled = false;
 
     var Utils = Backendless.Utils = {
         isObject  : function(obj) {
@@ -1889,8 +1889,7 @@
         },
 
         isValidLogin: function(async) {
-            var cache = Backendless.LocalCache;
-            var userToken = cache.get("user-token");
+            var userToken = Backendless.LocalCache.get("user-token");
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -1898,8 +1897,7 @@
                 responder = this._wrapAsync(responder);
             }
 
-            if (cache.get("user-token")) {
-                userToken = cache.get("user-token");
+            if (userToken) {
                 if (!async) {
                     try {
                         var result = Backendless._ajax({
@@ -4353,7 +4351,7 @@
     }
 
     function enablePromises() {
-        if (isPromisesEnabled) {
+        if (promisesEnabled) {
             return;
         }
 
@@ -4362,6 +4360,8 @@
                 'Please use "Backendless.Async" to make async requests, ' +
                 'or upgrade to a modern browser.\nSee ' + 'http://caniuse.com/#feat=promises');
         }
+
+        promisesEnabled = true;
 
         var toPromisify = [
             [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
