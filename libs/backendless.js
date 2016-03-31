@@ -113,6 +113,8 @@
     Backendless.browser = browser;
     Backendless.enablePromises = enablePromises;
 
+    var isPromisesEnabled = false;
+
     var Utils = Backendless.Utils = {
         isObject  : function(obj) {
             return obj === Object(obj);
@@ -4351,6 +4353,10 @@
     }
 
     function enablePromises() {
+        if (isPromisesEnabled) {
+            return;
+        }
+
         if (typeof Promise === 'undefined') {
             throw new Error('Promises are not supported by your browser. ' +
                 'Please use "Backendless.Async" to make async requests, ' +
