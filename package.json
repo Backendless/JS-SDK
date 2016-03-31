@@ -4,7 +4,7 @@
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "main": "./libs/backendless.js",
   "scripts": {
-    "minify": "uglifyjs libs/backendless.js -o libs/backendless.min.js"
+    "build": "uglifyjs libs/backendless.js --mangle --source-map libs/backendless.min.map -o libs/backendless.min.js"
   },
   "repository": {
     "type": "git",
