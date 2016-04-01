@@ -1,8 +1,8 @@
 /// <reference path="node_modules/backendless/libs/backendless.d.ts" />
 
 module MyApp {
-    export var APP_ID:string = '19C421CA-F89C-E47A-FF71-E6D0666ECB00';
-    var APP_KEY:string = 'A789016C-5894-3CD7-FFFC-CAC34ECBBD00';
+    var APP_ID:string =  'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+    var APP_KEY:string = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
     var APP_VER:string = 'v1';
 
     Backendless.initApp(APP_ID, APP_KEY, APP_VER);
