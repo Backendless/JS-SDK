@@ -1860,7 +1860,10 @@
                 throw new Error("Facebook SDK not found");
             }
 
-            async = extractResponder(arguments);
+            if (stayLoggedIn instanceof Async) {
+                async = stayLoggedIn;
+                stayLoggedIn = false;
+            }
 
             var me = this;
             FB.getLoginStatus(function(response) {
@@ -1879,7 +1882,10 @@
                 throw new Error("Google Plus SDK not found");
             }
 
-            async = extractResponder(arguments);
+            if (stayLoggedIn instanceof Async) {
+                async = stayLoggedIn;
+                stayLoggedIn = false;
+            }
 
             var me = this;
 
@@ -1899,11 +1905,7 @@
 
             var interimCallback = new Backendless.Async(function(r) {
                 currentUser = context._parseResponse(r);
-
-                if (Utils.isBoolean(stayLoggedIn)) {
-                    Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
-                }
-
+                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
                 async.success(context._getUserFromResponse(currentUser));
             }, function(e) {
                 async.fault(e);
