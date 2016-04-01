@@ -4258,9 +4258,11 @@
             return this.loggers[loggerName];
         },
 
-        flush                : function() {
+        flush: function() {
+            var async = extractResponder(arguments);
+
             if (this.logInfo.length) {
-                var async = extractResponder(arguments);
+                this.flushInterval && clearTimeout(this.flushInterval);
 
                 Backendless._ajax({
                     method      : 'PUT',
@@ -4270,9 +4272,10 @@
                     data        : JSON.stringify(this.logInfo)
                 });
 
-                this.flushInterval && clearTimeout(this.flushInterval);
                 this.logInfo = [];
                 this.messagesCount = 0;
+            } else if (async) {
+                setTimeout(async.success, 0);
             }
         },
 
@@ -4280,7 +4283,7 @@
             var logging = this;
 
             this.flushInterval = setTimeout(function() {
-                logging.flush();
+                logging.flush(new Backendless.Async());
             }, this.timeFrequency * 1000);
         },
 
