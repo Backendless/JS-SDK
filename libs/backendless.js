@@ -1855,26 +1855,36 @@
             });
         },
 
-        loginWithFacebookSdk: function(fieldsMapping, async) {
+        loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, async) {
             if (!FB) {
                 throw new Error("Facebook SDK not found");
+            }
+
+            if (stayLoggedIn instanceof Async) {
+                async = stayLoggedIn;
+                stayLoggedIn = false;
             }
 
             var me = this;
             FB.getLoginStatus(function(response) {
                 if (response.status === 'connected') {
-                    me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, async);
+                    me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, stayLoggedIn, async);
                 } else {
                     FB.login(function(response) {
-                        me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, async);
+                        me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, stayLoggedIn, async);
                     });
                 }
             });
         },
 
-        loginWithGooglePlusSdk: function(fieldsMapping, async) {
+        loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
             if (!gapi) {
                 throw new Error("Google Plus SDK not found");
+            }
+
+            if (stayLoggedIn instanceof Async) {
+                async = stayLoggedIn;
+                stayLoggedIn = false;
             }
 
             var me = this;
@@ -1884,17 +1894,18 @@
                 scope    : "https://www.googleapis.com/auth/plus.login"
             }, function(response) {
                 delete response['g-oauth-window'];
-                me._sendSocialLoginRequest(me, response, "googleplus", fieldsMapping, async);
+                me._sendSocialLoginRequest(me, response, "googleplus", fieldsMapping, stayLoggedIn, async);
             });
         },
 
-        _sendSocialLoginRequest: function(context, response, socialType, fieldsMapping, async) {
+        _sendSocialLoginRequest: function(context, response, socialType, fieldsMapping, stayLoggedIn, async) {
             if (fieldsMapping) {
                 response["fieldsMapping"] = fieldsMapping;
             }
 
             var interimCallback = new Backendless.Async(function(r) {
                 currentUser = context._parseResponse(r);
+                Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                 async.success(context._getUserFromResponse(currentUser));
             }, function(e) {
                 async.fault(e);
@@ -4402,11 +4413,11 @@
             [PollingProxy.prototype, ['poll']],
             [Backendless.Logging, ['flush']],
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                'getRegistrations', 'unregisterDevice']],
+                                   'getRegistrations', 'unregisterDevice']],
             [Geo.prototype, ['addPoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                'getCategories', 'deleteCategory', 'deletePoint']],
+                             'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                 'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk', 'loginWithGooglePlusSdk']]
+                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk', 'loginWithGooglePlusSdk']]
         ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
