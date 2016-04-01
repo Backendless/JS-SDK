@@ -1,3 +1,5 @@
+// Backendless.js 3.1.1
+
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
         (typeof global == 'object' && global.global === global && global);
@@ -80,7 +82,7 @@
 
     var WebSocket = null; // isBrowser ? window.WebSocket || window.MozWebSocket : {};
 
-    Backendless.VERSION = '3.0.11';
+    Backendless.VERSION = '3.1.1';
     Backendless.serverURL = 'https://api.backendless.com';
 
     initXHR();
