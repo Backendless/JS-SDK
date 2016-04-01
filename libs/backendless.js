@@ -6,7 +6,7 @@
         define([], function() {
             var Backendless = root.Backendless = factory(root);
 
-            //when we use System.js we need to return export object otherwize Backendless object
+            //when we use System.js we need to return export object othervise Backendless object
             if (typeof System !== "undefined") {
                 return {Backendless:Backendless};
             }
