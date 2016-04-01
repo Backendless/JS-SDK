@@ -103,9 +103,9 @@ function testDataQueryClass() {
 
 function testDataStoreClass() {
     var item:Object = {};
-    var dataStore1:BackendlessDataStore = new Backendless.Persistence.of('str');
-    var dataStore2:BackendlessDataStore = new Backendless.Persistence.of({});
-    var dataStore3:BackendlessDataStore = new Backendless.Persistence.of(function () {
+    var dataStore1:Backendless.DataStore = Backendless.Persistence.of('str');
+    var dataStore2:Backendless.DataStore = Backendless.Persistence.of({});
+    var dataStore3:Backendless.DataStore = Backendless.Persistence.of(function () {
     });
 
     var model:Function|Object = dataStore1.model;
@@ -168,7 +168,7 @@ function testDataStoreClass() {
 function testPersistence() {
     var resultObj:Object;
     var resultXHR:XMLHttpRequest;
-    var dataStore:BackendlessDataStore = new Backendless.Persistence.of('str');
+    var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
     var Model:Function;
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
     });
@@ -207,7 +207,7 @@ function testPersistence() {
 function testData() {
     var resultObj:Object;
     var resultXHR:XMLHttpRequest;
-    var dataStore:BackendlessDataStore = new Backendless.Persistence.of('str');
+    var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
     });
 
@@ -248,8 +248,8 @@ function testData() {
 function testDataPermissions() {
     var userId:string = 'userId';
     var roleName:string = 'myRole';
-    var dataObj:BackendlessExistDataItem = {___class: 'myClass', objectId: 'myId'};
-    var resultObj:BackendlessExistDataItem;
+    var dataObj:Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
+    var resultObj:Backendless.ExistDataItemI;
     var resultXHR:XMLHttpRequest;
 
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
@@ -410,18 +410,18 @@ function testGoeService() {
     var categoryName:string = 'str';
     var restUrl:string = Backendless.Geo.restUrl;
     var EARTH_RADIUS:number = Backendless.Geo.EARTH_RADIUS;
-    var geoCollectionResult:BackendlessGeoCollectionResult;
-    var geoCategory:BackendlessGeoCategory;
-    var geoCategories:BackendlessGeoCategory[];
+    var geoCollectionResult:Backendless.GeoCollectionResultI;
+    var geoCategory:Backendless.GeoCategoryI;
+    var geoCategories:Backendless.GeoCategoryI[];
     var resultObj:Object;
     var resultXHR:XMLHttpRequest;
 
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
     });
 
-    var baseGeoQuery:BackendlessGeoQuery = new Backendless.GeoQuery();
-    var rectangleGeoQuery:BackendlessRectangleGeoQuery = {searchRectangle: [1, 2, 3, 4]};
-    var circleGeoQuery:BackendlessCircleGeoQuery = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
+    var baseGeoQuery:Backendless.GeoQueryI = new Backendless.GeoQuery();
+    var rectangleGeoQuery:Backendless.RectangleGeoQueryI = {searchRectangle: [1, 2, 3, 4]};
+    var circleGeoQuery:Backendless.CircleGeoQueryI = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
     var categories:string|string[] = baseGeoQuery.categories;
     var includeMetadata:boolean = baseGeoQuery.includeMetadata;
     var metadata:Object = baseGeoQuery.metadata;
@@ -437,7 +437,7 @@ function testGoeService() {
     var radius:number = circleGeoQuery.radius;
     var units:string = circleGeoQuery.units;
 
-    var inAppCallback:BackendlessGeofenceMonitoringCallbacks = {
+    var inAppCallback:Backendless.GeofenceMonitoringCallbacksI = {
         onenter: function () {
         }
     };
@@ -518,9 +518,9 @@ function testMessaging() {
     var expiration:number|Date = 123;
     var publishOptions:Backendless.PublishOptions = new Backendless.PublishOptions();
     var deliveryOptions:Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
-    var subscription:BackendlessSubscription;
+    var subscription:Backendless.SubscriptionI;
     var subscriptionOptions:Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
-    var subscriptionCallback:Function = function () {
+    var subscriptionCallback = function ():void {
     };
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
     });
@@ -556,8 +556,8 @@ function testFilesService() {
     var pageSize:number = 123;
     var offset:number = 123;
     var overwrite:boolean = true;
-    var file:File = new File();
-    var files:File[] = [new File()];
+    var file:File;
+    var files:File[] = [file];
     var oldPathName:string = 'str';
     var newName:string = 'str';
     var sourcePath:string = 'str';
@@ -750,7 +750,7 @@ function testCounters() {
     resultNum = Backendless.Counters.reset(counterName);
     resultXHR = Backendless.Counters.reset(counterName, async);
 
-    var atomicInstance:BackendlessAtomicInstance = Backendless.Counters.of(counterName);
+    var atomicInstance:Backendless.AtomicInstance = Backendless.Counters.of(counterName);
 
     resultNum = atomicInstance.get();
     resultXHR = atomicInstance.get(async);
@@ -797,7 +797,7 @@ function testLogging() {
     var numOfMessagesValue:number = 123;
     var timeFrequencySecValue:number = 123;
     var loggerName:string = 'str';
-    var logger:BackendlessLogger;
+    var logger:Backendless.Logger;
     var message:string = 'str';
 
     var restUrl:string = Backendless.Logging.restUrl;
