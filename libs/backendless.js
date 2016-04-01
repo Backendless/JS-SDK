@@ -3894,12 +3894,12 @@
     var Cache = function() {
     };
 
-    var FactoryMethods = [];
+    var FactoryMethods = {};
 
     Cache.prototype = {
-        _wrapAsync      : function(async) {
+        _wrapAsync      : function(async, parser) {
             var me   = this, success = function(data) {
-                data = me._parseResponse(data);
+                data = parser ? parser(data) : me._parseResponse(data);
                 async.success(data);
             }, error = function(data) {
                 async.fault(data);
@@ -4019,11 +4019,25 @@
                 throw new Error('The "key" argument must be String');
             }
 
+            function parseResult(result) {
+                var className = result && result.___class;
+
+                if (className) {
+                    var clazz = FactoryMethods[className] || root[className];
+
+                    if (clazz) {
+                        result = new clazz(result);
+                    }
+                }
+
+                return result;
+            }
+
             var responder = extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = this._wrapAsync(responder, parseResult);
             }
 
             var result = Backendless._ajax({
@@ -4033,22 +4047,7 @@
                 asyncHandler: responder
             });
 
-            if (Utils.isObject(result)) {
-                if (result.___class) {
-                    var object;
-                    try {
-                        var Object = eval(result.___class);
-                        object = new Object(result);
-                    } catch (e) {
-                        object = new FactoryMethods[result.___class](result);
-                    }
-                    return object;
-                } else {
-                    return result;
-                }
-            } else {
-                return result;
-            }
+            return isAsync ? result : parseResult(result);
         },
 
         remove          : function(key, async) {
