@@ -38,67 +38,67 @@ declare module __Backendless {
     /**
      * @namespace Backendless.Utils
      **/
-    var Utils:UtilsI;
+    var Utils:Backendless.UtilsI;
 
     /**
      * @namespace Backendless.LocalCache
      **/
-    var LocalCache:LocalCacheI;
+    var LocalCache:Backendless.LocalCacheI;
 
     /**
      * @namespace Backendless.Persistence
      **/
-    var Persistence:PersistenceClass;
+    var Persistence:Backendless.PersistenceClass;
 
     /**
      * @namespace Backendless.Data
      **/
-    var Data:PersistenceClass;
+    var Data:Backendless.PersistenceClass;
 
     /**
      * @namespace Backendless.UserService
      **/
-    var UserService:UserServiceClass;
+    var UserService:Backendless.UserServiceClass;
 
     /**
      * @namespace Backendless.Geo
      **/
-    var Geo:GeoClass;
+    var Geo:Backendless.GeoClass;
 
     /**
      * @namespace Backendless.Messaging
      **/
-    var Messaging:MessagingClass;
+    var Messaging:Backendless.MessagingClass;
 
     /**
      * @namespace Backendless.Files
      **/
-    var Files:FilesClass;
+    var Files:Backendless.FilesClass;
 
     /**
      * @namespace Backendless.Commerce
      **/
-    var Commerce:CommerceClass;
+    var Commerce:Backendless.CommerceClass;
 
     /**
      * @namespace Backendless.Events
      **/
-    var Events:EventsClass;
+    var Events:Backendless.EventsClass;
 
     /**
      * @namespace Backendless.Cache
      **/
-    var Cache:CacheClass;
+    var Cache:Backendless.CacheClass;
 
     /**
      * @namespace Backendless.Counters
      **/
-    var Counters:CountersClass;
+    var Counters:Backendless.CountersClass;
 
     /**
      * @namespace Backendless.CustomServices
      **/
-    var CustomServices:CustomServicesClass;
+    var CustomServices:Backendless.CustomServicesClass;
 
     /**
      * @namespace Backendless.Logging
@@ -135,7 +135,7 @@ declare module __Backendless {
      * @class Backendless.DataQuery
      * @constructor
      */
-    class DataQuery implements DataQueryValueI {
+    class DataQuery implements Backendless.DataQueryValueI {
         properties:string[];
         condition:string;
         options:Object;
@@ -164,9 +164,9 @@ declare module __Backendless {
      * @extends GeoPoint
      * @constructor
      */
-    class GeoCluster extends GeoPoint {
+    class GeoCluster extends Backendless.GeoPoint {
         totalPoints:number;
-        geoQuery:GeoQuery | RectangleGeoQueryI | CircleGeoQueryI;
+        geoQuery:Backendless.GeoQuery | Backendless.RectangleGeoQueryI | Backendless.CircleGeoQueryI;
     }
 
     /**
@@ -174,7 +174,7 @@ declare module __Backendless {
      * @class Backendless.GeoQuery
      * @constructor
      */
-    class GeoQuery implements GeoQueryI {
+    class GeoQuery implements Backendless.GeoQueryI {
         categories:string|string[];
         includeMetadata:boolean;
         metadata:Object;
@@ -273,7 +273,7 @@ declare module __Backendless {
      * @private
      * @class PollingProxy
      */
-    class PollingProxy extends Proxy {
+    class PollingProxy extends Backendless.Proxy {
         restUrl:string;
         timer:number;
         timeout:number;
@@ -297,7 +297,7 @@ declare module __Backendless {
      * @private
      * @class SocketProxy
      */
-    class SocketProxy extends Proxy {
+    class SocketProxy extends Backendless.Proxy {
         reconnectWithPolling:boolean;
         socket:WebSocket;
 
@@ -327,9 +327,9 @@ declare module __Backendless {
 
         find():Object;
         find(async:Backendless.Async):XMLHttpRequest;
-        find(obj:Backendless.DataQuery|DataQueryValueI|string):Object;
-        find(id:Backendless.DataQuery|DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
-        find(id:Backendless.DataQuery|DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
+        find(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Object;
+        find(id:Backendless.DataQuery|Backendless.DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
+        find(id:Backendless.DataQuery|Backendless.DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
 
         findById(query:Backendless.DataQuery|DataQueryValueI|string):Object;
         findById(query:Backendless.DataQuery|DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
@@ -396,10 +396,10 @@ declare module __Backendless {
          **/
         Permissions:PersistencePermissionsClass;
 
-        of(model:string|Object|Function):DataStore;
+        of(model:string|Object|Function):Backendless.DataStore;
 
-        save(model:DataStore|string, data:Object):Object;
-        save(model:DataStore|string, data:Object, async:Backendless.Async):XMLHttpRequest;
+        save(model:Backendless.DataStore|string, data:Object):Object;
+        save(model:Backendless.DataStore|string, data:Object, async:Backendless.Async):XMLHttpRequest;
 
         getView(viewName:string):Object;
         getView(viewName:string, async:Object):XMLHttpRequest;
@@ -431,60 +431,60 @@ declare module __Backendless {
             grantUser(userId:string, dataItem:ExistDataItemI):ExistDataItemI;
             grantUser(userId:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            grantRole(roleName:string, dataItem:ExistDataItemI):ExistDataItemI;
-            grantRole(roleName:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            grant(dataItem:ExistDataItemI):ExistDataItemI;
-            grant(dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grant(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grant(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            denyUser(userId:string, dataItem:ExistDataItemI):ExistDataItemI;
-            denyUser(userId:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            denyUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            denyRole(roleName:string, dataItem:ExistDataItemI):ExistDataItemI;
-            denyRole(roleName:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            deny(dataItem:ExistDataItemI):ExistDataItemI;
-            deny(dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            deny(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            deny(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
         };
 
         REMOVE:{
-            grantUser(userId:string, dataItem:ExistDataItemI):ExistDataItemI;
-            grantUser(userId:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grantUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grantUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            grantRole(roleName:string, dataItem:ExistDataItemI):ExistDataItemI;
-            grantRole(roleName:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            grant(dataItem:ExistDataItemI):ExistDataItemI;
-            grant(dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grant(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grant(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            denyUser(userId:string, dataItem:ExistDataItemI):ExistDataItemI;
-            denyUser(userId:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            denyUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            denyRole(roleName:string, dataItem:ExistDataItemI):ExistDataItemI;
-            denyRole(roleName:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            deny(dataItem:ExistDataItemI):ExistDataItemI;
-            deny(dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            deny(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            deny(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
         };
 
         UPDATE:{
-            grantUser(userId:string, dataItem:ExistDataItemI):ExistDataItemI;
-            grantUser(userId:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grantUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grantUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            grantRole(roleName:string, dataItem:ExistDataItemI):ExistDataItemI;
-            grantRole(roleName:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            grant(dataItem:ExistDataItemI):ExistDataItemI;
-            grant(dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            grant(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            grant(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            denyUser(userId:string, dataItem:ExistDataItemI):ExistDataItemI;
-            denyUser(userId:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            denyUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            denyRole(roleName:string, dataItem:ExistDataItemI):ExistDataItemI;
-            denyRole(roleName:string, dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
 
-            deny(dataItem:ExistDataItemI):ExistDataItemI;
-            deny(dataItem:ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
+            deny(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+            deny(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
         };
     }
 
@@ -502,8 +502,8 @@ declare module __Backendless {
         addPoint(point:Backendless.GeoPoint):Backendless.GeoPoint;
         addPoint(point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
 
-        find(query:GeoQueryI):GeoCollectionResultI;
-        find(query:GeoQueryI, async:Backendless.Async):XMLHttpRequest;
+        find(query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        find(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
 
         deletePoint(pointId:string):string;
         deletePoint(point:Backendless.GeoPoint):string;
@@ -516,19 +516,19 @@ declare module __Backendless {
         getClusterPoints(cluster:Backendless.GeoCluster):GeoCollectionResultI;
         getClusterPoints(cluster:Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
 
-        getFencePoints(fenceName:string, query:GeoQueryI):GeoCollectionResultI;
-        getFencePoints(fenceName:string, query:GeoQueryI, async:Backendless.Async):XMLHttpRequest;
+        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        getFencePoints(fenceName:string, query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
 
-        relativeFind(query:GeoQueryI):GeoCollectionResultI;
-        relativeFind(query:GeoQueryI, async:Backendless.Async):XMLHttpRequest;
+        relativeFind(query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        relativeFind(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
 
-        addCategory(name:string):GeoCategoryI;
+        addCategory(name:string):Backendless.GeoCategoryI;
         addCategory(name:string, async:Backendless.Async):XMLHttpRequest;
 
         deleteCategory(name:string):boolean;
         deleteCategory(name:string, async:Backendless.Async):XMLHttpRequest;
 
-        getCategories():GeoCategoryI[];
+        getCategories():Backendless.GeoCategoryI[];
         getCategories(async:Backendless.Async):XMLHttpRequest;
 
         runOnStayAction(fenceName:string, point:Backendless.GeoPoint):Object;
@@ -540,7 +540,7 @@ declare module __Backendless {
         runOnEnterAction(fenceName:string, point:Backendless.GeoPoint):Object;
         runOnEnterAction(fenceName:string, point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
 
-        startGeofenceMonitoringWithInAppCallback(fenceName:string, inAppCallback:GeofenceMonitoringCallbacksI, async?:Backendless.Async):void;
+        startGeofenceMonitoringWithInAppCallback(fenceName:string, inAppCallback:Backendless.GeofenceMonitoringCallbacksI, async?:Backendless.Async):void;
 
         startGeofenceMonitoringWithRemoteCallback(fenceName:string, point:Backendless.GeoPoint, async?:Backendless.Async):void;
 
@@ -556,8 +556,8 @@ declare module __Backendless {
         restUrl:string;
         channelProperties:Object;
 
-        subscribe(channelName:string, subscriptionCallback:()=>void, subscriptionOptions:Backendless.SubscriptionOptions):SubscriptionI;
-        subscribe(channelName:string, subscriptionCallback:()=>void, subscriptionOptions:Backendless.SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
+        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
+        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
 
         publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
         publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions, async:Backendless.Async):XMLHttpRequest;
@@ -713,7 +713,7 @@ declare module __Backendless {
      * @refers {@link Backendless.Counters}
      */
     class CountersClass {
-        of(counterName:string):AtomicInstance;
+        of(counterName:string):Backendless.AtomicInstance;
 
         get(counterName:string):number;
         get(counterName:string, async:Backendless.Async):XMLHttpRequest;
@@ -841,7 +841,7 @@ declare module __Backendless {
 
         setLogReportingPolicy(numOfMessages:number, timeFrequencySec:number):void;
 
-        getLogger(name):Logger;
+        getLogger(name):Backendless.Logger;
     }
 
     interface DataQueryValueI {
@@ -887,9 +887,9 @@ declare module __Backendless {
     }
 
     interface GeofenceMonitoringCallbacksI {
-        onenter?:GeofenceMonitoringCallbackI;
-        onstay?:GeofenceMonitoringCallbackI;
-        onexit?:GeofenceMonitoringCallbackI;
+        onenter?:Backendless.GeofenceMonitoringCallbackI;
+        onstay?:Backendless.GeofenceMonitoringCallbackI;
+        onexit?:Backendless.GeofenceMonitoringCallbackI;
     }
 
     interface DataItemI {
@@ -897,7 +897,7 @@ declare module __Backendless {
         objectId?:string;
     }
 
-    interface ExistDataItemI extends DataItemI {
+    interface ExistDataItemI extends Backendless.DataItemI {
         objectId:string;
     }
 
@@ -922,11 +922,11 @@ declare module __Backendless {
         offset?:number;
     }
 
-    interface RectangleGeoQueryI extends GeoQueryI {
+    interface RectangleGeoQueryI extends Backendless.GeoQueryI {
         searchRectangle:number[];
     }
 
-    interface CircleGeoQueryI extends GeoQueryI {
+    interface CircleGeoQueryI extends Backendless.GeoQueryI {
         latitude:number;
         longitude:number;
         radius:number;

@@ -4,6 +4,7 @@
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "main": "./libs/backendless.js",
   "scripts": {
+    "test:tsc":"tsc ./tests/tsd.ts",
     "build": "uglifyjs libs/backendless.js --mangle --source-map libs/backendless.min.map -o libs/backendless.min.js"
   },
   "repository": {
@@ -24,6 +25,7 @@
   "author": "kate@backendless.com",
   "license": "ISC",
   "devDependencies": {
-    "uglifyjs": "^2.4.10"
+    "uglifyjs": "^2.4.10",
+    "typescript": "^1.8.9"
   }
 }
