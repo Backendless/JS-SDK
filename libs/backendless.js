@@ -1905,7 +1905,7 @@
 
             var interimCallback = new Backendless.Async(function(r) {
                 currentUser = context._parseResponse(r);
-                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
+                Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                 async.success(context._getUserFromResponse(currentUser));
             }, function(e) {
                 async.fault(e);
