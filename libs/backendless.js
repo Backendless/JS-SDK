@@ -198,6 +198,14 @@
         }
     }
 
+    function tryParseJSON(s) {
+        try {
+            return JSON.parse(s);
+        } catch (e) {
+            return s;
+        }
+    }
+
     Backendless.setUIState = function(stateName) {
         if (stateName === undefined) {
             throw new Error('UI state name must be defined or explicitly set to null');
@@ -279,11 +287,7 @@
                     var result = true;
 
                     if (xhr.responseText) {
-                        try {
-                            result = JSON.parse(xhr.responseText);
-                        } catch (e) {
-                            result = xhr.responseText;
-                        }
+                        result = tryParseJSON(xhr.responseText);
                     }
 
                     return result;
@@ -433,6 +437,12 @@
                 buffer += chunk;
             });
             res.on('end', function() {
+                var contentType = res.headers['content-type'];
+
+                if (contentType && contentType.indexOf('application/json') !== -1) {
+                    buffer = tryParseJSON(buffer);
+                }
+
                 var callback = config.asyncHandler[res.statusCode >= 200 && res.statusCode < 300 ? "success" : "fault"];
 
                 if (Utils.isFunction(callback)) {
