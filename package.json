@@ -22,7 +22,7 @@
     "baas",
     "backendless.com"
   ],
-  "author": "kate@backendless.com",
+  "author": "info@backendless.com",
   "license": "ISC",
   "devDependencies": {
     "uglifyjs": "^2.4.10",
