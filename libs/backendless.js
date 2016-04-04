@@ -4261,6 +4261,8 @@
         }
     };
 
+    var lastFlushListeners;
+
     Backendless.Logging = {
         restUrl              : root.url,
         loggers              : {},
@@ -4286,10 +4288,28 @@
             if (this.logInfo.length) {
                 this.flushInterval && clearTimeout(this.flushInterval);
 
+                var listeners;
+                var cb = function(method) {
+                    return function() {
+                        for (var i = 0; i < listeners.length; i++) {
+                            listeners[i][method].apply(null, arguments);
+                        }
+
+                        if (listeners === lastFlushListeners) {
+                            lastFlushListeners = null;
+                        }
+                    }
+                }
+
+                if (async) {
+                    listeners = lastFlushListeners = lastFlushListeners ? lastFlushListeners.splice(0) : [];
+                    listeners.push(async);
+                }
+
                 Backendless._ajax({
                     method      : 'PUT',
                     isAsync     : !!async,
-                    asyncHandler: async,
+                    asyncHandler: async && new Async(cb('success'), cb('failure')),
                     url         : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
                     data        : JSON.stringify(this.logInfo)
                 });
@@ -4297,7 +4317,11 @@
                 this.logInfo = [];
                 this.messagesCount = 0;
             } else if (async) {
-                setTimeout(async.success, 0);
+                if (lastFlushListeners) {
+                    lastFlushListeners.push(async);
+                } else {
+                    setTimeout(async.success, 0);
+                }
             }
         },
 
