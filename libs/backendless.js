@@ -202,7 +202,7 @@
 
     function tryParseJSON(s) {
         try {
-            return JSON.parse(s);
+            return typeof s === 'string' && JSON.parse(s) || s;
         } catch (e) {
             return s;
         }
@@ -892,10 +892,6 @@
             response = response.fields || response;
             item = new _Model();
 
-            if (!isBrowser) {
-                response = JSON.parse(response);
-            }
-
             extendCollection(response, this);
             deepExtend(item, response);
             return this._formCircDeps(item);
@@ -1467,11 +1463,7 @@
     UserService.prototype = {
         _wrapAsync: function(async) {
             var me   = this, success = function(data) {
-                try {
-                    data = JSON.parse(data);
-                } catch (e) {
-                }
-                currentUser = me._parseResponse(data);
+                currentUser = me._parseResponse(tryParseJSON(data));
                 async.success(me._getUserFromResponse(currentUser));
             }, error = function(data) {
                 async.fault(data);
