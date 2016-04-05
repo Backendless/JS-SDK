@@ -1,4 +1,4 @@
-// Backendless.js 3.1.4
+// Backendless.js 3.1.5
 
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
@@ -32,6 +32,9 @@
     var Backendless = {},
         emptyFn     = (function() {
         });
+
+    Backendless.VERSION = '3.1.5';
+    Backendless.serverURL = 'https://api.backendless.com';
 
     Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
@@ -74,9 +77,6 @@
     var nativeForEach = ArrayProto.forEach, nativeMap = ArrayProto.map, nativeReduce = ArrayProto.reduce, nativeReduceRight = ArrayProto.reduceRight, nativeFilter = ArrayProto.filter, nativeEvery = ArrayProto.every, nativeSome = ArrayProto.some, nativeIndexOf = ArrayProto.indexOf, nativeLastIndexOf = ArrayProto.lastIndexOf, nativeIsArray = Array.isArray, nativeKeys = Object.keys, nativeBind = FuncProto.bind;
 
     var WebSocket = null; // isBrowser ? window.WebSocket || window.MozWebSocket : {};
-
-    Backendless.VERSION = '3.1.4';
-    Backendless.serverURL = 'https://api.backendless.com';
 
     initXHR();
 
