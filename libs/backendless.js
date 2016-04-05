@@ -202,7 +202,7 @@
 
     function tryParseJSON(s) {
         try {
-            return typeof s === 'string' && JSON.parse(s) || s;
+            return typeof s === 'string' ? JSON.parse(s) : s;
         } catch (e) {
             return s;
         }
