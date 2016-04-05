@@ -556,6 +556,22 @@
         return null;
     };
 
+    var wrapAsync = function(async, parser) {
+        var success = function(data) {
+            if (parser) {
+                data = parser(data);
+            }
+
+            async.success(data);
+        };
+
+        var error = function(data) {
+            async.fault(data);
+        };
+
+        return new Async(success, error);
+    };
+
     function extendCollection(collection, dataMapper) {
         if (collection.nextPage != null) {
             if (collection.nextPage && collection.nextPage.split("/")[1] == Backendless.appVersion) {
@@ -858,35 +874,6 @@
 
             return params.join('&');
         },
-
-        _wrapAsync: function(async) {
-            var me = this;
-
-            var success = function(data) {
-                data = me._parseResponse(data);
-                async.success(data);
-            };
-
-            var error = function(data) {
-                async.fault(data);
-            };
-
-            return new Async(success, error);
-        },
-        _wrapFindAsync: function(async) {
-            var me   = this;
-
-            var success = function(data) {
-                data = me._parseFindResponse(data);
-                async.success(data);
-            };
-
-            var error = function(data) {
-                async.fault(data);
-            };
-
-            return new Async(success, error);
-        },
         _parseResponse: function(response) {
             var _Model = this.model, item;
             response = response.fields || response;
@@ -929,7 +916,7 @@
 
                 if (responder != null) {
                     isAsync = true;
-                    responder = this._wrapAsync(responder);
+                    responder = wrapAsync(responder, this._parseResponse.bind(this));
                 }
 
                 var result = Backendless._ajax({
@@ -1011,7 +998,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder, this._parseResponse.bind(this));
             }
 
             var result = Backendless._ajax({
@@ -1038,7 +1025,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder, this._parseResponse.bind(this));
             }
 
             var result;
@@ -1086,7 +1073,7 @@
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
-            responder != null && (responder = this._wrapFindAsync(responder));
+            responder != null && (responder = wrapAsync(responder, this._parseFindResponse.bind(this)));
             options && query.push(options);
             whereClause && query.push(whereClause);
             props && query.push(props);
@@ -1163,7 +1150,7 @@
                     send += key + '=' + argsObj[key] + '&';
                 }
 
-                responder != null && (responder = this._wrapAsync(responder));
+                responder != null && (responder = wrapAsync(responder, this._parseResponse.bind(this)));
 
                 var result;
 
@@ -1972,17 +1959,6 @@
             MILES     : 'MILES',
             YARDS     : 'YARDS',
             FEET      : 'FEET'
-        },
-
-        _wrapAsync      : function(async) {
-            var me   = this, success = function(data) {
-                data = me._parseResponse(data);
-                async.success(data);
-            }, error = function(data) {
-                async.fault(data);
-            };
-
-            return new Async(success, error);
         },
 
         _parseResponse  : function(data) {
@@ -3758,16 +3734,6 @@
         this.restUrl = Backendless.appPath + '/commerce/googleplay';
     }
 
-    Commerce.prototype._wrapAsync = function(async) {
-        var success = function(data) {
-            async.success(data);
-        }, error    = function(data) {
-            async.fault(data);
-        };
-
-        return new Async(success, error);
-    };
-
     Commerce.prototype.validatePlayPurchase = function(packageName, productId, token, async) {
         if (arguments.length < 3) {
             throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
@@ -3783,7 +3749,7 @@
             isAsync   = responder != null;
 
         if (responder) {
-            responder = this._wrapAsync(responder);
+            responder = wrapAsync(responder);
         }
 
         return Backendless._ajax({
@@ -3809,7 +3775,7 @@
             isAsync   = responder != null;
 
         if (responder) {
-            responder = this._wrapAsync(responder);
+            responder = wrapAsync(responder);
         }
 
         return Backendless._ajax({
@@ -3835,7 +3801,7 @@
             isAsync   = responder != null;
 
         if (responder) {
-            responder = this._wrapAsync(responder);
+            responder = wrapAsync(responder);
         }
 
         return Backendless._ajax({
@@ -3850,16 +3816,6 @@
         this.restUrl = Backendless.appPath + '/servercode/events';
     }
 
-    Events.prototype._wrapAsync = function(async) {
-        var success = function(data) {
-            async.success(data);
-        }, error    = function(data) {
-            async.fault(data);
-        };
-
-        return new Async(success, error);
-    };
-
     Events.prototype.dispatch = function(eventname, eventArgs, Async) {
         if (!eventname || !Utils.isString(eventname)) {
             throw new Error('Event Name must be provided and must be not an empty STRING!');
@@ -3871,7 +3827,7 @@
             isAsync   = responder != null;
 
         if (responder) {
-            responder = this._wrapAsync(responder);
+            responder = wrapAsync(responder);
         }
 
         eventArgs = eventArgs instanceof Backendless.Async ? {} : eventArgs;
@@ -3891,20 +3847,6 @@
     var FactoryMethods = {};
 
     Cache.prototype = {
-        _wrapAsync      : function(async, parser) {
-            var me   = this, success = function(data) {
-                data = parser ? parser(data) : me._parseResponse(data);
-                async.success(data);
-            }, error = function(data) {
-                async.fault(data);
-            };
-            return new Async(success, error);
-        },
-
-        _parseResponse  : function(response) {
-            return response;
-        },
-
         put             : function(key, value, timeToLive, async) {
             if (!Utils.isString(key)) {
                 throw new Error('You can use only String as key to put into Cache');
@@ -3930,7 +3872,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -3948,7 +3890,7 @@
                 var responder = extractResponder(arguments), isAsync = false;
                 if (responder != null) {
                     isAsync = true;
-                    responder = this._wrapAsync(responder);
+                    responder = wrapAsync(responder);
                 }
 
                 return Backendless._ajax({
@@ -3969,7 +3911,7 @@
                 var responder = extractResponder(arguments), isAsync = false;
                 if (responder != null) {
                     isAsync = true;
-                    responder = this._wrapAsync(responder);
+                    responder = wrapAsync(responder);
                 }
 
                 return Backendless._ajax({
@@ -3993,7 +3935,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4031,7 +3973,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder, parseResult);
+                responder = wrapAsync(responder, parseResult.bind(this));
             }
 
             var result = Backendless._ajax({
@@ -4061,21 +4003,6 @@
     };
 
     Counters.prototype = {
-        _wrapAsync              : function(async) {
-            var me   = this, success = function(data) {
-                data = me._parseResponse(data);
-                async.success(data);
-            }, error = function(data) {
-                async.fault(data);
-            };
-
-            return new Async(success, error);
-        },
-
-        _parseResponse          : function(response) {
-            return response;
-        },
-
         of                      : function(counterName) {
             return new AtomicInstance(counterName);
         },
@@ -4101,7 +4028,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4149,7 +4076,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4173,7 +4100,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4211,7 +4138,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = this._wrapAsync(responder);
+                responder = wrapAsync(responder);
             }
 
             return Backendless._ajax({
