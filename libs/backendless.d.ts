@@ -950,5 +950,5 @@ import Backendless = __Backendless;
 declare module 'backendless' {
     import Backendless = __Backendless;
 
-    export {Backendless};
+    export = Backendless;
 }
