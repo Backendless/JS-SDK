@@ -1,7 +1,7 @@
 import { bootstrap}    from 'angular2/platform/browser'
 import { AppComponent } from './app.component'
 import { Comment } from './comment'
-import { Backendless } from 'backendless';
+import Backendless from 'backendless';
 
 var APP_ID:string = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
 var APP_KEY:string = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';

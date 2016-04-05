@@ -6,14 +6,7 @@
 
     if (typeof define === "function" && define.amd) {
         define([], function() {
-            var Backendless = root.Backendless = factory(root);
-
-            //when we use System.js we need to return export object othervise Backendless object
-            if (typeof System !== "undefined") {
-                return {Backendless:Backendless};
-            }
-
-            return Backendless;
+            return root.Backendless = factory(root);
         });
 
     } else if (typeof exports === "object" && typeof module !== "undefined") {
