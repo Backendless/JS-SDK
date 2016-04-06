@@ -549,10 +549,10 @@
         return null;
     };
 
-    var wrapAsync = function(async, parser) {
+    var wrapAsync = function(async, parser, context) {
         var success = function(data) {
             if (parser) {
-                data = parser(data);
+                data = parser.call(context, data);
             }
 
             async.success(data);
@@ -909,7 +909,7 @@
 
                 if (responder != null) {
                     isAsync = true;
-                    responder = wrapAsync(responder, this._parseResponse.bind(this));
+                    responder = wrapAsync(responder, this._parseResponse, this);
                 }
 
                 var result = Backendless._ajax({
@@ -991,7 +991,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, this._parseResponse.bind(this));
+                responder = wrapAsync(responder, this._parseResponse, this);
             }
 
             var result = Backendless._ajax({
@@ -1018,7 +1018,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, this._parseResponse.bind(this));
+                responder = wrapAsync(responder, this._parseResponse, this);
             }
 
             var result;
@@ -1066,7 +1066,7 @@
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
-            responder != null && (responder = wrapAsync(responder, this._parseFindResponse.bind(this)));
+            responder != null && (responder = wrapAsync(responder, this._parseFindResponse, this));
             options && query.push(options);
             whereClause && query.push(whereClause);
             props && query.push(props);
@@ -1143,7 +1143,7 @@
                     send += key + '=' + argsObj[key] + '&';
                 }
 
-                responder != null && (responder = wrapAsync(responder, this._parseResponse.bind(this)));
+                responder != null && (responder = wrapAsync(responder, this._parseResponse, this));
 
                 var result;
 
@@ -3967,7 +3967,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, parseResult.bind(this));
+                responder = wrapAsync(responder, parseResult, this);
             }
 
             var result = Backendless._ajax({
