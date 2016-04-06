@@ -1834,15 +1834,9 @@
                 responder.fault(e);
             });
 
-            var request = fieldsMapping || permissions ? {} : null;
-
-            if (fieldsMapping) {
-                request.fieldsMapping = fieldsMapping;
-            }
-
-            if (permissions) {
-                request.permissions = permissions;
-            }
+            var request = {};
+            request.fieldsMapping = fieldsMapping || {};
+            request.permissions = permissions || [];
 
             Backendless._ajax({
                 method      : 'POST',
