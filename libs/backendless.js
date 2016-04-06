@@ -1,4 +1,4 @@
-// Backendless.js 3.1.3
+// Backendless.js 3.1.5
 
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
@@ -6,14 +6,7 @@
 
     if (typeof define === "function" && define.amd) {
         define([], function() {
-            var Backendless = root.Backendless = factory(root);
-
-            //when we use System.js we need to return export object othervise Backendless object
-            if (typeof System !== "undefined") {
-                return {Backendless:Backendless};
-            }
-
-            return Backendless;
+            return root.Backendless = factory(root);
         });
 
     } else if (typeof exports === "object" && typeof module !== "undefined") {
@@ -39,6 +32,9 @@
     var Backendless = {},
         emptyFn     = (function() {
         });
+
+    Backendless.VERSION = '3.1.5';
+    Backendless.serverURL = 'https://api.backendless.com';
 
     Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
@@ -81,9 +77,6 @@
     var nativeForEach = ArrayProto.forEach, nativeMap = ArrayProto.map, nativeReduce = ArrayProto.reduce, nativeReduceRight = ArrayProto.reduceRight, nativeFilter = ArrayProto.filter, nativeEvery = ArrayProto.every, nativeSome = ArrayProto.some, nativeIndexOf = ArrayProto.indexOf, nativeLastIndexOf = ArrayProto.lastIndexOf, nativeIsArray = Array.isArray, nativeKeys = Object.keys, nativeBind = FuncProto.bind;
 
     var WebSocket = null; // isBrowser ? window.WebSocket || window.MozWebSocket : {};
-
-    Backendless.VERSION = '3.1.3';
-    Backendless.serverURL = 'https://api.backendless.com';
 
     initXHR();
 
@@ -1725,16 +1718,16 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        loginWithFacebook      : function(facebookFieldsMapping, permissions, callback, container) {
-            this._loginSocial('Facebook', facebookFieldsMapping, permissions, callback, container);
+        loginWithFacebook      : function(facebookFieldsMapping, permissions, callback, container, stayLoggedIn) {
+            this._loginSocial('Facebook', facebookFieldsMapping, permissions, callback, container, stayLoggedIn);
         },
 
-        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, callback, container) {
-            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, callback, container);
+        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, callback, container, stayLoggedIn) {
+            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, callback, container, stayLoggedIn);
         },
 
-        loginWithTwitter       : function(twitterFieldsMapping, callback) {
-            this._loginSocial('Twitter', twitterFieldsMapping, null, callback, null);
+        loginWithTwitter       : function(twitterFieldsMapping, callback, stayLoggedIn) {
+            this._loginSocial('Twitter', twitterFieldsMapping, null, callback, null, stayLoggedIn);
         },
 
         _socialContainer       : function(socialType, container) {
@@ -1796,8 +1789,9 @@
             }
         },
 
-        _loginSocial: function(socialType, fieldsMapping, permissions, callback, container) {
+        _loginSocial: function(socialType, fieldsMapping, permissions, callback, container, stayLoggedIn) {
             var socialContainer = new this._socialContainer(socialType, container);
+            Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
 
             var responder = extractResponder(arguments);
             if (responder) {
