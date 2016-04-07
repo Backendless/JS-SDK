@@ -27,6 +27,9 @@
 
     var isBrowser = (new Function("try {return this===window;}catch(e){ return false;}"))();
 
+    var WebSocket = null; // isBrowser ? window.WebSocket || window.MozWebSocket : {};
+    var UIState = null;
+
     var previousBackendless = root.Backendless;
 
     var Backendless = {},
@@ -70,14 +73,6 @@
         };
     }
 
-    var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
-
-    var slice = ArrayProto.slice, unshift = ArrayProto.unshift, toString = ObjProto.toString, hasOwnProperty = ObjProto.hasOwnProperty;
-
-    var nativeForEach = ArrayProto.forEach, nativeMap = ArrayProto.map, nativeReduce = ArrayProto.reduce, nativeReduceRight = ArrayProto.reduceRight, nativeFilter = ArrayProto.filter, nativeEvery = ArrayProto.every, nativeSome = ArrayProto.some, nativeIndexOf = ArrayProto.indexOf, nativeLastIndexOf = ArrayProto.lastIndexOf, nativeIsArray = Array.isArray, nativeKeys = Object.keys, nativeBind = FuncProto.bind;
-
-    var WebSocket = null; // isBrowser ? window.WebSocket || window.MozWebSocket : {};
-
     initXHR();
 
     var browser = (function() {
@@ -100,7 +95,6 @@
         return browser;
     })();
 
-    var UIState = null;
     var getNow = function() {
         return new Date().getTime();
     };
@@ -134,7 +128,7 @@
         }
     };
 
-    Utils.isArray = (nativeIsArray || function(obj) {
+    Utils.isArray = (Array.isArray || function(obj) {
         return Object.prototype.toString.call(obj).slice(8, -1) === 'Array';
     });
 
