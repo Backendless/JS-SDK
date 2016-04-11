@@ -1620,6 +1620,7 @@
             }
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
+            Backendless.LocalCache.remove("user-token");
 
             return Backendless._ajax({
                 method      : 'GET',
