@@ -1785,8 +1785,6 @@
 
         _loginSocial: function(socialType, fieldsMapping, permissions, callback, container, stayLoggedIn) {
             var socialContainer = new this._socialContainer(socialType, container);
-            Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
-
             var responder = extractResponder(arguments);
             if (responder) {
                 responder = this._wrapAsync(responder);
@@ -1799,6 +1797,7 @@
                     if (result.fault) {
                         responder.fault(result.fault);
                     } else {
+                        Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                         currentUser = this.Backendless.UserService._parseResponse(result);
                         responder.success(this.Backendless.UserService._getUserFromResponse(currentUser));
                     }
