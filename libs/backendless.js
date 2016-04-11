@@ -1760,7 +1760,7 @@
                 };
             } else {
                 container = window.open('', socialType + ' authorization',
-                    "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
+                    "resizable=yes, scrollbars=yes, titlebar=yes, top=10, left=10");
                 loadingMsg = container.document.getElementsByTagName('body')[0].innerHTML;
                 loadingMsg = "Loading...";
                 container.document.getElementsByTagName('html')[0].style.cursor = 'wait';
