@@ -1712,8 +1712,8 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        loginWithFacebook      : function(facebookFieldsMapping, permissions, callback, container, stayLoggedIn) {
-            this._loginSocial('Facebook', facebookFieldsMapping, permissions, callback, container, stayLoggedIn);
+        loginWithFacebook      : function(facebookFieldsMapping, permissions, callback, stayLoggedIn) {
+            this._loginSocial('Facebook', facebookFieldsMapping, permissions, callback, null, stayLoggedIn);
         },
 
         loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, callback, container, stayLoggedIn) {
