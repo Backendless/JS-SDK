@@ -418,7 +418,7 @@
             throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
         }
 
-        var httpx = require(protocol);
+        var httpx = require(protocol === 'http' ? 'http' : 'https');
 
         var req = httpx.request(options, function(res) {
             res.setEncoding('utf8');
