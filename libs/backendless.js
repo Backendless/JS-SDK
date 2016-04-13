@@ -374,8 +374,7 @@
         try {
             return cacheMethods[config.cachePolicy.policy].call(this, config);
         } catch (error) {
-            console.error(error && error.message || error);
-            return false;
+            throw error;
         }
     };
 
