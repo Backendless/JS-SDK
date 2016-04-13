@@ -389,10 +389,11 @@
         config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
 
         var protocol = config.url.substr(0, config.url.indexOf('/', 8)).substr(0, config.url.indexOf(":"));
+        var https = protocol === 'https';
 
         var uri  = config.url.substr(0, config.url.indexOf('/', 8)).substr(config.url.indexOf("/") + 2),
             host = uri.substr(0, (uri.indexOf(":") == -1 ? uri.length : uri.indexOf(":"))),
-            port = uri.indexOf(":") != -1 ? parseInt(uri.substr(uri.indexOf(":") + 1)) : (protocol == "http" ? 80 : 443);
+            port = uri.indexOf(":") != -1 ? parseInt(uri.substr(uri.indexOf(":") + 1)) : (https ? 443 : 80);
 
         var options = {
             host   : host,
@@ -418,7 +419,7 @@
             throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
         }
 
-        var httpx = require(protocol);
+        var httpx = require(https ? 'https' : 'http');
 
         var req = httpx.request(options, function(res) {
             res.setEncoding('utf8');
