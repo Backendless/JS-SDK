@@ -374,7 +374,8 @@
         try {
             return cacheMethods[config.cachePolicy.policy].call(this, config);
         } catch (error) {
-            throw error;
+            console.error(error && error.message || error);
+            return false;
         }
     };
 
@@ -1435,8 +1436,11 @@
     };
 
     UserService.prototype = {
-        _wrapAsync: function(async) {
+        _wrapAsync: function(async, stayLoggedIn) {
             var me   = this, success = function(data) {
+                if (Utils.isBoolean(stayLoggedIn)) {
+                    Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
+                }
                 currentUser = me._parseResponse(tryParseJSON(data));
                 async.success(me._getUserFromResponse(currentUser));
             }, error = function(data) {
@@ -1545,15 +1549,11 @@
             Backendless.LocalCache.remove("current-user-id");
             Backendless.LocalCache.set("stayLoggedIn", false);
 
-            if (Utils.isBoolean(stayLoggedIn)) {
-                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
-            }
-
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
-                responder = this._wrapAsync(responder);
+                responder = this._wrapAsync(responder, stayLoggedIn);
             }
 
             var data = {
@@ -1571,6 +1571,10 @@
 
             if (isAsync) {
                 return result;
+            } else if (result && Utils.isBoolean(stayLoggedIn)) {
+                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
+            } else if (!result) {
+                return false;
             }
 
             currentUser = this._parseResponse(result);
