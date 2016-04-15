@@ -1923,7 +1923,18 @@
             } else {
                 var user = Backendless.UserService.getCurrentUser();
 
-                return !!user;
+                if (async) {
+                    //if async need to put it to the end of the stack
+                    setTimeout(function() {
+                        if (!!user) {
+                            responder.success(user);
+                        } else {
+                            responder.fault();
+                        }
+                    }, 1);
+                } else {
+                    return !!user;
+                }
             }
         }
     };
