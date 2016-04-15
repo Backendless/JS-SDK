@@ -1435,11 +1435,8 @@
     };
 
     UserService.prototype = {
-        _wrapAsync: function(async, stayLoggedIn) {
+        _wrapAsync: function(async) {
             var me   = this, success = function(data) {
-                if (Utils.isBoolean(stayLoggedIn)) {
-                    Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
-                }
                 currentUser = me._parseResponse(tryParseJSON(data));
                 async.success(me._getUserFromResponse(currentUser));
             }, error = function(data) {
@@ -1449,9 +1446,13 @@
             return new Async(success, error);
         },
 
-        _parseResponse: function(data) {
+        _parseResponse: function(data, stayLoggedIn) {
             var user = new Backendless.User();
             deepExtend(user, data);
+
+            if (Utils.isBoolean(stayLoggedIn)) {
+                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
+            }
 
             return user;
         },
@@ -1552,7 +1553,7 @@
             var isAsync = responder != null;
 
             if (responder) {
-                responder = this._wrapAsync(responder, stayLoggedIn);
+                responder = this._wrapAsync(responder);
             }
 
             var data = {
@@ -1570,13 +1571,11 @@
 
             if (isAsync) {
                 return result;
-            } else if (result && Utils.isBoolean(stayLoggedIn)) {
-                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
             } else if (!result) {
                 return false;
             }
 
-            currentUser = this._parseResponse(result);
+            currentUser = this._parseResponse(result, stayLoggedIn);
 
             return this._getUserFromResponse(currentUser);
         },
