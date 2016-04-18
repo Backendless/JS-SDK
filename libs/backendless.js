@@ -1926,12 +1926,8 @@
                 if (async) {
                     //if async need to put it to the end of the stack
                     setTimeout(function() {
-                        if (!!user) {
-                            responder.success(user);
-                        } else {
-                            responder.fault();
-                        }
-                    }, 1);
+                        responder.success(!!user);
+                    }, 0);
                 } else {
                     return !!user;
                 }
