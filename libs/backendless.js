@@ -1451,7 +1451,7 @@
             deepExtend(user, data);
 
             if (stayLoggedIn) {
-                Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
+                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
             }
 
             return user;
@@ -1570,8 +1570,8 @@
             });
 
             if (!isAsync && result) {
-                currentUser = this._parseResponse(result, stayLoggedIn);
-                return this._getUserFromResponse(currentUser);
+                currentUser = this._parseResponse(result, stayLoggedIn === true);
+                result = this._getUserFromResponse(currentUser);
             }
 
             return result;
