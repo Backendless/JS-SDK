@@ -1450,8 +1450,8 @@
             var user = new Backendless.User();
             deepExtend(user, data);
 
-            if (Utils.isBoolean(stayLoggedIn)) {
-                Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
+            if (stayLoggedIn) {
+                Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
             }
 
             return user;
@@ -1569,15 +1569,12 @@
                 data        : JSON.stringify(data)
             });
 
-            if (isAsync) {
-                return result;
-            } else if (!result) {
-                return false;
+            if (!isAsync && result) {
+                currentUser = this._parseResponse(result, stayLoggedIn);
+                return this._getUserFromResponse(currentUser);
             }
 
-            currentUser = this._parseResponse(result, stayLoggedIn);
-
-            return this._getUserFromResponse(currentUser);
+            return result;
         },
 
         _getUserFromResponse: function(user) {
