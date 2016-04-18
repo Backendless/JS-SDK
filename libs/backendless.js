@@ -1687,6 +1687,10 @@
                 return this._getUserFromResponse(currentUser);
             } else if (Backendless.LocalCache.get("stayLoggedIn")) {
                 var userId = Backendless.LocalCache.get("current-user-id");
+                if (!userId) {
+                    return null;
+                }
+
                 return Backendless.Data.of(Backendless.User).findById(userId);
             } else {
                 return null;
