@@ -1686,12 +1686,12 @@
         getCurrentUser: function() {
             if (currentUser) {
                 return this._getUserFromResponse(currentUser);
-            } else if (Backendless.LocalCache.get("stayLoggedIn")) {
-                var userId = Backendless.LocalCache.get("current-user-id");
-                return Backendless.Data.of(Backendless.User).findById(userId);
-            } else {
-                return null;
             }
+
+            var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
+            var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
+
+            return currentUserId && persistence.of(User).findById(currentUserId) || null;
         },
 
         update: function(user, async) {
@@ -4360,13 +4360,13 @@
 
         UserService.prototype.getCurrentUser = function() {
             if (currentUser) {
-                return Promise.resolve(currentUser);
-            } else if (Backendless.LocalCache.get("stayLoggedIn")) {
-                var userId = Backendless.LocalCache.get("current-user-id");
-                return Backendless.Data.of(Backendless.User).findById(userId);
-            } else {
-                return Promise.resolve(null);
+                return Promise.resolve(this._getUserFromResponse(currentUser));
             }
+
+            var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
+            var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
+
+            return currentUserId && persistence.of(User).findById(currentUserId) || Promise.resolve(null);
         };
 
         UserService.prototype.isValidLogin = function() {
