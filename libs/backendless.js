@@ -4361,7 +4361,8 @@
             [Geo.prototype, ['addPoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
                              'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk', 'loginWithGooglePlusSdk']]
+                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
+                                     'loginWithGooglePlusSdk','loginWithFacebook', 'loginWithGooglePlus', 'loginWithTwitter']]
         ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
