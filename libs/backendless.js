@@ -1896,10 +1896,6 @@
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
-            if (responder) {
-                responder = this._wrapAsync(responder);
-            }
-
             if (userToken) {
                 if (!async) {
                     try {
@@ -1916,16 +1912,16 @@
                         method      : 'GET',
                         url         : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
                         isAsync     : isAsync,
-                        asyncHandler: responder
+                        asyncHandler: responder && this._wrapAsync(responder)
                     });
                 }
             } else {
                 var user = Backendless.UserService.getCurrentUser();
 
-                if (async) {
+                if (isAsync) {
                     //if async need to put it to the end of the stack
                     setTimeout(function() {
-                        responder.success(!!user);
+                        responder[user ? 'success' : 'fault']();
                     }, 0);
                 } else {
                     return !!user;
