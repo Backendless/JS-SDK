@@ -1436,9 +1436,9 @@
     };
 
     UserService.prototype = {
-        _wrapAsync: function(async) {
+        _wrapAsync: function(async, stayLoggedIn) {
             var me   = this, success = function(data) {
-                currentUser = me._parseResponse(tryParseJSON(data));
+                currentUser = me._parseResponse(tryParseJSON(data), stayLoggedIn);
                 async.success(me._getUserFromResponse(currentUser));
             }, error = function(data) {
                 async.fault(data);
@@ -1546,6 +1546,8 @@
                 throw new Error('Password can not be empty');
             }
 
+            stayLoggedIn = stayLoggedIn === true;
+
             Backendless.LocalCache.remove("user-token");
             Backendless.LocalCache.remove("current-user-id");
             Backendless.LocalCache.set("stayLoggedIn", false);
@@ -1554,7 +1556,7 @@
             var isAsync = responder != null;
 
             if (responder) {
-                responder = this._wrapAsync(responder);
+                responder = this._wrapAsync(responder, stayLoggedIn);
             }
 
             var data = {
@@ -1571,7 +1573,7 @@
             });
 
             if (!isAsync && result) {
-                currentUser = this._parseResponse(result, stayLoggedIn === true);
+                currentUser = this._parseResponse(result, stayLoggedIn);
                 result = this._getUserFromResponse(currentUser);
             }
 
