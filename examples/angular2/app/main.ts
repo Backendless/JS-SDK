@@ -10,7 +10,7 @@ var APP_VER:string = 'v1';
 Backendless.initApp(APP_ID, APP_KEY, APP_VER);
 
 var user:Backendless.User = new Backendless.User();
-user.username = 'michael@backendless.com';
+user.email = 'michael@backendless.com';
 user.password = "my_super_password";
 
 try {
