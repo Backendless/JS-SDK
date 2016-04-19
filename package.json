@@ -5,7 +5,8 @@
   "main": "./libs/backendless.js",
   "scripts": {
     "test:tsc":"tsc ./tests/tsd.ts",
-    "build": "uglifyjs libs/backendless.js --mangle --source-map libs/backendless.min.map -o libs/backendless.min.js"
+    "build": "uglifyjs libs/backendless.js --mangle --source-map libs/backendless.min.map -o libs/backendless.min.js",
+    "update-libs": "git push origin `git subtree split --prefix libs master`:gh-pages --force"
   },
   "repository": {
     "type": "git",
