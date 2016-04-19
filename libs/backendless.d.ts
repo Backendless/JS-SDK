@@ -793,7 +793,7 @@ declare module __Backendless {
         update(user:Backendless.User):Backendless.User ;
         update(user:Backendless.User, async:Backendless.Async):XMLHttpRequest;
 
-        loginWithFacebook(fields?:Object, permissions?:Object, async?:Backendless.Async, container?:HTMLElement, stayLoggedIn:boolean):void;
+        loginWithFacebook(fields?:Object, permissions?:Object, async?:Backendless.Async, stayLoggedIn:boolean):void;
 
         loginWithGooglePlus(fields?:Object, permissions?:Object, async?:Backendless.Async, container?:HTMLElement, stayLoggedIn:boolean):void;
 
