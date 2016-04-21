@@ -111,7 +111,7 @@ declare module __Backendless {
      * @constructor
      */
     class Async {
-        constructor(onSuccess:(data?:Object) => void, onError?:((data:Object) => void) | Object, context?:Object);
+        constructor(onSuccess?:(data?:Object) => void, onError?:((data:Object) => void) | Object, context?:Object);
 
         success(data:Object):void;
 
@@ -938,6 +938,7 @@ declare module __Backendless {
         totalObjects: number;
         getPage : (offset:number, pageSize:number, async:Backendless.Async)=>any;
         nextPage: (async:Backendless.Async)=>any;
+        data: Object[];
     }
 
     interface GeoCollectionResultI extends CollectionResultI {
