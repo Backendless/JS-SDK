@@ -1714,16 +1714,16 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        loginWithFacebook      : function(facebookFieldsMapping, permissions, callback, stayLoggedIn) {
-            this._loginSocial('Facebook', facebookFieldsMapping, permissions, callback, null, stayLoggedIn);
+        loginWithFacebook      : function(facebookFieldsMapping, permissions, stayLoggedIn, async) {
+            this._loginSocial('Facebook', facebookFieldsMapping, permissions, null, stayLoggedIn, async);
         },
 
-        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, callback, container, stayLoggedIn) {
-            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, callback, container, stayLoggedIn);
+        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, stayLoggedIn, container, async) {
+            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, container, stayLoggedIn, async);
         },
 
-        loginWithTwitter       : function(twitterFieldsMapping, callback, stayLoggedIn) {
-            this._loginSocial('Twitter', twitterFieldsMapping, null, callback, null, stayLoggedIn);
+        loginWithTwitter       : function(twitterFieldsMapping, stayLoggedIn, async) {
+            this._loginSocial('Twitter', twitterFieldsMapping, null, null, stayLoggedIn, async);
         },
 
         _socialContainer       : function(socialType, container) {
@@ -1784,7 +1784,7 @@
             }
         },
 
-        _loginSocial: function(socialType, fieldsMapping, permissions, callback, container, stayLoggedIn) {
+        _loginSocial: function(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
             var socialContainer = new this._socialContainer(socialType, container);
             var responder = extractResponder(arguments);
             if (responder) {
