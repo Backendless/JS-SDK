@@ -793,11 +793,11 @@ declare module __Backendless {
         update(user:Backendless.User):Backendless.User ;
         update(user:Backendless.User, async:Backendless.Async):XMLHttpRequest;
 
-        loginWithFacebook(fields?:Object, permissions?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):void;
+        loginWithFacebook(fields?:Object, permissions?:Object, stayLoggedIn?:boolean, async?:Backendless.Async):void;
 
-        loginWithGooglePlus(fields?:Object, permissions?:Object, async?:Backendless.Async, container?:HTMLElement, stayLoggedIn?:boolean):void;
+        loginWithGooglePlus(fields?:Object, permissions?:Object, stayLoggedIn?:boolean, container?:HTMLElement, async?:Backendless.Async):void;
 
-        loginWithTwitter(fields?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):void;
+        loginWithTwitter(fields?:Object, stayLoggedIn?:boolean, async?:Backendless.Async):void;
 
         loginWithFacebookSdk(fields?:Object, stayLoggedIn?:boolean, async?:Backendless.Async):void;
 
