@@ -1715,18 +1715,18 @@
         },
 
         loginWithFacebook      : function(facebookFieldsMapping, permissions, async, stayLoggedIn) {
-          async = extractResponder(arguments);
-          this._loginSocial('Facebook', facebookFieldsMapping, permissions, null, async, stayLoggedIn);
+            async = extractResponder(arguments);
+            this._loginSocial('Facebook', facebookFieldsMapping, permissions, async, null, stayLoggedIn);
         },
 
         loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, async, container, stayLoggedIn) {
             async = extractResponder(arguments);
-            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, container, async, stayLoggedIn);
+            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, async, container, stayLoggedIn);
         },
 
         loginWithTwitter       : function(twitterFieldsMapping, async, stayLoggedIn) {
             async = extractResponder(arguments);
-            this._loginSocial('Twitter', twitterFieldsMapping, null, null, async, stayLoggedIn);
+            this._loginSocial('Twitter', twitterFieldsMapping, null, async, null, stayLoggedIn);
         },
 
         _socialContainer       : function(socialType, container) {
@@ -1787,7 +1787,7 @@
             }
         },
 
-        _loginSocial: function(socialType, fieldsMapping, permissions, container, async, stayLoggedIn) {
+        _loginSocial: function(socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
             var socialContainer = new this._socialContainer(socialType, container);
             async = async && this._wrapAsync(async);
 
@@ -4203,7 +4203,7 @@
                             lastFlushListeners = null;
                         }
                     }
-                }
+                };
 
                 if (async) {
                     listeners = lastFlushListeners = lastFlushListeners ? lastFlushListeners.splice(0) : [];
@@ -4360,7 +4360,7 @@
                              'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
                                      'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter']]
+                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook']]
         ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
