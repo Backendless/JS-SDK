@@ -303,6 +303,7 @@ function testUser() {
 
 function testUserService() {
     var userName:string = 'userName';
+    var identity:string = 'identity';
     var roleName:string = 'rolename';
     var password:string = 'password';
     var div:HTMLElement = document.createElement('div');
@@ -326,11 +327,11 @@ function testUserService() {
     newUser = Backendless.UserService.getUserRoles();
     resultXHR = Backendless.UserService.getUserRoles(async);
 
-    newUser = Backendless.UserService.assignRole(userName, roleName);
-    resultXHR = Backendless.UserService.assignRole(userName, roleName, async);
+    newUser = Backendless.UserService.assignRole(identity, roleName);
+    resultXHR = Backendless.UserService.assignRole(identity, roleName, async);
 
-    newUser = Backendless.UserService.unassignRole(userName, roleName);
-    resultXHR = Backendless.UserService.unassignRole(userName, roleName, async);
+    newUser = Backendless.UserService.unassignRole(identity, roleName);
+    resultXHR = Backendless.UserService.unassignRole(identity, roleName, async);
 
     newUser = Backendless.UserService.login(userName, password);
     newUser = Backendless.UserService.login(userName, password, bol);

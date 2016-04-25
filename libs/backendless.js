@@ -409,8 +409,6 @@
             }
         };
 
-        var buffer = '';
-
         if (currentUser != null && !!currentUser["user-token"]) {
             options.headers["user-token"] = currentUser["user-token"];
         }
@@ -419,23 +417,23 @@
             throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
         }
 
+        var buffer;
         var httpx = require(https ? 'https' : 'http');
-
         var req = httpx.request(options, function(res) {
             res.setEncoding('utf8');
             res.on('data', function(chunk) {
-                buffer += chunk;
+                buffer = buffer ? buffer + chunk : chunk;
             });
             res.on('end', function() {
-                var contentType = res.headers['content-type'];
-
-                if (contentType && contentType.indexOf('application/json') !== -1) {
-                    buffer = tryParseJSON(buffer);
-                }
-
                 var callback = config.asyncHandler[res.statusCode >= 200 && res.statusCode < 300 ? "success" : "fault"];
 
                 if (Utils.isFunction(callback)) {
+                    var contentType = res.headers['content-type'];
+
+                    if (buffer !== undefined && contentType && contentType.indexOf('application/json') !== -1) {
+                        buffer = tryParseJSON(buffer);
+                    }
+
                     callback(buffer);
                 }
             });
@@ -1499,9 +1497,9 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        roleHelper: function(username, rolename, async, operation) {
-            if (!username) {
-                throw new Error('Username can not be empty');
+        roleHelper: function(identity, rolename, async, operation) {
+            if (!identity) {
+                throw new Error('User identity can not be empty');
             }
 
             if (!rolename) {
@@ -1509,32 +1507,22 @@
             }
 
             var responder = extractResponder(arguments);
-            var isAsync = responder != null;
-
-            if (responder) {
-                responder = this._wrapAsync(responder);
-            }
-
-            var data = {
-                user    : username,
-                roleName: rolename
-            };
 
             return Backendless._ajax({
                 method      : 'POST',
                 url         : this.restUrl + '/' + operation,
-                isAsync     : isAsync,
+                isAsync     : !!responder,
                 asyncHandler: responder,
-                data        : JSON.stringify(data)
+                data        : JSON.stringify({user : identity, roleName: rolename})
             });
         },
 
-        assignRole: function(username, rolename, async) {
-            return this.roleHelper(username, rolename, async, 'assignRole');
+        assignRole: function(identity, rolename, async) {
+            return this.roleHelper(identity, rolename, async, 'assignRole');
         },
 
-        unassignRole: function(username, rolename, async) {
-            return this.roleHelper(username, rolename, async, 'unassignRole');
+        unassignRole: function(identity, rolename, async) {
+            return this.roleHelper(identity, rolename, async, 'unassignRole');
         },
 
         login: function(username, password, stayLoggedIn, async) {
