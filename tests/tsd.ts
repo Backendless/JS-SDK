@@ -351,28 +351,28 @@ function testUserService() {
     Backendless.UserService.loginWithFacebook();
     Backendless.UserService.loginWithFacebook({});
     Backendless.UserService.loginWithFacebook({}, {});
-    Backendless.UserService.loginWithFacebook({}, {}, true);
-    Backendless.UserService.loginWithFacebook({}, {}, true, async);
-    Backendless.UserService.loginWithFacebook({}, {}, null, async);
-    Backendless.UserService.loginWithFacebook({}, null, null, async);
-    Backendless.UserService.loginWithFacebook(null, null, null, async);
+    Backendless.UserService.loginWithFacebook({}, {}, async);
+    Backendless.UserService.loginWithFacebook({}, {}, async, true);
+    Backendless.UserService.loginWithFacebook({}, {}, null, true);
+    Backendless.UserService.loginWithFacebook({}, null, null, true);
+    Backendless.UserService.loginWithFacebook(null, null, null, true);
 
     Backendless.UserService.loginWithGooglePlus();
     Backendless.UserService.loginWithGooglePlus({});
     Backendless.UserService.loginWithGooglePlus({}, {});
-    Backendless.UserService.loginWithGooglePlus({}, {}, true);
-    Backendless.UserService.loginWithGooglePlus({}, {}, true, document.createElement('div'));
-    Backendless.UserService.loginWithGooglePlus({}, {}, true, document.createElement('div'), async);
-    Backendless.UserService.loginWithGooglePlus({}, {}, true, null, async);
-    Backendless.UserService.loginWithGooglePlus({}, {}, null, null, async);
-    Backendless.UserService.loginWithGooglePlus({}, null, null, null, async);
-    Backendless.UserService.loginWithGooglePlus(null, null, null, null, async);
+    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'));
+    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), async);
+    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), async, true);
+    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), null, true);
+    Backendless.UserService.loginWithGooglePlus({}, {}, null, null, true);
+    Backendless.UserService.loginWithGooglePlus({}, null, null, null, true);
+    Backendless.UserService.loginWithGooglePlus(null, null, null, null, true);
 
     Backendless.UserService.loginWithTwitter();
-    Backendless.UserService.loginWithTwitter({}, true);
-    Backendless.UserService.loginWithTwitter({}, true, async);
-    Backendless.UserService.loginWithTwitter({}, null, async);
-    Backendless.UserService.loginWithTwitter(null, null, async);
+    Backendless.UserService.loginWithTwitter({}, async);
+    Backendless.UserService.loginWithTwitter({}, async, true);
+    Backendless.UserService.loginWithTwitter({}, null, true);
+    Backendless.UserService.loginWithTwitter(null, null, true);
 
     Backendless.UserService.loginWithFacebookSdk();
     Backendless.UserService.loginWithFacebookSdk({}, true);
