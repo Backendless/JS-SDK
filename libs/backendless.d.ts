@@ -795,7 +795,7 @@ declare module __Backendless {
 
         loginWithFacebook(fields?:Object, permissions?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):void;
 
-        loginWithGooglePlus(fields?:Object, permissions?:Object, async?:Backendless.Async, container?:HTMLElement, stayLoggedIn?:boolean):void;
+        loginWithGooglePlus(fields?:Object, permissions?:Object, container?:HTMLElement, async?:Backendless.Async, stayLoggedIn?:boolean):void;
 
         loginWithTwitter(fields?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):void;
 

@@ -1702,16 +1702,19 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        loginWithFacebook      : function(facebookFieldsMapping, permissions, callback, stayLoggedIn) {
-            this._loginSocial('Facebook', facebookFieldsMapping, permissions, callback, null, stayLoggedIn);
+        loginWithFacebook      : function(facebookFieldsMapping, permissions, async, stayLoggedIn) {
+            async = extractResponder(arguments);
+            this._loginSocial('Facebook', facebookFieldsMapping, permissions, async, null, stayLoggedIn);
         },
 
-        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, callback, container, stayLoggedIn) {
-            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, callback, container, stayLoggedIn);
+        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, async, container, stayLoggedIn) {
+            async = extractResponder(arguments);
+            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, async, container, stayLoggedIn);
         },
 
-        loginWithTwitter       : function(twitterFieldsMapping, callback, stayLoggedIn) {
-            this._loginSocial('Twitter', twitterFieldsMapping, null, callback, null, stayLoggedIn);
+        loginWithTwitter       : function(twitterFieldsMapping, async, stayLoggedIn) {
+            async = extractResponder(arguments);
+            this._loginSocial('Twitter', twitterFieldsMapping, null, async, null, stayLoggedIn);
         },
 
         _socialContainer       : function(socialType, container) {
@@ -1772,23 +1775,20 @@
             }
         },
 
-        _loginSocial: function(socialType, fieldsMapping, permissions, callback, container, stayLoggedIn) {
+        _loginSocial: function(socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
             var socialContainer = new this._socialContainer(socialType, container);
-            var responder = extractResponder(arguments);
-            if (responder) {
-                responder = this._wrapAsync(responder);
-            }
+            async = async && this._wrapAsync(async);
 
             Utils.addEvent('message', window, function(e) {
                 if (e.origin == Backendless.serverURL) {
                     var result = JSON.parse(e.data);
 
                     if (result.fault) {
-                        responder.fault(result.fault);
+                        async.fault(result.fault);
                     } else {
                         Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                         currentUser = this.Backendless.UserService._parseResponse(result);
-                        responder.success(this.Backendless.UserService._getUserFromResponse(currentUser));
+                        async.success(this.Backendless.UserService._getUserFromResponse(currentUser));
                     }
 
                     Utils.removeEvent('message', window);
@@ -1800,7 +1800,7 @@
                 socialContainer.doAuthorizationActivity(r);
             }, function(e) {
                 socialContainer.closeContainer();
-                responder.fault(e);
+                async.fault(e);
             });
 
             var request = {};
@@ -4191,7 +4191,7 @@
                             lastFlushListeners = null;
                         }
                     }
-                }
+                };
 
                 if (async) {
                     listeners = lastFlushListeners = lastFlushListeners ? lastFlushListeners.splice(0) : [];
@@ -4348,7 +4348,7 @@
                              'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
                                      'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                                     'loginWithGooglePlusSdk','loginWithFacebook', 'loginWithGooglePlus', 'loginWithTwitter']]
+                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook']]
         ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
