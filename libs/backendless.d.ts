@@ -773,11 +773,11 @@ declare module __Backendless {
         restorePassword(email:string):Backendless.User ;
         restorePassword(email:string, async:Backendless.Async):XMLHttpRequest;
 
-        assignRole(userName:string, roleName:string):Backendless.User ;
-        assignRole(userName:string, roleName:string, async:Backendless.Async):XMLHttpRequest;
+        assignRole(identity:string, roleName:string):Backendless.User ;
+        assignRole(identity:string, roleName:string, async:Backendless.Async):XMLHttpRequest;
 
-        unassignRole(userName:string, roleName:string):Backendless.User ;
-        unassignRole(userName:string, roleName:string, async:Backendless.Async):XMLHttpRequest;
+        unassignRole(identity:string, roleName:string):Backendless.User ;
+        unassignRole(identity:string, roleName:string, async:Backendless.Async):XMLHttpRequest;
 
         login(userName:string, password:string):Backendless.User ;
         login(userName:string, password:string, stayLoggedIn:boolean):Backendless.User ;
