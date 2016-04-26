@@ -380,26 +380,25 @@
 
     Backendless._ajax_for_nodejs = function(config) {
         config.data = config.data || "";
+        config.asyncHandler = config.asyncHandler || {};
+        config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
+
+        if (!config.isAsync) {
+            throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
+        }
 
         if (typeof config.data !== "string") {
             config.data = JSON.stringify(config.data);
         }
 
-        config.asyncHandler = config.asyncHandler || {};
-        config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
-
-        var protocol = config.url.substr(0, config.url.indexOf('/', 8)).substr(0, config.url.indexOf(":"));
-        var https = protocol === 'https';
-
-        var uri  = config.url.substr(0, config.url.indexOf('/', 8)).substr(config.url.indexOf("/") + 2),
-            host = uri.substr(0, (uri.indexOf(":") == -1 ? uri.length : uri.indexOf(":"))),
-            port = uri.indexOf(":") != -1 ? parseInt(uri.substr(uri.indexOf(":") + 1)) : (https ? 443 : 80);
+        var u = require('url').parse(config.url);
+        var https = u.protocol === 'https:';
 
         var options = {
-            host   : host,
-            port   : port,
+            host   : u.host,
+            port   : u.port || https ? 443 : 80,
             method : config.method || "GET",
-            path   : config.url.substr(config.url.indexOf('/', 8)),
+            path   : u.path,
             headers: {
                 "Content-Length"  : config.data ? Buffer.byteLength(config.data) : 0,
                 "Content-Type"    : config.data ? 'application/json' : 'application/x-www-form-urlencoded',
@@ -411,10 +410,6 @@
 
         if (currentUser != null && !!currentUser["user-token"]) {
             options.headers["user-token"] = currentUser["user-token"];
-        }
-
-        if (!config.isAsync) {
-            throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
         }
 
         var buffer;
@@ -440,8 +435,7 @@
         });
 
         req.on('error', function(e) {
-            config.asyncHandler.fault || (config.asyncHandler.fault = function() {});
-            config.asyncHandler.fault(e);
+            config.asyncHandler.fault && config.asyncHandler.fault(e);
         });
 
         req.write(config.data);
