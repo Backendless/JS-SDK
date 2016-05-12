@@ -2016,7 +2016,7 @@
             }
         },
 
-        addPoint        : function(geopoint, async) {
+        savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
             }
@@ -2063,9 +2063,10 @@
                 asyncHandler: responder
             });
         },
-
-        savePoint: function(geopoint, async) {
-          return this.addPoint.apply(this, arguments);
+      
+        /** @deprecated */
+        addPoint: function(geopoint, async) {
+          return this.savePoint.apply(this, arguments);
         },
 
         findUtil        : function(query, async) {
