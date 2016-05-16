@@ -2016,12 +2016,20 @@
             }
         },
 
-        addPoint        : function(geopoint, async) {
+        savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
             }
             geopoint.categories = geopoint.categories || ['Default'];
             geopoint.categories = Utils.isArray(geopoint.categories) ? geopoint.categories : [geopoint.categories];
+
+            var objectId = geopoint.objectId;
+            var method = objectId ? 'PATCH' : 'PUT',
+                url = this.restUrl + '/points';
+
+            if (objectId) {
+                url += '/' + objectId;
+            }
 
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
@@ -2048,12 +2056,17 @@
             responder = responderOverride(responder);
 
             return Backendless._ajax({
-                method      : 'PUT',
-                url         : this.restUrl + '/points',
+                method      : method,
+                url         : url,
                 data        : JSON.stringify(geopoint),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+        },
+      
+        /** @deprecated */
+        addPoint: function(geopoint, async) {
+          return this.savePoint.apply(this, arguments);
         },
 
         findUtil        : function(query, async) {
@@ -4338,7 +4351,7 @@
             [Backendless.Logging, ['flush']],
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
                                    'getRegistrations', 'unregisterDevice']],
-            [Geo.prototype, ['addPoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
+            [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
                              'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
                                      'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
@@ -4472,23 +4485,25 @@
         }
     };
 
-    var GeoPoint = function() {
+    var GeoPoint = function(args) {
+        args = args || {};
         this.___class = "GeoPoint";
-        this.categories = undefined;
-        this.latitude = undefined;
-        this.longitude = undefined;
-        this.metadata = undefined;
-        this.objectId = undefined;
+        this.categories = args.categories;
+        this.latitude = args.latitude;
+        this.longitude = args.longitude;
+        this.metadata = args.metadata;
+        this.objectId = args.objectId;
     };
 
-    var GeoCluster = function() {
-        this.categories = undefined;
-        this.latitude = undefined;
-        this.longitude = undefined;
-        this.metadata = undefined;
-        this.objectId = undefined;
-        this.totalPoints = undefined;
-        this.geoQuery = undefined;
+    var GeoCluster = function(args) {
+        args = args || {};
+        this.categories = args.categories;
+        this.latitude = args.latitude;
+        this.longitude = args.longitude;
+        this.metadata = args.metadata;
+        this.objectId = args.objectId;
+        this.totalPoints = args.totalPoints;
+        this.geoQuery = args.geoQuery;
     };
 
     var PublishOptionsHeaders = { //PublishOptions headers namespace helper
