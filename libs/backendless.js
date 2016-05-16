@@ -395,8 +395,8 @@
         var https = u.protocol === 'https:';
 
         var options = {
-            host   : u.host,
-            port   : u.port || https ? 443 : 80,
+            host   : u.hostname,
+            port   : u.port || (https ? 443 : 80),
             method : config.method || "GET",
             path   : u.path,
             headers: {
