@@ -658,7 +658,7 @@
 
             var expired = function(obj) {
                 var result = false;
-                if (Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if (obj && Utils.isObject(obj)) {
                     if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy'] && obj['cachePolicy']['timeToLive'] != -1 && 'created' in obj['cachePolicy']) {
                         result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive'];
                     }
@@ -668,7 +668,7 @@
             };
 
             var addTimestamp = function(obj) {
-                if (Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if (obj && Utils.isObject(obj)) {
                     if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
                         obj['cachePolicy']['created'] = new Date().getTime();
                     }
@@ -2063,10 +2063,10 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
-          return this.savePoint.apply(this, arguments);
+            return this.savePoint.apply(this, arguments);
         },
 
         findUtil        : function(query, async) {
@@ -4350,12 +4350,12 @@
             [PollingProxy.prototype, ['poll']],
             [Backendless.Logging, ['flush']],
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                                   'getRegistrations', 'unregisterDevice']],
+                'getRegistrations', 'unregisterDevice']],
             [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                             'getCategories', 'deleteCategory', 'deletePoint']],
+                'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook']]
+                'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
+                'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook']]
         ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
@@ -4386,8 +4386,7 @@
             return Backendless.UserService.getCurrentUser()
                 .then(function(user) {
                     return Promise.resolve(!!user);
-                })
-                .catch(function() {
+                }, function() {
                     return Promise.resolve(false);
                 });
         };
