@@ -2063,10 +2063,10 @@
                 asyncHandler: responder
             });
         },
-
+      
         /** @deprecated */
         addPoint: function(geopoint, async) {
-            return this.savePoint.apply(this, arguments);
+          return this.savePoint.apply(this, arguments);
         },
 
         findUtil        : function(query, async) {
@@ -4350,12 +4350,12 @@
             [PollingProxy.prototype, ['poll']],
             [Backendless.Logging, ['flush']],
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                'getRegistrations', 'unregisterDevice']],
+                                   'getRegistrations', 'unregisterDevice']],
             [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                'getCategories', 'deleteCategory', 'deletePoint']],
+                             'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook']]
+                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
+                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook']]
         ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
