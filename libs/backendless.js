@@ -658,7 +658,7 @@
 
             var expired = function(obj) {
                 var result = false;
-                if (Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
                     if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy'] && obj['cachePolicy']['timeToLive'] != -1 && 'created' in obj['cachePolicy']) {
                         result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive'];
                     }
@@ -668,7 +668,7 @@
             };
 
             var addTimestamp = function(obj) {
-                if (Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
                     if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
                         obj['cachePolicy']['created'] = new Date().getTime();
                     }
@@ -4386,8 +4386,7 @@
             return Backendless.UserService.getCurrentUser()
                 .then(function(user) {
                     return Promise.resolve(!!user);
-                })
-                .catch(function() {
+                }, function() {
                     return Promise.resolve(false);
                 });
         };
