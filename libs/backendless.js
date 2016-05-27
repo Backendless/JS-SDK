@@ -1911,6 +1911,21 @@
                     return !!user;
                 }
             }
+        },
+
+        resendEmailConfirmation: function(emailAddress, async) {
+            if(!emailAddress || emailAddress instanceof Async) {
+                throw "Email cannot be empty";
+            }
+            var responder = extractResponder(arguments);
+            var isAsync = !!responder;
+
+            return Backendless._ajax({
+                method      : 'POST',
+                url         : this.restUrl + "/resendconfirmation/" + emailAddress,
+                isAsync     : isAsync,
+                asyncHandler: responder
+            });
         }
     };
 
@@ -4355,7 +4370,8 @@
                              'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
                                      'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook']]
+                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
+                                     'resendEmailConfirmation']]
         ].forEach(promisifyPack);
 
         UserService.prototype.getCurrentUser = function() {
