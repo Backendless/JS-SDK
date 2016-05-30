@@ -389,6 +389,10 @@ function testUserService() {
 
     bol = Backendless.UserService.isValidLogin();
     resultXHR = Backendless.UserService.isValidLogin(async);
+
+    Backendless.UserService.resendEmailConfirmation('email');
+    Backendless.UserService.resendEmailConfirmation('email', async);
+
 }
 
 function testGoeService() {
