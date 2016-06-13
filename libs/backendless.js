@@ -76,7 +76,9 @@
     initXHR();
 
     var browser = (function() {
-        var ua      = isBrowser ? navigator.userAgent.toLowerCase() : "NodeJS",
+        var userAgent = navigator.userAgent || "hybrid-app";
+
+        var ua      = isBrowser ? userAgent.toLowerCase() : "NodeJS",
             match   = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
             /(webkit)[ \/]([\w.]+)/.exec(ua) ||
             /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
@@ -4566,29 +4568,33 @@
     Backendless.SubscriptionOptions = SubscriptionOptions;
     Backendless.PublishOptionsHeaders = PublishOptionsHeaders;
 
-    /** @deprecated */
-    root.GeoPoint = Backendless.GeoPoint;
+    try {
+        /** @deprecated */
+        root.GeoPoint = Backendless.GeoPoint;
 
-    /** @deprecated */
-    root.GeoCluster = Backendless.GeoCluster;
+        /** @deprecated */
+        root.GeoCluster = Backendless.GeoCluster;
 
-    /** @deprecated */
-    root.BackendlessGeoQuery = Backendless.GeoQuery;
+        /** @deprecated */
+        root.BackendlessGeoQuery = Backendless.GeoQuery;
 
-    /** @deprecated */
-    root.Bodyparts = Backendless.Bodyparts;
+        /** @deprecated */
+        root.Bodyparts = Backendless.Bodyparts;
 
-    /** @deprecated */
-    root.PublishOptions = Backendless.PublishOptions;
+        /** @deprecated */
+        root.PublishOptions = Backendless.PublishOptions;
 
-    /** @deprecated */
-    root.DeliveryOptions = Backendless.DeliveryOptions;
+        /** @deprecated */
+        root.DeliveryOptions = Backendless.DeliveryOptions;
 
-    /** @deprecated */
-    root.SubscriptionOptions = Backendless.SubscriptionOptions;
+        /** @deprecated */
+        root.SubscriptionOptions = Backendless.SubscriptionOptions;
 
-    /** @deprecated */
-    root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders;
+        /** @deprecated */
+        root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders;
+    } catch (error) {
+        console && console.warn(error);
+    }
 
     return Backendless;
 });
