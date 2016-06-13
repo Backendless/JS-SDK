@@ -76,7 +76,9 @@
     initXHR();
 
     var browser = (function() {
-        var ua      = isBrowser ? navigator.userAgent.toLowerCase() : "NodeJS",
+        var userAgent = navigator.userAgent || "hybrid-app";
+
+        var ua      = isBrowser ? userAgent.toLowerCase() : "NodeJS",
             match   = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
             /(webkit)[ \/]([\w.]+)/.exec(ua) ||
             /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
@@ -658,7 +660,7 @@
 
             var expired = function(obj) {
                 var result = false;
-                if (Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
                     if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy'] && obj['cachePolicy']['timeToLive'] != -1 && 'created' in obj['cachePolicy']) {
                         result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive'];
                     }
@@ -668,7 +670,7 @@
             };
 
             var addTimestamp = function(obj) {
-                if (Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
                     if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
                         obj['cachePolicy']['created'] = new Date().getTime();
                     }
@@ -4386,8 +4388,7 @@
             return Backendless.UserService.getCurrentUser()
                 .then(function(user) {
                     return Promise.resolve(!!user);
-                })
-                .catch(function() {
+                }, function() {
                     return Promise.resolve(false);
                 });
         };
@@ -4567,29 +4568,33 @@
     Backendless.SubscriptionOptions = SubscriptionOptions;
     Backendless.PublishOptionsHeaders = PublishOptionsHeaders;
 
-    /** @deprecated */
-    root.GeoPoint = Backendless.GeoPoint;
+    try {
+        /** @deprecated */
+        root.GeoPoint = Backendless.GeoPoint;
 
-    /** @deprecated */
-    root.GeoCluster = Backendless.GeoCluster;
+        /** @deprecated */
+        root.GeoCluster = Backendless.GeoCluster;
 
-    /** @deprecated */
-    root.BackendlessGeoQuery = Backendless.GeoQuery;
+        /** @deprecated */
+        root.BackendlessGeoQuery = Backendless.GeoQuery;
 
-    /** @deprecated */
-    root.Bodyparts = Backendless.Bodyparts;
+        /** @deprecated */
+        root.Bodyparts = Backendless.Bodyparts;
 
-    /** @deprecated */
-    root.PublishOptions = Backendless.PublishOptions;
+        /** @deprecated */
+        root.PublishOptions = Backendless.PublishOptions;
 
-    /** @deprecated */
-    root.DeliveryOptions = Backendless.DeliveryOptions;
+        /** @deprecated */
+        root.DeliveryOptions = Backendless.DeliveryOptions;
 
-    /** @deprecated */
-    root.SubscriptionOptions = Backendless.SubscriptionOptions;
+        /** @deprecated */
+        root.SubscriptionOptions = Backendless.SubscriptionOptions;
 
-    /** @deprecated */
-    root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders;
+        /** @deprecated */
+        root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders;
+    } catch (error) {
+        console && console.warn(error);
+    }
 
     return Backendless;
 });
