@@ -805,6 +805,8 @@ declare module __Backendless {
 
         isValidLogin():boolean;
         isValidLogin(async:Backendless.Async):XMLHttpRequest;
+
+        resendEmailConfirmation(email:string, async?:Backendless.Async):XMLHttpRequest;
     }
 
     interface UtilsI {
