@@ -1,4 +1,4 @@
-// Backendless.js 3.1.11
+// Backendless.js 3.1.12
 
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
@@ -36,7 +36,7 @@
         emptyFn     = (function() {
         });
 
-    Backendless.VERSION = '3.1.11';
+    Backendless.VERSION = '3.1.12';
     Backendless.serverURL = 'https://api.backendless.com';
 
     Backendless.noConflict = function() {
@@ -76,10 +76,13 @@
     initXHR();
 
     var browser = (function() {
-        var userAgent = navigator.userAgent || "hybrid-app";
+        var ua = 'NodeJS';
 
-        var ua      = isBrowser ? userAgent.toLowerCase() : "NodeJS",
-            match   = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
+        if (isBrowser) {
+            ua = navigator.userAgent ? navigator.userAgent.toLowerCase() : 'hybrid-app';
+        }
+
+        var match   = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
             /(webkit)[ \/]([\w.]+)/.exec(ua) ||
             /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
             /(msie) ([\w.]+)/.exec(ua) ||
