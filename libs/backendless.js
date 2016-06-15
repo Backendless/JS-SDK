@@ -656,7 +656,7 @@
             storage = window[localStorageName];
 
             var createBndlsStorage = function() {
-                if (!('Backendless' in storage)) {
+                if (!(storage.getItem('Backendless'))) {
                     storage.setItem('Backendless', store.serialize({}));
                 }
             };
@@ -2083,7 +2083,7 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
