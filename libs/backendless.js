@@ -30,6 +30,8 @@
     var WebSocket = null; // isBrowser ? window.WebSocket || window.MozWebSocket : {};
     var UIState = null;
 
+    var localStorageName = 'localStorage';
+
     var previousBackendless = root.Backendless;
 
     var Backendless = {},
@@ -603,30 +605,55 @@
     }
 
     function setCache() {
-        var store            = {},
-            localStorageName = 'localStorage',
-            storage;
+        var store   = {},
+            storage = {};
 
         store.enabled = false;
+
         store.exists = function(key) {
+            return store.get(key) !== undefined;
         };
+
         store.set = function(key, value) {
+            return storage[key] = store.serialize(value);
         };
+
         store.get = function(key) {
+            var result = storage[key];
+
+            return result && store.deserialize(result);
         };
+
         store.remove = function(key) {
+            return delete storage[key];
         };
+
         store.clear = function() {
+            storage = {};
         };
+
         store.flushExpired = function() {
         };
+
         store.getCachePolicy = function(key) {
         };
-        store.getAll = function() {
+
+        store.getAll = function () {
+            var result = {};
+
+            for (var prop in storage) {
+                if (storage.hasOwnProperty(prop)) {
+                    result[prop] = storage[prop];
+                }
+            }
+
+            return result;
         };
+
         store.serialize = function(value) {
             return JSON.stringify(value);
         };
+
         store.deserialize = function(value) {
             if (typeof value != 'string') {
                 return undefined;
@@ -653,141 +680,157 @@
         }
 
         if (isLocalStorageSupported()) {
-            storage = window[localStorageName];
+            return extendToLocalStorageCache(store);
+        }
 
-            var createBndlsStorage = function() {
-                if (!('Backendless' in storage)) {
-                    storage.setItem('Backendless', store.serialize({}));
+        return store;
+    }
+
+    function extendToLocalStorageCache(store) {
+        var storage = window[localStorageName];
+
+        var createBndlsStorage = function() {
+            if (!('Backendless' in storage)) {
+                storage.setItem('Backendless', store.serialize({}));
+            }
+        };
+
+        var expired = function(obj) {
+            var result = false;
+            if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy'] && obj['cachePolicy']['timeToLive'] != -1 && 'created' in obj['cachePolicy']) {
+                    result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive'];
                 }
-            };
+            }
 
-            var expired = function(obj) {
-                var result = false;
-                if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
-                    if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy'] && obj['cachePolicy']['timeToLive'] != -1 && 'created' in obj['cachePolicy']) {
-                        result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive'];
-                    }
+            return result;
+        };
+
+        var addTimestamp = function(obj) {
+            if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+                if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
+                    obj['cachePolicy']['created'] = new Date().getTime();
                 }
+            }
+        };
 
-                return result;
-            };
+        createBndlsStorage();
 
-            var addTimestamp = function(obj) {
-                if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
-                    if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
-                        obj['cachePolicy']['created'] = new Date().getTime();
-                    }
-                }
-            };
+        store.enabled = true;
+
+        store.exists = function(key) {
+            return store.get(key) !== undefined;
+        };
+
+        store.set = function(key, val) {
+            if (val === undefined) {
+                return store.remove(key);
+            }
 
             createBndlsStorage();
-            store.enabled = true;
 
-            store.exists = function(key) {
-                return store.get(key) !== undefined;
-            };
+            var backendlessObj = store.deserialize(storage.getItem('Backendless'));
 
-            store.set = function(key, val) {
-                if (val === undefined) {
-                    return store.remove(key);
-                }
+            addTimestamp(val);
 
-                createBndlsStorage();
-                var backendlessObj = store.deserialize(storage.getItem('Backendless'));
-                addTimestamp(val);
-                backendlessObj[key] = val;
+            backendlessObj[key] = val;
 
-                try {
-                    storage.setItem('Backendless', store.serialize(backendlessObj));
-                } catch (e) {
-                    backendlessObj = {};
-                    backendlessObj[key] = val;
-                    storage.setItem('Backendless', store.serialize(backendlessObj));
-                }
-
-                return val;
-            };
-
-            store.get = function(key) {
-                createBndlsStorage();
-                var backendlessObj = store.deserialize(storage.getItem('Backendless')),
-                    obj            = backendlessObj[key],
-                    result         = obj;
-
-                if (expired(obj)) {
-                    delete backendlessObj[key];
-                    storage.setItem('Backendless', store.serialize(backendlessObj));
-                    result = undefined;
-                }
-
-                if (result && result['cachePolicy']) {
-                    delete result['cachePolicy'];
-                }
-
-                return result;
-            };
-
-            store.remove = function(key) {
-                var result;
-                createBndlsStorage();
-                key = key.replace(/([^A-Za-z0-9-])/g, '');
-                var backendlessObj = store.deserialize(storage.getItem('Backendless'));
-
-                if (backendlessObj.hasOwnProperty(key)) {
-                    result = delete backendlessObj[key];
-                }
-
+            try {
                 storage.setItem('Backendless', store.serialize(backendlessObj));
+            } catch (e) {
+                backendlessObj = {};
+                backendlessObj[key] = val;
+                storage.setItem('Backendless', store.serialize(backendlessObj));
+            }
 
-                return result;
-            };
+            return val;
+        };
 
-            store.clear = function() {
-                storage.setItem('Backendless', store.serialize({}));
-            };
+        store.get = function(key) {
+            createBndlsStorage();
 
-            store.getAll = function() {
-                createBndlsStorage();
+            var backendlessObj = store.deserialize(storage.getItem('Backendless')),
+                obj            = backendlessObj[key],
+                result         = obj;
 
-                var backendlessObj = store.deserialize(storage.getItem('Backendless'));
-                var ret = {};
+            if (expired(obj)) {
+                delete backendlessObj[key];
+                storage.setItem('Backendless', store.serialize(backendlessObj));
+                result = undefined;
+            }
 
-                for (var prop in backendlessObj) {
-                    if (backendlessObj.hasOwnProperty(prop)) {
-                        ret[prop] = backendlessObj[prop];
-                        if (ret[prop] !== null && ret[prop].hasOwnProperty('cachePolicy')) {
-                            delete ret[prop]['cachePolicy'];
-                        }
+            if (result && result['cachePolicy']) {
+                delete result['cachePolicy'];
+            }
+
+            return result;
+        };
+
+        store.remove = function(key) {
+            var result;
+
+            createBndlsStorage();
+
+            key = key.replace(/([^A-Za-z0-9-])/g, '');
+
+            var backendlessObj = store.deserialize(storage.getItem('Backendless'));
+
+            if (backendlessObj.hasOwnProperty(key)) {
+                result = delete backendlessObj[key];
+            }
+
+            storage.setItem('Backendless', store.serialize(backendlessObj));
+
+            return result;
+        };
+
+        store.clear = function() {
+            storage.setItem('Backendless', store.serialize({}));
+        };
+
+        store.getAll = function() {
+            createBndlsStorage();
+
+            var backendlessObj = store.deserialize(storage.getItem('Backendless'));
+            var ret = {};
+
+            for (var prop in backendlessObj) {
+                if (backendlessObj.hasOwnProperty(prop)) {
+                    ret[prop] = backendlessObj[prop];
+                    if (ret[prop] !== null && ret[prop].hasOwnProperty('cachePolicy')) {
+                        delete ret[prop]['cachePolicy'];
                     }
                 }
+            }
 
-                return ret;
-            };
+            return ret;
+        };
 
-            store.flushExpired = function() {
-                createBndlsStorage();
-                var backendlessObj = store.deserialize(storage.getItem('Backendless')),
-                    obj;
+        store.flushExpired = function() {
+            createBndlsStorage();
 
-                for (var prop in backendlessObj) {
-                    if (backendlessObj.hasOwnProperty(prop)) {
-                        obj = backendlessObj[prop];
-                        if (expired(obj)) {
-                            delete backendlessObj[prop];
-                            storage.setItem('Backendless', store.serialize(backendlessObj));
-                        }
+            var backendlessObj = store.deserialize(storage.getItem('Backendless')),
+                obj;
+
+            for (var prop in backendlessObj) {
+                if (backendlessObj.hasOwnProperty(prop)) {
+                    obj = backendlessObj[prop];
+                    if (expired(obj)) {
+                        delete backendlessObj[prop];
+                        storage.setItem('Backendless', store.serialize(backendlessObj));
                     }
                 }
-            };
+            }
+        };
 
-            store.getCachePolicy = function(key) {
-                createBndlsStorage();
-                var backendlessObj = store.deserialize(storage.getItem('Backendless'));
-                var obj = backendlessObj[key];
+        store.getCachePolicy = function(key) {
+            createBndlsStorage();
 
-                return obj ? obj['cachePolicy'] : undefined;
-            };
-        }
+            var backendlessObj = store.deserialize(storage.getItem('Backendless'));
+            var obj = backendlessObj[key];
+
+            return obj ? obj['cachePolicy'] : undefined;
+        };
 
         return store;
     }
