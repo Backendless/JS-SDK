@@ -690,7 +690,7 @@
         var storage = window[localStorageName];
 
         var createBndlsStorage = function() {
-            if (!('Backendless' in storage)) {
+            if (!(storage.getItem('Backendless'))) {
                 storage.setItem('Backendless', store.serialize({}));
             }
         };
