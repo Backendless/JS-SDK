@@ -36,6 +36,12 @@ declare module __Backendless {
     function setUIState(state:string):void;
 
     /**
+     * @public
+     * @type: Function
+     **/
+    function enablePromises():void;
+
+    /**
      * @namespace Backendless.Utils
      **/
     var Utils:Backendless.UtilsI;
