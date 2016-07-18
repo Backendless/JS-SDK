@@ -17,6 +17,7 @@ function testMain() {
 
     Backendless.setUIState('state');
     Backendless.setUIState(null);
+    Backendless.enablePromises();
 }
 
 function testUtils() {
