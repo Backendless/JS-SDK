@@ -1860,7 +1860,7 @@
             });
         },
 
-        loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, async) {
+        loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options, async) {
             if (!FB) {
                 throw new Error("Facebook SDK not found");
             }
@@ -1868,6 +1868,9 @@
             if (stayLoggedIn instanceof Async) {
                 async = stayLoggedIn;
                 stayLoggedIn = false;
+            } else if (options instanceof Async) {
+                async = options;
+                options = undefined;
             }
 
             var me = this;
@@ -1877,7 +1880,7 @@
                 } else {
                     FB.login(function(response) {
                         me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, stayLoggedIn, async);
-                    });
+                    }, options);
                 }
             });
         },
