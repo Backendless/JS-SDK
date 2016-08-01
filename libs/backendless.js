@@ -417,6 +417,8 @@
 
         if (currentUser != null && !!currentUser["user-token"]) {
             options.headers["user-token"] = currentUser["user-token"];
+        } else if (Backendless.LocalCache.exists("user-token")) {
+            options.headers["user-token"] = Backendless.LocalCache.get("user-token");
         }
 
         var buffer;
