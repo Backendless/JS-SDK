@@ -904,6 +904,7 @@ declare module __Backendless {
 
         getCurrentUser():Backendless.User;
         getCurrentUser<Promise>():Promise;
+        getCurrentUser(async?:Backendless.Async):void;
 
         update(user:Backendless.User):Backendless.User ;
         update(user:Backendless.User, async:Backendless.Async):XMLHttpRequest;
