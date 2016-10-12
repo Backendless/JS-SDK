@@ -4271,7 +4271,7 @@
                 Backendless._ajax({
                     method      : 'PUT',
                     isAsync     : !!async,
-                    asyncHandler: async && new Async(cb('success'), cb('failure')),
+                    asyncHandler: async && new Async(cb('success'), cb('fault')),
                     url         : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
                     data        : JSON.stringify(this.logInfo)
                 });
