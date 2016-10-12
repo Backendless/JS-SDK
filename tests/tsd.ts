@@ -1,4 +1,5 @@
 /// <reference path="../libs/backendless.d.ts" />
+/// <reference path="./es6-promise.d.ts" />
 
 function testMain() {
     var VERSION:string = Backendless.VERSION;
@@ -124,11 +125,14 @@ function testDataStoreClass() {
 
     resultObj = dataStore1.save(item);
     resultXHR = dataStore1.save(item, async);
+    dataStore1.save<Promise<Object>>(item).then().catch().then().then();
 
     resultObj = dataStore1.remove('str');
     resultObj = dataStore1.remove(item);
     resultXHR = dataStore1.remove('str', async);
     resultXHR = dataStore1.remove(item, async);
+    dataStore1.remove<Promise<Object>>('str').then().catch().then().then();
+    dataStore1.remove<Promise<Object>>(item).then().catch().then().then();
 
     resultObj = dataStore1.find(dataQuery1);
     resultObj = dataStore1.find(dataQuery2);
@@ -138,6 +142,10 @@ function testDataStoreClass() {
     resultXHR = dataStore1.find(dataQuery2, async);
     resultXHR = dataStore1.find('id', async);
     resultXHR = dataStore1.find(async);
+    dataStore1.find<Promise<Object>>(dataQuery1).then().catch().then().then();
+    dataStore1.find<Promise<Object>>(dataQuery2).then().catch().then().then();
+    dataStore1.find<Promise<Object>>('id').then().catch().then().then();
+    dataStore1.find<Promise<Object>>().then().catch().then().then();
 
     resultObj = dataStore1.findById(dataQuery1);
     resultObj = dataStore1.findById(dataQuery2);
@@ -145,6 +153,9 @@ function testDataStoreClass() {
     resultXHR = dataStore1.findById(dataQuery1, async);
     resultXHR = dataStore1.findById(dataQuery2, async);
     resultXHR = dataStore1.findById('myId', async);
+    dataStore1.findById<Promise<Object>>(dataQuery1).then().catch().then().then();
+    dataStore1.findById<Promise<Object>>(dataQuery2).then().catch().then().then();
+    dataStore1.findById<Promise<Object>>('myId').then().catch().then().then();
 
     resultObj = dataStore1.findFirst();
     resultObj = dataStore1.findFirst(dataQuery1);
@@ -152,6 +163,9 @@ function testDataStoreClass() {
     resultXHR = dataStore1.findFirst(async);
     resultXHR = dataStore1.findFirst(dataQuery1, async);
     resultXHR = dataStore1.findFirst(dataQuery2, async);
+    dataStore1.findFirst<Promise<Object>>().then().catch().then().then();
+    dataStore1.findFirst<Promise<Object>>(dataQuery1).then().catch().then().then();
+    dataStore1.findFirst<Promise<Object>>(dataQuery2).then().catch().then().then();
 
     resultObj = dataStore1.findLast();
     resultObj = dataStore1.findLast(dataQuery1);
@@ -159,11 +173,18 @@ function testDataStoreClass() {
     resultXHR = dataStore1.findLast(async);
     resultXHR = dataStore1.findLast(dataQuery1, async);
     resultXHR = dataStore1.findLast(dataQuery2, async);
+    dataStore1.findLast<Promise<Object>>().then().catch().then().then();
+    dataStore1.findLast<Promise<Object>>(dataQuery1).then().catch().then().then();
+    dataStore1.findLast<Promise<Object>>(dataQuery2).then().catch().then().then();
 
     dataStore1.loadRelations(dataQuery1);
     dataStore1.loadRelations(dataQuery2);
     dataStore1.loadRelations(dataQuery1, ['item1', 'item2']);
     dataStore1.loadRelations(dataQuery2, ['item1', 'item2']);
+    dataStore1.loadRelations<Promise<Object>>(dataQuery1).then().catch().then().then();
+    dataStore1.loadRelations<Promise<Object>>(dataQuery2).then().catch().then().then();
+    dataStore1.loadRelations<Promise<Object>>(dataQuery1, ['item1', 'item2']).then().catch().then().then();
+    dataStore1.loadRelations<Promise<Object>>(dataQuery2, ['item1', 'item2']).then().catch().then().then();
 }
 
 function testPersistence() {
@@ -178,6 +199,8 @@ function testPersistence() {
     resultObj = Backendless.Persistence.save(dataStore, {});
     resultXHR = Backendless.Persistence.save('model', {}, async);
     resultXHR = Backendless.Persistence.save(dataStore, {}, async);
+    Backendless.Persistence.save<Promise<Object>>('model', {}).then().catch().then().then();
+    Backendless.Persistence.save<Promise<Object>>(dataStore, {}).then().catch().then().then();
 
     resultXHR = Backendless.Persistence.getView('viewName', 'whereClause', 123, 123, async);
     resultXHR = Backendless.Persistence.getView('viewName', 'whereClause', 123, async);
@@ -187,11 +210,17 @@ function testPersistence() {
     resultObj = Backendless.Persistence.getView('viewName', 'whereClause', 123);
     resultObj = Backendless.Persistence.getView('viewName', 'whereClause');
     resultObj = Backendless.Persistence.getView('viewName');
+    Backendless.Persistence.getView<Promise<Object>>('viewName', 'whereClause', 123, 123).then().catch().then().then();
+    Backendless.Persistence.getView<Promise<Object>>('viewName', 'whereClause', 123).then().catch().then().then();
+    Backendless.Persistence.getView<Promise<Object>>('viewName', 'whereClause').then().catch().then().then();
+    Backendless.Persistence.getView<Promise<Object>>('viewName').then().catch().then().then();
 
     resultXHR = Backendless.Persistence.callStoredProcedure('spName', 'argumentValues', async);
     resultXHR = Backendless.Persistence.callStoredProcedure('spName', {}, async);
     resultObj = Backendless.Persistence.callStoredProcedure('spName', 'argumentValues');
     resultObj = Backendless.Persistence.callStoredProcedure('spName', {});
+    Backendless.Persistence.callStoredProcedure<Promise<Object>>('spName', 'argumentValues').then().catch().then().then();
+    Backendless.Persistence.callStoredProcedure<Promise<Object>>('spName', {}).then().catch().then().then();
 
     dataStore = Backendless.Persistence.of(Model);
     dataStore = Backendless.Persistence.of('str');
@@ -203,6 +232,9 @@ function testPersistence() {
     resultXHR = Backendless.Persistence.describe(Model, async);
     resultXHR = Backendless.Persistence.describe('str', async);
     resultXHR = Backendless.Persistence.describe({}, async);
+    Backendless.Persistence.describe<Promise<Object>>(Model).then().catch().then().then();
+    Backendless.Persistence.describe<Promise<Object>>('str').then().catch().then().then();
+    Backendless.Persistence.describe<Promise<Object>>({}).then().catch().then().then();
 }
 
 function testData() {
@@ -294,6 +326,28 @@ function testDataPermissions() {
     resultXHR = Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj, async);
     resultObj = Backendless.Data.Permissions.UPDATE.deny(dataObj);
     resultXHR = Backendless.Data.Permissions.UPDATE.deny(dataObj, async);
+
+    Backendless.Data.Permissions.FIND.grantUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.grantRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.grant<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.denyUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.denyRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.deny<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+
+    Backendless.Data.Permissions.REMOVE.grantUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.grantRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.grant<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.denyUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.denyRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.deny<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+
+    Backendless.Data.Permissions.UPDATE.grantUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.grantRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.grant<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.denyUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.denyRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.deny<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+
 }
 
 function testUser() {
@@ -321,34 +375,45 @@ function testUserService() {
 
     resultObj = Backendless.UserService.restorePassword('email');
     resultXHR = Backendless.UserService.restorePassword('email', async);
+    Backendless.UserService.restorePassword<Promise<Object>>('email').then().catch().then().then();
 
     newUser = Backendless.UserService.register(newUser);
     resultXHR = Backendless.UserService.register(newUser, async);
+    Backendless.UserService.register<Promise<Backendless.User>>(newUser).then().catch().then().then();
 
     newUser = Backendless.UserService.getUserRoles();
     resultXHR = Backendless.UserService.getUserRoles(async);
+    Backendless.UserService.getUserRoles<Promise<Backendless.User>>().then().catch().then().then();
 
     newUser = Backendless.UserService.assignRole(identity, roleName);
     resultXHR = Backendless.UserService.assignRole(identity, roleName, async);
+    Backendless.UserService.assignRole<Promise<Backendless.User>>(identity, roleName).then().catch().then().then();
 
     newUser = Backendless.UserService.unassignRole(identity, roleName);
     resultXHR = Backendless.UserService.unassignRole(identity, roleName, async);
+    Backendless.UserService.unassignRole<Promise<Backendless.User>>(identity, roleName).then().catch().then().then();
 
     newUser = Backendless.UserService.login(userName, password);
     newUser = Backendless.UserService.login(userName, password, bol);
     resultXHR = Backendless.UserService.login(userName, password, bol, async);
     resultXHR = Backendless.UserService.login(userName, password, null, async);
+    Backendless.UserService.login<Promise<Backendless.User>>(userName, password).then().catch().then().then();
+    Backendless.UserService.login<Promise<Backendless.User>>(userName, password, bol).then().catch().then().then();
 
     newUser = Backendless.UserService.describeUserClass();
     resultXHR = Backendless.UserService.describeUserClass(async);
+    Backendless.UserService.describeUserClass<Promise<Backendless.User>>().then().catch().then().then();
 
     Backendless.UserService.logout();
     resultXHR = Backendless.UserService.logout(async);
+    Backendless.UserService.logout<Promise<void>>().then().catch().then().then();
 
     newUser = Backendless.UserService.getCurrentUser();
+    Backendless.UserService.getCurrentUser<Promise<Backendless.User>>().then().catch().then().then();
 
     newUser = Backendless.UserService.update(newUser);
     resultXHR = Backendless.UserService.update(newUser, async);
+    Backendless.UserService.update<Promise<Backendless.User>>(newUser).then().catch().then().then();
 
     Backendless.UserService.loginWithFacebook();
     Backendless.UserService.loginWithFacebook({});
@@ -358,6 +423,12 @@ function testUserService() {
     Backendless.UserService.loginWithFacebook({}, {}, null, true);
     Backendless.UserService.loginWithFacebook({}, null, null, true);
     Backendless.UserService.loginWithFacebook(null, null, null, true);
+    Backendless.UserService.loginWithFacebook<Promise<void>>().then().catch().then().then();
+    Backendless.UserService.loginWithFacebook<Promise<void>>({}).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook<Promise<void>>({}, {}).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook<Promise<void>>({}, {}, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook<Promise<void>>({}, null, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook<Promise<void>>(null, null, null, true).then().catch().then().then();
 
     Backendless.UserService.loginWithGooglePlus();
     Backendless.UserService.loginWithGooglePlus({});
@@ -369,30 +440,50 @@ function testUserService() {
     Backendless.UserService.loginWithGooglePlus({}, {}, null, null, true);
     Backendless.UserService.loginWithGooglePlus({}, null, null, null, true);
     Backendless.UserService.loginWithGooglePlus(null, null, null, null, true);
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>().then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}, document.createElement('div')).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}, document.createElement('div'), null, true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}, null, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, null, null, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus<Promise<void>>(null, null, null, null, true).then().catch().then().then();
 
     Backendless.UserService.loginWithTwitter();
     Backendless.UserService.loginWithTwitter({}, async);
     Backendless.UserService.loginWithTwitter({}, async, true);
     Backendless.UserService.loginWithTwitter({}, null, true);
     Backendless.UserService.loginWithTwitter(null, null, true);
+    Backendless.UserService.loginWithTwitter<Promise<void>>().then().catch().then().then();
+    Backendless.UserService.loginWithTwitter<Promise<void>>({}).then().catch().then().then();
+    Backendless.UserService.loginWithTwitter<Promise<void>>({}, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithTwitter<Promise<void>>(null, null, true).then().catch().then().then();
 
     Backendless.UserService.loginWithFacebookSdk();
     Backendless.UserService.loginWithFacebookSdk({}, true);
     Backendless.UserService.loginWithFacebookSdk({}, true, async);
     Backendless.UserService.loginWithFacebookSdk({}, null, async);
     Backendless.UserService.loginWithFacebookSdk(null, null, async);
+    Backendless.UserService.loginWithFacebookSdk<Promise<void>>().then().catch().then().then();
+    Backendless.UserService.loginWithFacebookSdk<Promise<void>>({}).then().catch().then().then();
+    Backendless.UserService.loginWithFacebookSdk<Promise<void>>({}, true).then().catch().then().then();
 
     Backendless.UserService.loginWithGooglePlusSdk();
     Backendless.UserService.loginWithGooglePlusSdk({}, true);
     Backendless.UserService.loginWithGooglePlusSdk({}, true, async);
     Backendless.UserService.loginWithGooglePlusSdk({}, null, async);
     Backendless.UserService.loginWithGooglePlusSdk(null, null, async);
+    Backendless.UserService.loginWithGooglePlusSdk<Promise<void>>().then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlusSdk<Promise<void>>({}).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlusSdk<Promise<void>>({}, true).then().catch().then().then();
 
     bol = Backendless.UserService.isValidLogin();
     resultXHR = Backendless.UserService.isValidLogin(async);
+    Backendless.UserService.isValidLogin<Promise<boolean>>().then().catch().then().then();
 
     Backendless.UserService.resendEmailConfirmation('email');
     Backendless.UserService.resendEmailConfirmation('email', async);
+    Backendless.UserService.resendEmailConfirmation<Promise<void>>('email').then().catch().then().then();
 
 }
 
@@ -458,58 +549,77 @@ function testGoeService() {
 
     existPoint = Backendless.Geo.addPoint(newGeoPoint);
     resultXHR = Backendless.Geo.addPoint(newGeoPoint, async);
+    Backendless.Geo.addPoint<Promise<Backendless.GeoPoint>>(newGeoPoint).then().catch().then().then();
 
     geoCollectionResult = Backendless.Geo.find(baseGeoQuery);
     resultXHR = Backendless.Geo.find(baseGeoQuery, async);
+    Backendless.Geo.find<Promise<Backendless.GeoCollectionResultI>>(baseGeoQuery).then().catch().then().then();
 
     geoCollectionResult = Backendless.Geo.find(rectangleGeoQuery);
     resultXHR = Backendless.Geo.find(rectangleGeoQuery, async);
+    Backendless.Geo.find<Promise<Backendless.GeoCollectionResultI>>(rectangleGeoQuery).then().catch().then().then();
 
     geoCollectionResult = Backendless.Geo.find(circleGeoQuery);
     resultXHR = Backendless.Geo.find(circleGeoQuery, async);
+    Backendless.Geo.find<Promise<Backendless.GeoCollectionResultI>>(circleGeoQuery).then().catch().then().then();
 
     errorStr = Backendless.Geo.deletePoint(categoryName);
     resultXHR = Backendless.Geo.deletePoint(categoryName, async);
     errorStr = Backendless.Geo.deletePoint(existPoint);
     resultXHR = Backendless.Geo.deletePoint(existPoint, async);
+    Backendless.Geo.deletePoint<Promise<string>>(categoryName).then().catch().then().then();
+    Backendless.Geo.deletePoint<Promise<string>>(existPoint).then().catch().then().then();
 
     resultObj = Backendless.Geo.loadMetadata(existPoint);
     resultXHR = Backendless.Geo.loadMetadata(existPoint, async);
     resultObj = Backendless.Geo.loadMetadata(geoClaster);
     resultXHR = Backendless.Geo.loadMetadata(geoClaster, async);
+    Backendless.Geo.loadMetadata<Promise<Object>>(existPoint).then().catch().then().then();
+    Backendless.Geo.loadMetadata<Promise<Object>>(geoClaster).then().catch().then().then();
 
     geoCollectionResult = Backendless.Geo.getClusterPoints(geoClaster);
     resultXHR = Backendless.Geo.getClusterPoints(geoClaster, async);
+    Backendless.Geo.getClusterPoints<Promise<Backendless.GeoCollectionResultI>>(geoClaster).then().catch().then().then();
 
     geoCollectionResult = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery);
     resultXHR = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery, async);
+    Backendless.Geo.getFencePoints<Promise<Backendless.GeoCollectionResultI>>(fenceName, baseGeoQuery).then().catch().then().then();
 
     geoCollectionResult = Backendless.Geo.relativeFind(baseGeoQuery);
     resultXHR = Backendless.Geo.relativeFind(baseGeoQuery, async);
+    Backendless.Geo.relativeFind<Promise<Backendless.GeoCollectionResultI>>(baseGeoQuery).then().catch().then().then();
 
     geoCategory = Backendless.Geo.addCategory(categoryName);
     resultXHR = Backendless.Geo.addCategory(categoryName, async);
+    Backendless.Geo.addCategory<Promise<Backendless.GeoCategoryI>>(categoryName).then().catch().then().then();
 
     bool = Backendless.Geo.deleteCategory(categoryName);
     resultXHR = Backendless.Geo.deleteCategory(categoryName, async);
+    Backendless.Geo.deleteCategory<Promise<boolean>>(categoryName).then().catch().then().then();
 
     geoCategories = Backendless.Geo.getCategories();
     resultXHR = Backendless.Geo.getCategories(async);
+    Backendless.Geo.getCategories<Promise<Backendless.GeoCategoryI[]>>().then().catch().then().then();
 
     resultObj = Backendless.Geo.runOnStayAction(fenceName, existPoint);
     resultXHR = Backendless.Geo.runOnStayAction(fenceName, existPoint, async);
+    Backendless.Geo.runOnStayAction<Promise<Object>>(fenceName, existPoint).then().catch().then().then();
 
     resultObj = Backendless.Geo.runOnExitAction(fenceName, existPoint);
     resultXHR = Backendless.Geo.runOnExitAction(fenceName, existPoint, async);
+    Backendless.Geo.runOnExitAction<Promise<Object>>(fenceName, existPoint).then().catch().then().then();
 
     resultObj = Backendless.Geo.runOnEnterAction(fenceName, existPoint);
     resultXHR = Backendless.Geo.runOnEnterAction(fenceName, existPoint, async);
+    Backendless.Geo.runOnEnterAction<Promise<Object>>(fenceName, existPoint).then().catch().then().then();
 
     Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback);
     Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback, async);
+    Backendless.Geo.startGeofenceMonitoringWithInAppCallback<Promise<void>>(fenceName, inAppCallback).then().catch().then().then();
 
     Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint);
     Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint, async);
+    //Backendless.Geo.startGeofenceMonitoringWithRemoteCallback<Promise<void>>(fenceName, existPoint).then().catch().then().then();
 
     Backendless.Geo.stopGeofenceMonitoring(fenceName);
 
@@ -541,24 +651,32 @@ function testMessaging() {
 
     subscription = Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions);
     resultXHR = Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions, async);
+    Backendless.Messaging.subscribe<Promise<Backendless.SubscriptionI>>(channelName, subscriptionCallback, subscriptionOptions).then().catch().then().then();
 
     resultObj = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
     resultXHR = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions, async);
+    Backendless.Messaging.publish<Promise<Object>>(channelName, message, publishOptions, deliveryOptions).then().catch().then().then();
 
     resultObj = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
     resultXHR = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments, async);
+    Backendless.Messaging.sendEmail<Promise<Object>>(subject, bodyParts, recipients, attachments).then().catch().then().then();
 
     resultBool = Backendless.Messaging.cancel(messageId);
     resultXHR = Backendless.Messaging.cancel(messageId, async);
+    Backendless.Messaging.cancel<Promise<boolean>>(messageId).then().catch().then().then();
 
     resultObj = Backendless.Messaging.registerDevice(channels, expiration);
     resultXHR = Backendless.Messaging.registerDevice(channels, expiration, async);
+    Backendless.Messaging.registerDevice<Promise<Object>>(channels, expiration).then().catch().then().then();
 
     resultObj = Backendless.Messaging.getRegistrations();
     resultXHR = Backendless.Messaging.getRegistrations(async);
+    Backendless.Messaging.getRegistrations<Promise<Object>>().then().catch().then().then();
 
     resultObj = Backendless.Messaging.unregisterDevice();
     resultXHR = Backendless.Messaging.unregisterDevice(async);
+    Backendless.Messaging.unregisterDevice<Promise<Object>>().then().catch().then().then();
+
 }
 
 function testFilesService() {
@@ -595,6 +713,9 @@ function testFilesService() {
     resultBool = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
     resultBool = Backendless.Files.saveFile(path, fileName, fileContent);
 
+    Backendless.Files.saveFile<Promise<boolean>>(path, fileName, fileContent, overwrite).then().catch().then().then();
+    Backendless.Files.saveFile<Promise<boolean>>(path, fileName, fileContent).then().catch().then().then();
+
     Backendless.Files.saveFile(path, fileName, fileContent, overwrite, async);
     Backendless.Files.saveFile(path, fileName, fileContent, async);
 
@@ -602,6 +723,11 @@ function testFilesService() {
     Backendless.Files.upload(files, path, overwrite, async);
     Backendless.Files.upload(file, path, null, async);
     Backendless.Files.upload(files, path, null, async);
+
+    Backendless.Files.upload<Promise<Object>>(file, path, overwrite).then().catch().then().then();
+    Backendless.Files.upload<Promise<Object>>(files, path, overwrite).then().catch().then().then();
+    Backendless.Files.upload<Promise<Object>>(file, path, null).then().catch().then().then();
+    Backendless.Files.upload<Promise<Object>>(files, path, null).then().catch().then().then();
 
     resultObj = Backendless.Files.listing(path);
     resultXHR = Backendless.Files.listing(path, async);
@@ -614,35 +740,51 @@ function testFilesService() {
     resultObj = Backendless.Files.listing(path, pattern, recursively, pageSize, offset);
     resultXHR = Backendless.Files.listing(path, pattern, recursively, pageSize, offset, async);
 
+    Backendless.Files.listing<Promise<Object>>(path).then().catch().then().then();
+    Backendless.Files.listing<Promise<Object>>(path, pattern).then().catch().then().then();
+    Backendless.Files.listing<Promise<Object>>(path, pattern, recursively).then().catch().then().then();
+    Backendless.Files.listing<Promise<Object>>(path, pattern, recursively, pageSize).then().catch().then().then();
+    Backendless.Files.listing<Promise<Object>>(path, pattern, recursively, pageSize, offset).then().catch().then().then();
+
     resultObj = Backendless.Files.renameFile(oldPathName, newName);
     Backendless.Files.renameFile(oldPathName, newName, async);
+    Backendless.Files.renameFile<Promise<Object>>(oldPathName, newName).then().catch().then().then();
 
     resultObj = Backendless.Files.moveFile(sourcePath, targetPath);
     Backendless.Files.moveFile(sourcePath, targetPath, async);
+    Backendless.Files.moveFile<Promise<Object>>(sourcePath, targetPath).then().catch().then().then();
 
     resultObj = Backendless.Files.copyFile(sourcePath, targetPath);
     Backendless.Files.copyFile(sourcePath, targetPath, async);
+    Backendless.Files.copyFile<Promise<Object>>(sourcePath, targetPath).then().catch().then().then();
 
     Backendless.Files.remove(fileURL);
     Backendless.Files.remove(fileURL, async);
+    Backendless.Files.remove<Promise<void>>(fileURL).then().catch().then().then();
 
     resultObj = Backendless.Files.exists(path);
     resultXHR = Backendless.Files.exists(path, async);
+    Backendless.Files.exists<Promise<Object>>(path).then().catch().then().then();
 
     Backendless.Files.removeDirectory(path);
     Backendless.Files.removeDirectory(path, async);
+    Backendless.Files.removeDirectory<Promise<void>>(path).then().catch().then().then();
 
     resultObj = Backendless.Files.Permissions.grantUser(userid, url, permissionType);
     resultXHR = Backendless.Files.Permissions.grantUser(userid, url, permissionType, async);
+    Backendless.Files.Permissions.grantUser<Promise<Object>>(userid, url, permissionType).then().catch().then().then();
 
     resultObj = Backendless.Files.Permissions.grantRole(roleName, url, permissionType);
     resultXHR = Backendless.Files.Permissions.grantRole(roleName, url, permissionType, async);
+    Backendless.Files.Permissions.grantRole<Promise<Object>>(roleName, url, permissionType).then().catch().then().then();
 
     resultObj = Backendless.Files.Permissions.denyUser(userid, url, permissionType);
     resultXHR = Backendless.Files.Permissions.denyUser(userid, url, permissionType, async);
+    Backendless.Files.Permissions.denyUser<Promise<Object>>(userid, url, permissionType).then().catch().then().then();
 
     resultObj = Backendless.Files.Permissions.denyRole(roleName, url, permissionType);
     resultXHR = Backendless.Files.Permissions.denyRole(roleName, url, permissionType, async);
+    Backendless.Files.Permissions.denyRole<Promise<Object>>(roleName, url, permissionType).then().catch().then().then();
 }
 
 function testCommerce() {
@@ -662,12 +804,15 @@ function testCommerce() {
 
     resultObj = Backendless.Commerce.validatePlayPurchase(packageName, productId, token);
     resultXHR = Backendless.Commerce.validatePlayPurchase(packageName, productId, token, async);
+    Backendless.Commerce.validatePlayPurchase<Promise<Object>>(packageName, productId, token).then().catch().then().then();
 
     resultObj = Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token);
     resultXHR = Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token, async);
+    Backendless.Commerce.cancelPlaySubscription<Promise<Object>>(packageName, subscriptionId, token).then().catch().then().then();
 
     resultObj = Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token);
     resultXHR = Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token, async);
+    Backendless.Commerce.getPlaySubscriptionStatus<Promise<Object>>(packageName, subscriptionId, token).then().catch().then().then();
 }
 
 function testEvents() {
@@ -685,6 +830,7 @@ function testEvents() {
 
     resultObj = Backendless.Events.dispatch(eventName, eventArgs);
     resultXHR = Backendless.Events.dispatch(eventName, eventArgs, async);
+    Backendless.Events.dispatch<Promise<Object>>(eventName, eventArgs).then().catch().then().then();
 }
 
 function testCache() {
@@ -704,25 +850,34 @@ function testCache() {
     resultObj = Backendless.Cache.put(key, value, timeToLive);
     resultXHR = Backendless.Cache.put(key, value, async);
     resultXHR = Backendless.Cache.put(key, value, timeToLive, async);
+    Backendless.Cache.put<Promise<Object>>(key, value).then().catch().then().then();
+    Backendless.Cache.put<Promise<Object>>(key, value, timeToLive).then().catch().then().then();
 
     resultObj = Backendless.Cache.expireIn(key, seconds);
     resultXHR = Backendless.Cache.expireIn(key, seconds, async);
     resultObj = Backendless.Cache.expireIn(key, date);
     resultXHR = Backendless.Cache.expireIn(key, date, async);
+    Backendless.Cache.expireIn<Promise<Object>>(key, seconds).then().catch().then().then();
+    Backendless.Cache.expireIn<Promise<Object>>(key, date).then().catch().then().then();
 
     resultObj = Backendless.Cache.expireAt(key, seconds);
     resultXHR = Backendless.Cache.expireAt(key, seconds, async);
     resultObj = Backendless.Cache.expireAt(key, date);
     resultXHR = Backendless.Cache.expireAt(key, date, async);
+    Backendless.Cache.expireAt<Promise<Object>>(key, seconds).then().catch().then().then();
+    Backendless.Cache.expireAt<Promise<Object>>(key, date).then().catch().then().then();
 
     resultObj = Backendless.Cache.contains(key);
     resultXHR = Backendless.Cache.contains(key, async);
+    Backendless.Cache.contains<Promise<Object>>(key).then().catch().then().then();
 
     resultObj = Backendless.Cache.get(key);
     resultXHR = Backendless.Cache.get(key, async);
+    Backendless.Cache.get<Promise<Object>>(key).then().catch().then().then();
 
     resultObj = Backendless.Cache.remove(key);
     resultXHR = Backendless.Cache.remove(key, async);
+    Backendless.Cache.remove<Promise<Object>>(key).then().catch().then().then();
 }
 
 function testCounters() {
@@ -733,65 +888,83 @@ function testCounters() {
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
 
     });
-
+    //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
     var resultNum:number = 123;
     var resultXHR:XMLHttpRequest;
 
     resultNum = Backendless.Counters.get(counterName);
     resultXHR = Backendless.Counters.get(counterName, async);
+    Backendless.Counters.get<Promise<number>>(counterName).then().catch().then().then();
 
     resultNum = Backendless.Counters.getAndIncrement(counterName);
     resultXHR = Backendless.Counters.getAndIncrement(counterName, async);
+    Backendless.Counters.getAndIncrement<Promise<number>>(counterName).then().catch().then().then();
 
     resultNum = Backendless.Counters.incrementAndGet(counterName);
     resultXHR = Backendless.Counters.incrementAndGet(counterName, async);
+    Backendless.Counters.incrementAndGet<Promise<number>>(counterName).then().catch().then().then();
 
     resultNum = Backendless.Counters.getAndDecrement(counterName);
     resultXHR = Backendless.Counters.getAndDecrement(counterName, async);
+    Backendless.Counters.getAndDecrement<Promise<number>>(counterName).then().catch().then().then();
 
     resultNum = Backendless.Counters.decrementAndGet(counterName);
     resultXHR = Backendless.Counters.decrementAndGet(counterName, async);
+    Backendless.Counters.decrementAndGet<Promise<number>>(counterName).then().catch().then().then();
 
     resultNum = Backendless.Counters.addAndGet(counterName, value);
     resultXHR = Backendless.Counters.addAndGet(counterName, value, async);
+    Backendless.Counters.addAndGet<Promise<number>>(counterName, value).then().catch().then().then();
 
     resultNum = Backendless.Counters.getAndAdd(counterName, value);
     resultXHR = Backendless.Counters.getAndAdd(counterName, value, async);
+    Backendless.Counters.getAndAdd<Promise<number>>(counterName, value).then().catch().then().then();
 
     resultNum = Backendless.Counters.compareAndSet(counterName, expected, updated);
     resultXHR = Backendless.Counters.compareAndSet(counterName, expected, updated, async);
+    Backendless.Counters.compareAndSet<Promise<number>>(counterName, expected, updated).then().catch().then().then();
 
     resultNum = Backendless.Counters.reset(counterName);
     resultXHR = Backendless.Counters.reset(counterName, async);
+    Backendless.Counters.reset<Promise<number>>(counterName).then().catch().then().then();
 
     var atomicInstance:Backendless.AtomicInstance = Backendless.Counters.of(counterName);
 
     resultNum = atomicInstance.get();
     resultXHR = atomicInstance.get(async);
+    atomicInstance.get<Promise<number>>().then().catch().then().then();
 
     resultNum = atomicInstance.getAndIncrement();
     resultXHR = atomicInstance.getAndIncrement(async);
+    atomicInstance.getAndIncrement<Promise<number>>().then().catch().then().then();
 
     resultNum = atomicInstance.incrementAndGet();
     resultXHR = atomicInstance.incrementAndGet(async);
+    atomicInstance.incrementAndGet<Promise<number>>().then().catch().then().then();
 
     resultNum = atomicInstance.getAndDecrement();
     resultXHR = atomicInstance.getAndDecrement(async);
+    atomicInstance.getAndDecrement<Promise<number>>().then().catch().then().then();
 
     resultNum = atomicInstance.decrementAndGet();
     resultXHR = atomicInstance.decrementAndGet(async);
+    atomicInstance.decrementAndGet<Promise<number>>().then().catch().then().then();
 
     resultNum = atomicInstance.addAndGet(value);
     resultXHR = atomicInstance.addAndGet(value, async);
+    atomicInstance.addAndGet<Promise<number>>(value).then().catch().then().then();
 
     resultNum = atomicInstance.getAndAdd(value);
     resultXHR = atomicInstance.getAndAdd(value, async);
+    atomicInstance.getAndAdd<Promise<number>>(value).then().catch().then().then();
 
     resultNum = atomicInstance.compareAndSet(expected, updated);
     resultXHR = atomicInstance.compareAndSet(expected, updated, async);
+    atomicInstance.compareAndSet<Promise<number>>(expected, updated).then().catch().then().then();
 
     resultNum = atomicInstance.reset();
     resultXHR = atomicInstance.reset(async);
+    atomicInstance.reset<Promise<number>>().then().catch().then().then();
 }
 
 function testCustomServices() {
@@ -805,6 +978,7 @@ function testCustomServices() {
 
     var resultObj:Object = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters);
     var resultXHR:XMLHttpRequest = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters, async);
+    Backendless.CustomServices.invoke<Promise<Object>>(serviceName, serviceVersion, method, parameters).then().catch().then().then();
 }
 
 function testLogging() {
