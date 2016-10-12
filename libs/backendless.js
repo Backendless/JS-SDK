@@ -1716,15 +1716,21 @@
             }
         },
 
-        getCurrentUser: function() {
+        getCurrentUser: function(async) {
             if (currentUser) {
-                return this._getUserFromResponse(currentUser);
+                var userFromResponse = this._getUserFromResponse(currentUser);
+
+                return async ? async.success(userFromResponse) : userFromResponse;
             }
 
             var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
             var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
 
-            return currentUserId && persistence.of(User).findById(currentUserId) || null;
+            if (currentUserId) {
+                return persistence.of(User).findById(currentUserId, async);
+            }
+
+            return async ? async.success(null) : null;
         },
 
         update: function(user, async) {
