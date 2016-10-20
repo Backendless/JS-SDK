@@ -327,9 +327,6 @@
 
                 xhr.open(config.method, config.url, config.isAsync);
                 xhr.setRequestHeader('Content-Type', contentType);
-                xhr.setRequestHeader('application-id', Backendless.applicationId);
-                xhr.setRequestHeader('secret-key', Backendless.secretKey);
-                xhr.setRequestHeader('application-type', 'JS');
 
                 if ((currentUser != null && currentUser["user-token"])) {
                     xhr.setRequestHeader("user-token", currentUser["user-token"]);
@@ -407,11 +404,8 @@
             method : config.method || "GET",
             path   : u.path,
             headers: {
-                "Content-Length"  : config.data ? Buffer.byteLength(config.data) : 0,
-                "Content-Type"    : config.data ? 'application/json' : 'application/x-www-form-urlencoded',
-                "application-id"  : Backendless.applicationId,
-                "secret-key"      : Backendless.secretKey,
-                "application-type": "JS"
+                "Content-Length": config.data ? Buffer.byteLength(config.data) : 0,
+                "Content-Type"  : config.data ? 'application/json' : 'application/x-www-form-urlencoded'
             }
         };
 
@@ -563,10 +557,6 @@
 
     function extendCollection(collection, dataMapper) {
         if (collection.nextPage != null) {
-            if (collection.nextPage && collection.nextPage.split("/")[1] == Backendless.appVersion) {
-                collection.nextPage = Backendless.serverURL + collection.nextPage;
-            }
-
             collection._nextPage = collection.nextPage;
 
             collection.nextPage = function(async) {
@@ -1944,7 +1934,7 @@
                     try {
                         var result = Backendless._ajax({
                             method: 'GET',
-                            url   : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken
+                            url   : this.restUrl + '/isvalidusertoken/' + userToken
                         });
                         return !!result;
                     } catch (e) {
@@ -1953,7 +1943,7 @@
                 } else {
                     Backendless._ajax({
                         method      : 'GET',
-                        url         : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
+                        url         : this.restUrl + '/isvalidusertoken/' + userToken,
                         isAsync     : isAsync,
                         asyncHandler: responder && this._wrapAsync(responder)
                     });
@@ -3896,6 +3886,7 @@
     };
 
     var Cache = function() {
+        this.restUrl = Backendless.appPath + '/cache/';
     };
 
     var FactoryMethods = {};
@@ -3931,7 +3922,7 @@
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+                url         : this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
                 data        : JSON.stringify(value),
                 isAsync     : isAsync,
                 asyncHandler: responder
@@ -3949,7 +3940,7 @@
 
                 return Backendless._ajax({
                     method      : 'PUT',
-                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + '/expireIn?timeout=' + seconds,
+                    url         : this.restUrl + key + '/expireIn?timeout=' + seconds,
                     data        : JSON.stringify({}),
                     isAsync     : isAsync,
                     asyncHandler: responder
@@ -3970,7 +3961,7 @@
 
                 return Backendless._ajax({
                     method      : 'PUT',
-                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + '/expireAt?timestamp=' + timestamp,
+                    url         : this.restUrl + key + '/expireAt?timestamp=' + timestamp,
                     data        : JSON.stringify({}),
                     isAsync     : isAsync,
                     asyncHandler: responder
@@ -3994,7 +3985,7 @@
 
             return Backendless._ajax({
                 method      : method,
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + (contain ? '/check' : ''),
+                url         : this.restUrl + key + (contain ? '/check' : ''),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4032,7 +4023,7 @@
 
             var result = Backendless._ajax({
                 method      : 'GET',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key,
+                url         : this.restUrl + key,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4050,6 +4041,7 @@
     };
 
     var Counters = function() {
+        this.restUrl = Backendless.appPath + '/counters/';
     };
 
     var AtomicInstance = function(counterName) {
@@ -4087,7 +4079,7 @@
 
             return Backendless._ajax({
                 method      : method,
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + urlPart,
+                url         : this.restUrl + this.name + urlPart,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4135,7 +4127,7 @@
 
             return Backendless._ajax({
                 method      : 'GET',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name,
+                url         : this.restUrl + this.name,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4159,7 +4151,7 @@
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + urlPart + ((value) ? value : ''),
+                url         : this.restUrl + this.name + urlPart + ((value) ? value : ''),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4197,7 +4189,7 @@
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
+                url         : this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4283,7 +4275,7 @@
                     method      : 'PUT',
                     isAsync     : !!async,
                     asyncHandler: async && new Async(cb('success'), cb('fault')),
-                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
+                    url         : Backendless.appPath + '/log',
                     data        : JSON.stringify(this.logInfo)
                 });
 
@@ -4357,6 +4349,7 @@
     };
 
     function CustomServices() {
+        this.restUrl = Backendless.appPath + '/services/';
     }
 
     CustomServices.prototype = {
@@ -4366,7 +4359,7 @@
 
             return Backendless._ajax({
                 method      : "POST",
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/services/' + serviceName + '/' + serviceVersion + '/' + method,
+                url         : this.restUrl + [serviceName, serviceVersion, method].join('/'),
                 data        : JSON.stringify(parameters),
                 isAsync     : isAsync,
                 asyncHandler: responder
@@ -4451,7 +4444,7 @@
                 return new Promise(function(resolve, reject) {
                     return Backendless._ajax({
                         method: 'GET',
-                        url: Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
+                        url: this.restUrl + '/isvalidusertoken/' + userToken,
                         isAsync: true,
                         asyncHandler: new Async(resolve, reject)
                     });
@@ -4467,11 +4460,10 @@
         };
     }
 
-    Backendless.initApp = function(appId, secretKey, appVersion) {
+    Backendless.initApp = function(appId, secretKey) {
         Backendless.applicationId = appId;
         Backendless.secretKey = secretKey;
-        Backendless.appVersion = appVersion;
-        Backendless.appPath = [Backendless.serverURL, Backendless.appVersion].join('/');
+        Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/');
         Backendless.UserService = new UserService();
         Backendless.Users = Backendless.UserService;
         Backendless.Geo = new Geo();
@@ -4490,7 +4482,7 @@
         currentUser = null;
     };
 
-    var DataQuery = function () {
+    var DataQuery = function() {
         this.properties = [];
         this.condition = null;
         this.options = null;
