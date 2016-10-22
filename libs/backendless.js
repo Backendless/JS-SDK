@@ -555,33 +555,6 @@
         return new Async(success, error);
     };
 
-    function extendCollection(collection, dataMapper) {
-        if (collection.nextPage != null) {
-            collection._nextPage = collection.nextPage;
-
-            collection.nextPage = function(async) {
-                return dataMapper._load(this._nextPage, async);
-            };
-
-            if (promisesEnabled) {
-                collection.nextPage = promisify(collection.nextPage);
-            }
-
-            collection.getPage = function(offset, pageSize, async) {
-                var nextPage = this._nextPage.replace(/offset=\d+/ig, 'offset=' + offset);
-
-                if (!(pageSize instanceof Async)) {
-                    nextPage = nextPage.replace(/pagesize=\d+/ig, 'pageSize=' + pageSize);
-                }
-                async = extractResponder(arguments);
-
-                return dataMapper._load(nextPage, async);
-            };
-
-            collection.dataMapper = dataMapper;
-        }
-    }
-
     function Async(successCallback, faultCallback, context) {
         if (!(faultCallback instanceof Function)) {
             context = faultCallback;
@@ -899,7 +872,6 @@
             response = response.fields || response;
             item = new _Model();
 
-            extendCollection(response, this);
             deepExtend(item, response);
             return this._formCircDeps(item);
         },
@@ -917,11 +889,8 @@
                     arr[i] = item;
                 }
 
-                extendCollection(collection, this);
-
                 return this._formCircDeps(collection);
-            }
-            else {
+            } else {
                 response = response.fields || response;
                 item = Utils.isString(_Model) ? {} : new _Model();
                 deepExtend(item, response);
@@ -1992,25 +1961,16 @@
             FEET      : 'FEET'
         },
 
-        _parseResponse  : function(data) {
-            var collection = data.collection;
-            extendCollection(collection, this);
-
-            return collection;
-        },
-
         _load           : function(url, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null;
 
-            var result = Backendless._ajax({
+            return Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-
-            return isAsync ? result : this._parseResponse(result);
         },
 
         _findHelpers    : {
@@ -2277,9 +2237,8 @@
             var self = this;
 
             var responderOverride = function(async) {
-                var success = function(data) {
-                    var geoCollection = data.collection.data;
-                    for (var i = 0; i < geoCollection.length; i++) {
+                var success = function(geoCollection) {
+                   for (var i = 0; i < geoCollection.length; i++) {
                         var geoObject = null;
                         geoObject = new GeoPoint();
                         geoObject.categories = geoCollection[i].categories;
@@ -2289,8 +2248,7 @@
                         geoObject.objectId = geoCollection[i].objectId;
                         data.collection.data[i] = geoObject;
                     }
-                    data = self._parseResponse(data);
-                    async.success(data);
+                    async.success(geoCollection);
                 };
 
                 var error = function(data) {
@@ -2306,14 +2264,12 @@
 
             responder = responderOverride(responder);
 
-            var result = Backendless._ajax({
+            return Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-
-            return isAsync ? result : this._parseResponse(result);
         },
 
         relativeFind: function(query, async) {
