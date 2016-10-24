@@ -1207,6 +1207,26 @@
             argsObj.url = 'last';
 
             return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        },
+
+        count: function(dataQuery) {
+            dataQuery = dataQuery || {};
+
+            var url       = this.restUrl + '/count';
+            var responder = extractResponder(arguments);
+            var isAsync   = responder != null;
+
+            if (dataQuery.condition) {
+                url += '?where=' + encodeURIComponent(dataQuery.condition);
+            }
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
+                asyncHandler: responder,
+                cachePolicy : dataQuery.cachePolicy
+            });
         }
     };
 
