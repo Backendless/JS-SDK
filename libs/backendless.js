@@ -3328,9 +3328,6 @@
 
         xhr.open("POST", this.uploadPath, true);
         xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
-        xhr.setRequestHeader('application-id', Backendless.applicationId);
-        xhr.setRequestHeader("secret-key", Backendless.secretKey);
-        xhr.setRequestHeader("application-type", "JS");
 
         if ((currentUser != null && currentUser["user-token"])) {
             xhr.setRequestHeader("user-token", currentUser["user-token"]);
@@ -3385,9 +3382,6 @@
 
         xhr.open("PUT", this.uploadPath, true);
         xhr.setRequestHeader('Content-Type', 'text/plain');
-        xhr.setRequestHeader('application-id', Backendless.applicationId);
-        xhr.setRequestHeader("secret-key", Backendless.secretKey);
-        xhr.setRequestHeader("application-type", "JS");
 
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
