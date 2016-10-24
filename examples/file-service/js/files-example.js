@@ -1,7 +1,7 @@
 (function (Backendless, $) {
 
-    var APPLICATION_ID = '3C5A679C-A2CA-C0AA-FFE4-E87E856A2B00';
-    var SECRET_KEY = 'F1AE218D-08D9-6474-FF8A-4B1D7F720500';
+    var APPLICATION_ID = '';
+    var SECRET_KEY = '';
 
     var DEVICE_ID = 'fileServiceTest';
     var TEST_FOLDER = 'testFolder';
