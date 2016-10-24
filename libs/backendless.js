@@ -879,17 +879,13 @@
         _parseFindResponse: function(response) {
             var i, len, _Model = this.model, item;
 
-            if (response.data) {
-                var collection = response, arr = collection.data;
-
-                for (i = 0, len = arr.length; i < len; ++i) {
-                    arr[i] = arr[i].fields || arr[i];
-                    item = new _Model();
-                    deepExtend(item, arr[i]);
-                    arr[i] = item;
+            if (Utils.isArray(response)) {
+                for (i = 0, len = response.length; i < len; ++i) {
+                    response[i] = response[i].fields || response[i];
+                    response[i] = deepExtend(new _Model(), response[i]);
                 }
 
-                return this._formCircDeps(collection);
+                return this._formCircDeps(response);
             } else {
                 response = response.fields || response;
                 item = Utils.isString(_Model) ? {} : new _Model();
