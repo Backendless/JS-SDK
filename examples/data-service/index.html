@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>jQuery • TodoMVC</title>
+	<title>Data Service Example</title>
 	<link rel="stylesheet" href="assets/base.css">
 	<link rel="stylesheet" href="css/app.css">
 	<!--[if IE]>
@@ -32,7 +32,7 @@
 		<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
 	</footer>
 	<script id="todo-template" type="text/x-handlebars-template">
-	{{#this}}
+	{{#each todos}}
 	<li {{#if completed}}class="completed"{{/if}} data-id="{{id}}">
 		<div class="view">
 			<input class="toggle" type="checkbox" {{#if completed}}checked{{/if}}>
@@ -41,7 +41,7 @@
 		</div>
 		<input class="edit" value="{{title}}">
 	</li>
-	{{/this}}
+	{{/each}}
 	</script>
 	<script id="footer-template" type="text/x-handlebars-template">
 	<span id="todo-count"><strong>{{activeTodoCount}}</strong> {{activeTodoWord}} left</span>
