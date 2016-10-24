@@ -1,14 +1,14 @@
 var APPLICATION_ID = '';
 var SECRET_KEY = '';
-var VERSION = 'v1';
 
-if (!APPLICATION_ID || !SECRET_KEY || !VERSION)
+if (!APPLICATION_ID || !SECRET_KEY)
     alert("Missing application ID and secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in UserExample.js");
 
 init();
 function init() {
     $('.carousel').carousel({interval: false});
-    Backendless.initApp(APPLICATION_ID, SECRET_KEY, VERSION);
+
+    Backendless.initApp(APPLICATION_ID, SECRET_KEY);
     var userProps = [
         {name: 'email'},
         {name: 'name'},
