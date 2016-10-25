@@ -2056,8 +2056,8 @@
             }
         },
 
-        _buildUrlByQuery: function (query) {
-            var url = query.url;
+        _buildUrlQueryParams: function (query) {
+            var params = '?';
 
             if (query.searchRectangle && query.radius) {
                 throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
@@ -2071,16 +2071,15 @@
                 throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
             }
 
-            url += query.searchRectangle ? '/rect?' : '/points?';
-            url += query.units ? 'units=' + query.units : '';
+            params += query.units ? 'units=' + query.units : '';
 
             for (var prop in query) {
                 if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
-                    url += '&' + this._findHelpers[prop](query[prop]);
+                    params += '&' + this._findHelpers[prop](query[prop]);
                 }
             }
 
-            return url.replace(/\?&/g, '?');
+            return params.replace(/\?&/g, '?');
         },
 
         savePoint        : function(geopoint, async) {
@@ -2137,9 +2136,10 @@
         },
 
         findUtil        : function(query, async) {
-            var url       = this._buildUrlByQuery(query),
-                responder = extractResponder(arguments),
+            var responder = extractResponder(arguments),
                 isAsync   = false;
+
+            var url = query.url + (query.searchRectangle ? '/rect' : '/points') + this._buildUrlQueryParams(query);
 
             var self = this;
 
@@ -2412,9 +2412,7 @@
                 throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
             }
 
-            query.url = this.restUrl + '/count';
-
-            var url       = this._buildUrlByQueryquery(query);
+            var url       = this.restUrl + '/count' + this._buildUrlQueryParams(query);
             var responder = extractResponder(arguments);
             var isAsync   = !!responder;
 
