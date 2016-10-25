@@ -4,7 +4,7 @@ var APP_ID = '',
     FENCE_NAME = '';
 
 function initApp() {
-    Backendless.initApp(APP_ID, SECRET_KEY, VERSION);
+    Backendless.initApp(APP_ID, SECRET_KEY);
 }
 
 if (!APP_ID || !SECRET_KEY)
@@ -77,6 +77,7 @@ Backendless.Geo.startGeofenceMonitoringWithInAppCallback(null, inAppCallBack);
 
 
 var $resultBlock;
+var $count;
 var $thead;
 var $tbody;
 var $geoQuery;
@@ -97,6 +98,7 @@ $(function () {
     });
 
     $resultBlock = $('#result-block');
+    $count = $('#total-count');
     $thead = $('#thead');
     $tbody = $('#tbody');
 
@@ -122,23 +124,29 @@ function searchGeoPoints() {
     startLoading();
 
     $tbody.empty();
+    $count.text('loading...');
     $resultBlock.hide();
 
     $geoQuery.radius = $('#radius-value').text();
     Backendless.Geo.find($geoQuery, new Backendless.Async(onResult, onFault, this));
+    Backendless.Geo.getGeopointCount($geoQuery, new Backendless.Async(onCountResult, onFault, this));
+}
+
+function onCountResult(count) {
+    $count.text(count);
 }
 
 function onResult(result) {
     finishLoading();
     $resultBlock.show();
 
-    if (!result.totalObjects) {
+    if (!result.collection.length) {
         $thead.hide();
         $tbody.append("<h3 style='text-align: center'>No geo points found</h3>");
         return;
     }
 
-    $.each(result.data, function () {
+    $.each(result.collection, function () {
         var cells = [
             "<td>" + this.metadata.city + "</td>", "<td>" + this.latitude + "</td>", "<td>" + this.longitude + "</td>"
         ];
