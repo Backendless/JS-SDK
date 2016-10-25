@@ -2145,7 +2145,7 @@
 
             var responderOverride = function(async) {
                 var success = function(data) {
-                    var geoCollection = data.collection.data;
+                    var geoCollection = data.collection;
 
                     for (var i = 0; i < geoCollection.length; i++) {
                         var geoObject = null;
@@ -2162,10 +2162,9 @@
                         geoObject.metadata = geoCollection[i].metadata;
                         geoObject.objectId = geoCollection[i].objectId;
                         geoObject.distance = geoCollection[i].distance;
-                        data.collection.data[i] = geoObject;
+                        data.collection[i] = geoObject;
                     }
 
-                    data = self._parseResponse(data);
                     async.success(data);
                 };
 
