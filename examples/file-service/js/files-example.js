@@ -65,7 +65,7 @@
 
         countContainer.text('loading...');
 
-        Backendless.Persistence.of(FileItem).count(new Backendless.Async(
+        Backendless.Persistence.of(FileItem).getObjectCount(new Backendless.Async(
             function(count){
                 countContainer.text(count);
             },

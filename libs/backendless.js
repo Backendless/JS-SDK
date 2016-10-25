@@ -1209,7 +1209,7 @@
             return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
-        count: function(dataQuery) {
+        getObjectCount: function(dataQuery) {
             dataQuery = dataQuery || {};
 
             var url       = this.restUrl + '/count';
@@ -2056,6 +2056,33 @@
             }
         },
 
+        _buildUrlByQuery: function (query) {
+            var url = query.url;
+
+            if (query.searchRectangle && query.radius) {
+                throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
+            }
+
+            if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
+                throw new Error("Latitude and longitude should be provided to search in radius");
+            }
+
+            if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
+                throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
+            }
+
+            url += query.searchRectangle ? '/rect?' : '/points?';
+            url += query.units ? 'units=' + query.units : '';
+
+            for (var prop in query) {
+                if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
+                    url += '&' + this._findHelpers[prop](query[prop]);
+                }
+            }
+
+            return url.replace(/\?&/g, '?');
+        },
+
         savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
@@ -2110,27 +2137,10 @@
         },
 
         findUtil        : function(query, async) {
-            var url       = query["url"],
+            var url       = this._buildUrlByQuery(query),
                 responder = extractResponder(arguments),
                 isAsync   = false;
 
-            if (query.searchRectangle && query.radius) {
-                throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
-            } else if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
-                throw new Error("Latitude and longitude should be provided to search in radius");
-            } else if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
-                throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
-            } else {
-                url += query.searchRectangle ? '/rect?' : '/points?';
-                url += query.units ? 'units=' + query.units : '';
-                for (var prop in query) {
-                    if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
-                        url += '&' + this._findHelpers[prop](query[prop]);
-                    }
-                }
-            }
-
-            url = url.replace(/\?&/g, '?');
             var self = this;
 
             var responderOverride = function(async) {
@@ -2396,6 +2406,25 @@
             query["url"] = this.restUrl;
 
             return this.findUtil(query, async);
+        },
+
+        getGeopointCount: function(query) {
+            if (!(query instanceof GeoQuery)) {
+                throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
+            }
+
+            query.url = this.restUrl + '/count';
+
+            var url       = this._buildUrlByQueryquery(query);
+            var responder = extractResponder(arguments);
+            var isAsync   = !!responder;
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
+                asyncHandler: responder
+            });
         },
 
         _runFenceAction: function(action, geoFenceName, geoPoint, async) {
