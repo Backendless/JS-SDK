@@ -1227,6 +1227,104 @@
                 asyncHandler: responder,
                 cachePolicy : dataQuery.cachePolicy
             });
+        },
+
+        setRelation: function () {
+            return this._manageRelation('POST', arguments);
+        },
+
+        addRelation: function() {
+            return this._manageRelation('PUT', arguments);
+        },
+
+        deleteRelation: function() {
+            return this._manageRelation('DELETE', arguments);
+        },
+
+        _formRelationObject: function (args) {
+            var relation = {
+                columnName: args[1]
+            };
+
+            var parent = args[0];
+            var child;
+
+            if (Utils.isString(parent)) {
+                relation.parentId = parent
+            } else if (Utils.isObject(parent)) {
+                relation.parentId = parent.objectId
+            }
+
+            var children = args[2];
+
+            if (Utils.isString(children)) {
+                relation.whereClause = children
+            } else if (Utils.isArray(children)) {
+                relation.childrenIds = [];
+
+                for (var i = 0; i < children.length; i++) {
+                    child = children[i];
+
+                    if (Utils.isString(child)) {
+                        relation.childrenIds.push(child)
+                    } else if (Utils.isObject(child)) {
+                        relation.childrenIds.push(child.objectId)
+                    }
+
+                }
+            }
+
+            return relation;
+        },
+
+        _validateRelationObject: function(relation) {
+            if (!relation.parentId) {
+                return (
+                    'Invalid value for the "parent" argument. ' +
+                    'The argument is required and must contain only string or object values.'
+                );
+            }
+
+            if (!relation.columnName) {
+                return (
+                    'Invalid value for the "columnName" argument. ' +
+                    'The argument is required and must contain only string values.'
+                );
+            }
+
+            if (!relation.whereClause && !relation.childrenIds) {
+                return (
+                    'Invalid value for the third argument. ' +
+                    'The argument is required and must contain string values if it sets whereClause ' +
+                    'or array if it sets childObjects.'
+                );
+            }
+        },
+
+        _manageRelation: function(method, args) {
+            var relation = this._formRelationObject(args);
+            var responder = extractResponder(args);
+            var validationError = this._validateRelationObject(relation);
+
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
+            return Backendless._ajax({
+                method      : method,
+                url         : this._buildRelationUrl(relation),
+                isAsync     : !!responder,
+                asyncHandler: responder,
+                data        : relation.childrenIds && JSON.stringify(relation.childrenIds)
+            });
+        },
+
+        _buildRelationUrl: function(relation) {
+          return this.restUrl + encodeURIComponent(
+              '/' + relation.parentId +
+              '/' + relation.columnName +
+              (relation.whereClause ? '?whereClause=' + relation.whereClause : '')
+          );
         }
     };
 
@@ -2129,7 +2227,7 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
