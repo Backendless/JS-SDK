@@ -2151,14 +2151,12 @@
 
             responder = responderOverride(responder);
 
-            var result = Backendless._ajax({
+            return Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-
-            return isAsync ? result : this._parseResponse(result);
         },
 
         find            : function(query, async) {
