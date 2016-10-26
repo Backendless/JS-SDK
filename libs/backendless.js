@@ -1209,7 +1209,15 @@
             return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
-        getObjectCount: function(dataQuery) {
+        /**
+         * Count of object
+         *
+         * @param {[DataQuery]} dataQuery
+         * @param {[Async]} async
+         *
+         * @return {number} The count of objects.
+         */
+        getObjectCount: function(dataQuery, async) {
             dataQuery = dataQuery || {};
 
             var url       = this.restUrl + '/count';
@@ -2405,17 +2413,17 @@
 
         /**
          * Count of points
-         * Has two signatures
          *
-         * @param {(string|GeoQuery)} - fenceName name, or an GeoQuery.
+         * @param {(string|GeoQuery)} fenceName - fenceName name, or an GeoQuery.
          * @param {[GeoQuery]} query
+         * @param {[Async]} async
          *
          * @return {number} The count of points.
          */
-        getGeopointCount: function (fenceName, query) {
+        getGeopointCount: function (fenceName, query, async) {
             var responder = extractResponder(arguments);
             var isAsync = !!responder;
-            var query = this._buildQueryObject(arguments, isAsync);
+            var query = this._buildCountQueryObject(arguments, isAsync);
             var url = this.restUrl + '/count' + this._buildUrlQueryParams(query);
 
             return Backendless._ajax({
@@ -2442,7 +2450,7 @@
             }
         },
 
-        _buildQueryObject: function(args, isAsync) {
+        _buildCountQueryObject: function(args, isAsync) {
             args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
 
             var query;
@@ -3806,6 +3814,81 @@
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+        },
+
+        /**
+         * Count of files
+         *
+         * @param {string} path
+         * @param {[string]} pattern
+         * @param {[boolean]} recursive
+         * @param {[boolean]} countDirectories
+         * @param {[Async]} async
+         *
+         * @return {number} The count of files.
+         */
+        getFileCount: function(path, pattern, recursive, countDirectories, async) {
+            var responder = extractResponder(arguments);
+            var isAsync = !!responder;
+            var query = this._buildCountQueryObject(arguments, isAsync);
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : this.restUrl + '/count',
+                data        : JSON.stringify(query),
+                isAsync     : isAsync,
+                asyncHandler: responder
+            });
+        },
+
+        _buildCountQueryObject: function (args, isAsync) {
+            args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
+
+            var query = {
+                path: args[0],
+                pattern: args[1] !== undefined ? args[1] : '*',
+                recursive: args[2] !== undefined ? args[2] : false,
+                countDirectories: args[3] !== undefined ? args[3] : false
+            };
+
+            this._validatePath(query.path);
+            this._validatePattern(query.pattern);
+            this._validateRecursive(query.recursive);
+            this._validateCountDirectories(query.countDirectories);
+
+            return query;
+        },
+
+        _validatePath: function(path) {
+            var MSG_ERROR = 'Missing value for the "path" argument. The argument must contain a string value';
+
+            if (!path || !Utils.isString(path)) {
+                throw new Error(MSG_ERROR);
+            }
+        },
+
+        _validatePattern: function(pattern) {
+            var MSG_ERROR = 'Missing value for the "pattern" argument. The argument must contain a string value';
+
+            if (!path || !Utils.isString(pattern)) {
+                throw new Error(MSG_ERROR);
+            }
+        },
+
+        _validateRecursive: function(recursive) {
+            var MSG_ERROR = 'Missing value for the "recursive" argument. The argument must contain a boolean value';
+
+            if (!Utils.isBoolean(recursive)) {
+                throw new Error(MSG_ERROR);
+            }
+        },
+
+        _validateCountDirectories: function(countDirectories) {
+            var MSG_ERROR = 'Missing value for the "countDirectories" argument. The argument must contain a boolean value';
+
+            if (!Utils.isBoolean(recursive)) {
+                throw new Error(MSG_ERROR);
+            }
         }
     };
 
@@ -4440,10 +4523,10 @@
             [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
             [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
             [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
-            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory']],
+            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
             [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
             [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations']],
+            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations', 'getObjectCount']],
             [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
             [persistence, ['describe', 'getView', 'callStoredProcedure']],
             [FilePermissions.prototype, ['sendRequest']],
@@ -4454,7 +4537,7 @@
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
                                    'getRegistrations', 'unregisterDevice']],
             [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                             'getCategories', 'deleteCategory', 'deletePoint']],
+                             'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
                                      'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
                                      'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
