@@ -1,4 +1,4 @@
-// Backendless.js 3.1.17
+// Backendless.js 3.1.18
 
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
@@ -38,7 +38,7 @@
         emptyFn     = (function() {
         });
 
-    Backendless.VERSION = '3.1.16';
+    Backendless.VERSION = '3.1.18';
     Backendless.serverURL = 'https://api.backendless.com';
 
     Backendless.noConflict = function() {
@@ -1938,7 +1938,7 @@
                         method      : 'GET',
                         url         : this.restUrl + '/isvalidusertoken/' + userToken,
                         isAsync     : isAsync,
-                        asyncHandler: responder && this._wrapAsync(responder)
+                        asyncHandler: responder
                     });
                 }
             } else {
@@ -1947,7 +1947,7 @@
                 if (isAsync) {
                     //if async need to put it to the end of the stack
                     setTimeout(function() {
-                        responder[user ? 'success' : 'fault']();
+                        responder.success(!!user);
                     }, 0);
                 } else {
                     return !!user;
