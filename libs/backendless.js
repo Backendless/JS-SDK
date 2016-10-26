@@ -3831,14 +3831,28 @@
             var responder = extractResponder(arguments);
             var isAsync = !!responder;
             var query = this._buildCountQueryObject(arguments, isAsync);
+            var queryString = this._getQueryParamsString(query);
 
             return Backendless._ajax({
                 method      : 'GET',
-                url         : this.restUrl + '/count',
+                url         : this.restUrl + '/count?' + queryString,
                 data        : JSON.stringify(query),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+        },
+
+        _getQueryParamsString: function(query) {
+            var params = '';
+
+            for (var prop in query) {
+                if (query.hasOwnProperty(prop) && query[prop] != null) {
+                    params += (params ? '&' : '');
+                    params += prop + '=' + encodeURIComponent(query[prop]);
+                }
+            }
+
+            return params;
         },
 
         _buildCountQueryObject: function (args, isAsync) {
@@ -3870,7 +3884,7 @@
         _validatePattern: function(pattern) {
             var MSG_ERROR = 'Missing value for the "pattern" argument. The argument must contain a string value';
 
-            if (!path || !Utils.isString(pattern)) {
+            if (!pattern || !Utils.isString(pattern)) {
                 throw new Error(MSG_ERROR);
             }
         },
@@ -3886,7 +3900,7 @@
         _validateCountDirectories: function(countDirectories) {
             var MSG_ERROR = 'Missing value for the "countDirectories" argument. The argument must contain a boolean value';
 
-            if (!Utils.isBoolean(recursive)) {
+            if (!Utils.isBoolean(countDirectories)) {
                 throw new Error(MSG_ERROR);
             }
         }
