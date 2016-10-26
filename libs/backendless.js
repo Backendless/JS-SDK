@@ -2392,12 +2392,9 @@
 
         getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
-            if (!Utils.isString(geoFenceName)) {
-                throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
-            }
-            if (!(query instanceof GeoQuery)) {
-                throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
-            }
+
+            this._validateFenceName(geoFenceName);
+            this._validateQuery(query);
 
             query["geoFence"] = geoFenceName;
             query["url"] = this.restUrl;
@@ -2405,21 +2402,69 @@
             return this.findUtil(query, async);
         },
 
-        getGeopointCount: function(query) {
-            if (!(query instanceof GeoQuery)) {
-                throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
-            }
 
-            var url       = this.restUrl + '/count' + this._buildUrlQueryParams(query);
+        /**
+         * Count of points
+         * Has two signatures
+         *
+         * @param {(string|GeoQuery)} - fenceName name, or an GeoQuery.
+         * @param {[GeoQuery]} query
+         *
+         * @return {number} The count of points.
+         */
+        getGeopointCount: function (fenceName, query) {
             var responder = extractResponder(arguments);
-            var isAsync   = !!responder;
+            var isAsync = !!responder;
+            var query = this._buildQueryObject(arguments, isAsync);
+            var url = this.restUrl + '/count' + this._buildUrlQueryParams(query);
 
             return Backendless._ajax({
-                method      : 'GET',
-                url         : url,
-                isAsync     : isAsync,
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
                 asyncHandler: responder
             });
+        },
+
+        _validateQuery: function(query) {
+            var MSG_INVALID_QUERY = 'Invalid Geo Query. Query should be instance of Backendless.GeoQuery';
+
+            if (!(query instanceof GeoQuery)) {
+                throw new Error(MSG_INVALID_QUERY);
+            }
+        },
+
+        _validateFenceName: function(fenceName) {
+            var MSG_INVALID_FENCE_NAME = 'Invalid value for parameter "geoFenceName". Geo Fence Name must be a String';
+
+            if (!Utils.isString(fenceName)) {
+                throw new Error(MSG_INVALID_FENCE_NAME);
+            }
+        },
+
+        _buildQueryObject: function(args, isAsync) {
+            args = isAsync ? Array.prototype.slice.call(args, -1) : args;
+
+            var query;
+            var fenceName;
+
+            if (args.length === 1) {
+                query = args[0];
+
+                this._validateQuery(query);
+            }
+
+            if (args.length === 2) {
+                fenceName = args[0];
+                query = args[1];
+
+                this._validateQuery(query);
+                this._validateFenceName(fenceName);
+
+                query["geoFence"] = fenceName;
+            }
+
+            return query;
         },
 
         _runFenceAction: function(action, geoFenceName, geoPoint, async) {
