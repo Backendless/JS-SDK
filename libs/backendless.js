@@ -1955,7 +1955,7 @@
                         method      : 'GET',
                         url         : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
                         isAsync     : isAsync,
-                        asyncHandler: responder && this._wrapAsync(responder)
+                        asyncHandler: responder
                     });
                 }
             } else {
@@ -1964,7 +1964,7 @@
                 if (isAsync) {
                     //if async need to put it to the end of the stack
                     setTimeout(function() {
-                        responder[user ? 'success' : 'fault']();
+                        responder.success(!!user);
                     }, 0);
                 } else {
                     return !!user;
