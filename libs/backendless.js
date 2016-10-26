@@ -2443,7 +2443,7 @@
         },
 
         _buildQueryObject: function(args, isAsync) {
-            args = isAsync ? Array.prototype.slice.call(args, -1) : args;
+            args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
 
             var query;
             var fenceName;
