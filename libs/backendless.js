@@ -1320,10 +1320,11 @@
         },
 
         _buildRelationUrl: function(relation) {
-          return this.restUrl + encodeURIComponent(
+          return (
+              this.restUrl +
               '/' + relation.parentId +
               '/' + relation.columnName +
-              (relation.whereClause ? '?whereClause=' + relation.whereClause : '')
+              (relation.whereClause ? '?whereClause=' + encodeURIComponent(relation.whereClause) : '')
           );
         }
     };
