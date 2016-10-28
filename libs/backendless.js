@@ -1229,7 +1229,33 @@
             });
         },
 
-        setRelation: function () {
+        /**
+         * Defining the relation
+         *
+         * @param {string} columnName
+         * @param {string} childTableName
+         * @param {string} cardinality
+         * @param {Async} [async]
+         **/
+
+        declareRelation: function(columnName, childTableName, cardinality, async) {
+            var responder = extractResponder(arguments);
+
+            trowError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
+
+            return Backendless._ajax({
+                method      : 'POST',
+                url         : this.restUrl + ['', columnName, childTableName, cardinality].join('/'),
+                isAsync     : !!responder,
+                asyncHandler: responder
+            });
+        },
+
+        _validateDeclareRelationArgs: function(columnName, childTableName, cardinality) {
+
+        },
+
+        setRelation: function() {
             return this._manageRelation('POST', arguments);
         },
 
@@ -1324,7 +1350,7 @@
               this.restUrl +
               '/' + relation.parentId +
               '/' + relation.columnName +
-              (relation.whereClause ? '?whereClause=' + encodeURIComponent(relation.whereClause) : '')
+              (relation.whereClause ? '?where=' + encodeURIComponent(relation.whereClause) : '')
           );
         }
     };
