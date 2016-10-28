@@ -120,6 +120,29 @@
         return url;
     };
 
+    var toUri = function() {
+        var uri = '';
+        var arg;
+
+        for (var i=0; i < arguments.length; i++) {
+            arg = arguments[i];
+
+            if (!arg) {
+                continue;
+            }
+
+            uri += uri ? '/' : '';
+
+            if (Utils.isArray(arg)) {
+                uri += toUri.apply(null, arg);
+            } else if (Utils.isString(arg)) {
+                uri += encodeURIComponent(arg);
+            }
+        }
+
+        return uri;
+    };
+
     var promisesEnabled = false;
 
     Backendless.browser = browser;
