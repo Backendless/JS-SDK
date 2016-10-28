@@ -1212,10 +1212,10 @@
         /**
          * Count of object
          *
-         * @param {[DataQuery]} dataQuery
-         * @param {[Async]} async
+         * @param {DataQuery} [dataQuery]
+         * @param {Async} [async]
          *
-         * @return {number} The count of objects.
+         * @return {*}
          */
         getObjectCount: function(dataQuery, async) {
             dataQuery = dataQuery || {};
@@ -2414,11 +2414,11 @@
         /**
          * Count of points
          *
-         * @param {(string|GeoQuery)} fenceName - fenceName name, or an GeoQuery.
-         * @param {[GeoQuery]} query
-         * @param {[Async]} async
+         * @param {(string|GeoQuery)} [fenceName] - fenceName name, or an GeoQuery.
+         * @param {GeoQuery} query
+         * @param {Async} [async]
          *
-         * @return {number} The count of points.
+         * @return {*}
          */
         getGeopointCount: function (fenceName, query, async) {
             var responder = extractResponder(arguments);
@@ -3820,12 +3820,12 @@
          * Count of files
          *
          * @param {string} path
-         * @param {[string]} pattern
-         * @param {[boolean]} recursive
-         * @param {[boolean]} countDirectories
-         * @param {[Async]} async
+         * @param {string} [pattern]
+         * @param {boolean} [recursive]
+         * @param {boolean} [countDirectories]
+         * @param {Async} [async]
          *
-         * @return {number} The count of files.
+         * @return {*}
          */
         getFileCount: function(path, pattern, recursive, countDirectories, async) {
             var responder = extractResponder(arguments);
