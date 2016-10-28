@@ -131,11 +131,10 @@
                 continue;
             }
 
-            uri += uri ? '/' : '';
-
             if (Utils.isArray(arg)) {
                 uri += toUri.apply(null, arg);
             } else if (Utils.isString(arg)) {
+                uri += '/';
                 uri += encodeURIComponent(arg);
             }
         }
