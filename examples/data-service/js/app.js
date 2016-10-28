@@ -40,14 +40,17 @@ jQuery(function( $ ) {
 			this.$main = $('#main');
 			this.$todoList = $('#todo-list');
 			this.$footer = this.$todoApp.find('#footer');
-			this.$count = $('#todo-count');
-			this.$clearBtn = $('#clear-completed');
 		},
 		bindEvents: function() {
 			var list = this.$todoList;
+			var footer = this.$footer;
+
 			this.$newTodo.on( 'keyup', this.create );
 			this.$toggleAll.on( 'change', this.toggleAll );
-			this.$footer.on( 'click', '#clear-completed', this.destroyCompleted );
+
+			footer.on('click', '#clear-completed', this.destroyCompleted);
+			footer.on('click', '#complete-all', this.completeAll);
+
 			list.on( 'change', '.toggle', this.toggle );
 			list.on( 'dblclick', 'label', this.edit );
 			list.on( 'keypress', '.edit', this.blurOnEnter );
@@ -82,6 +85,7 @@ jQuery(function( $ ) {
 			});
 			App.render();
 		},
+
 		activeTodoCount: function() {
 			var count = 0;
 			$.each( this.todos, function( i, val ) {
@@ -91,16 +95,28 @@ jQuery(function( $ ) {
 			});
 			return count;
 		},
+
 		destroyCompleted: function() {
-			var todos = App.todos,
-				l = todos.length;
-			while ( l-- ) {
-				if ( todos[l].completed ) {
-					todos.splice( l, 1 );
-				}
-			}
-			App.render();
+			Backendless.Persistence.of( Task ).bulkDelete("completed=true", new Backendless.Async(
+				function() {
+					App.todos = App.todos.filter(function(todo) { return !todo.completed; });
+					App.render();
+				}, console.error
+			));
 		},
+
+		completeAll: function() {
+			Backendless.Persistence.of( Task ).bulkUpdate({completed: true}, "completed=false", new Backendless.Async(
+				function() {
+					App.todos = App.todos.map(function(todo) {
+						todo.completed = true;
+						return todo;
+					});
+					App.render();
+				}, console.error
+			));
+		},
+
 		getTodo: function( elem, callback ) {
 			var id = $( elem ).closest('li').data('id');
 			$.each( this.todos, function( i, val ) {
@@ -154,6 +170,7 @@ jQuery(function( $ ) {
 				this.render();
 			});
 		},
+
 		destroy: function() {
 			App.getTodo( this, function( i ) {
                 //Backendless: delete item
@@ -166,18 +183,15 @@ jQuery(function( $ ) {
 	};
 
 
-    function Task() {
-        this.id = "";
-        this.title = "";
+    function Task(title) {
+        this.id = Utils.uuid();
+        this.title = title || "";
         this.completed = false;
     }
 
     function createNewItem(newTitle)
     {
-        var record = new Task();
-        record.id = Utils.uuid();
-        record.title = newTitle;
-        record.completed = false;
+        var record = new Task(newTitle);
 
         var savedItem = saveItem(record);
         App.todos.push(savedItem);
