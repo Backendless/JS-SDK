@@ -106,6 +106,20 @@
         return new Date().getTime();
     };
 
+    var throwError = function(errorMessage) {
+        if (errorMessage) {
+           throw new Error(errorMessage);
+        }
+    };
+
+    var addWhereClause = function(url, whereClause) {
+        if (whereClause) {
+            url += '?where=' + encodeURIComponent(whereClause);
+        }
+
+        return url;
+    };
+
     var promisesEnabled = false;
 
     Backendless.browser = browser;
@@ -175,6 +189,27 @@
         } else {
             elem[evnt] = null;
         }
+    };
+
+    Utils.map = function(array, iteratee) {
+        var result = [];
+        var item;
+
+        if (Utils.isArray(array)) {
+            for (var i = 0; i < array.length; i++) {
+                item = array[i];
+
+                if (Utils.isFunction(iteratee)) {
+                    item = iteratee(item);
+                } else if (Utils.isString(iteratee) && Utils.isObject(item)) {
+                    item = item[iteratee];
+                }
+
+                result.push(item);
+            }
+        }
+
+        return result;
     };
 
     function initXHR() {
