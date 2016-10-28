@@ -1276,11 +1276,15 @@
         declareRelation: function(columnName, childTableName, cardinality, async) {
             var responder = extractResponder(arguments);
 
-            trowError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
+            throwError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
+
+            columnName = encodeArrayToUriComponent(columnName);
+            childTableName = encodeArrayToUriComponent(childTableName);
+            cardinality = encodeArrayToUriComponent(cardinality);
 
             return Backendless._ajax({
                 method      : 'POST',
-                url         : this.restUrl + ['', columnName, childTableName, cardinality].join('/'),
+                url         : [this.restUrl, columnName, childTableName, cardinality].join('/'),
                 isAsync     : !!responder,
                 asyncHandler: responder
             });
@@ -1380,13 +1384,14 @@
             });
         },
 
-        _buildRelationUrl: function(relation) {
-          return (
-              this.restUrl +
-              '/' + relation.parentId +
-              '/' + relation.columnName +
-              (relation.whereClause ? '?where=' + encodeURIComponent(relation.whereClause) : '')
-          );
+        _buildRelationUrl: function (relation) {
+            var url = [
+                this.restUrl,
+                encodeURIComponent(relation.parentId),
+                encodeURIComponent(relation.columnName)
+            ].join('/');
+
+            return addWhereClause(url, relation.whereClause);
         }
     };
 
