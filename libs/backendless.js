@@ -131,11 +131,10 @@
                 continue;
             }
 
-            uri += uri ? '/' : '';
-
             if (Utils.isArray(arg)) {
                 uri += toUri.apply(null, arg);
             } else if (Utils.isString(arg)) {
+                uri += '/';
                 uri += encodeURIComponent(arg);
             }
         }
@@ -1301,29 +1300,76 @@
 
             throwError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
 
-            columnName = encodeArrayToUriComponent(columnName);
-            childTableName = encodeArrayToUriComponent(childTableName);
-            cardinality = encodeArrayToUriComponent(cardinality);
-
             return Backendless._ajax({
                 method      : 'POST',
-                url         : [this.restUrl, columnName, childTableName, cardinality].join('/'),
+                url         : this.restUrl + toUri(columnName, childTableName, cardinality),
                 isAsync     : !!responder,
                 asyncHandler: responder
             });
         },
 
         _validateDeclareRelationArgs: function(columnName, childTableName, cardinality) {
+            var existsAndString = function (value) {
+                return !!value && Utils.isString(value);
+            };
 
+            if (!existsAndString(columnName)) {
+                return (
+                    'Invalid value for the "columnName" argument. ' +
+                    'The argument is required and must contain only string values.'
+                );
+            }
+
+            if (!existsAndString(childTableName)) {
+                return (
+                    'Invalid value for the "childTableName" argument. ' +
+                    'The argument is required and must contain only string values.'
+                );
+            }
+
+            if (!existsAndString(cardinality) || (cardinality !== 'one-to-one' && cardinality !== 'one-to-many')) {
+                return (
+                    'Invalid value for the "cardinality" argument. ' +
+                    'The argument is required and must contain string values ' +
+                    '("one-to-one" or "one-to-many").'
+                );
+            }
         },
+
+        /**
+         * Set relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @param {Async} [async]
+         **/
 
         setRelation: function() {
             return this._manageRelation('POST', arguments);
         },
 
+        /**
+         * Add relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @param {Async} [async]
+         **/
+
         addRelation: function() {
             return this._manageRelation('PUT', arguments);
         },
+
+        /**
+         * Delete relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @param {Async} [async]
+         **/
 
         deleteRelation: function() {
             return this._manageRelation('DELETE', arguments);
@@ -1408,11 +1454,7 @@
         },
 
         _buildRelationUrl: function (relation) {
-            var url = [
-                this.restUrl,
-                encodeURIComponent(relation.parentId),
-                encodeURIComponent(relation.columnName)
-            ].join('/');
+            var url = this.restUrl + toUri(relation.parentId, relation.columnName);
 
             return addWhereClause(url, relation.whereClause);
         }
