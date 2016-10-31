@@ -4628,7 +4628,10 @@
             [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory']],
             [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
             [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations']],
+            [DataStore.prototype, [
+                'save', 'remove', 'find', 'findById', 'loadRelations',
+                'declareRelation', 'setRelation', 'addRelation', 'deleteRelations'
+            ]],
             [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
             [persistence, ['describe', 'getView', 'callStoredProcedure']],
             [FilePermissions.prototype, ['sendRequest']],
