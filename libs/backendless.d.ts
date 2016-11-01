@@ -358,10 +358,9 @@ declare module __Backendless {
         findLast<Promise>():Promise;
         findLast<Promise>(query:Backendless.DataQuery|DataQueryValueI):Promise;
 
-        loadRelations(query:Backendless.DataQuery|DataQueryValueI|string):void;
-        loadRelations(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):void;
-        loadRelations<Promise>(query:Backendless.DataQuery|DataQueryValueI|string):Promise;
-        loadRelations<Promise>(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):Promise;
+        loadRelations(parentObjectId:string, query:Backendless.DataQuery):void;
+        loadRelations(parentObjectId:string, query:Backendless.DataQuery, async:Backendless.Async):XMLHttpRequest;
+        loadRelations<Promise>(parentObjectId:string, query:Backendless.DataQuery):Promise;
     }
 
     /**

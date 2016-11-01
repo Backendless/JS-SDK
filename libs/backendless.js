@@ -1234,9 +1234,10 @@
             var responder = extractResponder(arguments);
             var isAsync = !!responder;
             var relationName = dataQuery.options.relationName;
+            var query = this._extractQueryOptions(dataQuery.options);
             var url = this.restUrl + toUri(parentObjectId, relationName);
 
-            //responder = responder && wrapAsync(responder, this._parseFindResponse, this);
+            url += query ? '?' + query : '';
 
             return Backendless._ajax({
                 method: 'GET',
@@ -1245,8 +1246,6 @@
                 asyncHandler: responder,
                 cachePolicy : dataQuery.cachePolicy
             });
-
-            //return isAsync ? result : this._parseFindResponse(result);
         },
 
         _validateLoadRelationsArguments: function(parentObjectId, dataQuery) {
@@ -1255,13 +1254,13 @@
             }
 
             if (!dataQuery || !(dataQuery instanceof Backendless.DataQuery)) {
-                return '';
+                return 'The dataQuery is required argument and must be an instance of DataQuery';
             }
 
             var relationName = dataQuery.options && dataQuery.options.relationName;
 
             if (!relationName || !Utils.isString(relationName)) {
-                return '';
+                return 'The options object of DataQuery must contain string value relationName';
             }
         },
 
