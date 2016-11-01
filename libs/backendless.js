@@ -1219,37 +1219,50 @@
             }
         },
 
-        loadRelations: function(obj) {
-            if (!obj) {
-                throw new Error('missing object argument for method loadRelations()');
-            }
 
-            if (!Utils.isObject(obj)) {
-                throw new Error('Invalid value for the "value" argument. The argument must contain only object values');
-            }
+        /**
+         * Get related objects
+         *
+         * @param {string} parentObjectId
+         * @param {DataQuery} dataQuery
+         * @param {Async} [async]
+         * @returns {*}
+         */
+        loadRelations: function (parentObjectId, dataQuery, async) {
+            throwError(this._validateLoadRelationsArguments(parentObjectId, dataQuery));
 
-            var argsObj = arguments[0];
-            var url = this.restUrl + '/relations';
+            var responder = extractResponder(arguments);
+            var isAsync = !!responder;
+            var relationName = dataQuery.options.relationName;
+            var url = this.restUrl + toUri(parentObjectId, relationName);
 
-            if (arguments[1]) {
-                if (Utils.isArray(arguments[1])) {
-                    if (arguments[1][0] == '*') {
-                        url += '?relationsDepth=' + arguments[1].length;
-                    } else {
-                        url += '?loadRelations=' + arguments[1][0] + '&relationsDepth=' + arguments[1].length;
-                    }
-                } else {
-                    throw new Error('Invalid value for the "options" argument. The argument must contain only array values');
-                }
-            }
+            //responder = responder && wrapAsync(responder, this._parseFindResponse, this);
 
-            var result = Backendless._ajax({
-                method: 'PUT',
-                url   : url,
-                data  : JSON.stringify(argsObj)
+            return Backendless._ajax({
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
+                asyncHandler: responder,
+                cachePolicy : dataQuery.cachePolicy
             });
 
-            deepExtend(obj, result);
+            //return isAsync ? result : this._parseFindResponse(result);
+        },
+
+        _validateLoadRelationsArguments: function(parentObjectId, dataQuery) {
+            if (!parentObjectId || !Utils.isString(parentObjectId)) {
+                return 'The parentObjectId is required argument and must be a nonempty string';
+            }
+
+            if (!dataQuery || !(dataQuery instanceof Backendless.DataQuery)) {
+                return '';
+            }
+
+            var relationName = dataQuery.options && dataQuery.options.relationName;
+
+            if (!relationName || !Utils.isString(relationName)) {
+                return '';
+            }
         },
 
         findFirst: function() {
