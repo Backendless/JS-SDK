@@ -4516,11 +4516,15 @@
     };
 
     var DataQuery = function() {
-        this.properties = [];
-        this.condition = null;
-        this.options = null;
-        this.url = null;
+        this.body = {
+            properties: [],
+            condition: null,
+            options: null,
+            url: null
+        };
     };
+
+    DataQuery.DEFAULT_PAGE_SIZE = 10;
 
     DataQuery.prototype = {
         addProperty: function(prop) {
@@ -4530,7 +4534,28 @@
 
         setOption: function(name, value) {
             this.options = this.options || {};
+
+            if (name === 'offset') {
+                throwError(this.validateOffset(value));
+            }
+
+            if (name === 'pageSize') {
+                throwError(this.validatePageSize(value));
+            }
+
             this.options[name] = value;
+        },
+
+        validateOffset: function(offset) {
+            if (offset < 0) {
+                return 'Offset cannot have a negative value.';
+            }
+        },
+
+        validatePageSize: function(pageSize) {
+            if (pageSize <= 0) {
+                return 'Page size must be a positive value.';
+            }
         },
 
         getOption: function(name) {
@@ -4538,12 +4563,7 @@
         },
 
         toJSON: function () {
-            return {
-                properties: this.properties,
-                condition: this.condition,
-                options: this.options,
-                url: this.url
-            }
+            return this.body
         }
     };
 
@@ -4567,11 +4587,22 @@
         },
 
         prepareNextPage: function(){
-            return pagedQueryBuilder.prepareNextPage();
+            var pageSize = this._query.getOption('pageSize') || DataQuery.DEFAULT_PAGE_SIZE;
+            var offset = this._query.getOption('offset') || 0;
+
+            this.setOffset(offset + pageSize);
+
+            return this;
         },
 
         preparePreviousPage: function(){
-            return pagedQueryBuilder.preparePreviousPage();
+            var pageSize = this._query.getOption('pageSize') || DataQuery.DEFAULT_PAGE_SIZE;
+            var offset = this._query.getOption('offset') || 0;
+            var newOffset = offset > pageSize ? offset - pageSize : 0;
+
+            this.setOffset(newOffset);
+
+            return this;
         },
 
         getProperties: function(){
