@@ -1239,11 +1239,17 @@
          * Get related objects
          *
          * @param {string} parentObjectId
-         * @param {DataQuery} dataQuery
+         * @param {LoadRelationsQueryBuilder} queryBuilder
          * @param {Async} [async]
          * @returns {*}
          */
-        loadRelations: function (parentObjectId, dataQuery, async) {
+        loadRelations: function (parentObjectId, queryBuilder, async) {
+            if (!queryBuilder || !queryBuilder instanceof Backendless.LoadRelationsQueryBuilder) {
+
+            }
+
+            var dataQuery = queryBuilder.build();
+
             throwError(this._validateLoadRelationsArguments(parentObjectId, dataQuery));
 
             var responder = extractResponder(arguments);
@@ -4625,6 +4631,49 @@
         }
     };
 
+    var LoadRelationsQueryBuilder = function(RelationModel) {
+        this._query = new DataQuery();
+        RelationModel && this._query.setToBody('relationModel', RelationModel);
+    };
+
+    LoadRelationsQueryBuilder.create = function() {
+       return  new LoadRelationsQueryBuilder();
+    };
+
+
+    LoadRelationsQueryBuilder.of = function(RelationModel) {
+        return  new LoadRelationsQueryBuilder(RelationModel);
+    };
+
+    LoadRelationsQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            this._query.setOption('pageSize', pageSize);
+            return this;
+        },
+
+        setOffset: function(offset) {
+            this._query.setOption('offset', offset);
+            return this;
+        },
+
+        setRelationName: function(relationName) {
+            this._query.setOption('relationName', relationName);
+            return this;
+        },
+
+        prepareNextPage: function() {
+            return pagedQueryBuilder.prepareNextPage();
+        },
+
+        preparePreviousPage: function() {
+            return pagedQueryBuilder.preparePreviousPage();
+        },
+
+        build: function() {
+            return this._query.toJSON();
+        }
+    };
+
     var GeoQuery = function() {
         this.searchRectangle = undefined;
         this.categories = [];
@@ -4753,6 +4802,7 @@
     };
 
     Backendless.DataQueryBuilder = DataQueryBuilder;
+    Backendless.LoadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder;
     Backendless.GeoQuery = GeoQuery;
     Backendless.GeoPoint = GeoPoint;
     Backendless.GeoCluster = GeoCluster;
