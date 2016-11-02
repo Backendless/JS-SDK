@@ -175,6 +175,14 @@
         return Object.prototype.toString.call(obj).slice(8, -1) === 'Array';
     });
 
+    Utils.castArray = function(value) {
+        if (Utils.isArray(value)) {
+            return value;
+        }
+
+        return [value];
+    };
+
     Utils.addEvent = function(evnt, elem, func) {
         if (elem.addEventListener) {
             elem.addEventListener(evnt, func, false);
