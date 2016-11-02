@@ -175,6 +175,14 @@
         return Object.prototype.toString.call(obj).slice(8, -1) === 'Array';
     });
 
+    Utils.castArray = function(value) {
+        if (Utils.isArray(value)) {
+            return value;
+        }
+
+        return [value];
+    };
+
     Utils.addEvent = function(evnt, elem, func) {
         if (elem.addEventListener) {
             elem.addEventListener(evnt, func, false);
@@ -1093,8 +1101,15 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        find: function(dataQuery) {
+        find: function(queryBuilder) {
+            var dataQuery = queryBuilder ? queryBuilder.build() : {};
+
+            return this._find(dataQuery);
+        },
+
+        _find: function(dataQuery) {
             dataQuery = dataQuery || {};
+
             var props,
                 whereClause,
                 options,
@@ -1180,7 +1195,7 @@
                     throw new Error('missing argument "object ID" for method findById()');
                 }
 
-                return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+                return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
                 var responder = extractResponder(arguments),
@@ -1268,14 +1283,14 @@
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'first';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
         findLast: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'last';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         }
     };
 
@@ -2152,7 +2167,7 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
@@ -4505,6 +4520,108 @@
         addProperty: function(prop) {
             this.properties = this.properties || [];
             this.properties.push(prop);
+        },
+
+        setOption: function(name, value) {
+            this.options = this.options || {};
+            this.options[name] = value;
+        },
+
+        getOption: function(name) {
+            return this.options && this.options[name];
+        },
+
+        toJSON: function () {
+            return {
+                properties: this.properties,
+                condition: this.condition,
+                options: this.options,
+                url: this.url
+            }
+        }
+    };
+
+    var DataQueryBuilder = function() {
+        this._query = new DataQuery();
+    };
+
+    DataQueryBuilder.create = function() {
+        return new DataQueryBuilder();
+    };
+
+    DataQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            this._query.setOption('pageSize', pageSize);
+            return this;
+        },
+
+        setOffset: function(offset){
+            this._query.setOption('offset', offset);
+            return this;
+        },
+
+        prepareNextPage: function(){
+            return pagedQueryBuilder.prepareNextPage();
+        },
+
+        preparePreviousPage: function(){
+            return pagedQueryBuilder.preparePreviousPage();
+        },
+
+        getProperties: function(){
+            return this._query.properties;
+        },
+
+        setProperties: function(properties){
+            this._query.properties = Utils.castArray(properties);
+            return this;
+        },
+
+        addProperty: function(property){
+            this._query.addProperty(property);
+            return this;
+        },
+
+        getWhereClause: function(){
+            return this._query.condition;
+        },
+
+        setWhereClause: function(whereClause){
+            this._query.condition = whereClause;
+            return this;
+        },
+
+        getSortBy: function(){
+            return this._query.getOption('sortBy');
+        },
+
+        setSortBy: function(sortBy){
+            this._query.setOption('sortBy', Utils.castArray(sortBy));
+
+            return this;
+        },
+
+        getRelated: function(relations){
+            return this._query.getOption('relations', relations);
+        },
+
+        setRelated: function(relations){
+            this._query.setOption('relations', Utils.castArray(relations));
+
+            return this;
+        },
+
+        getRelationsDepth: function(){
+            return this._query.getOption('relationsDepth');
+        },
+
+        setRelationsDepth: function(relationsDepth){
+            this._query.setOption('relationsDepth', relationsDepth);
+            return this;
+        },
+
+        build: function(){
+            return this._query.toJSON();
         }
     };
 
@@ -4635,7 +4752,7 @@
         this.selector = args.selector || undefined;
     };
 
-    Backendless.DataQuery = DataQuery;
+    Backendless.DataQueryBuilder = DataQueryBuilder;
     Backendless.GeoQuery = GeoQuery;
     Backendless.GeoPoint = GeoPoint;
     Backendless.GeoCluster = GeoCluster;
