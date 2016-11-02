@@ -4516,12 +4516,10 @@
     };
 
     var DataQuery = function() {
-        this.body = {
-            properties: [],
-            condition: null,
-            options: null,
-            url: null
-        };
+        this.properties = [];
+        this.condition = null;
+        this.options = null;
+        this.url = null;
     };
 
     DataQuery.DEFAULT_PAGE_SIZE = 10;
@@ -4563,7 +4561,15 @@
         },
 
         toJSON: function () {
-            return this.body
+            var result = {};
+
+            for (var key in this) {
+                if (this.hasOwnProperty(key)) {
+                    result[key] = this[key]
+                }
+            }
+
+            return result;
         }
     };
 
@@ -4664,45 +4670,28 @@
 
     var LoadRelationsQueryBuilder = function(RelationModel) {
         this._query = new DataQuery();
-        RelationModel && this._query.setToBody('relationModel', RelationModel);
+        this._query.relationModel = RelationModel;
     };
 
     LoadRelationsQueryBuilder.create = function() {
        return  new LoadRelationsQueryBuilder();
     };
 
-
     LoadRelationsQueryBuilder.of = function(RelationModel) {
         return  new LoadRelationsQueryBuilder(RelationModel);
     };
 
     LoadRelationsQueryBuilder.prototype = {
-        setPageSize: function(pageSize){
-            this._query.setOption('pageSize', pageSize);
-            return this;
-        },
-
-        setOffset: function(offset) {
-            this._query.setOption('offset', offset);
-            return this;
-        },
-
         setRelationName: function(relationName) {
             this._query.setOption('relationName', relationName);
             return this;
         },
 
-        prepareNextPage: function() {
-            return pagedQueryBuilder.prepareNextPage();
-        },
-
-        preparePreviousPage: function() {
-            return pagedQueryBuilder.preparePreviousPage();
-        },
-
-        build: function() {
-            return this._query.toJSON();
-        }
+        setPageSize: DataQueryBuilder.prototype.setPageSize,
+        setOffset: DataQueryBuilder.prototype.setOffset,
+        prepareNextPage: DataQueryBuilder.prototype.prepareNextPage,
+        preparePreviousPage: DataQueryBuilder.prototype.preparePreviousPage,
+        build: DataQueryBuilder.prototype.build
     };
 
     var GeoQuery = function() {
