@@ -2140,7 +2140,7 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
@@ -4493,6 +4493,116 @@
         addProperty: function(prop) {
             this.properties = this.properties || [];
             this.properties.push(prop);
+        },
+
+        setOption: function(name, value) {
+            this.options = this.options || {};
+            this.options[name] = value;
+        },
+
+        getOption: function(name) {
+            return this.options && this.options[name];
+        },
+
+        toJSON: function () {
+            return {
+                properties: this.properties,
+                condition: this.condition,
+                options: this.options,
+                url: this.url
+            }
+        }
+    };
+
+    var DataQueryBuilder = function() {
+        this._query = new DataQuery();
+    };
+
+    DataQueryBuilder.create = function() {
+        return new DataQueryBuilder();
+    };
+
+    DataQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            this._query.setOption('pageSize', pageSize);
+            return this;
+        },
+
+        setOffset: function(offset){
+            this._query.setOption('offset', offset);
+            return this;
+        },
+
+        prepareNextPage: function(){
+            return pagedQueryBuilder.prepareNextPage();
+        },
+
+        preparePreviousPage: function(){
+            return pagedQueryBuilder.preparePreviousPage();
+        },
+
+        getProperties: function(){
+            return this._query.properties;
+        },
+
+        setProperties: function(properties){
+            this._query.properties = properties;
+            return this;
+        },
+
+        addProperty: function(property){
+            this._query.addProperty(property);
+            return this;
+        },
+
+        getWhereClause: function(){
+            return this._query.condition;
+        },
+
+        setWhereClause: function(whereClause){
+            this._query.condition = whereClause;
+            return this;
+        },
+
+        getSortBy: function(){
+            return this._query.getOption('sortBy');
+        },
+
+        setSortBy: function(sortBy){
+            if (!Utils.isArray(sortBy)) {
+                sortBy = [sortBy];
+            }
+
+            this._query.setOption('sortBy', sortBy);
+
+            return this;
+        },
+
+        getRelated: function(relations){
+            return this._query.getOption('relations', relations);
+        },
+
+        setRelated: function(relations){
+            if (!Utils.isArray(relations)) {
+                relations = [relations];
+            }
+
+            this._query.setOption('relations', relations);
+
+            return this;
+        },
+
+        getRelationsDepth: function(){
+            return this._query.getOption('relationsDepth');
+        },
+
+        setRelationsDepth: function(relationsDepth){
+            this._query.setOption('relationsDepth', relationsDepth);
+            return this;
+        },
+
+        build: function(){
+            return this._query.toJSON();
         }
     };
 
@@ -4623,7 +4733,7 @@
         this.selector = args.selector || undefined;
     };
 
-    Backendless.DataQuery = DataQuery;
+    Backendless.DataQueryBuilder = DataQueryBuilder;
     Backendless.GeoQuery = GeoQuery;
     Backendless.GeoPoint = GeoPoint;
     Backendless.GeoCluster = GeoCluster;
