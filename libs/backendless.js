@@ -1101,8 +1101,15 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        find: function(dataQuery) {
+        find: function(queryBuilder) {
+            var dataQuery = queryBuilder ? queryBuilder.build() : {};
+
+            return this._find(dataQuery);
+        },
+
+        _find: function(dataQuery) {
             dataQuery = dataQuery || {};
+
             var props,
                 whereClause,
                 options,
@@ -1188,7 +1195,7 @@
                     throw new Error('missing argument "object ID" for method findById()');
                 }
 
-                return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+                return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
                 var responder = extractResponder(arguments),
@@ -1264,14 +1271,14 @@
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'first';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
         findLast: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'last';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         }
     };
 
@@ -4497,6 +4504,8 @@
         this.url = null;
     };
 
+    DataQuery.DEFAULT_PAGE_SIZE = 10;
+
     DataQuery.prototype = {
         addProperty: function(prop) {
             this.properties = this.properties || [];
@@ -4505,7 +4514,28 @@
 
         setOption: function(name, value) {
             this.options = this.options || {};
+
+            if (name === 'offset') {
+                throwError(this.validateOffset(value));
+            }
+
+            if (name === 'pageSize') {
+                throwError(this.validatePageSize(value));
+            }
+
             this.options[name] = value;
+        },
+
+        validateOffset: function(offset) {
+            if (offset < 0) {
+                return 'Offset cannot have a negative value.';
+            }
+        },
+
+        validatePageSize: function(pageSize) {
+            if (pageSize <= 0) {
+                return 'Page size must be a positive value.';
+            }
         },
 
         getOption: function(name) {
@@ -4513,12 +4543,15 @@
         },
 
         toJSON: function () {
-            return {
-                properties: this.properties,
-                condition: this.condition,
-                options: this.options,
-                url: this.url
+            var result = {};
+
+            for (var key in this) {
+                if (this.hasOwnProperty(key)) {
+                    result[key] = this[key]
+                }
             }
+
+            return result;
         }
     };
 
@@ -4542,11 +4575,22 @@
         },
 
         prepareNextPage: function(){
-            return pagedQueryBuilder.prepareNextPage();
+            var pageSize = this._query.getOption('pageSize') || DataQuery.DEFAULT_PAGE_SIZE;
+            var offset = this._query.getOption('offset') || 0;
+
+            this.setOffset(offset + pageSize);
+
+            return this;
         },
 
         preparePreviousPage: function(){
-            return pagedQueryBuilder.preparePreviousPage();
+            var pageSize = this._query.getOption('pageSize') || DataQuery.DEFAULT_PAGE_SIZE;
+            var offset = this._query.getOption('offset') || 0;
+            var newOffset = offset > pageSize ? offset - pageSize : 0;
+
+            this.setOffset(newOffset);
+
+            return this;
         },
 
         getProperties: function(){
@@ -4554,7 +4598,7 @@
         },
 
         setProperties: function(properties){
-            this._query.properties = properties;
+            this._query.properties = Utils.castArray(properties);
             return this;
         },
 
@@ -4577,11 +4621,7 @@
         },
 
         setSortBy: function(sortBy){
-            if (!Utils.isArray(sortBy)) {
-                sortBy = [sortBy];
-            }
-
-            this._query.setOption('sortBy', sortBy);
+            this._query.setOption('sortBy', Utils.castArray(sortBy));
 
             return this;
         },
@@ -4591,11 +4631,7 @@
         },
 
         setRelated: function(relations){
-            if (!Utils.isArray(relations)) {
-                relations = [relations];
-            }
-
-            this._query.setOption('relations', relations);
+            this._query.setOption('relations', Utils.castArray(relations));
 
             return this;
         },
