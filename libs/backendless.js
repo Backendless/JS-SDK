@@ -2111,31 +2111,36 @@
             }
 
             url = url.replace(/\?&/g, '?');
-            var self = this;
 
             var responderOverride = function(async) {
                 var success = function(data) {
-                    var geoCollection = data.collection;
+                    var geoCollection = [];
+                    var geoObject;
+                    var isGeoCluster;
+                    var resultGeoObject;
 
-                    for (var i = 0; i < geoCollection.length; i++) {
-                        var geoObject = null;
-                        if (geoCollection[i].hasOwnProperty('totalPoints')) {
-                            geoObject = new GeoCluster();
-                            geoObject.totalPoints = geoCollection[i].totalPoints;
-                            geoObject.geoQuery = query;
-                        } else {
-                            geoObject = new GeoPoint();
+                    for (var i = 0; i < data.collection.length; i++) {
+                        geoObject = data.collection[i];
+
+                        isGeoCluster = geoObject.hasOwnProperty('totalPoints');
+                        resultGeoObject = isGeoCluster ? new GeoCluster() : new GeoPoint();
+
+                        if (isGeoCluster) {
+                            resultGeoObject.totalPoints = geoObject.totalPoints;
+                            resultGeoObject.geoQuery = query;
                         }
-                        geoObject.categories = geoCollection[i].categories;
-                        geoObject.latitude = geoCollection[i].latitude;
-                        geoObject.longitude = geoCollection[i].longitude;
-                        geoObject.metadata = geoCollection[i].metadata;
-                        geoObject.objectId = geoCollection[i].objectId;
-                        geoObject.distance = geoCollection[i].distance;
-                        data.collection[i] = geoObject;
+
+                        resultGeoObject.categories = geoObject.categories;
+                        resultGeoObject.latitude = geoObject.latitude;
+                        resultGeoObject.longitude = geoObject.longitude;
+                        resultGeoObject.metadata = geoObject.metadata;
+                        resultGeoObject.objectId = geoObject.objectId;
+                        resultGeoObject.distance = geoObject.distance;
+
+                        geoCollection.push(resultGeoObject);
                     }
 
-                    async.success(data);
+                    async.success(geoCollection);
                 };
 
                 var error = function(data) {
@@ -2227,20 +2232,22 @@
                 throw new Error("Method argument must be a valid instance of GeoCluster persisted on the server");
             }
 
-            var self = this;
-
             var responderOverride = function(async) {
                 var success = function(geoCollection) {
-                   for (var i = 0; i < geoCollection.length; i++) {
-                        var geoObject = null;
+                    var geoObject;
+
+                    for (var i = 0; i < geoCollection.length; i++) {
                         geoObject = new GeoPoint();
+
                         geoObject.categories = geoCollection[i].categories;
                         geoObject.latitude = geoCollection[i].latitude;
                         geoObject.longitude = geoCollection[i].longitude;
                         geoObject.metadata = geoCollection[i].metadata;
                         geoObject.objectId = geoCollection[i].objectId;
-                        data.collection.data[i] = geoObject;
+
+                        geoCollection[i] = geoObject;
                     }
+
                     async.success(geoCollection);
                 };
 
