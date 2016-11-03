@@ -41,6 +41,11 @@
     Backendless.VERSION = '3.1.18';
     Backendless.serverURL = 'https://api.backendless.com';
 
+    Backendless.DEFAULTS = {
+        pageSize: 10,
+        offset: 0
+    };
+
     Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
         return this;
@@ -941,23 +946,25 @@
             return this._formCircDeps(item);
         },
 
-        _parseFindResponse: function(response) {
-            var i, len, _Model = this.model, item;
+        _parseFindResponse: function(response, model) {
+            var _Model = model === undefined ? this.model : model;
+            var result;
+
+            var sanitizeResponseItem = function(response) {
+                var item = Utils.isFunction(_Model) ? new _Model() : {};
+
+                response  = response.fields || response;
+
+                return deepExtend(item, response);
+            };
 
             if (Utils.isArray(response)) {
-                for (i = 0, len = response.length; i < len; ++i) {
-                    response[i] = response[i].fields || response[i];
-                    response[i] = deepExtend(new _Model(), response[i]);
-                }
-
-                return this._formCircDeps(response);
+                result = Utils.map(response, sanitizeResponseItem);
             } else {
-                response = response.fields || response;
-                item = Utils.isString(_Model) ? {} : new _Model();
-                deepExtend(item, response);
-
-                return this._formCircDeps(item);
+                result = sanitizeResponseItem(response);
             }
+
+            return this._formCircDeps(result);
         },
 
         _load: function(url, async) {
@@ -1130,6 +1137,7 @@
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
+
             responder != null && (responder = wrapAsync(responder, this._parseFindResponse, this));
             options && query.push(options);
             whereClause && query.push(whereClause);
@@ -1244,44 +1252,50 @@
          * @returns {*}
          */
         loadRelations: function (parentObjectId, queryBuilder, async) {
-            if (!queryBuilder || !queryBuilder instanceof Backendless.LoadRelationsQueryBuilder) {
-
-            }
+            throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
 
             var dataQuery = queryBuilder.build();
-
-            throwError(this._validateLoadRelationsArguments(parentObjectId, dataQuery));
-
+            var relationModel = dataQuery.relationModel || null;
             var responder = extractResponder(arguments);
             var isAsync = !!responder;
             var relationName = dataQuery.options.relationName;
             var query = this._extractQueryOptions(dataQuery.options);
             var url = this.restUrl + toUri(parentObjectId, relationName);
 
+            responder = responder && wrapAsync(responder, function(response){
+                return this._parseFindResponse(response, relationModel);
+            }, this);
+
             url += query ? '?' + query : '';
 
-            return Backendless._ajax({
+            var result = Backendless._ajax({
                 method: 'GET',
                 url: url,
                 isAsync: isAsync,
-                asyncHandler: responder,
-                cachePolicy : dataQuery.cachePolicy
+                asyncHandler: responder
             });
+
+            return isAsync ? result : this._parseFindResponse(result, relationModel);
         },
 
-        _validateLoadRelationsArguments: function(parentObjectId, dataQuery) {
+        _validateLoadRelationsArguments: function(parentObjectId, queryBuilder) {
             if (!parentObjectId || !Utils.isString(parentObjectId)) {
                 return 'The parentObjectId is required argument and must be a nonempty string';
             }
 
-            if (!dataQuery || !(dataQuery instanceof Backendless.DataQuery)) {
-                return 'The dataQuery is required argument and must be an instance of DataQuery';
+            if (!queryBuilder || !(queryBuilder instanceof Backendless.LoadRelationsQueryBuilder)) {
+                return (
+                    'Invalid queryBuilder object.' +
+                    'The queryBuilder is required and must be instance of the Backendless.LoadRelationsQueryBuilder'
+                );
             }
+
+            var dataQuery = queryBuilder.build();
 
             var relationName = dataQuery.options && dataQuery.options.relationName;
 
             if (!relationName || !Utils.isString(relationName)) {
-                return 'The options object of DataQuery must contain string value relationName';
+                return 'The options relationName is required and must contain string value';
             }
         },
 
@@ -4522,8 +4536,6 @@
         this.url = null;
     };
 
-    DataQuery.DEFAULT_PAGE_SIZE = 10;
-
     DataQuery.prototype = {
         addProperty: function(prop) {
             this.properties = this.properties || [];
@@ -4533,26 +4545,14 @@
         setOption: function(name, value) {
             this.options = this.options || {};
 
-            if (name === 'offset') {
-                throwError(this.validateOffset(value));
-            }
-
-            if (name === 'pageSize') {
-                throwError(this.validatePageSize(value));
-            }
-
             this.options[name] = value;
         },
 
-        validateOffset: function(offset) {
-            if (offset < 0) {
-                return 'Offset cannot have a negative value.';
-            }
-        },
-
-        validatePageSize: function(pageSize) {
-            if (pageSize <= 0) {
-                return 'Page size must be a positive value.';
+        setOptions: function(options) {
+            for (var key in options) {
+                if (options.hasOwnProperty(key)) {
+                    this.setOption(key, options[key]);
+                }
             }
         },
 
@@ -4573,8 +4573,63 @@
         }
     };
 
+    var PagingQueryBuilder = function() {
+        this.offset = Backendless.DEFAULTS.offset;
+        this.pageSize = Backendless.DEFAULTS.pageSize;
+    };
+
+    PagingQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            throwError(this.validatePageSize(pageSize));
+            this.pageSize = pageSize;
+
+            return this;
+        },
+
+        setOffset: function(offset){
+            throwError(this.validateOffset(offset));
+            this.offset = offset;
+
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this.setOffset(this.offset + this.pageSize);
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            var newOffset = this.offset > this.pageSize ? this.offset - this.pageSize : 0;
+
+            this.setOffset(newOffset);
+
+            return this;
+        },
+
+        validateOffset: function(offset) {
+            if (offset < 0) {
+                return 'Offset cannot have a negative value.';
+            }
+        },
+
+        validatePageSize: function(pageSize) {
+            if (pageSize <= 0) {
+                return 'Page size must be a positive value.';
+            }
+        },
+
+        build: function() {
+            return {
+                pageSize: this.pageSize,
+                offset: this.offset
+            }
+        }
+    };
+
     var DataQueryBuilder = function() {
         this._query = new DataQuery();
+        this._paging = new PagingQueryBuilder();
     };
 
     DataQueryBuilder.create = function() {
@@ -4583,30 +4638,23 @@
 
     DataQueryBuilder.prototype = {
         setPageSize: function(pageSize){
-            this._query.setOption('pageSize', pageSize);
+            this._paging.setPageSize(pageSize);
             return this;
         },
 
         setOffset: function(offset){
-            this._query.setOption('offset', offset);
+            this._paging.setOffset(offset);
             return this;
         },
 
         prepareNextPage: function(){
-            var pageSize = this._query.getOption('pageSize') || DataQuery.DEFAULT_PAGE_SIZE;
-            var offset = this._query.getOption('offset') || 0;
-
-            this.setOffset(offset + pageSize);
+            this._paging.prepareNextPage();
 
             return this;
         },
 
         preparePreviousPage: function(){
-            var pageSize = this._query.getOption('pageSize') || DataQuery.DEFAULT_PAGE_SIZE;
-            var offset = this._query.getOption('offset') || 0;
-            var newOffset = offset > pageSize ? offset - pageSize : 0;
-
-            this.setOffset(newOffset);
+            this._paging.preparePreviousPage();
 
             return this;
         },
@@ -4664,6 +4712,8 @@
         },
 
         build: function(){
+            this._query.setOptions(this._paging.build());
+
             return this._query.toJSON();
         }
     };
@@ -4671,6 +4721,7 @@
     var LoadRelationsQueryBuilder = function(RelationModel) {
         this._query = new DataQuery();
         this._query.relationModel = RelationModel;
+        this._paging = new PagingQueryBuilder();
     };
 
     LoadRelationsQueryBuilder.create = function() {
@@ -4687,11 +4738,33 @@
             return this;
         },
 
-        setPageSize: DataQueryBuilder.prototype.setPageSize,
-        setOffset: DataQueryBuilder.prototype.setOffset,
-        prepareNextPage: DataQueryBuilder.prototype.prepareNextPage,
-        preparePreviousPage: DataQueryBuilder.prototype.preparePreviousPage,
-        build: DataQueryBuilder.prototype.build
+        setPageSize: function(pageSize){
+            this._paging.setPageSize(pageSize);
+            return this;
+        },
+
+        setOffset: function(offset){
+            this._paging.setOffset(offset);
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this._paging.prepareNextPage();
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            this._paging.preparePreviousPage();
+
+            return this;
+        },
+
+        build: function(){
+            this._query.setOptions(this._paging.build());
+
+            return this._query.toJSON();
+        }
     };
 
     var GeoQuery = function() {
@@ -4822,7 +4895,7 @@
     };
 
     Backendless.DataQueryBuilder = DataQueryBuilder;
-    Backendless.LoadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder;
+    Backendless.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder;
     Backendless.GeoQuery = GeoQuery;
     Backendless.GeoPoint = GeoPoint;
     Backendless.GeoCluster = GeoCluster;
