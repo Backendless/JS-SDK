@@ -4692,8 +4692,8 @@
             return this;
         },
 
-        getRelated: function(relations){
-            return this._query.getOption('relations', relations);
+        getRelated: function(){
+            return this._query.getOption('relations');
         },
 
         setRelated: function(relations){
