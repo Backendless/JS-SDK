@@ -4630,7 +4630,7 @@
             [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
             [DataStore.prototype, [
                 'save', 'remove', 'find', 'findById', 'loadRelations',
-                'declareRelation', 'setRelation', 'addRelation', 'deleteRelations'
+                'declareRelation', 'setRelation', 'addRelation', 'deleteRelation'
             ]],
             [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
             [persistence, ['describe', 'getView', 'callStoredProcedure']],
