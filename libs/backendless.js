@@ -41,6 +41,11 @@
     Backendless.VERSION = '3.1.18';
     Backendless.serverURL = 'https://api.backendless.com';
 
+    Backendless.DEFAULTS = {
+        pageSize: 10,
+        offset: 0
+    };
+
     Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
         return this;
@@ -174,6 +179,14 @@
     Utils.isArray = (Array.isArray || function(obj) {
         return Object.prototype.toString.call(obj).slice(8, -1) === 'Array';
     });
+
+    Utils.castArray = function(value) {
+        if (Utils.isArray(value)) {
+            return value;
+        }
+
+        return [value];
+    };
 
     Utils.addEvent = function(evnt, elem, func) {
         if (elem.addEventListener) {
@@ -933,23 +946,25 @@
             return this._formCircDeps(item);
         },
 
-        _parseFindResponse: function(response) {
-            var i, len, _Model = this.model, item;
+        _parseFindResponse: function(response, model) {
+            var _Model = model === undefined ? this.model : model;
+            var result;
+
+            var sanitizeResponseItem = function(response) {
+                var item = Utils.isFunction(_Model) ? new _Model() : {};
+
+                response  = response.fields || response;
+
+                return deepExtend(item, response);
+            };
 
             if (Utils.isArray(response)) {
-                for (i = 0, len = response.length; i < len; ++i) {
-                    response[i] = response[i].fields || response[i];
-                    response[i] = deepExtend(new _Model(), response[i]);
-                }
-
-                return this._formCircDeps(response);
+                result = Utils.map(response, sanitizeResponseItem);
             } else {
-                response = response.fields || response;
-                item = Utils.isString(_Model) ? {} : new _Model();
-                deepExtend(item, response);
-
-                return this._formCircDeps(item);
+                result = sanitizeResponseItem(response);
             }
+
+            return this._formCircDeps(result);
         },
 
         _load: function(url, async) {
@@ -1093,8 +1108,15 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        find: function(dataQuery) {
+        find: function(queryBuilder) {
+            var dataQuery = queryBuilder ? queryBuilder.build() : {};
+
+            return this._find(dataQuery);
+        },
+
+        _find: function(dataQuery) {
             dataQuery = dataQuery || {};
+
             var props,
                 whereClause,
                 options,
@@ -1115,6 +1137,7 @@
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
+
             responder != null && (responder = wrapAsync(responder, this._parseFindResponse, this));
             options && query.push(options);
             whereClause && query.push(whereClause);
@@ -1180,7 +1203,7 @@
                     throw new Error('missing argument "object ID" for method findById()');
                 }
 
-                return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+                return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
                 var responder = extractResponder(arguments),
@@ -1219,51 +1242,75 @@
             }
         },
 
-        loadRelations: function(obj) {
-            if (!obj) {
-                throw new Error('missing object argument for method loadRelations()');
-            }
 
-            if (!Utils.isObject(obj)) {
-                throw new Error('Invalid value for the "value" argument. The argument must contain only object values');
-            }
+        /**
+         * Get related objects
+         *
+         * @param {string} parentObjectId
+         * @param {LoadRelationsQueryBuilder} queryBuilder
+         * @param {Async} [async]
+         * @returns {*}
+         */
+        loadRelations: function (parentObjectId, queryBuilder, async) {
+            throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
 
-            var argsObj = arguments[0];
-            var url = this.restUrl + '/relations';
+            var dataQuery = queryBuilder.build();
+            var relationModel = dataQuery.relationModel || null;
+            var responder = extractResponder(arguments);
+            var isAsync = !!responder;
+            var relationName = dataQuery.options.relationName;
+            var query = this._extractQueryOptions(dataQuery.options);
+            var url = this.restUrl + toUri(parentObjectId, relationName);
 
-            if (arguments[1]) {
-                if (Utils.isArray(arguments[1])) {
-                    if (arguments[1][0] == '*') {
-                        url += '?relationsDepth=' + arguments[1].length;
-                    } else {
-                        url += '?loadRelations=' + arguments[1][0] + '&relationsDepth=' + arguments[1].length;
-                    }
-                } else {
-                    throw new Error('Invalid value for the "options" argument. The argument must contain only array values');
-                }
-            }
+            responder = responder && wrapAsync(responder, function(response){
+                return this._parseFindResponse(response, relationModel);
+            }, this);
+
+            url += query ? '?' + query : '';
 
             var result = Backendless._ajax({
-                method: 'PUT',
-                url   : url,
-                data  : JSON.stringify(argsObj)
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
+                asyncHandler: responder
             });
 
-            deepExtend(obj, result);
+            return isAsync ? result : this._parseFindResponse(result, relationModel);
+        },
+
+        _validateLoadRelationsArguments: function(parentObjectId, queryBuilder) {
+            if (!parentObjectId || !Utils.isString(parentObjectId)) {
+                return 'The parentObjectId is required argument and must be a nonempty string';
+            }
+
+            if (!queryBuilder || !(queryBuilder instanceof Backendless.LoadRelationsQueryBuilder)) {
+                return (
+                    'Invalid queryBuilder object.' +
+                    'The queryBuilder is required and must be instance of the Backendless.LoadRelationsQueryBuilder'
+                );
+            }
+
+            var dataQuery = queryBuilder.build();
+
+            var relationName = dataQuery.options && dataQuery.options.relationName;
+
+            if (!relationName || !Utils.isString(relationName)) {
+                return 'The options relationName is required and must contain string value';
+            }
         },
 
         findFirst: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'first';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
         findLast: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'last';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
         getObjectCount: function(dataQuery) {
@@ -4716,6 +4763,230 @@
         addProperty: function(prop) {
             this.properties = this.properties || [];
             this.properties.push(prop);
+        },
+
+        setOption: function(name, value) {
+            this.options = this.options || {};
+
+            this.options[name] = value;
+        },
+
+        setOptions: function(options) {
+            for (var key in options) {
+                if (options.hasOwnProperty(key)) {
+                    this.setOption(key, options[key]);
+                }
+            }
+        },
+
+        getOption: function(name) {
+            return this.options && this.options[name];
+        },
+
+        toJSON: function () {
+            var result = {};
+
+            for (var key in this) {
+                if (this.hasOwnProperty(key)) {
+                    result[key] = this[key]
+                }
+            }
+
+            return result;
+        }
+    };
+
+    var PagingQueryBuilder = function() {
+        this.offset = Backendless.DEFAULTS.offset;
+        this.pageSize = Backendless.DEFAULTS.pageSize;
+    };
+
+    PagingQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            throwError(this.validatePageSize(pageSize));
+            this.pageSize = pageSize;
+
+            return this;
+        },
+
+        setOffset: function(offset){
+            throwError(this.validateOffset(offset));
+            this.offset = offset;
+
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this.setOffset(this.offset + this.pageSize);
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            var newOffset = this.offset > this.pageSize ? this.offset - this.pageSize : 0;
+
+            this.setOffset(newOffset);
+
+            return this;
+        },
+
+        validateOffset: function(offset) {
+            if (offset < 0) {
+                return 'Offset cannot have a negative value.';
+            }
+        },
+
+        validatePageSize: function(pageSize) {
+            if (pageSize <= 0) {
+                return 'Page size must be a positive value.';
+            }
+        },
+
+        build: function() {
+            return {
+                pageSize: this.pageSize,
+                offset: this.offset
+            }
+        }
+    };
+
+    var DataQueryBuilder = function() {
+        this._query = new DataQuery();
+        this._paging = new PagingQueryBuilder();
+    };
+
+    DataQueryBuilder.create = function() {
+        return new DataQueryBuilder();
+    };
+
+    DataQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            this._paging.setPageSize(pageSize);
+            return this;
+        },
+
+        setOffset: function(offset){
+            this._paging.setOffset(offset);
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this._paging.prepareNextPage();
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            this._paging.preparePreviousPage();
+
+            return this;
+        },
+
+        getProperties: function(){
+            return this._query.properties;
+        },
+
+        setProperties: function(properties){
+            this._query.properties = Utils.castArray(properties);
+            return this;
+        },
+
+        addProperty: function(property){
+            this._query.addProperty(property);
+            return this;
+        },
+
+        getWhereClause: function(){
+            return this._query.condition;
+        },
+
+        setWhereClause: function(whereClause){
+            this._query.condition = whereClause;
+            return this;
+        },
+
+        getSortBy: function(){
+            return this._query.getOption('sortBy');
+        },
+
+        setSortBy: function(sortBy){
+            this._query.setOption('sortBy', Utils.castArray(sortBy));
+
+            return this;
+        },
+
+        getRelated: function(){
+            return this._query.getOption('relations');
+        },
+
+        setRelated: function(relations){
+            this._query.setOption('relations', Utils.castArray(relations));
+
+            return this;
+        },
+
+        getRelationsDepth: function(){
+            return this._query.getOption('relationsDepth');
+        },
+
+        setRelationsDepth: function(relationsDepth){
+            this._query.setOption('relationsDepth', relationsDepth);
+            return this;
+        },
+
+        build: function(){
+            this._query.setOptions(this._paging.build());
+
+            return this._query.toJSON();
+        }
+    };
+
+    var LoadRelationsQueryBuilder = function(RelationModel) {
+        this._query = new DataQuery();
+        this._query.relationModel = RelationModel;
+        this._paging = new PagingQueryBuilder();
+    };
+
+    LoadRelationsQueryBuilder.create = function() {
+       return  new LoadRelationsQueryBuilder();
+    };
+
+    LoadRelationsQueryBuilder.of = function(RelationModel) {
+        return  new LoadRelationsQueryBuilder(RelationModel);
+    };
+
+    LoadRelationsQueryBuilder.prototype = {
+        setRelationName: function(relationName) {
+            this._query.setOption('relationName', relationName);
+            return this;
+        },
+
+        setPageSize: function(pageSize){
+            this._paging.setPageSize(pageSize);
+            return this;
+        },
+
+        setOffset: function(offset){
+            this._paging.setOffset(offset);
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this._paging.prepareNextPage();
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            this._paging.preparePreviousPage();
+
+            return this;
+        },
+
+        build: function(){
+            this._query.setOptions(this._paging.build());
+
+            return this._query.toJSON();
         }
     };
 
@@ -4846,7 +5117,8 @@
         this.selector = args.selector || undefined;
     };
 
-    Backendless.DataQuery = DataQuery;
+    Backendless.DataQueryBuilder = DataQueryBuilder;
+    Backendless.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder;
     Backendless.GeoQuery = GeoQuery;
     Backendless.GeoPoint = GeoPoint;
     Backendless.GeoCluster = GeoCluster;
