@@ -1109,9 +1109,48 @@
         },
 
         find: function(queryBuilder) {
-            var dataQuery = queryBuilder ? queryBuilder.build() : {};
+            throwError(this._validateFindArguments(arguments));
 
-            return this._find(dataQuery);
+            var args = this._parseFindArguments(arguments);
+            var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
+
+            return this._find(dataQuery, args.async);
+        },
+
+        _validateFindArguments: function(args) {
+            if (args.length === 0) {
+                return;
+            }
+
+            if (args.length === 1) {
+                if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Backendless.Async)) {
+                    return (
+                        'Invalid find method argument. ' +
+                        'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
+                    );
+                }
+            } else {
+                if (!(args[0] instanceof Backendless.DataQueryBuilder)) {
+                    return 'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder';
+                }
+
+                if (!(args[1] instanceof Backendless.Async)) {
+                    return 'Invalid callback wrapper object. The argument should be instance of Backendless.Async';
+                }
+            }
+        },
+
+        _parseFindArguments: function(args) {
+          var result = {
+              queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
+              async       : args[0] instanceof Backendless.Async ? args[0] : null
+          };
+
+          if (args.length > 1) {
+              result.async = args[1];
+          }
+
+          return result;
         },
 
         _find: function(dataQuery) {
@@ -1592,7 +1631,7 @@
             var tableName;
             if (Utils.isString(model)) {
                 if (model.toLowerCase() === 'users') {
-                    throw new Error("Table 'Users' is not accessible through this signature. Use Backendless.Data.of( BackendlessUser.class ) instead");
+                    throw new Error("Table 'Users' is not accessible through this signature. Use Backendless.Data.of( Backendless.User ) instead");
                 }
                 tableName = model;
             } else {
