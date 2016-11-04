@@ -24,7 +24,7 @@
 
         toBind: [
             'onInitState',
-            'searchUsers',
+            'search',
             'renderFollowing',
             'renderSearchResults',
             'addFollowing',
@@ -64,7 +64,7 @@
         },
 
         initEventHandlers: function () {
-            this.ui.searchForm.on('submit', this.searchUsers);
+            this.ui.searchForm.on('submit', this.search);
             this.ui.followBtn.on('click', this.addFollowing);
             // this.ui.deleteRelation.on('click', this.deleteRelation);
         },
@@ -80,7 +80,7 @@
         },
 
         declareRelation: function () {
-            return bless.Persistence.of(TABLE_NAME).deleteRelation(
+            return bless.Persistence.of(TABLE_NAME).declareRelation(
                 'following',
                 TABLE_NAME,
                 'one_to_many'
@@ -93,14 +93,14 @@
             this.refreshFollowing();
         },
 
-        searchUsers: function (e) {
+        search: function (e) {
             e.preventDefault();
 
             var searchQuery = this.ui.searchField.val();
 
-            bless.Persistence.of(TABLE_NAME).find({
-                condition: 'name like \'%' + searchQuery + '%\''
-            }).then(this.renderSearchResults, this.onFail);
+            bless.Persistence.of(TABLE_NAME).find(
+                bless.DataQueryBuilder.create().setWhereClause('name like \'%' + searchQuery + '%\'')
+            ).then(this.renderSearchResults, this.onFail);
         },
 
         renderSearchResults: function (results) {
@@ -121,8 +121,15 @@
         },
 
         refreshFollowing: function () {
-            this.ui.
-            bless.Persistence.of(TABLE_NAME).loadRelations(OBJECT_ID).then(this.renderFollowing, this.onFail)
+            this.ui.followingListContainer.html(this.templates.progress());
+
+            bless.Persistence.of(TABLE_NAME).loadRelations(
+                OBJECT_ID,
+                bless.LoadRelationsQueryBuilder.create().setRelationName('following')
+            ).then(
+                this.renderFollowing,
+                this.onFail
+            )
         },
 
         renderFollowing: function (list) {
