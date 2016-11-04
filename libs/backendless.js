@@ -3892,20 +3892,20 @@
 
             return Backendless._ajax({
                 method      : 'GET',
-                url         : this.restUrl + '/count?' + queryString,
-                data        : JSON.stringify(query),
+                url         : this.restUrl + queryString,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
         _getQueryParamsString: function(query) {
-            var params = '';
+            var params = '/' + query.path + '?action=count';
+
+            delete query.path;
 
             for (var prop in query) {
                 if (query.hasOwnProperty(prop) && query[prop] != null) {
-                    params += (params ? '&' : '');
-                    params += prop + '=' + encodeURIComponent(query[prop]);
+                    params += '&' + prop + '=' + encodeURIComponent(query[prop]);
                 }
             }
 
