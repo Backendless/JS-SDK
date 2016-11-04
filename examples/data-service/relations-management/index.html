@@ -19,8 +19,8 @@
         </div>
         <div class="pull-right">
             <ul class="nav navbar-nav">
-                <li><a href="#about">Docs</a></li>
-                <li><a href="#contact">Support</a></li>
+                <li><a target="_blank" href="https://backendless.com/documentation/data/js/data_overview.htm">Docs</a></li>
+                <li><a target="_blank" href="http://support.backendless.com/">Support</a></li>
             </ul>
         </div>
     </div>
@@ -43,30 +43,35 @@
         {{#if results.length}}
         <ul class="list-group">
             {{#each results}}
-            <li class="list-group-item"><input type="checkbox" id="{{objectId}}"/>{{name}}</li>
+            <li class="list-group-item">
+                <input {{#if _subscribed}}
+                       title="You are already subscribed"
+                       disabled
+                       {{/if}}
+                type="checkbox" id="{{objectId}}"/> {{name}}
+            </li>
             {{/each}}
         </ul>
-        <button class="btn btn-primary" id="follow">Follow</button>
+        <button class="btn btn-primary" id="subscribe-btn">Subscribe</button>
         {{else}}
         <i>Nobody was found</i>
         {{/if}}
     </script>
-
-    <div id="following-list">
-        <h4>Following</h4>
+    <hr/>
+    <div id="subscriptions-list">
+        <h4>Subscriptions</h4>
         <div class="list-container">
         </div>
     </div>
-    <script id="following-template" type="text/x-handlebars-template">
-        {{#if results.length}}
+    <script id="subscriptions-template" type="text/x-handlebars-template">
+        {{#if list.length}}
         <ul class="list-group">
-            {{#each results}}
-            <li class="list-group-item">
-                {{name}}
-                <i  class="pull-right glyphicon glyphicon-remove" id="{{objectId}}"></i>
-            </li>
+            {{#each list}}
+            <li class="list-group-item"><input type="checkbox" id="{{objectId}}"/> {{name}}</li>
             {{/each}}
         </ul>
+        <button class="btn btn-primary" id="unsubscribe-btn">Unsubscribe selected</button>
+
         {{else}}
         <i>You don't follow anyone</i>
         {{/if}}

@@ -3,6 +3,7 @@
     var SECRET_KEY = '9E0406F0-0A91-4D41-FF4A-421A613DD300';
     var TABLE_NAME = 'Parent';
     var OBJECT_ID = '352292C3-9417-26BB-FF64-F434B1D91A00';
+    var COLUMN = 'subscriptions';
 
     var App = {
         ui: {
@@ -11,26 +12,31 @@
             'searchField': '[name="search-field"]',
             'searchResults': '#search-results',
             'searchResultsContainer': '#search-results > .list-container',
-            'followingList': '#following-list',
-            'followingListContainer': '#following-list > .list-container',
-            'followBtn': '#follow-btn'
+            'subscriptionsList': '#subscriptions-list',
+            'subscriptionsListContainer': '#subscriptions-list > .list-container'
         },
 
         templates: {
             'searchResults': '#search-results-template',
-            'followingList': '#following-template',
+            'subscriptionsList': '#subscriptions-template',
             'progress': '#progress-template'
         },
 
         toBind: [
             'onInitState',
             'search',
-            'renderFollowing',
+            'renderSubscriptions',
             'renderSearchResults',
-            'addFollowing',
+            'addSubscriptions',
+            'removeSubscription',
             'declareRelation',
-            'refreshFollowing'
+            'onAddSubscriptionsSuccess',
+            'onAddSubscriptionsError',
+            'onRemoveSubscriptionsSuccess',
+            'onRemoveSubscriptionsError'
         ],
+
+        subscriptions: [],
 
         init: function (appId, sekretKey) {
             bless.enablePromises();
@@ -65,8 +71,8 @@
 
         initEventHandlers: function () {
             this.ui.searchForm.on('submit', this.search);
-            this.ui.followBtn.on('click', this.addFollowing);
-            // this.ui.deleteRelation.on('click', this.deleteRelation);
+            this.ui.container.on('click', '#subscribe-btn', this.addSubscriptions);
+            this.ui.container.on('click', '#unsubscribe-btn', this.removeSubscription);
         },
 
         setInitialState: function () {
@@ -81,7 +87,7 @@
 
         declareRelation: function () {
             return bless.Persistence.of(TABLE_NAME).declareRelation(
-                'following',
+                COLUMN,
                 TABLE_NAME,
                 'one_to_many'
             );
@@ -90,7 +96,7 @@
         onInitState: function () {
             this.ui.container.show();
 
-            this.refreshFollowing();
+            this.refreshSubscriptionsList();
         },
 
         search: function (e) {
@@ -104,41 +110,94 @@
         },
 
         renderSearchResults: function (results) {
+            var app = this;
+
+            results = $.map(results, function(item) {
+                item._subscribed = app.subscriptions.indexOf(item.objectId) !== -1
+
+                return item;
+            });
+
             this.ui.searchResults.show();
             this.ui.searchResultsContainer.html(this.templates.searchResults({results: results}));
         },
 
-        addFollowing: function () {
-            var list = this.ui.searchResults.find(':checked').map(function (el) {
-                return $(el).id;
+        addSubscriptions: function () {
+            var list = $.map(this.ui.searchResults.find(':checked'), function (el) {
+                return el.id;
             });
 
-            bless.Persistence.of(TABLE_NAME).addRelation(
-                OBJECT_ID,
-                'following',
-                list
-            ).then(this.refreshFollowing, console.error);
+            if (list.length) {
+                $('#subscribe-btn').text('Subscribing...');
+
+                bless.Persistence.of(TABLE_NAME).addRelation(
+                    OBJECT_ID,
+                    COLUMN,
+                    list
+                ).then(this.onAddSubscriptionsSuccess, this.onAddSubscriptionsError);
+            }
         },
 
-        refreshFollowing: function () {
-            this.ui.followingListContainer.html(this.templates.progress());
+        onAddSubscriptionsSuccess: function() {
+            this.ui.searchField.val('');
+            this.ui.searchResults.hide();
+            this.refreshSubscriptionsList();
+        },
+
+        onAddSubscriptionsError: function(error) {
+            $('#subscribe-btn').text('Subscribe');
+            this.onFail(error);
+        },
+
+        removeSubscription: function (e) {
+            var list = $.map(this.ui.subscriptionsList.find(':checked'), function (el) {
+                return el.id;
+            });
+
+            if (list.length) {
+                $('#unsubscribe-btn').text('Unsubscribing...');
+
+                bless.Persistence.of(TABLE_NAME).deleteRelation(
+                    OBJECT_ID,
+                    COLUMN,
+                    list
+                ).then(this.onRemoveSubscriptionsSuccess, this.onRemoveSubscriptionsError);
+            }
+        },
+
+        onRemoveSubscriptionsSuccess: function() {
+            $('#unsubscribe-btn').text('Unsubscribe');
+            this.refreshSubscriptionsList();
+        },
+
+        onRemoveSubscriptionsError: function(error) {
+            $('#unsubscribe-btn').text('Unsubscribe');
+            this.onFail(error);
+        },
+
+        refreshSubscriptionsList: function () {
+            this.ui.subscriptionsListContainer.html(this.templates.progress());
 
             bless.Persistence.of(TABLE_NAME).loadRelations(
                 OBJECT_ID,
-                bless.LoadRelationsQueryBuilder.create().setRelationName('following')
+                bless.LoadRelationsQueryBuilder.create().setRelationName('subscriptions')
             ).then(
-                this.renderFollowing,
+                this.renderSubscriptions,
                 this.onFail
             )
         },
 
-        renderFollowing: function (list) {
-            this.ui.followingList.show();
-            this.ui.followingListContainer.html(this.templates.followingList({list: list}));
+        renderSubscriptions: function (list) {
+            this.subscriptions = $.map(list, function (item) {
+                return item.objectId;
+            });
+
+            this.ui.subscriptionsList.show();
+            this.ui.subscriptionsListContainer.html(this.templates.subscriptionsList({list: list}));
         },
 
         onFail: function (error) {
-            console.error(error);
+            alert(error.message || error);
         }
     };
 
