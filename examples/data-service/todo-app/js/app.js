@@ -13,8 +13,8 @@ jQuery(function( $ ) {
 
     //Backendless: defaults
     var Defaults = {
-        APPLICATION_ID : '',
-        SECRET_KEY : ''
+        APPLICATION_ID : 'A976213F-6BFF-C715-FF75-A698FDEDEF00',
+        SECRET_KEY : '9E84C74A-0A11-B1BE-FFCA-9FE261BDA200'
     };
 
 	var App = {
@@ -56,6 +56,8 @@ jQuery(function( $ ) {
 			list.on( 'keypress', '.edit', this.blurOnEnter );
 			list.on( 'blur', '.edit', this.update );
 			list.on( 'click', '.destroy', this.destroy );
+
+			$('#load-relations').on('click', this.loadRelations);
 		},
 		render: function() {
 			this.$todoList.html( this.todoTemplate( { todos: this.todos } ) );
@@ -179,6 +181,19 @@ jQuery(function( $ ) {
                 this.todos.splice( i, 1 );
 				this.render();
 			});
+		},
+
+		loadRelations: function() {
+          function parent() {
+            this.child = null
+		  }
+
+		  var query = new Backendless.DataQuery();
+
+			query.options = {relationName: 'child', pageSize: 1};
+
+		  Backendless.Persistence.of( parent )
+			  .loadRelations('7190EBEB-B064-55DD-FF03-06DA87DC0200', query, new Backendless.Async(console.log, console.error));
 		}
 	};
 
