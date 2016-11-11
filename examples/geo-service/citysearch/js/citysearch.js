@@ -1,15 +1,13 @@
 var APP_ID = '',
     SECRET_KEY = '',
-    VERSION = '',
     CATEGORY = 'geoservice_sample',
     FENCE_NAME = '';
 
-function initApp()
-{
-    Backendless.initApp(APP_ID, SECRET_KEY, VERSION);
+function initApp() {
+    Backendless.initApp(APP_ID, SECRET_KEY);
 }
 
-if (!APPLICATION_ID || !SECRET_KEY || !VERSION)
+if (!APP_ID || !SECRET_KEY)
     alert("Missing application ID and secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in citysearch.js");
 
 function FenceEvent(args) {
@@ -23,48 +21,43 @@ function FenceEvent(args) {
 var myLocation = new GeoPoint();
 
 var inAppCallBack = {
-    onenter : function (geofenceName, geofenceId, latitude, longitude)
-    {
+    onenter: function (geofenceName, geofenceId, latitude, longitude) {
         var logger = new FenceEvent({
-            latitude : latitude,
-            longitude : longitude,
-            fenceName : geofenceName,
-            rule : "onEnter"
+            latitude: latitude,
+            longitude: longitude,
+            fenceName: geofenceName,
+            rule: "onEnter"
         });
         Backendless.Persistence.of(FenceEvent).save(logger);
     },
 
-    onstay : function (geofenceName, geofenceId, latitude, longitude)
-    {
+    onstay: function (geofenceName, geofenceId, latitude, longitude) {
         var logger = new FenceEvent({
-            latitude : latitude,
-            longitude : longitude,
-            fenceName : geofenceName,
-            rule : "onStay"
+            latitude: latitude,
+            longitude: longitude,
+            fenceName: geofenceName,
+            rule: "onStay"
         });
         Backendless.Persistence.of(FenceEvent).save(logger);
     },
 
-    onexit : function (geofenceName, geofenceId, latitude, longitude)
-    {
+    onexit: function (geofenceName, geofenceId, latitude, longitude) {
         var logger = new FenceEvent({
-            latitude : latitude,
-            longitude : longitude,
-            fenceName : geofenceName,
-            rule : "onExit"
+            latitude: latitude,
+            longitude: longitude,
+            fenceName: geofenceName,
+            rule: "onExit"
         });
         Backendless.Persistence.of(FenceEvent).save(logger);
     }
 };
 
 var completionCallback = new Backendless.Async(
-    function(result)
-    {
-        console.log( "geofence monitoring has been started" );
+    function (result) {
+        console.log("geofence monitoring has been started");
     },
-    function(result)
-    {
-        console.log( "error - " + result.message );
+    function (result) {
+        console.log("error - " + result.message);
     }
 );
 
@@ -139,13 +132,13 @@ function onResult(result) {
     finishLoading();
     $resultBlock.show();
 
-    if (!result.totalObjects) {
+    if (!result.length) {
         $thead.hide();
         $tbody.append("<h3 style='text-align: center'>No geo points found</h3>");
         return;
     }
 
-    $.each(result.data, function () {
+    $.each(result, function () {
         var cells = [
             "<td>" + this.metadata.city + "</td>", "<td>" + this.latitude + "</td>", "<td>" + this.longitude + "</td>"
         ];

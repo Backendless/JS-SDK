@@ -14,17 +14,16 @@ jQuery(function( $ ) {
     //Backendless: defaults
     var Defaults = {
         APPLICATION_ID : '',
-        SECRET_KEY : '',
-        VERSION : 'v1'
+        SECRET_KEY : ''
     };
 
 	var App = {
 		init: function() {
             //Backendless: initialize API
-            if( !Defaults.APPLICATION_ID || !Defaults.SECRET_KEY || !Defaults.VERSION )
-                alert( "Missing application ID and secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in app.js" );
+            if( !Defaults.APPLICATION_ID || !Defaults.SECRET_KEY)
+                alert( "Missing application ID or secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in app.js" );
 
-            Backendless.initApp(Defaults.APPLICATION_ID, Defaults.SECRET_KEY, Defaults.VERSION);
+            Backendless.initApp(Defaults.APPLICATION_ID, Defaults.SECRET_KEY);
 
 			this.ENTER_KEY = 13;
 			this.todos = getItems();
@@ -56,7 +55,7 @@ jQuery(function( $ ) {
 			list.on( 'click', '.destroy', this.destroy );
 		},
 		render: function() {
-			this.$todoList.html( this.todoTemplate( this.todos ) );
+			this.$todoList.html( this.todoTemplate( { todos: this.todos } ) );
 			this.$main.toggle( !!this.todos.length );
 			this.$toggleAll.prop( 'checked', !this.activeTodoCount() );
 			this.renderFooter();
@@ -198,7 +197,7 @@ jQuery(function( $ ) {
     {
         try
         {
-            return Backendless.Persistence.of( Task ).find().data;
+            return Backendless.Persistence.of( Task ).find();
         }
         catch( e )
         {

@@ -327,9 +327,6 @@
 
                 xhr.open(config.method, config.url, config.isAsync);
                 xhr.setRequestHeader('Content-Type', contentType);
-                xhr.setRequestHeader('application-id', Backendless.applicationId);
-                xhr.setRequestHeader('secret-key', Backendless.secretKey);
-                xhr.setRequestHeader('application-type', 'JS');
 
                 if ((currentUser != null && currentUser["user-token"])) {
                     xhr.setRequestHeader("user-token", currentUser["user-token"]);
@@ -407,11 +404,8 @@
             method : config.method || "GET",
             path   : u.path,
             headers: {
-                "Content-Length"  : config.data ? Buffer.byteLength(config.data) : 0,
-                "Content-Type"    : config.data ? 'application/json' : 'application/x-www-form-urlencoded',
-                "application-id"  : Backendless.applicationId,
-                "secret-key"      : Backendless.secretKey,
-                "application-type": "JS"
+                "Content-Length": config.data ? Buffer.byteLength(config.data) : 0,
+                "Content-Type"  : config.data ? 'application/json' : 'application/x-www-form-urlencoded'
             }
         };
 
@@ -560,37 +554,6 @@
 
         return new Async(success, error);
     };
-
-    function extendCollection(collection, dataMapper) {
-        if (collection.nextPage != null) {
-            if (collection.nextPage && collection.nextPage.split("/")[1] == Backendless.appVersion) {
-                collection.nextPage = Backendless.serverURL + collection.nextPage;
-            }
-
-            collection._nextPage = collection.nextPage;
-
-            collection.nextPage = function(async) {
-                return dataMapper._load(this._nextPage, async);
-            };
-
-            if (promisesEnabled) {
-                collection.nextPage = promisify(collection.nextPage);
-            }
-
-            collection.getPage = function(offset, pageSize, async) {
-                var nextPage = this._nextPage.replace(/offset=\d+/ig, 'offset=' + offset);
-
-                if (!(pageSize instanceof Async)) {
-                    nextPage = nextPage.replace(/pagesize=\d+/ig, 'pageSize=' + pageSize);
-                }
-                async = extractResponder(arguments);
-
-                return dataMapper._load(nextPage, async);
-            };
-
-            collection.dataMapper = dataMapper;
-        }
-    }
 
     function Async(successCallback, faultCallback, context) {
         if (!(faultCallback instanceof Function)) {
@@ -909,7 +872,6 @@
             response = response.fields || response;
             item = new _Model();
 
-            extendCollection(response, this);
             deepExtend(item, response);
             return this._formCircDeps(item);
         },
@@ -917,21 +879,14 @@
         _parseFindResponse: function(response) {
             var i, len, _Model = this.model, item;
 
-            if (response.data) {
-                var collection = response, arr = collection.data;
-
-                for (i = 0, len = arr.length; i < len; ++i) {
-                    arr[i] = arr[i].fields || arr[i];
-                    item = new _Model();
-                    deepExtend(item, arr[i]);
-                    arr[i] = item;
+            if (Utils.isArray(response)) {
+                for (i = 0, len = response.length; i < len; ++i) {
+                    response[i] = response[i].fields || response[i];
+                    response[i] = deepExtend(new _Model(), response[i]);
                 }
 
-                extendCollection(collection, this);
-
-                return this._formCircDeps(collection);
-            }
-            else {
+                return this._formCircDeps(response);
+            } else {
                 response = response.fields || response;
                 item = Utils.isString(_Model) ? {} : new _Model();
                 deepExtend(item, response);
@@ -1944,7 +1899,7 @@
                     try {
                         var result = Backendless._ajax({
                             method: 'GET',
-                            url   : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken
+                            url   : this.restUrl + '/isvalidusertoken/' + userToken
                         });
                         return !!result;
                     } catch (e) {
@@ -1953,7 +1908,7 @@
                 } else {
                     Backendless._ajax({
                         method      : 'GET',
-                        url         : Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
+                        url         : this.restUrl + '/isvalidusertoken/' + userToken,
                         isAsync     : isAsync,
                         asyncHandler: responder
                     });
@@ -2002,25 +1957,16 @@
             FEET      : 'FEET'
         },
 
-        _parseResponse  : function(data) {
-            var collection = data.collection;
-            extendCollection(collection, this);
-
-            return collection;
-        },
-
         _load           : function(url, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null;
 
-            var result = Backendless._ajax({
+            return Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-
-            return isAsync ? result : this._parseResponse(result);
         },
 
         _findHelpers    : {
@@ -2165,32 +2111,25 @@
             }
 
             url = url.replace(/\?&/g, '?');
-            var self = this;
 
             var responderOverride = function(async) {
                 var success = function(data) {
-                    var geoCollection = data.collection.data;
+                    var geoCollection = [];
+                    var geoObject;
+                    var isCluster;
+                    var GeoItemType;
 
-                    for (var i = 0; i < geoCollection.length; i++) {
-                        var geoObject = null;
-                        if (geoCollection[i].hasOwnProperty('totalPoints')) {
-                            geoObject = new GeoCluster();
-                            geoObject.totalPoints = geoCollection[i].totalPoints;
-                            geoObject.geoQuery = query;
-                        } else {
-                            geoObject = new GeoPoint();
-                        }
-                        geoObject.categories = geoCollection[i].categories;
-                        geoObject.latitude = geoCollection[i].latitude;
-                        geoObject.longitude = geoCollection[i].longitude;
-                        geoObject.metadata = geoCollection[i].metadata;
-                        geoObject.objectId = geoCollection[i].objectId;
-                        geoObject.distance = geoCollection[i].distance;
-                        data.collection.data[i] = geoObject;
+                    for (var i = 0; i < data.collection.length; i++) {
+                        geoObject = data.collection[i];
+                        geoObject.geoQuery = query;
+
+                        isCluster = geoObject.hasOwnProperty('totalPoints');
+                        GeoItemType = isCluster ? GeoCluster : GeoPoint;
+
+                        geoCollection.push(new GeoItemType(geoObject))
                     }
 
-                    data = self._parseResponse(data);
-                    async.success(data);
+                    async.success(geoCollection);
                 };
 
                 var error = function(data) {
@@ -2206,14 +2145,12 @@
 
             responder = responderOverride(responder);
 
-            var result = Backendless._ajax({
+            return Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-
-            return isAsync ? result : this._parseResponse(result);
         },
 
         find            : function(query, async) {
@@ -2284,23 +2221,13 @@
                 throw new Error("Method argument must be a valid instance of GeoCluster persisted on the server");
             }
 
-            var self = this;
-
             var responderOverride = function(async) {
-                var success = function(data) {
-                    var geoCollection = data.collection.data;
+                var success = function(geoCollection) {
                     for (var i = 0; i < geoCollection.length; i++) {
-                        var geoObject = null;
-                        geoObject = new GeoPoint();
-                        geoObject.categories = geoCollection[i].categories;
-                        geoObject.latitude = geoCollection[i].latitude;
-                        geoObject.longitude = geoCollection[i].longitude;
-                        geoObject.metadata = geoCollection[i].metadata;
-                        geoObject.objectId = geoCollection[i].objectId;
-                        data.collection.data[i] = geoObject;
+                        geoCollection[i] = new GeoPoint(geoCollection[i]);
                     }
-                    data = self._parseResponse(data);
-                    async.success(data);
+
+                    async.success(geoCollection);
                 };
 
                 var error = function(data) {
@@ -2316,14 +2243,12 @@
 
             responder = responderOverride(responder);
 
-            var result = Backendless._ajax({
+            return Backendless._ajax({
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-
-            return isAsync ? result : this._parseResponse(result);
         },
 
         relativeFind: function(query, async) {
@@ -3386,9 +3311,6 @@
 
         xhr.open("POST", this.uploadPath, true);
         xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
-        xhr.setRequestHeader('application-id', Backendless.applicationId);
-        xhr.setRequestHeader("secret-key", Backendless.secretKey);
-        xhr.setRequestHeader("application-type", "JS");
 
         if ((currentUser != null && currentUser["user-token"])) {
             xhr.setRequestHeader("user-token", currentUser["user-token"]);
@@ -3443,9 +3365,6 @@
 
         xhr.open("PUT", this.uploadPath, true);
         xhr.setRequestHeader('Content-Type', 'text/plain');
-        xhr.setRequestHeader('application-id', Backendless.applicationId);
-        xhr.setRequestHeader("secret-key", Backendless.secretKey);
-        xhr.setRequestHeader("application-type", "JS");
 
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
@@ -3896,6 +3815,7 @@
     };
 
     var Cache = function() {
+        this.restUrl = Backendless.appPath + '/cache/';
     };
 
     var FactoryMethods = {};
@@ -3931,7 +3851,7 @@
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+                url         : this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
                 data        : JSON.stringify(value),
                 isAsync     : isAsync,
                 asyncHandler: responder
@@ -3949,7 +3869,7 @@
 
                 return Backendless._ajax({
                     method      : 'PUT',
-                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + '/expireIn?timeout=' + seconds,
+                    url         : this.restUrl + key + '/expireIn?timeout=' + seconds,
                     data        : JSON.stringify({}),
                     isAsync     : isAsync,
                     asyncHandler: responder
@@ -3970,7 +3890,7 @@
 
                 return Backendless._ajax({
                     method      : 'PUT',
-                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + '/expireAt?timestamp=' + timestamp,
+                    url         : this.restUrl + key + '/expireAt?timestamp=' + timestamp,
                     data        : JSON.stringify({}),
                     isAsync     : isAsync,
                     asyncHandler: responder
@@ -3994,7 +3914,7 @@
 
             return Backendless._ajax({
                 method      : method,
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key + (contain ? '/check' : ''),
+                url         : this.restUrl + key + (contain ? '/check' : ''),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4032,7 +3952,7 @@
 
             var result = Backendless._ajax({
                 method      : 'GET',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/cache/' + key,
+                url         : this.restUrl + key,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4050,6 +3970,7 @@
     };
 
     var Counters = function() {
+        this.restUrl = Backendless.appPath + '/counters/';
     };
 
     var AtomicInstance = function(counterName) {
@@ -4087,7 +4008,7 @@
 
             return Backendless._ajax({
                 method      : method,
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + urlPart,
+                url         : this.restUrl + this.name + urlPart,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4135,7 +4056,7 @@
 
             return Backendless._ajax({
                 method      : 'GET',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name,
+                url         : this.restUrl + this.name,
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4159,7 +4080,7 @@
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + urlPart + ((value) ? value : ''),
+                url         : this.restUrl + this.name + urlPart + ((value) ? value : ''),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4197,7 +4118,7 @@
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/counters/' + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
+                url         : this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
@@ -4283,7 +4204,7 @@
                     method      : 'PUT',
                     isAsync     : !!async,
                     asyncHandler: async && new Async(cb('success'), cb('fault')),
-                    url         : Backendless.serverURL + '/' + Backendless.appVersion + '/log',
+                    url         : Backendless.appPath + '/log',
                     data        : JSON.stringify(this.logInfo)
                 });
 
@@ -4357,6 +4278,7 @@
     };
 
     function CustomServices() {
+        this.restUrl = Backendless.appPath + '/services/';
     }
 
     CustomServices.prototype = {
@@ -4366,7 +4288,7 @@
 
             return Backendless._ajax({
                 method      : "POST",
-                url         : Backendless.serverURL + '/' + Backendless.appVersion + '/services/' + serviceName + '/' + serviceVersion + '/' + method,
+                url         : this.restUrl + [serviceName, serviceVersion, method].join('/'),
                 data        : JSON.stringify(parameters),
                 isAsync     : isAsync,
                 asyncHandler: responder
@@ -4451,7 +4373,7 @@
                 return new Promise(function(resolve, reject) {
                     return Backendless._ajax({
                         method: 'GET',
-                        url: Backendless.serverURL + '/' + Backendless.appVersion + '/users/isvalidusertoken/' + userToken,
+                        url: this.restUrl + '/isvalidusertoken/' + userToken,
                         isAsync: true,
                         asyncHandler: new Async(resolve, reject)
                     });
@@ -4467,11 +4389,10 @@
         };
     }
 
-    Backendless.initApp = function(appId, secretKey, appVersion) {
+    Backendless.initApp = function(appId, secretKey) {
         Backendless.applicationId = appId;
         Backendless.secretKey = secretKey;
-        Backendless.appVersion = appVersion;
-        Backendless.appPath = [Backendless.serverURL, Backendless.appVersion].join('/');
+        Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/');
         Backendless.UserService = new UserService();
         Backendless.Users = Backendless.UserService;
         Backendless.Geo = new Geo();
@@ -4490,7 +4411,7 @@
         currentUser = null;
     };
 
-    var DataQuery = function () {
+    var DataQuery = function() {
         this.properties = [];
         this.condition = null;
         this.options = null;
@@ -4567,6 +4488,7 @@
         this.longitude = args.longitude;
         this.metadata = args.metadata;
         this.objectId = args.objectId;
+        this.distance = args.distance;
     };
 
     var GeoCluster = function(args) {
@@ -4578,6 +4500,7 @@
         this.objectId = args.objectId;
         this.totalPoints = args.totalPoints;
         this.geoQuery = args.geoQuery;
+        this.distance = args.distance;
     };
 
     var PublishOptionsHeaders = { //PublishOptions headers namespace helper

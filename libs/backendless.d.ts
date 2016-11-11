@@ -9,7 +9,6 @@ declare module __Backendless {
     var serverURL:string;
     var applicationId:string;
     var secretKey:string;
-    var appVersion:string;
     var appPath:string;
 
     var browser:{
@@ -27,7 +26,7 @@ declare module __Backendless {
      * @public
      * @type: Function
      **/
-    function initApp(applicationId:string, jsSecretKey:string, applicationVersion:string):void;
+    function initApp(applicationId:string, jsSecretKey:string):void;
 
     /**
      * @public
@@ -333,9 +332,9 @@ declare module __Backendless {
         remove(obj:Object|string):Object;
         remove<Promise>(obj:Object|string):Promise;
 
-        find():Object;
+        find():Array<Object>;
         find(async:Backendless.Async):XMLHttpRequest;
-        find(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Object;
+        find(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Array<Object>;
         find(id:Backendless.DataQuery|Backendless.DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
         find<Promise>():Promise;
         find<Promise>(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Promise;
@@ -550,7 +549,7 @@ declare module __Backendless {
         addPoint(point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
         addPoint<Promise>(point:Backendless.GeoPoint):Promise;
 
-        find(query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        find(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         find(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
         find<Promise>(query:Backendless.GeoQueryI):Promise;
 
@@ -565,15 +564,15 @@ declare module __Backendless {
         loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
         loadMetadata<Promise>(point:Backendless.GeoPoint|Backendless.GeoCluster):Promise;
 
-        getClusterPoints(cluster:Backendless.GeoCluster):GeoCollectionResultI;
+        getClusterPoints(cluster:Backendless.GeoCluster):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         getClusterPoints(cluster:Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
         getClusterPoints<Promise>(cluster:Backendless.GeoCluster):Promise;
 
-        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         getFencePoints(fenceName:string, query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
         getFencePoints<Promise>(fenceName:string, query:Backendless.GeoQueryI):Promise;
 
-        relativeFind(query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        relativeFind(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         relativeFind(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
         relativeFind<Promise>(query:Backendless.GeoQueryI):Promise;
 
@@ -1058,18 +1057,6 @@ declare module __Backendless {
         longitude:number;
         radius:number;
         units:string;
-    }
-
-    interface CollectionResultI {
-        offset: number;
-        totalObjects: number;
-        getPage : (offset:number, pageSize:number, async:Backendless.Async)=>any;
-        nextPage: (async:Backendless.Async)=>any;
-        data: Object[];
-    }
-
-    interface GeoCollectionResultI extends CollectionResultI {
-        data:Array<Backendless.GeoPoint|Backendless.GeoCluster>;
     }
 }
 
