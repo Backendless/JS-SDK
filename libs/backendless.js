@@ -111,13 +111,7 @@
         return new Date().getTime();
     };
 
-    var promisesEnabled = false;
-
     Backendless.browser = browser;
-    Backendless.enablePromises = enablePromises;
-    Backendless.promisesEnabled = function() {
-        return promisesEnabled;
-    };
 
     var Utils = Backendless.Utils = {
         isObject  : function(obj) {
@@ -897,8 +891,6 @@
         Backendless.LocalCache.flushExpired();
     }
 
-    Backendless.Async = Async;
-
     function DataStore(model) {
         this.model = Utils.isString(model) ? function() {
         } : model;
@@ -1067,7 +1059,11 @@
             return result;
         },
 
-        save: function(obj, async) {
+        save: promisified('_save'),
+
+        saveSync: synchronized('_save'),
+
+        _save: function(obj, async) {
             this._replCircDeps(obj);
             var responder = extractResponder(arguments),
                 isAsync   = false,
@@ -1095,7 +1091,11 @@
             return isAsync ? result : objRef;
         },
 
-        remove: function(objId, async) {
+        remove: promisified('_remove'),
+
+        removeSync: synchronized('_remove'),
+
+        _remove: function(objId, async) {
             if (!Utils.isObject(objId) && !Utils.isString(objId)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
@@ -1130,13 +1130,17 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        find: function(queryBuilder) {
+        find: promisified('_find'),
+
+        findSync: synchronized('_find'),
+
+        _find: function(queryBuilder) {
             Utils.throwError(this._validateFindArguments(arguments));
 
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
 
-            return this._find(dataQuery, args.async);
+            return this._findUtil(dataQuery, args.async);
         },
 
         _validateFindArguments: function(args) {
@@ -1163,19 +1167,19 @@
         },
 
         _parseFindArguments: function(args) {
-          var result = {
-              queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-              async       : args[0] instanceof Backendless.Async ? args[0] : null
-          };
+            var result = {
+                queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
+                async       : args[0] instanceof Backendless.Async ? args[0] : null
+            };
 
-          if (args.length > 1) {
-              result.async = args[1];
-          }
+            if (args.length > 1) {
+                result.async = args[1];
+            }
 
-          return result;
+            return result;
         },
 
-        _find: function(dataQuery) {
+        _findUtil: function(dataQuery) {
             dataQuery = dataQuery || {};
 
             var props,
@@ -1255,7 +1259,11 @@
             return args;
         },
 
-        findById: function() {
+        findById: promisified('_findById'),
+
+        findByIdSync: synchronized('_findById'),
+
+        _findById: function() {
             var argsObj;
 
             if (Utils.isString(arguments[0])) {
@@ -1264,7 +1272,7 @@
                     throw new Error('missing argument "object ID" for method findById()');
                 }
 
-                return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+                return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
                 var responder = extractResponder(arguments),
@@ -1310,9 +1318,20 @@
          * @param {string} parentObjectId
          * @param {LoadRelationsQueryBuilder} queryBuilder
          * @param {Async} [async]
-         * @returns {*}
+         * @returns {Promise}
          */
-        loadRelations: function (parentObjectId, queryBuilder, async) {
+        loadRelations: promisified('_loadRelations'),
+
+        /**
+         * Get related objects (sync)
+         *
+         * @param {string} parentObjectId
+         * @param {LoadRelationsQueryBuilder} queryBuilder
+         * @returns {Object[]}
+         */
+        loadRelationsSync: synchronized('_loadRelations'),
+
+        _loadRelations: function (parentObjectId, queryBuilder, async) {
             Utils.throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
 
             var dataQuery = queryBuilder.build();
@@ -1324,8 +1343,8 @@
             var url = this.restUrl + Utils.toUri(parentObjectId, relationName);
 
             responder = responder && wrapAsync(responder, function(response){
-                return this._parseFindResponse(response, relationModel);
-            }, this);
+                    return this._parseFindResponse(response, relationModel);
+                }, this);
 
             url += query ? '?' + query : '';
 
@@ -1360,29 +1379,47 @@
             }
         },
 
-        findFirst: function() {
+        findFirst: promisified('_findFirst'),
+
+        findFirstSync: synchronized('_findFirst'),
+
+        _findFirst: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'first';
 
-            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
-        findLast: function() {
+        findLast: promisified('_findLast'),
+
+        findLastSync: synchronized('_findLast'),
+
+        _findLast: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'last';
 
-            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
         /**
          * Count of object
          *
          * @param {DataQuery} [dataQuery]
-         * @param {Async} [async]
          *
-         * @return {*}
+         * @return {Promise}
          */
-        getObjectCount: function(dataQuery, async) {
+        getObjectCount: promisified('_getObjectCount'),
+
+        /**
+         * Count of object (sync)
+         *
+         * @param {DataQuery} [dataQuery]
+         *
+         * @return {number}
+         */
+        getObjectCountSync: synchronized('_getObjectCount'),
+
+        _getObjectCount: function(dataQuery, async) {
             dataQuery = dataQuery || {};
 
             var url       = this.restUrl + '/count';
@@ -1406,11 +1443,19 @@
          * Create of several objects
          *
          * @param {object[]} objectsArray - array of objects
-         * @param {Async} [async]
+         * @returns {Promise}
+         */
+        bulkCreate: promisified('_bulkCreate'),
+
+        /**
+         * Create of several objects (sync)
+         *
+         * @param {object[]} objectsArray - array of objects
          * @returns {*}
          */
+        bulkCreateSync: synchronized('_bulkCreate'),
 
-        bulkCreate: function(objectsArray, async) {
+        _bulkCreate: function(objectsArray, async) {
             Utils.throwError(this._validateBulkCreateArg(objectsArray));
 
             return Backendless._ajax({
@@ -1427,11 +1472,20 @@
          *
          * @param {object} templateObject
          * @param {string} whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
+         */
+        bulkUpdate: promisified('_bulkUpdate'),
+
+        /**
+         * Update of several objects by template (sync)
+         *
+         * @param {object} templateObject
+         * @param {string} whereClause
          * @returns {*}
          */
+        bulkUpdateSync: synchronized('_bulkUpdate'),
 
-        bulkUpdate: function(templateObject, whereClause, async) {
+        _bulkUpdate: function(templateObject, whereClause, async) {
             Utils.throwError(this._validateBulkUpdateArgs(templateObject, whereClause));
 
             return Backendless._ajax({
@@ -1447,11 +1501,20 @@
          * Delete of several objects
          *
          * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
-         * @param {Async} [async]
-         * @returns {*}
+         * @returns {Promise}
          */
 
-        bulkDelete: function(objectsArray, async) {
+        bulkDelete: promisified('_bulkDelete'),
+
+        /**
+         * Delete of several objects (sync)
+         *
+         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
+         * @returns {*}
+         */
+        bulkDeleteSync: synchronized('_bulkDelete'),
+
+        _bulkDelete: function(objectsArray, async) {
             Utils.throwError(this._validateBulkDeleteArg(objectsArray));
 
             var whereClause;
@@ -1529,10 +1592,22 @@
          * @param {string} columnName
          * @param {string} childTableName
          * @param {string} cardinality
-         * @param {Async} [async]
+         * @returns {Promise}
          **/
 
-        declareRelation: function(columnName, childTableName, cardinality, async) {
+        declareRelation: promisified('_declareRelation'),
+
+        /**
+         * Defining the relation (sync)
+         *
+         * @param {string} columnName
+         * @param {string} childTableName
+         * @param {string} cardinality
+         * @returns {*}
+         **/
+        declareRelationSync: synchronized('_declareRelation'),
+
+        _declareRelation: function(columnName, childTableName, cardinality, async) {
             var responder = extractResponder(arguments);
 
             Utils.throwError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
@@ -1579,10 +1654,23 @@
          * @param {object} parentObject,
          * @param {string} columnName
          * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
          **/
 
-        setRelation: function() {
+        setRelation: promisified('_setRelation'),
+
+
+        /**
+         * Set relations (sync)
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @returns {*}
+         **/
+        setRelationSync: synchronized('_setRelation'),
+
+        _setRelation: function() {
             return this._manageRelation('POST', arguments);
         },
 
@@ -1592,10 +1680,22 @@
          * @param {object} parentObject,
          * @param {string} columnName
          * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
          **/
+        addRelation: promisified('_addRelation'),
 
-        addRelation: function() {
+
+        /**
+         * Add relations (sync)
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @returns {*}
+         **/
+        addRelationSync: synchronized('_addRelation'),
+
+        _addRelation: function() {
             return this._manageRelation('PUT', arguments);
         },
 
@@ -1605,10 +1705,22 @@
          * @param {object} parentObject,
          * @param {string} columnName
          * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
          **/
+        deleteRelation: promisified('_deleteRelation'),
 
-        deleteRelation: function() {
+
+        /**
+         * Delete relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @returns {*}
+         **/
+        deleteRelationSync: synchronized('_deleteRelation'),
+
+        _deleteRelation: function() {
             return this._manageRelation('DELETE', arguments);
         },
 
@@ -4945,99 +5057,88 @@
         }
     };
 
-    function promisify(fn) {
+    function promisified(methodName) {
         return function() {
-            var context = this;
             var args = [].slice.call(arguments);
+            var context = this;
+            var fn = context[methodName];
 
             return new Promise(function(resolve, reject)  {
                 args.push(new Async(resolve, reject, context));
                 fn.apply(context, args);
             });
-        }
-    }
-
-    function promisifyPack(data) {
-        var obj = data[0];
-        var methods = data[1];
-
-        methods.forEach(function(name) {
-            obj[name] = promisify(obj[name]);
-        });
-    }
-
-    function enablePromises() {
-        if (promisesEnabled) {
-            return;
-        }
-
-        if (typeof Promise === 'undefined') {
-            throw new Error('Promises are not supported by your browser. ' +
-                'Please use "Backendless.Async" to make async requests, ' +
-                'or upgrade to a modern browser.\nSee ' + 'http://caniuse.com/#feat=promises');
-        }
-
-        promisesEnabled = true;
-
-        [
-            [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
-            [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
-            [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
-            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
-            [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
-            [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations', 'getObjectCount',
-                'declareRelation', 'setRelation', 'addRelation', 'deleteRelation']],
-            [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
-            [persistence, ['describe', 'getView', 'callStoredProcedure']],
-            [FilePermissions.prototype, ['sendRequest']],
-            [CustomServices.prototype, ['invoke']],
-            [Events.prototype, ['dispatch']],
-            [PollingProxy.prototype, ['poll']],
-            [Backendless.Logging, ['flush']],
-            [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                                   'getRegistrations', 'unregisterDevice']],
-            [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                             'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
-            [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
-                                     'resendEmailConfirmation']]
-        ].forEach(promisifyPack);
-
-        UserService.prototype.getCurrentUser = function() {
-            if (currentUser) {
-                return Promise.resolve(this._getUserFromResponse(currentUser));
-            }
-
-            var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
-            var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
-
-            return currentUserId && persistence.of(User).findById(currentUserId) || Promise.resolve(null);
-        };
-
-        UserService.prototype.isValidLogin = function() {
-            var userToken = Backendless.LocalCache.get("user-token");
-
-            if (userToken) {
-                return new Promise(function(resolve, reject) {
-                    return Backendless._ajax({
-                        method: 'GET',
-                        url: this.restUrl + '/isvalidusertoken/' + userToken,
-                        isAsync: true,
-                        asyncHandler: new Async(resolve, reject)
-                    });
-                });
-            }
-
-            return Backendless.UserService.getCurrentUser()
-                .then(function(user) {
-                    return Promise.resolve(!!user);
-                }, function() {
-                    return Promise.resolve(false);
-                });
         };
     }
+
+    function synchronized(methodName) {
+        return function() {
+            console.warn('Using of sync methods is an outdated approach. Please, use async methods.');
+
+            var context = this;
+            var fn = context[methodName];
+
+            return fn.apply(context, arguments);
+        };
+    }
+
+    // function enablePromises() {
+    //     [
+    //         [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
+    //         [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
+    //         [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
+    //         [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
+    //         [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
+    //         [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
+    //         [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
+    //         [persistence, ['describe', 'getView', 'callStoredProcedure']],
+    //         [FilePermissions.prototype, ['sendRequest']],
+    //         [CustomServices.prototype, ['invoke']],
+    //         [Events.prototype, ['dispatch']],
+    //         [PollingProxy.prototype, ['poll']],
+    //         [Backendless.Logging, ['flush']],
+    //         [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
+    //                                'getRegistrations', 'unregisterDevice']],
+    //         [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
+    //                          'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
+    //         [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
+    //                                  'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
+    //                                  'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
+    //                                  'resendEmailConfirmation']]
+    //     ].forEach(promisifyPack);
+    //
+    //     UserService.prototype.getCurrentUser = function() {
+    //         if (currentUser) {
+    //             return Promise.resolve(this._getUserFromResponse(currentUser));
+    //         }
+    //
+    //         var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
+    //         var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
+    //
+    //         return currentUserId && persistence.of(User).findById(currentUserId) || Promise.resolve(null);
+    //     };
+    //
+    //     UserService.prototype.isValidLogin = function() {
+    //         var userToken = Backendless.LocalCache.get("user-token");
+    //
+    //         if (userToken) {
+    //             return new Promise(function(resolve, reject) {
+    //                 return Backendless._ajax({
+    //                     method: 'GET',
+    //                     url: this.restUrl + '/isvalidusertoken/' + userToken,
+    //                     isAsync: true,
+    //                     asyncHandler: new Async(resolve, reject)
+    //                 });
+    //             });
+    //         }
+    //
+    //         return Backendless.UserService.getCurrentUser()
+    //             .then(function(user) {
+    //                 return Promise.resolve(!!user);
+    //             }, function() {
+    //                 return Promise.resolve(false);
+    //             });
+    //     };
+    // }
 
     Backendless.initApp = function(appId, secretKey) {
         Backendless.applicationId = appId;
