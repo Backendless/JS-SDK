@@ -2116,28 +2116,17 @@
                 var success = function(data) {
                     var geoCollection = [];
                     var geoObject;
-                    var isGeoCluster;
-                    var resultGeoObject;
+                    var isCluster;
+                    var GeoItemType;
 
                     for (var i = 0; i < data.collection.length; i++) {
                         geoObject = data.collection[i];
+                        geoObject.geoQuery = query;
 
-                        isGeoCluster = geoObject.hasOwnProperty('totalPoints');
-                        resultGeoObject = isGeoCluster ? new GeoCluster() : new GeoPoint();
+                        isCluster = geoObject.hasOwnProperty('totalPoints');
+                        GeoItemType = isCluster ? GeoCluster : GeoPoint;
 
-                        if (isGeoCluster) {
-                            resultGeoObject.totalPoints = geoObject.totalPoints;
-                            resultGeoObject.geoQuery = query;
-                        }
-
-                        resultGeoObject.categories = geoObject.categories;
-                        resultGeoObject.latitude = geoObject.latitude;
-                        resultGeoObject.longitude = geoObject.longitude;
-                        resultGeoObject.metadata = geoObject.metadata;
-                        resultGeoObject.objectId = geoObject.objectId;
-                        resultGeoObject.distance = geoObject.distance;
-
-                        geoCollection.push(resultGeoObject);
+                        geoCollection.push(new GeoItemType(geoObject))
                     }
 
                     async.success(geoCollection);
@@ -2234,18 +2223,8 @@
 
             var responderOverride = function(async) {
                 var success = function(geoCollection) {
-                    var geoObject;
-
                     for (var i = 0; i < geoCollection.length; i++) {
-                        geoObject = new GeoPoint();
-
-                        geoObject.categories = geoCollection[i].categories;
-                        geoObject.latitude = geoCollection[i].latitude;
-                        geoObject.longitude = geoCollection[i].longitude;
-                        geoObject.metadata = geoCollection[i].metadata;
-                        geoObject.objectId = geoCollection[i].objectId;
-
-                        geoCollection[i] = geoObject;
+                        geoCollection[i] = new GeoPoint(geoCollection[i]);
                     }
 
                     async.success(geoCollection);
@@ -4509,6 +4488,7 @@
         this.longitude = args.longitude;
         this.metadata = args.metadata;
         this.objectId = args.objectId;
+        this.distance = args.distance;
     };
 
     var GeoCluster = function(args) {
@@ -4520,6 +4500,7 @@
         this.objectId = args.objectId;
         this.totalPoints = args.totalPoints;
         this.geoQuery = args.geoQuery;
+        this.distance = args.distance;
     };
 
     var PublishOptionsHeaders = { //PublishOptions headers namespace helper
