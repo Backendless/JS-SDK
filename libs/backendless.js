@@ -106,42 +106,6 @@
         return new Date().getTime();
     };
 
-    var throwError = function(errorMessage) {
-        if (errorMessage) {
-           throw new Error(errorMessage);
-        }
-    };
-
-    var addWhereClause = function(url, whereClause) {
-        if (whereClause) {
-            url += '?where=' + encodeURIComponent(whereClause);
-        }
-
-        return url;
-    };
-
-    var toUri = function() {
-        var uri = '';
-        var arg;
-
-        for (var i=0; i < arguments.length; i++) {
-            arg = arguments[i];
-
-            if (!arg) {
-                continue;
-            }
-
-            if (Utils.isArray(arg)) {
-                uri += toUri.apply(null, arg);
-            } else if (Utils.isString(arg)) {
-                uri += '/';
-                uri += encodeURIComponent(arg);
-            }
-        }
-
-        return uri;
-    };
-
     var promisesEnabled = false;
 
     Backendless.browser = browser;
@@ -175,6 +139,11 @@
         return Object.prototype.toString.call(obj).slice(8, -1) === 'Array';
     });
 
+
+    /**
+     * @param {*} value
+     * @returns {Array}
+     */
     Utils.castArray = function(value) {
         if (Utils.isArray(value)) {
             return value;
@@ -221,6 +190,11 @@
         }
     };
 
+    /**
+     * @param {Array} array
+     * @param {function|string} iteratee
+     * @returns {Array}
+     */
     Utils.map = function(array, iteratee) {
         var result = [];
         var item;
@@ -240,6 +214,53 @@
         }
 
         return result;
+    };
+
+    /**
+     * @param {string} errorMessage
+     */
+    Utils.throwError = function(errorMessage) {
+        if (errorMessage) {
+            throw new Error(errorMessage);
+        }
+    };
+
+    /**
+     * @param {stirng} url
+     * @param {string} whereClause
+     * @returns {string}
+     */
+    Utils.addWhereClause = function(url, whereClause) {
+        if (whereClause) {
+            url += '?where=' + encodeURIComponent(whereClause);
+        }
+
+        return url;
+    };
+
+    /**
+     * @returns {string}
+     */
+    Utils.toUri = function() {
+        var uri = '';
+        var arg;
+
+        for (var i=0; i < arguments.length; i++) {
+            arg = arguments[i];
+
+            if (!arg) {
+                continue;
+            }
+
+            if (Utils.isArray(arg)) {
+                uri += toUri.apply(null, arg);
+            } else if (Utils.isString(arg)) {
+                uri += '/';
+                uri += encodeURIComponent(arg);
+            }
+        }
+
+        return uri;
     };
 
     function initXHR() {
