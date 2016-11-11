@@ -60,12 +60,31 @@
         Backendless.Persistence.of(FileItem).remove(id);
     }
 
+    function refreshCountOfList() {
+        var countContainer = $('#count');
+
+        countContainer.text('loading...');
+
+        Backendless.Persistence.of(FileItem).getObjectCount(new Backendless.Async(
+            function(count){
+                countContainer.text(count);
+            },
+            function(error) {
+                countContainer.text('NaN');
+                console.error(error);
+            })
+        );
+    }
+
     function onClickFileItem() {
         $(this).toggleClass('selectedThumbnail');
     }
 
     function refreshItemsList() {
         var items = getItemsFromPersistance();
+
+        refreshCountOfList();
+
         $('.thumbnails').empty();
 
         $.each(items, function (index, value) {

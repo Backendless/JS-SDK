@@ -1344,6 +1344,34 @@
             argsObj.url = 'last';
 
             return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        },
+
+        /**
+         * Count of object
+         *
+         * @param {DataQuery} [dataQuery]
+         * @param {Async} [async]
+         *
+         * @return {*}
+         */
+        getObjectCount: function(dataQuery, async) {
+            dataQuery = dataQuery || {};
+
+            var url       = this.restUrl + '/count';
+            var responder = extractResponder(arguments);
+            var isAsync   = responder != null;
+
+            if (dataQuery.condition) {
+                url += '?where=' + encodeURIComponent(dataQuery.condition);
+            }
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
+                asyncHandler: responder,
+                cachePolicy : dataQuery.cachePolicy
+            });
         }
     };
 
@@ -2173,6 +2201,32 @@
             }
         },
 
+        _buildUrlQueryParams: function (query) {
+            var params = '?';
+
+            if (query.searchRectangle && query.radius) {
+                throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
+            }
+
+            if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
+                throw new Error("Latitude and longitude should be provided to search in radius");
+            }
+
+            if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
+                throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
+            }
+
+            params += query.units ? 'units=' + query.units : '';
+
+            for (var prop in query) {
+                if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
+                    params += '&' + this._findHelpers[prop](query[prop]);
+                }
+            }
+
+            return params.replace(/\?&/g, '?');
+        },
+
         savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
@@ -2227,27 +2281,12 @@
         },
 
         findUtil        : function(query, async) {
-            var url       = query["url"],
-                responder = extractResponder(arguments),
+            var responder = extractResponder(arguments),
                 isAsync   = false;
 
-            if (query.searchRectangle && query.radius) {
-                throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
-            } else if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
-                throw new Error("Latitude and longitude should be provided to search in radius");
-            } else if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
-                throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
-            } else {
-                url += query.searchRectangle ? '/rect?' : '/points?';
-                url += query.units ? 'units=' + query.units : '';
-                for (var prop in query) {
-                    if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
-                        url += '&' + this._findHelpers[prop](query[prop]);
-                    }
-                }
-            }
+            var url = query.url + (query.searchRectangle ? '/rect' : '/points') + this._buildUrlQueryParams(query);
 
-            url = url.replace(/\?&/g, '?');
+            var self = this;
 
             var responderOverride = function(async) {
                 var success = function(data) {
@@ -2485,17 +2524,79 @@
 
         getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
-            if (!Utils.isString(geoFenceName)) {
-                throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
-            }
-            if (!(query instanceof GeoQuery)) {
-                throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
-            }
+
+            this._validateFenceName(geoFenceName);
+            this._validateQuery(query);
 
             query["geoFence"] = geoFenceName;
             query["url"] = this.restUrl;
 
             return this.findUtil(query, async);
+        },
+
+
+        /**
+         * Count of points
+         *
+         * @param {(string|GeoQuery)} [fenceName] - fenceName name, or an GeoQuery.
+         * @param {GeoQuery} query
+         * @param {Async} [async]
+         *
+         * @return {*}
+         */
+        getGeopointCount: function (fenceName, query, async) {
+            var responder = extractResponder(arguments);
+            var isAsync = !!responder;
+            var query = this._buildCountQueryObject(arguments, isAsync);
+            var url = this.restUrl + '/count' + this._buildUrlQueryParams(query);
+
+            return Backendless._ajax({
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
+
+        _validateQuery: function(query) {
+            var MSG_INVALID_QUERY = 'Invalid Geo Query. Query should be instance of Backendless.GeoQuery';
+
+            if (!(query instanceof GeoQuery)) {
+                throw new Error(MSG_INVALID_QUERY);
+            }
+        },
+
+        _validateFenceName: function(fenceName) {
+            var MSG_INVALID_FENCE_NAME = 'Invalid value for parameter "geoFenceName". Geo Fence Name must be a String';
+
+            if (!Utils.isString(fenceName)) {
+                throw new Error(MSG_INVALID_FENCE_NAME);
+            }
+        },
+
+        _buildCountQueryObject: function(args, isAsync) {
+            args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
+
+            var query;
+            var fenceName;
+
+            if (args.length === 1) {
+                query = args[0];
+
+                this._validateQuery(query);
+            }
+
+            if (args.length === 2) {
+                fenceName = args[0];
+                query = args[1];
+
+                this._validateQuery(query);
+                this._validateFenceName(fenceName);
+
+                query["geoFence"] = fenceName;
+            }
+
+            return query;
         },
 
         _runFenceAction: function(action, geoFenceName, geoPoint, async) {
@@ -3837,6 +3938,95 @@
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+        },
+
+        /**
+         * Count of files
+         *
+         * @param {string} path
+         * @param {string} [pattern]
+         * @param {boolean} [recursive]
+         * @param {boolean} [countDirectories]
+         * @param {Async} [async]
+         *
+         * @return {*}
+         */
+        getFileCount: function(path, pattern, recursive, countDirectories, async) {
+            var responder = extractResponder(arguments);
+            var isAsync = !!responder;
+            var query = this._buildCountQueryObject(arguments, isAsync);
+            var queryString = this._getQueryParamsString(query);
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : this.restUrl + queryString,
+                isAsync     : isAsync,
+                asyncHandler: responder
+            });
+        },
+
+        _getQueryParamsString: function(query) {
+            var params = '/' + query.path + '?action=count';
+
+            delete query.path;
+
+            for (var prop in query) {
+                if (query.hasOwnProperty(prop) && query[prop] != null) {
+                    params += '&' + prop + '=' + encodeURIComponent(query[prop]);
+                }
+            }
+
+            return params;
+        },
+
+        _buildCountQueryObject: function (args, isAsync) {
+            args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
+
+            var query = {
+                path: args[0],
+                pattern: args[1] !== undefined ? args[1] : '*',
+                recursive: args[2] !== undefined ? args[2] : false,
+                countDirectories: args[3] !== undefined ? args[3] : false
+            };
+
+            this._validatePath(query.path);
+            this._validatePattern(query.pattern);
+            this._validateRecursive(query.recursive);
+            this._validateCountDirectories(query.countDirectories);
+
+            return query;
+        },
+
+        _validatePath: function(path) {
+            var MSG_ERROR = 'Missing value for the "path" argument. The argument must contain a string value';
+
+            if (!path || !Utils.isString(path)) {
+                throw new Error(MSG_ERROR);
+            }
+        },
+
+        _validatePattern: function(pattern) {
+            var MSG_ERROR = 'Missing value for the "pattern" argument. The argument must contain a string value';
+
+            if (!pattern || !Utils.isString(pattern)) {
+                throw new Error(MSG_ERROR);
+            }
+        },
+
+        _validateRecursive: function(recursive) {
+            var MSG_ERROR = 'Missing value for the "recursive" argument. The argument must contain a boolean value';
+
+            if (!Utils.isBoolean(recursive)) {
+                throw new Error(MSG_ERROR);
+            }
+        },
+
+        _validateCountDirectories: function(countDirectories) {
+            var MSG_ERROR = 'Missing value for the "countDirectories" argument. The argument must contain a boolean value';
+
+            if (!Utils.isBoolean(countDirectories)) {
+                throw new Error(MSG_ERROR);
+            }
         }
     };
 
@@ -4471,10 +4661,10 @@
             [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
             [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
             [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
-            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory']],
+            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
             [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
             [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations']],
+            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations', 'getObjectCount']],
             [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
             [persistence, ['describe', 'getView', 'callStoredProcedure']],
             [FilePermissions.prototype, ['sendRequest']],
@@ -4485,7 +4675,7 @@
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
                                    'getRegistrations', 'unregisterDevice']],
             [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                             'getCategories', 'deleteCategory', 'deletePoint']],
+                             'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
                                      'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
                                      'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
