@@ -1812,8 +1812,14 @@
     var dataStoreCache = {};
 
     var persistence = {
-        save: function(className, obj, async) {
-            var responder = extractResponder(arguments), isAsync = false;
+
+        save: promisified('_save'),
+
+        saveSync: synchronized('_save'),
+
+        _save: function(className, obj, async) {
+            var responder = extractResponder(arguments);
+            var isAsync = !!responder;
 
             if (Utils.isString(className)) {
                 var url = Backendless.appPath + '/data/' + className;
@@ -1827,10 +1833,15 @@
             }
 
             if (Utils.isObject(className)) {
-                return new DataStore(className).save(className, obj, async);
+                return new DataStore(className)._save(className, obj, async);
             }
         },
-        getView: function(viewName, whereClause, pageSize, offset, async) {
+
+        getView: promisified('_getView'),
+
+        getViewSync: synchronized('_getView'),
+
+        _getView: function(viewName, whereClause, pageSize, offset, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null;
 
@@ -1867,7 +1878,12 @@
                 throw new Error('View name is required string parameter');
             }
         },
-        callStoredProcedure: function(spName, argumentValues, async) {
+
+        callStoredProcedure: promisified('_callStoredProcedure'),
+
+        callStoredProcedureSync: synchronized('_callStoredProcedure'),
+
+        _callStoredProcedure: function(spName, argumentValues, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null;
 
@@ -1890,6 +1906,7 @@
                 throw new Error('Stored Procedure name is required string parameter');
             }
         },
+
         of: function(model) {
             var tableName;
             if (Utils.isString(model)) {
@@ -1908,7 +1925,12 @@
 
             return store;
         },
-        describe: function(className, async) {
+
+        describe: promisified('_describe'),
+
+        describeSync: synchronized('_describe'),
+
+        _describe: function(className, async) {
             className = Utils.isString(className) ? className : getClassName.call(className);
             var responder = extractResponder(arguments), isAsync = (responder != null);
 
@@ -4134,7 +4156,12 @@
     }
 
     Files.prototype = {
-        saveFile  : function(path, fileName, fileContent, overwrite, async) {
+
+        saveFile: promisified('_saveFile'),
+
+        saveFileSync: synchronized('_saveFile'),
+
+        _saveFile  : function(path, fileName, fileContent, overwrite, async) {
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
@@ -4182,7 +4209,11 @@
             }
         },
 
-        upload    : function(files, path, overwrite, async) {
+        upload: promisified('_upload'),
+
+        uploadSync: synchronized('_upload'),
+
+        _upload    : function(files, path, overwrite, async) {
             files = files.files || files;
             var baseUrl = this.restUrl + '/' + path + '/';
             var overwriting = '';
@@ -4243,7 +4274,11 @@
             }
         },
 
-        listing   : function(path, pattern, recursively, pagesize, offset, async) {
+        listing: promisified('_listing'),
+
+        listingSync: synchronized('_listing'),
+
+        _listing   : function(path, pattern, recursively, pagesize, offset, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null,
                 url       = this.restUrl + '/' + path;
@@ -4276,7 +4311,11 @@
             });
         },
 
-        renameFile: function(oldPathName, newName, async) {
+        renameFile: promisified('_renameFile'),
+
+        renameFileSync: synchronized('_renameFile'),
+
+        _renameFile: function(oldPathName, newName, async) {
             this._checkPath(oldPathName);
 
             var parameters = {
@@ -4287,7 +4326,11 @@
             return this._doAction("rename", parameters, async);
         },
 
-        moveFile  : function(sourcePath, targetPath, async) {
+        moveFile: promisified('_moveFile'),
+
+        moveFileSync: synchronized('_moveFile'),
+
+        _moveFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
 
@@ -4299,7 +4342,11 @@
             return this._doAction("move", parameters, async);
         },
 
-        copyFile  : function(sourcePath, targetPath, async) {
+        copyFile: promisified('_copyFile'),
+
+        copyFileSync: synchronized('_copyFile'),
+
+        _copyFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
 
@@ -4321,7 +4368,7 @@
 
         _doAction : function(actionType, parameters, async) {
             var responder = extractResponder(arguments);
-            var isAsync = responder != null;
+            var isAsync = !!responder;
 
             return Backendless._ajax({
                 method      : 'PUT',
@@ -4332,7 +4379,11 @@
             });
         },
 
-        remove    : function(fileURL, async) {
+        remove: promisified('_remove'),
+
+        removeSync: synchronized('_remove'),
+
+        _remove    : function(fileURL, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var url = fileURL.indexOf("http://") === 0 || fileURL.indexOf("https://") === 0 ? fileURL : this.restUrl + '/' + fileURL;
@@ -4345,7 +4396,11 @@
             });
         },
 
-        exists    : function(path, async) {
+        exists: promisified('_exists'),
+
+        existsSync: synchronized('_exists'),
+
+        _exists    : function(path, async) {
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
@@ -4362,7 +4417,11 @@
             });
         },
 
-        removeDirectory: function(path, async) {
+        removeDirectory: promisified('_removeDirectory'),
+
+        removeDirectorySync: synchronized('_removeDirectory'),
+
+        _removeDirectory: function(path, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -4381,11 +4440,24 @@
          * @param {string} [pattern]
          * @param {boolean} [recursive]
          * @param {boolean} [countDirectories]
-         * @param {Async} [async]
          *
-         * @return {*}
+         * @return {Promise}
          */
-        getFileCount: function(path, pattern, recursive, countDirectories, async) {
+        getFileCount: promisified('_getFileCount'),
+
+        /**
+         * Count of files (sync)
+         *
+         * @param {string} path
+         * @param {string} [pattern]
+         * @param {boolean} [recursive]
+         * @param {boolean} [countDirectories]
+         *
+         * @return {number}
+         */
+        getFileCountSync: synchronized('_getFileCount'),
+
+        _getFileCount: function(path, pattern, recursive, countDirectories, async) {
             var responder = extractResponder(arguments);
             var isAsync = !!responder;
             var query = this._buildCountQueryObject(arguments, isAsync);
@@ -5086,11 +5158,9 @@
     //         [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
     //         [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
     //         [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
-    //         [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
     //         [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
     //         [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
     //         [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
-    //         [persistence, ['describe', 'getView', 'callStoredProcedure']],
     //         [FilePermissions.prototype, ['sendRequest']],
     //         [CustomServices.prototype, ['invoke']],
     //         [Events.prototype, ['dispatch']],
