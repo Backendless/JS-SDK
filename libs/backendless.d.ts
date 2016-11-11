@@ -197,6 +197,24 @@ declare module __Backendless {
 
     /**
      * @public
+     * @class Backendless.LoadRelationsQueryBuilder
+     * @constructor
+     */
+
+    class LoadRelationsQueryBuilder {
+        static create():Backendless.LoadRelationsQueryBuilder;
+        static of(RelationModel:Object):Backendless.LoadRelationsQueryBuilder;
+
+        setRelationName(relationName:string):Backendless.LoadRelationsQueryBuilder;
+        setPageSize(pageSize:number):Backendless.LoadRelationsQueryBuilder;
+        setOffset(offset:number):Backendless.LoadRelationsQueryBuilder;
+        prepareNextPage():Backendless.LoadRelationsQueryBuilder;
+        preparePreviousPage():Backendless.LoadRelationsQueryBuilder;
+        build():Backendless.DataQueryValueI;
+    }
+
+    /**
+     * @public
      * @class Backendless.GeoPoint
      * @constructor
      */
@@ -403,10 +421,9 @@ declare module __Backendless {
         findLast<Promise>():Promise;
         findLast<Promise>(query:DataQueryValueI):Promise;
 
-        loadRelations(query:Backendless.DataQuery|DataQueryValueI|string):void;
-        loadRelations(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):void;
-        loadRelations<Promise>(query:Backendless.DataQuery|DataQueryValueI|string):Promise;
-        loadRelations<Promise>(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):Promise;
+        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
+        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder, async:Backendless.Async):XMLHttpRequest;
+        loadRelations<Promise>(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
 
         bulkCreate(objectsArray:Array<Object>):void;
         bulkCreate(objectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
