@@ -3618,7 +3618,7 @@
                             reader.onerror = function(evn) {
                                 async.fault(evn);
                             };
-                            reader.readAsBinaryString(files[i]);
+                            reader.readAsArrayBuffer(files[i]);
 
                         } catch (err) {
                             filesError++;
