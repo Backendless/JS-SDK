@@ -1131,7 +1131,7 @@
         },
 
         find: function(queryBuilder) {
-            throwError(this._validateFindArguments(arguments));
+            Utils.throwError(this._validateFindArguments(arguments));
 
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
@@ -1313,7 +1313,7 @@
          * @returns {*}
          */
         loadRelations: function (parentObjectId, queryBuilder, async) {
-            throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
+            Utils.throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
 
             var dataQuery = queryBuilder.build();
             var relationModel = dataQuery.relationModel || null;
@@ -1321,7 +1321,7 @@
             var isAsync = !!responder;
             var relationName = dataQuery.options.relationName;
             var query = this._extractQueryOptions(dataQuery.options);
-            var url = this.restUrl + toUri(parentObjectId, relationName);
+            var url = this.restUrl + Utils.toUri(parentObjectId, relationName);
 
             responder = responder && wrapAsync(responder, function(response){
                 return this._parseFindResponse(response, relationModel);
@@ -1411,7 +1411,7 @@
          */
 
         bulkCreate: function(objectsArray, async) {
-            throwError(this._validateBulkCreateArg(objectsArray));
+            Utils.throwError(this._validateBulkCreateArg(objectsArray));
 
             return Backendless._ajax({
                 method      : 'POST',
@@ -1432,11 +1432,11 @@
          */
 
         bulkUpdate: function(templateObject, whereClause, async) {
-            throwError(this._validateBulkUpdateArgs(templateObject, whereClause));
+            Utils.throwError(this._validateBulkUpdateArgs(templateObject, whereClause));
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : addWhereClause(this.bulkRestUrl, whereClause),
+                url         : Utils.addWhereClause(this.bulkRestUrl, whereClause),
                 data        : JSON.stringify(templateObject),
                 isAsync     : !!async,
                 asyncHandler: async
@@ -1452,7 +1452,7 @@
          */
 
         bulkDelete: function(objectsArray, async) {
-            throwError(this._validateBulkDeleteArg(objectsArray));
+            Utils.throwError(this._validateBulkDeleteArg(objectsArray));
 
             var whereClause;
             var objects;
@@ -1467,7 +1467,7 @@
 
             return Backendless._ajax({
                 method      : 'DELETE',
-                url         : addWhereClause(this.bulkRestUrl, whereClause),
+                url         : Utils.addWhereClause(this.bulkRestUrl, whereClause),
                 data        : objects && JSON.stringify(objects),
                 isAsync     : !!async,
                 asyncHandler: async
@@ -1535,11 +1535,11 @@
         declareRelation: function(columnName, childTableName, cardinality, async) {
             var responder = extractResponder(arguments);
 
-            throwError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
+            Utils.throwError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
 
             return Backendless._ajax({
                 method      : 'POST',
-                url         : this.restUrl + toUri(columnName, childTableName, cardinality),
+                url         : this.restUrl + Utils.toUri(columnName, childTableName, cardinality),
                 isAsync     : !!responder,
                 asyncHandler: responder
             });
@@ -1691,9 +1691,9 @@
         },
 
         _buildRelationUrl: function (relation) {
-            var url = this.restUrl + toUri(relation.parentId, relation.columnName);
+            var url = this.restUrl + Utils.toUri(relation.parentId, relation.columnName);
 
-            return addWhereClause(url, relation.whereClause);
+            return Utils.addWhereClause(url, relation.whereClause);
         }
     };
 
@@ -5112,14 +5112,14 @@
 
     PagingQueryBuilder.prototype = {
         setPageSize: function(pageSize){
-            throwError(this.validatePageSize(pageSize));
+            Utils.throwError(this.validatePageSize(pageSize));
             this.pageSize = pageSize;
 
             return this;
         },
 
         setOffset: function(offset){
-            throwError(this.validateOffset(offset));
+            Utils.throwError(this.validateOffset(offset));
             this.offset = offset;
 
             return this;
