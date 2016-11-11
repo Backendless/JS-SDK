@@ -253,7 +253,7 @@
             }
 
             if (Utils.isArray(arg)) {
-                uri += toUri.apply(null, arg);
+                uri += this.toUri.apply(this, arg);
             } else if (Utils.isString(arg)) {
                 uri += '/';
                 uri += encodeURIComponent(arg);
