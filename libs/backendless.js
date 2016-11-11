@@ -41,6 +41,11 @@
     Backendless.VERSION = '3.1.18';
     Backendless.serverURL = 'https://api.backendless.com';
 
+    Backendless.DEFAULTS = {
+        pageSize: 10,
+        offset: 0
+    };
+
     Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
         return this;
@@ -1122,8 +1127,54 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        find: function(dataQuery) {
+        find: function(queryBuilder) {
+            throwError(this._validateFindArguments(arguments));
+
+            var args = this._parseFindArguments(arguments);
+            var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
+
+            return this._find(dataQuery, args.async);
+        },
+
+        _validateFindArguments: function(args) {
+            if (args.length === 0) {
+                return;
+            }
+
+            if (args.length === 1) {
+                if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Backendless.Async)) {
+                    return (
+                        'Invalid find method argument. ' +
+                        'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
+                    );
+                }
+            } else {
+                if (!(args[0] instanceof Backendless.DataQueryBuilder)) {
+                    return 'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder';
+                }
+
+                if (!(args[1] instanceof Backendless.Async)) {
+                    return 'Invalid callback wrapper object. The argument should be instance of Backendless.Async';
+                }
+            }
+        },
+
+        _parseFindArguments: function(args) {
+          var result = {
+              queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
+              async       : args[0] instanceof Backendless.Async ? args[0] : null
+          };
+
+          if (args.length > 1) {
+              result.async = args[1];
+          }
+
+          return result;
+        },
+
+        _find: function(dataQuery) {
             dataQuery = dataQuery || {};
+
             var props,
                 whereClause,
                 options,
@@ -1209,7 +1260,7 @@
                     throw new Error('missing argument "object ID" for method findById()');
                 }
 
-                return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+                return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
                 var responder = extractResponder(arguments),
@@ -1285,14 +1336,14 @@
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'first';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
         findLast: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'last';
 
-            return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         }
     };
 
@@ -1381,7 +1432,7 @@
             var tableName;
             if (Utils.isString(model)) {
                 if (model.toLowerCase() === 'users') {
-                    throw new Error("Table 'Users' is not accessible through this signature. Use Backendless.Data.of( BackendlessUser.class ) instead");
+                    throw new Error("Table 'Users' is not accessible through this signature. Use Backendless.Data.of( Backendless.User ) instead");
                 }
                 tableName = model;
             } else {
@@ -2169,7 +2220,7 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
@@ -4508,6 +4559,181 @@
         addProperty: function(prop) {
             this.properties = this.properties || [];
             this.properties.push(prop);
+        },
+
+        setOption: function(name, value) {
+            this.options = this.options || {};
+
+            this.options[name] = value;
+        },
+
+        setOptions: function(options) {
+            for (var key in options) {
+                if (options.hasOwnProperty(key)) {
+                    this.setOption(key, options[key]);
+                }
+            }
+        },
+
+        getOption: function(name) {
+            return this.options && this.options[name];
+        },
+
+        toJSON: function () {
+            var result = {};
+
+            for (var key in this) {
+                if (this.hasOwnProperty(key)) {
+                    result[key] = this[key]
+                }
+            }
+
+            return result;
+        }
+    };
+
+    var PagingQueryBuilder = function() {
+        this.offset = Backendless.DEFAULTS.offset;
+        this.pageSize = Backendless.DEFAULTS.pageSize;
+    };
+
+    PagingQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            throwError(this.validatePageSize(pageSize));
+            this.pageSize = pageSize;
+
+            return this;
+        },
+
+        setOffset: function(offset){
+            throwError(this.validateOffset(offset));
+            this.offset = offset;
+
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this.setOffset(this.offset + this.pageSize);
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            var newOffset = this.offset > this.pageSize ? this.offset - this.pageSize : 0;
+
+            this.setOffset(newOffset);
+
+            return this;
+        },
+
+        validateOffset: function(offset) {
+            if (offset < 0) {
+                return 'Offset cannot have a negative value.';
+            }
+        },
+
+        validatePageSize: function(pageSize) {
+            if (pageSize <= 0) {
+                return 'Page size must be a positive value.';
+            }
+        },
+
+        build: function() {
+            return {
+                pageSize: this.pageSize,
+                offset: this.offset
+            }
+        }
+    };
+
+    var DataQueryBuilder = function() {
+        this._query = new DataQuery();
+        this._paging = new PagingQueryBuilder();
+    };
+
+    DataQueryBuilder.create = function() {
+        return new DataQueryBuilder();
+    };
+
+    DataQueryBuilder.prototype = {
+        setPageSize: function(pageSize){
+            this._paging.setPageSize(pageSize);
+            return this;
+        },
+
+        setOffset: function(offset){
+            this._paging.setOffset(offset);
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this._paging.prepareNextPage();
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            this._paging.preparePreviousPage();
+
+            return this;
+        },
+
+        getProperties: function(){
+            return this._query.properties;
+        },
+
+        setProperties: function(properties){
+            this._query.properties = Utils.castArray(properties);
+            return this;
+        },
+
+        addProperty: function(property){
+            this._query.addProperty(property);
+            return this;
+        },
+
+        getWhereClause: function(){
+            return this._query.condition;
+        },
+
+        setWhereClause: function(whereClause){
+            this._query.condition = whereClause;
+            return this;
+        },
+
+        getSortBy: function(){
+            return this._query.getOption('sortBy');
+        },
+
+        setSortBy: function(sortBy){
+            this._query.setOption('sortBy', Utils.castArray(sortBy));
+
+            return this;
+        },
+
+        getRelated: function(){
+            return this._query.getOption('relations');
+        },
+
+        setRelated: function(relations){
+            this._query.setOption('relations', Utils.castArray(relations));
+
+            return this;
+        },
+
+        getRelationsDepth: function(){
+            return this._query.getOption('relationsDepth');
+        },
+
+        setRelationsDepth: function(relationsDepth){
+            this._query.setOption('relationsDepth', relationsDepth);
+            return this;
+        },
+
+        build: function(){
+            this._query.setOptions(this._paging.build());
+
+            return this._query.toJSON();
         }
     };
 
@@ -4640,7 +4866,7 @@
         this.selector = args.selector || undefined;
     };
 
-    Backendless.DataQuery = DataQuery;
+    Backendless.DataQueryBuilder = DataQueryBuilder;
     Backendless.GeoQuery = GeoQuery;
     Backendless.GeoPoint = GeoPoint;
     Backendless.GeoCluster = GeoCluster;
