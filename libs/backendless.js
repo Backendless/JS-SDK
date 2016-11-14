@@ -1148,28 +1148,15 @@
                 return;
             }
 
-            if (args.length === 1) {
-                if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Backendless.Async)) {
-                    return (
-                        'Invalid find method argument. ' +
-                        'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
-                    );
-                }
-            } else {
-                if (!(args[0] instanceof Backendless.DataQueryBuilder)) {
-                    return 'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder';
-                }
-
-                if (!(args[1] instanceof Backendless.Async)) {
-                    return 'Invalid callback wrapper object. The argument should be instance of Backendless.Async';
-                }
+            if (!(args[0] instanceof Backendless.DataQueryBuilder)) {
+                return 'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder';
             }
         },
 
         _parseFindArguments: function(args) {
             var result = {
                 queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-                async       : args[0] instanceof Backendless.Async ? args[0] : null
+                async       : args[0] instanceof Async ? args[0] : null
             };
 
             if (args.length > 1) {
@@ -1848,7 +1835,7 @@
             if (Utils.isString(viewName)) {
                 var url = Backendless.appPath + '/data/' + viewName;
 
-                if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
+                if ((arguments.length > 1) && !(arguments[1] instanceof Async)) {
                     url += '?';
                 }
                 if (Utils.isString(whereClause)) {
@@ -2076,7 +2063,11 @@
             return user;
         },
 
-        register: function(user, async) {
+        register: promisified('_register'),
+
+        registerSync: synchronized('_register'),
+
+        _register: function(user, async) {
             if (!(user instanceof Backendless.User)) {
                 throw new Error('Only Backendless.User accepted');
             }
@@ -2099,7 +2090,11 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        getUserRoles: function(async) {
+        getUserRoles: promisified('_getUserRoles'),
+
+        getUserRolesSync: synchronized('_getUserRoles'),
+
+        _getUserRoles: function(async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2117,7 +2112,7 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        roleHelper: function(identity, rolename, async, operation) {
+        _roleHelper: function(identity, rolename, async, operation) {
             if (!identity) {
                 throw new Error('User identity can not be empty');
             }
@@ -2137,15 +2132,27 @@
             });
         },
 
-        assignRole: function(identity, rolename, async) {
-            return this.roleHelper(identity, rolename, async, 'assignRole');
+        assignRole: promisified('_assignRole'),
+
+        assignRoleSync: synchronized('_assignRole'),
+
+        _assignRole: function(identity, rolename, async) {
+            return this._roleHelper(identity, rolename, async, 'assignRole');
         },
 
-        unassignRole: function(identity, rolename, async) {
-            return this.roleHelper(identity, rolename, async, 'unassignRole');
+        unassignRole: promisified('_unassignRole'),
+
+        unassignRoleSync: synchronized('_unassignRole'),
+
+        _unassignRole: function(identity, rolename, async) {
+            return this._roleHelper(identity, rolename, async, 'unassignRole');
         },
 
-        login: function(username, password, stayLoggedIn, async) {
+        login: promisified('_login'),
+
+        loginSync: synchronized('_login'),
+
+        _login: function(username, password, stayLoggedIn, async) {
             if (!username) {
                 throw new Error('Username can not be empty');
             }
@@ -2212,7 +2219,11 @@
             return Backendless.LocalCache.get("current-user-id");
         },
 
-        describeUserClass: function(async) {
+        describeUserClass: promisified('_describeUserClass'),
+
+        describeUserClassSync: synchronized('_describeUserClass'),
+
+        _describeUserClass: function(async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2224,7 +2235,11 @@
             });
         },
 
-        restorePassword: function(emailAddress, async) {
+        restorePassword: promisified('_restorePassword'),
+
+        restorePasswordSync: synchronized('_restorePassword'),
+
+        _restorePassword: function(emailAddress, async) {
             if (!emailAddress) {
                 throw 'Username can not be empty';
             }
@@ -2239,7 +2254,11 @@
             });
         },
 
-        logout: function(async) {
+        logout: promisified('_logout'),
+
+        logoutSync: synchronized('_logout'),
+
+        _logout: function(async) {
             var responder       = extractResponder(arguments),
                 isAsync         = responder != null,
                 errorCallback   = isAsync ? responder.fault : null,
@@ -2292,7 +2311,11 @@
             }
         },
 
-        getCurrentUser: function(async) {
+        getCurrentUser: promisified('_getCurrentUser'),
+
+        getCurrentUserSync: synchronized('_getCurrentUser'),
+
+        _getCurrentUser: function(async) {
             if (currentUser) {
                 var userFromResponse = this._getUserFromResponse(currentUser);
 
@@ -2309,7 +2332,11 @@
             return async ? async.success(null) : null;
         },
 
-        update: function(user, async) {
+        update: promisified('_update'),
+
+        updateSync: synchronized('_update'),
+
+        _update: function(user, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2328,19 +2355,28 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        loginWithFacebook      : function(facebookFieldsMapping, permissions, async, stayLoggedIn) {
-            async = extractResponder(arguments);
-            this._loginSocial('Facebook', facebookFieldsMapping, permissions, async, null, stayLoggedIn);
+        loginWithFacebook: promisified('_loginWithFacebook'),
+
+        loginWithFacebookSync: synchronized('_loginWithFacebook'),
+
+        _loginWithFacebook      : function(facebookFieldsMapping, permissions, stayLoggedIn, async) {
+            return this._loginSocial('Facebook', facebookFieldsMapping, permissions, null, stayLoggedIn, async);
         },
 
-        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, async, container, stayLoggedIn) {
-            async = extractResponder(arguments);
-            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, async, container, stayLoggedIn);
+        loginWithGooglePlus: promisified('_loginWithGooglePlus'),
+
+        loginWithGooglePlusSync: synchronized('_loginWithGooglePlus'),
+
+        _loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, container, stayLoggedIn, async) {
+            return this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, container, stayLoggedIn, async);
         },
 
-        loginWithTwitter       : function(twitterFieldsMapping, async, stayLoggedIn) {
-            async = extractResponder(arguments);
-            this._loginSocial('Twitter', twitterFieldsMapping, null, async, null, stayLoggedIn);
+        loginWithTwitter: promisified('_loginWithTwitter'),
+
+        loginWithTwitterSync: synchronized('_loginWithTwitter'),
+
+        _loginWithTwitter       : function(twitterFieldsMapping, stayLoggedIn, async) {
+            return this._loginSocial('Twitter', twitterFieldsMapping, null, null, stayLoggedIn, async);
         },
 
         _socialContainer       : function(socialType, container) {
@@ -2401,7 +2437,7 @@
             }
         },
 
-        _loginSocial: function(socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
+        _loginSocial: function(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
             var socialContainer = new this._socialContainer(socialType, container);
             async = async && this._wrapAsync(async);
 
@@ -2422,7 +2458,7 @@
                 }
             });
 
-            var interimCallback = new Backendless.Async(function(r) {
+            var interimCallback = new Async(function(r) {
                 socialContainer.doAuthorizationActivity(r);
             }, function(e) {
                 socialContainer.closeContainer();
@@ -2442,7 +2478,11 @@
             });
         },
 
-        loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options, async) {
+        loginWithFacebookSdk: promisified('_loginWithFacebookSdk'),
+
+        loginWithFacebookSdkSync: synchronized('_loginWithFacebookSdk'),
+
+        _loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options, async) {
             if (!FB) {
                 throw new Error("Facebook SDK not found");
             }
@@ -2467,7 +2507,11 @@
             });
         },
 
-        loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
+        loginWithGooglePlusSdk: promisified('_loginWithGooglePlusSdk'),
+
+        loginWithGooglePlusSdkSync: synchronized('_loginWithGooglePlusSdk'),
+
+        _loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
             if (!gapi) {
                 throw new Error("Google Plus SDK not found");
             }
@@ -2493,7 +2537,7 @@
                 response["fieldsMapping"] = fieldsMapping;
             }
 
-            var interimCallback = new Backendless.Async(function(r) {
+            var interimCallback = new Async(function(r) {
                 currentUser = context._parseResponse(r);
                 Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                 async.success(context._getUserFromResponse(currentUser));
@@ -2510,13 +2554,17 @@
             });
         },
 
-        isValidLogin: function(async) {
+        isValidLogin: promisified('_isValidLogin'),
+
+        isValidLoginSync: synchronized('_isValidLogin'),
+
+        _isValidLogin: function(async) {
             var userToken = Backendless.LocalCache.get("user-token");
             var responder = extractResponder(arguments);
-            var isAsync = responder != null;
+            var isAsync = !!responder;
 
             if (userToken) {
-                if (!async) {
+                if (!isAsync) {
                     try {
                         var result = Backendless._ajax({
                             method: 'GET',
@@ -2526,29 +2574,32 @@
                     } catch (e) {
                         return false;
                     }
-                } else {
-                    Backendless._ajax({
-                        method      : 'GET',
-                        url         : this.restUrl + '/isvalidusertoken/' + userToken,
-                        isAsync     : isAsync,
-                        asyncHandler: responder
-                    });
                 }
-            } else {
-                var user = Backendless.UserService.getCurrentUser();
 
-                if (isAsync) {
-                    //if async need to put it to the end of the stack
-                    setTimeout(function() {
-                        responder.success(!!user);
-                    }, 0);
-                } else {
-                    return !!user;
-                }
+                return Backendless._ajax({
+                    method: 'GET',
+                    url: this.restUrl + '/isvalidusertoken/' + userToken,
+                    isAsync: isAsync,
+                    asyncHandler: responder
+                });
             }
+
+            if (!isAsync) {
+                return !!this.getCurrentUserSync();
+            }
+
+            this.getCurrentUser().then(function (user) {
+                responder.success(!!user);
+            }, function () {
+                responder.success(false);
+            });
         },
 
-        resendEmailConfirmation: function(emailAddress, async) {
+        resendEmailConfirmation: promisified('_resendEmailConfirmation'),
+
+        resendEmailConfirmationSync: synchronized('_resendEmailConfirmation'),
+
+        _resendEmailConfirmation: function(emailAddress, async) {
             if(!emailAddress || emailAddress instanceof Async) {
                 throw "Email cannot be empty";
             }
@@ -2563,7 +2614,6 @@
             });
         }
     };
-
     function Geo() {
         this.restUrl = Backendless.appPath + '/geo';
         this.monitoringId = null;
@@ -3003,7 +3053,7 @@
         getGeopointCount: function (fenceName, query, async) {
             var responder = extractResponder(arguments);
             var isAsync = !!responder;
-            var query = this._buildCountQueryObject(arguments, isAsync);
+            query = this._buildCountQueryObject(arguments, isAsync);
             var url = this.restUrl + '/count' + this._buildUrlQueryParams(query);
 
             return Backendless._ajax({
@@ -3060,7 +3110,7 @@
                 throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
             }
 
-            if (geoPoint && !(geoPoint instanceof Backendless.Async) && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
+            if (geoPoint && !(geoPoint instanceof Async) && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
                 throw new Error("Method argument must be a valid instance of GeoPoint persisted on the server");
             }
 
@@ -3760,7 +3810,12 @@
 
             return result;
         },
-        subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
+
+        subscribe: promisified('_subscribe'),
+
+        subscribeSync: synchronized('_subscribe'),
+
+        _subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -3793,7 +3848,12 @@
                 });
             }
         },
-        publish         : function(channelName, message, publishOptions, deliveryTarget, async) {
+
+        publish: promisified('_publish'),
+
+        publishSync: synchronized('_publish'),
+
+        _publish         : function(channelName, message, publishOptions, deliveryTarget, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -3825,7 +3885,12 @@
                 data        : JSON.stringify(data)
             });
         },
-        sendEmail       : function(subject, bodyParts, recipients, attachments, async) {
+
+        sendEmail: promisified('_sendEmail'),
+
+        sendEmailSync: synchronized('_sendEmail'),
+
+        _sendEmail       : function(subject, bodyParts, recipients, attachments, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var data = {};
@@ -3867,7 +3932,11 @@
             });
         },
 
-        cancel          : function(messageId, async) {
+        cancel: promisified('_cancel'),
+
+        cancelSync: synchronized('_cancel'),
+
+        _cancel          : function(messageId, async) {
             var isAsync = async != null;
 
             return Backendless._ajax({
@@ -3878,7 +3947,11 @@
             });
         },
 
-        registerDevice  : function(channels, expiration, async) {
+        registerDevice: promisified('_registerDevice'),
+
+        registerDeviceSync: synchronized('_registerDevice'),
+
+        _registerDevice  : function(channels, expiration, async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
             var device = isBrowser ? window.device : NodeDevice;
@@ -3927,7 +4000,11 @@
             cordova.exec(success, fail, "PushNotification", "registerDevice", [config]);
         },
 
-        getRegistrations: function(async) {
+        getRegistrations: promisified('_getRegistrations'),
+
+        getRegistrationsSync: synchronized('_getRegistrations'),
+
+        _getRegistrations: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
@@ -3940,7 +4017,11 @@
             });
         },
 
-        unregisterDevice: function(async) {
+        unregisterDevice: promisified('_unregisterDevice'),
+
+        unregisterDeviceSync: synchronized('_unregisterDevice'),
+
+        _unregisterDevice: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
@@ -3961,6 +4042,7 @@
             return result;
         }
     };
+
     function getBuilder(filename, filedata, boundary) {
         var dashdash = '--',
             crlf     = '\r\n',
@@ -4170,7 +4252,7 @@
                 throw new Error('Missing value for the "fileName" argument. The argument must contain a string value');
             }
 
-            if (overwrite instanceof Backendless.Async) {
+            if (overwrite instanceof Async) {
                 async = overwrite;
                 overwrite = null;
             }
@@ -4283,7 +4365,7 @@
                 isAsync   = responder != null,
                 url       = this.restUrl + '/' + path;
 
-            if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
+            if ((arguments.length > 1) && !(arguments[1] instanceof Async)) {
                 url += "?";
             }
 
@@ -4636,7 +4718,7 @@
             responder = wrapAsync(responder);
         }
 
-        eventArgs = eventArgs instanceof Backendless.Async ? {} : eventArgs;
+        eventArgs = eventArgs instanceof Async ? {} : eventArgs;
 
         return Backendless._ajax({
             method      : 'POST',
@@ -4659,7 +4741,7 @@
                 throw new Error('You can use only String as key to put into Cache');
             }
 
-            if (!(timeToLive instanceof Backendless.Async)) {
+            if (!(timeToLive instanceof Async)) {
                 if (typeof timeToLive == 'object' && !arguments[3]) {
                     async = timeToLive;
                     timeToLive = null;
@@ -5056,7 +5138,7 @@
             var logging = this;
 
             this.flushInterval = setTimeout(function() {
-                logging.flush(new Backendless.Async());
+                logging.flush(new Async());
             }, this.timeFrequency * 1000);
         },
 
@@ -5166,48 +5248,10 @@
     //         [Events.prototype, ['dispatch']],
     //         [PollingProxy.prototype, ['poll']],
     //         [Backendless.Logging, ['flush']],
-    //         [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-    //                                'getRegistrations', 'unregisterDevice']],
     //         [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-    //                          'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
-    //         [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-    //                                  'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-    //                                  'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
-    //                                  'resendEmailConfirmation']]
+    //                          'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']]
     //     ].forEach(promisifyPack);
     //
-    //     UserService.prototype.getCurrentUser = function() {
-    //         if (currentUser) {
-    //             return Promise.resolve(this._getUserFromResponse(currentUser));
-    //         }
-    //
-    //         var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
-    //         var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
-    //
-    //         return currentUserId && persistence.of(User).findById(currentUserId) || Promise.resolve(null);
-    //     };
-    //
-    //     UserService.prototype.isValidLogin = function() {
-    //         var userToken = Backendless.LocalCache.get("user-token");
-    //
-    //         if (userToken) {
-    //             return new Promise(function(resolve, reject) {
-    //                 return Backendless._ajax({
-    //                     method: 'GET',
-    //                     url: this.restUrl + '/isvalidusertoken/' + userToken,
-    //                     isAsync: true,
-    //                     asyncHandler: new Async(resolve, reject)
-    //                 });
-    //             });
-    //         }
-    //
-    //         return Backendless.UserService.getCurrentUser()
-    //             .then(function(user) {
-    //                 return Promise.resolve(!!user);
-    //             }, function() {
-    //                 return Promise.resolve(false);
-    //             });
-    //     };
     // }
 
     Backendless.initApp = function(appId, secretKey) {
