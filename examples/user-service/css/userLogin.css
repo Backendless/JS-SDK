@@ -1,7 +1,8 @@
-        body {
+body {
     padding-bottom: 0px;
     color: #5a5a5a;
 }
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 
@@ -18,6 +19,7 @@
 .carousel .item {
     height: 1000px;
 }
+
 .carousel img {
     position: absolute;
     top: 0;
@@ -33,16 +35,18 @@
     padding: 0 20px;
     margin-top: 50px;
 }
+
 .carousel-caption h1,
 .carousel-caption .lead {
     margin: 0;
     line-height: 1.25;
-    text-shadow: 0 1px 1px rgba(0,0,0,.4);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
 }
+
 .carousel-caption .btn {
     margin-top: 10px;
 }
 
-input[type="text"], input[type="password"] {
+input.input-block-level {
     width: 400px;
 }
