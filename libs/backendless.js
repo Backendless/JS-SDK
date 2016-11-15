@@ -2614,6 +2614,7 @@
             });
         }
     };
+
     function Geo() {
         this.restUrl = Backendless.appPath + '/geo';
         this.monitoringId = null;
@@ -2733,7 +2734,11 @@
             return params.replace(/\?&/g, '?');
         },
 
-        savePoint        : function(geopoint, async) {
+        savePoint: promisified('_savePoint'),
+
+        savePointSync: synchronized('_savePoint'),
+
+        _savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
             }
@@ -2783,10 +2788,10 @@
 
         /** @deprecated */
         addPoint: function(geopoint, async) {
-          return this.savePoint.apply(this, arguments);
+            return this.savePoint.apply(this, arguments);
         },
 
-        findUtil        : function(query, async) {
+        _findUtil        : function(query, async) {
             var responder = extractResponder(arguments),
                 isAsync   = false;
 
@@ -2835,13 +2840,21 @@
             });
         },
 
-        find            : function(query, async) {
+        find: promisified('_find'),
+
+        findSync: synchronized('_find'),
+
+        _find            : function(query, async) {
             query["url"] = this.restUrl;
 
-            return this.findUtil(query, async);
+            return this._findUtil(query, async);
         },
 
-        loadMetadata    : function(geoObject, async) {
+        loadMetadata: promisified('_loadMetadata'),
+
+        loadMetadataSync: synchronized('_loadMetadata'),
+
+        _loadMetadata    : function(geoObject, async) {
             var url       = this.restUrl + '/points/',
                 responder = extractResponder(arguments),
                 isAsync   = false;
@@ -2879,7 +2892,11 @@
             });
         },
 
-        getClusterPoints: function(geoObject, async) {
+        getClusterPoints: promisified('_getClusterPoints'),
+
+        getClusterPointsSync: synchronized('_getClusterPoints'),
+
+        _getClusterPoints: function(geoObject, async) {
             var url       = this.restUrl + '/clusters/',
                 responder = extractResponder(arguments),
                 isAsync   = false;
@@ -2933,17 +2950,25 @@
             });
         },
 
-        relativeFind: function(query, async) {
+        relativeFind: promisified('_relativeFind'),
+
+        relativeFindSync: synchronized('_relativeFind'),
+
+        _relativeFind: function(query, async) {
             if (!(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
                 throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata");
             } else {
                 query["url"] = this.restUrl + "/relative";
 
-                return this.findUtil(query, async);
+                return this._findUtil(query, async);
             }
         },
 
-        addCategory: function(name, async) {
+        addCategory: promisified('_addCategory'),
+
+        addCategorySync: synchronized('_addCategory'),
+
+        _addCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
@@ -2961,7 +2986,11 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        getCategories: function(async) {
+        getCategory: promisified('_getCategories'),
+
+        getCategorySync: synchronized('_getCategories'),
+
+        _getCategories: function(async) {
             var responder = extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2973,7 +3002,11 @@
             });
         },
 
-        deleteCategory: function(name, async) {
+        deleteCategory: promisified('_deleteCategory'),
+
+        deleteCategorySync: synchronized('_deleteCategory'),
+
+        _deleteCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
@@ -3000,7 +3033,11 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        deletePoint: function(point, async) {
+        deletePoint: promisified('_deletePoint'),
+
+        deletePointSync: synchronized('_deletePoint'),
+
+        _deletePoint: function(point, async) {
             if (!point || Utils.isFunction(point)) {
                 throw new Error('Point argument name is required, must be string (object Id), or point object');
             }
@@ -3028,7 +3065,11 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        getFencePoints: function(geoFenceName, query, async) {
+        getFencePoints: promisified('_getFencePoints'),
+
+        getFencePointsSync: synchronized('_getFencePoints'),
+
+        _getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
 
             this._validateFenceName(geoFenceName);
@@ -3037,7 +3078,7 @@
             query["geoFence"] = geoFenceName;
             query["url"] = this.restUrl;
 
-            return this.findUtil(query, async);
+            return this._findUtil(query, async);
         },
 
 
@@ -3046,11 +3087,22 @@
          *
          * @param {(string|GeoQuery)} [fenceName] - fenceName name, or an GeoQuery.
          * @param {GeoQuery} query
-         * @param {Async} [async]
          *
-         * @return {*}
+         * @return {Promise}
          */
-        getGeopointCount: function (fenceName, query, async) {
+        getGeopointCount: promisified('_getGeopointCount'),
+
+        /**
+         * Count of points (sync)
+         *
+         * @param {(string|GeoQuery)} [fenceName] - fenceName name, or an GeoQuery.
+         * @param {GeoQuery} query
+         *
+         * @return {number}
+         */
+        getGeopointCountSync: synchronized('_getGeopointCount'),
+
+        _getGeopointCount: function (fenceName, query, async) {
             var responder = extractResponder(arguments);
             var isAsync = !!responder;
             query = this._buildCountQueryObject(arguments, isAsync);
@@ -5247,9 +5299,7 @@
     //         [CustomServices.prototype, ['invoke']],
     //         [Events.prototype, ['dispatch']],
     //         [PollingProxy.prototype, ['poll']],
-    //         [Backendless.Logging, ['flush']],
-    //         [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-    //                          'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']]
+    //         [Backendless.Logging, ['flush']]
     //     ].forEach(promisifyPack);
     //
     // }
