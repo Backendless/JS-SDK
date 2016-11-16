@@ -4764,82 +4764,97 @@
         this.restUrl = Backendless.appPath + '/commerce/googleplay';
     }
 
-    Commerce.prototype.validatePlayPurchase = function(packageName, productId, token, async) {
-        if (arguments.length < 3) {
-            throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
-        }
+    Commerce.prototype = {
 
-        for (var i = arguments.length - 2; i >= 0; i--) {
-            if (!arguments[i] || !Utils.isString(arguments[i])) {
+        validatePlayPurchase: promisified('_validatePlayPurchase'),
+
+        validatePlayPurchaseSync: synchronized('_validatePlayPurchase'),
+
+        _validatePlayPurchase: function (packageName, productId, token, async) {
+            if (arguments.length < 3) {
                 throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
             }
-        }
 
-        var responder = extractResponder(arguments),
-            isAsync   = responder != null;
+            for (var i = arguments.length - 2; i >= 0; i--) {
+                if (!arguments[i] || !Utils.isString(arguments[i])) {
+                    throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
+                }
+            }
 
-        if (responder) {
-            responder = wrapAsync(responder);
-        }
+            var responder = extractResponder(arguments),
+                isAsync = responder != null;
 
-        return Backendless._ajax({
-            method      : 'GET',
-            url         : this.restUrl + '/validate/' + packageName + '/inapp/' + productId + '/purchases/' + token,
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
-    };
+            if (responder) {
+                responder = wrapAsync(responder);
+            }
 
-    Commerce.prototype.cancelPlaySubscription = function(packageName, subscriptionId, token, Async) {
-        if (arguments.length < 3) {
-            throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
-        }
+            return Backendless._ajax({
+                method: 'GET',
+                url: this.restUrl + '/validate/' + packageName + '/inapp/' + productId + '/purchases/' + token,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
 
-        for (var i = arguments.length - 2; i >= 0; i--) {
-            if (!arguments[i] || !Utils.isString(arguments[i])) {
+        cancelPlaySubscription: promisified('_cancelPlaySubscription'),
+
+        cancelPlaySubscriptionSync: synchronized('_cancelPlaySubscription'),
+
+        _cancelPlaySubscription: function (packageName, subscriptionId, token, Async) {
+            if (arguments.length < 3) {
                 throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
             }
-        }
 
-        var responder = extractResponder(arguments),
-            isAsync   = responder != null;
+            for (var i = arguments.length - 2; i >= 0; i--) {
+                if (!arguments[i] || !Utils.isString(arguments[i])) {
+                    throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
+                }
+            }
 
-        if (responder) {
-            responder = wrapAsync(responder);
-        }
+            var responder = extractResponder(arguments),
+                isAsync = responder != null;
 
-        return Backendless._ajax({
-            method      : 'POST',
-            url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token + '/cancel',
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
-    };
+            if (responder) {
+                responder = wrapAsync(responder);
+            }
 
-    Commerce.prototype.getPlaySubscriptionStatus = function(packageName, subscriptionId, token, Async) {
-        if (arguments.length < 3) {
-            throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
-        }
+            return Backendless._ajax({
+                method: 'POST',
+                url: this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token + '/cancel',
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
 
-        for (var i = arguments.length - 2; i >= 0; i--) {
-            if (!arguments[i] || !Utils.isString(arguments[i])) {
+        getPlaySubscriptionStatus: promisified('_getPlaySubscriptionStatus'),
+
+        getPlaySubscriptionStatusSync: synchronized('_getPlaySubscriptionStatus'),
+
+        _getPlaySubscriptionStatus: function (packageName, subscriptionId, token, Async) {
+            if (arguments.length < 3) {
                 throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
             }
+
+            for (var i = arguments.length - 2; i >= 0; i--) {
+                if (!arguments[i] || !Utils.isString(arguments[i])) {
+                    throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
+                }
+            }
+
+            var responder = extractResponder(arguments),
+                isAsync = responder != null;
+
+            if (responder) {
+                responder = wrapAsync(responder);
+            }
+
+            return Backendless._ajax({
+                method: 'GET',
+                url: this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
         }
-
-        var responder = extractResponder(arguments),
-            isAsync   = responder != null;
-
-        if (responder) {
-            responder = wrapAsync(responder);
-        }
-
-        return Backendless._ajax({
-            method      : 'GET',
-            url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token,
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
     };
 
     function Events() {
@@ -5026,36 +5041,25 @@
         }
     };
 
-    var Counters = function() {
-        this.restUrl = Backendless.appPath + '/counters/';
+    var Counter = function (name, restUrl) {
+        this._nameValidation(name);
+
+        this.restUrl = restUrl;
+        this.name = name;
     };
 
-    var AtomicInstance = function(counterName) {
-        this.name = counterName;
-    };
-
-    Counters.prototype = {
-        of                      : function(counterName) {
-            return new AtomicInstance(counterName);
-        },
-
-        getConstructor          : function() {
-            return this;
-        },
-
-        counterNameValidation   : function(counterName) {
-            if (!counterName) {
+    Counter.prototype = {
+        _nameValidation: function (name) {
+            if (!name) {
                 throw new Error('Missing value for the "counterName" argument. The argument must contain a string value.');
             }
 
-            if (!Utils.isString(counterName)) {
+            if (!Utils.isString(name)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string values');
             }
-
-            this.name = counterName;
         },
 
-        implementMethod         : function(method, urlPart, async) {
+        _implementMethod: function (method, urlPart, async) {
             var responder = extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
@@ -5064,62 +5068,14 @@
             }
 
             return Backendless._ajax({
-                method      : method,
-                url         : this.restUrl + this.name + urlPart,
-                isAsync     : isAsync,
+                method: method,
+                url: this.restUrl + this.name + urlPart,
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        incrementAndGet         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/increment/get', async);
-        },
-
-        getAndIncrement         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/get/increment', async);
-        },
-
-        decrementAndGet         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/decrement/get', async);
-        },
-
-        getAndDecrement         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/get/decrement', async);
-        },
-
-        reset                   : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/reset', async);
-        },
-
-        get                     : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            var responder = extractResponder(arguments), isAsync = false;
-
-            if (responder != null) {
-                isAsync = true;
-                responder = wrapAsync(responder);
-            }
-
-            return Backendless._ajax({
-                method      : 'GET',
-                url         : this.restUrl + this.name,
-                isAsync     : isAsync,
-                asyncHandler: responder
-            });
-        },
-
-        implementMethodWithValue: function(urlPart, value, async) {
+        _implementMethodWithValue: function (urlPart, value, async) {
             if (!value) {
                 throw new Error('Missing value for the "value" argument. The argument must contain a numeric value.');
             }
@@ -5136,28 +5092,94 @@
             }
 
             return Backendless._ajax({
-                method      : 'PUT',
-                url         : this.restUrl + this.name + urlPart + ((value) ? value : ''),
-                isAsync     : isAsync,
+                method: 'PUT',
+                url: this.restUrl + this.name + urlPart + ((value) ? value : ''),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        addAndGet               : function(counterName, value, async) {
-            this.counterNameValidation(counterName, async);
+        incrementAndGet: promisified('_incrementAndGet'),
 
-            return this.implementMethodWithValue('/get/incrementby?value=', value, async);
+        incrementAndGetSync: synchronized('_incrementAndGet'),
+
+        _incrementAndGet: function (async) {
+            return this._implementMethod('PUT', '/increment/get', async);
         },
 
-        getAndAdd               : function(counterName, value, async) {
-            this.counterNameValidation(counterName, async);
+        getAndIncrement: promisified('_getAndIncrement'),
 
-            return this.implementMethodWithValue('/incrementby/get?value=', value, async);
+        getAndIncrementSync: synchronized('_getAndIncrement'),
+
+        _getAndIncrement: function (async) {
+            return this._implementMethod('PUT', '/get/increment', async);
         },
 
-        compareAndSet           : function(counterName, expected, updated, async) {
-            this.counterNameValidation(counterName, async);
+        decrementAndGet: promisified('_decrementAndGet'),
 
+        decrementAndGetSync: synchronized('_decrementAndGet'),
+
+        _decrementAndGet: function (async) {
+            return this._implementMethod('PUT', '/decrement/get', async);
+        },
+
+        getAndDecrement: promisified('_getAndDecrement'),
+
+        getAndDecrementSync: synchronized('_getAndDecrement'),
+
+        _getAndDecrement: function (async) {
+            return this._implementMethod('PUT', '/get/decrement', async);
+        },
+
+        reset: promisified('_reset'),
+
+        resetSync: synchronized('_reset'),
+
+        _reset: function (async) {
+            return this._implementMethod('PUT', '/reset', async);
+        },
+
+        get: promisified('_get'),
+
+        getSync: synchronized('_get'),
+
+        _get: function (async) {
+            var responder = extractResponder(arguments), isAsync = false;
+
+            if (responder != null) {
+                isAsync = true;
+                responder = wrapAsync(responder);
+            }
+
+            return Backendless._ajax({
+                method: 'GET',
+                url: this.restUrl + this.name,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
+
+        addAndGet: promisified('_addAndGet'),
+
+        addAndGetSync: synchronized('_addAndGet'),
+
+        _addAndGet: function (value, async) {
+            return this._implementMethodWithValue('/get/incrementby?value=', value, async);
+        },
+
+        getAndAdd: promisified('_getAndAdd'),
+
+        getAndAddSync: synchronized('_getAndAdd'),
+
+        _getAndAdd: function (value, async) {
+            return this._implementMethodWithValue('/incrementby/get?value=', value, async);
+        },
+
+        compareAndSet: promisified('_compareAndSet'),
+
+        compareAndSetSync: synchronized('_compareAndSet'),
+
+        _compareAndSet: function (expected, updated, async) {
             if (!expected || !updated) {
                 throw new Error('Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values');
             }
@@ -5174,43 +5196,38 @@
             }
 
             return Backendless._ajax({
-                method      : 'PUT',
-                url         : this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
-                isAsync     : isAsync,
+                method: 'PUT',
+                url: this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         }
     };
 
-    AtomicInstance.prototype = {
-        incrementAndGet: function(async) {
-            return Counters.prototype.getConstructor().incrementAndGet(this.name, async);
-        },
-        getAndIncrement: function(async) {
-            return Counters.prototype.getConstructor().getAndIncrement(this.name, async);
-        },
-        decrementAndGet: function(async) {
-            return Counters.prototype.getConstructor().decrementAndGet(this.name, async);
-        },
-        getAndDecrement: function(async) {
-            return Counters.prototype.getConstructor().getAndDecrement(this.name, async);
-        },
-        reset          : function(async) {
-            return Counters.prototype.getConstructor().reset(this.name, async);
-        },
-        get            : function(async) {
-            return Counters.prototype.getConstructor().get(this.name, async);
-        },
-        addAndGet      : function(value, async) {
-            return Counters.prototype.getConstructor().addAndGet(this.name, value, async);
-        },
-        getAndAdd      : function(value, async) {
-            return Counters.prototype.getConstructor().getAndAdd(this.name, value, async);
-        },
-        compareAndSet  : function(expected, updated, async) {
-            return Counters.prototype.getConstructor().getAndAdd(this.name, expected, updated, async);
+    var Counters = function () {
+        this.restUrl = Backendless.appPath + '/counters/';
+    };
+
+    Counters.prototype = {
+        of: function (name) {
+            return new Counter(name, this.restUrl);
         }
     };
+
+    for (var methodName in Counter.prototype) {
+        if (Counter.prototype.hasOwnProperty(methodName) && methodName[0] !== '_') {
+            Counters.prototype[methodName] = createCounterMethodInvoker(methodName);
+        }
+    }
+
+    function createCounterMethodInvoker(methodName) {
+        return function(name) {
+            var counter = this.of(name);
+            var args = Array.prototype.slice.call(arguments, 1);
+
+            return counter[methodName].apply(counter, args);
+        }
+    }
 
     var lastFlushListeners;
 
@@ -5379,10 +5396,6 @@
 
     // function enablePromises() {
     //     [
-    //         [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
-    //         [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
-    //         [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
-    //         [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
     //         [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
     //         [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
     //         [CustomServices.prototype, ['invoke']],
