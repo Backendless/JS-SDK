@@ -4230,50 +4230,104 @@
     }
 
     FilePermissions.prototype = {
-        grantUser  : function(userid, url, permissionType, async) {
-            this.varType = 'user';
-            this.id = userid;
+        grantUser: promisified('_grantUser'),
 
-            return this.grant(url, permissionType, async);
+        grantUserSync: synchronized('_grantUser'),
+
+        _grantUser  : function(userId, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'user',
+                id: userId,
+                url: url,
+                permissionType: permissionType,
+                state: 'GRANT',
+                responder: async
+            });
         },
 
-        grantRole  : function(rolename, url, permissionType, async) {
-            this.varType = 'role';
-            this.id = rolename;
+        grantRole: promisified('_grantRole'),
 
-            return this.grant(url, permissionType, async);
+        grantRoleSync: synchronized('_grantRole'),
+
+        _grantRole  : function(roleName, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'role',
+                id: roleName,
+                url: url,
+                permissionType: permissionType,
+                state: 'GRANT',
+                responder: async
+            });
         },
 
-        grant      : function(url, permissionType, async) {
-            return this.sendRequest('GRANT', url, permissionType, async);
+        grant: promisified('_grant'),
+
+        grantSync: synchronized('_grant'),
+
+        _grant      : function(url, permissionType, async) {
+            return this._sendRequest({
+                url: url,
+                permissionType: permissionType,
+                state: 'GRANT',
+                responder: async
+            });
         },
 
-        denyUser   : function(rolename, url, permissionType, async) {
-            this.varType = 'role';
-            this.id = rolename;
+        denyUser: promisified('_denyUser'),
 
-            return this.deny(url, permissionType, async);
+        denyUserSync: synchronized('_denyUser'),
+
+        _denyUser   : function(userId, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'user',
+                id: userId,
+                url: url,
+                permissionType: permissionType,
+                state: 'DENY',
+                responder: async
+            });
         },
 
-        denyRole   : function(rolename, url, permissionType, async) {
-            this.varType = 'role';
-            this.id = rolename;
+        denyRole: promisified('_denyRole'),
 
-            return this.deny(url, permissionType, async);
+        denyRoleSync: synchronized('_denyRole'),
+
+        _denyRole   : function(roleName, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'role',
+                id: roleName,
+                url: url,
+                permissionType: permissionType,
+                state: 'DENY',
+                responder: async
+            });
         },
 
-        deny       : function(url, permissionType, async) {
-            return this.sendRequest('DENY', url, permissionType, async);
+        deny: promisified('_deny'),
+
+        denySync: synchronized('_deny'),
+
+        _deny       : function(url, permissionType, async) {
+            return this._sendRequest({
+                url: url,
+                permissionType: permissionType,
+                state: 'DENY',
+                responder: async
+            });
         },
 
-        sendRequest: function(type, url, permissionType, async) {
-            var responder = extractResponder(arguments),
-                isAsync   = responder != null,
-                data      = {
-                    "permission": permissionType
-                };
+        _sendRequest: function (options) {
+            var type = options.state;
+            var url = options.url;
+            var responder = options.responder;
+            var isAsync = responder != null;
+            var data = {
+                "permission": options.permissionType
+            };
 
-            data[this.varType] = this.id || "*";
+            if (options.varType) {
+                data[options.varType] = options.id || "*";
+            }
 
             return Backendless._ajax({
                 method      : 'PUT',
