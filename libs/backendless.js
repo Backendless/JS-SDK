@@ -4266,6 +4266,7 @@
 
         _grant      : function(url, permissionType, async) {
             return this._sendRequest({
+                varType: 'user',
                 url: url,
                 permissionType: permissionType,
                 state: 'GRANT',
@@ -4309,6 +4310,7 @@
 
         _deny       : function(url, permissionType, async) {
             return this._sendRequest({
+                varType: 'user',
                 url: url,
                 permissionType: permissionType,
                 state: 'DENY',
