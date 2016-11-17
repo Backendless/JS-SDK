@@ -4886,14 +4886,18 @@
         });
     };
 
-    var Cache = function() {
+    var Cache = function () {
         this.restUrl = Backendless.appPath + '/cache/';
     };
 
     var FactoryMethods = {};
 
     Cache.prototype = {
-        put             : function(key, value, timeToLive, async) {
+        put: promisified('_put'),
+
+        putSync: synchronized('_put'),
+
+        _put: function (key, value, timeToLive, async) {
             if (!Utils.isString(key)) {
                 throw new Error('You can use only String as key to put into Cache');
             }
@@ -4922,15 +4926,19 @@
             }
 
             return Backendless._ajax({
-                method      : 'PUT',
-                url         : this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
-                data        : JSON.stringify(value),
-                isAsync     : isAsync,
+                method: 'PUT',
+                url: this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+                data: JSON.stringify(value),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        expireIn        : function(key, seconds, async) {
+        expireIn: promisified('_expireIn'),
+
+        expireInSync: synchronized('_expireIn'),
+
+        _expireIn: function (key, seconds, async) {
             if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
                 seconds = (Utils.isDate(seconds)) ? seconds.getTime() : seconds;
                 var responder = extractResponder(arguments), isAsync = false;
@@ -4940,10 +4948,10 @@
                 }
 
                 return Backendless._ajax({
-                    method      : 'PUT',
-                    url         : this.restUrl + key + '/expireIn?timeout=' + seconds,
-                    data        : JSON.stringify({}),
-                    isAsync     : isAsync,
+                    method: 'PUT',
+                    url: this.restUrl + key + '/expireIn?timeout=' + seconds,
+                    data: JSON.stringify({}),
+                    isAsync: isAsync,
                     asyncHandler: responder
                 });
             } else {
@@ -4951,7 +4959,11 @@
             }
         },
 
-        expireAt        : function(key, timestamp, async) {
+        expireAt: promisified('_expireAt'),
+
+        expireAtSync: synchronized('_expireAt'),
+
+        _expireAt: function (key, timestamp, async) {
             if (Utils.isString(key) && (Utils.isNumber(timestamp) || Utils.isDate(timestamp)) && timestamp) {
                 timestamp = (Utils.isDate(timestamp)) ? timestamp.getTime() : timestamp;
                 var responder = extractResponder(arguments), isAsync = false;
@@ -4961,10 +4973,10 @@
                 }
 
                 return Backendless._ajax({
-                    method      : 'PUT',
-                    url         : this.restUrl + key + '/expireAt?timestamp=' + timestamp,
-                    data        : JSON.stringify({}),
-                    isAsync     : isAsync,
+                    method: 'PUT',
+                    url: this.restUrl + key + '/expireAt?timestamp=' + timestamp,
+                    data: JSON.stringify({}),
+                    isAsync: isAsync,
                     asyncHandler: responder
                 });
             } else {
@@ -4972,7 +4984,7 @@
             }
         },
 
-        cacheMethod     : function(method, key, contain, async) {
+        _cacheMethod: function (method, key, contain, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
@@ -4985,18 +4997,26 @@
             }
 
             return Backendless._ajax({
-                method      : method,
-                url         : this.restUrl + key + (contain ? '/check' : ''),
-                isAsync     : isAsync,
+                method: method,
+                url: this.restUrl + key + (contain ? '/check' : ''),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        contains        : function(key, async) {
-            return this.cacheMethod('GET', key, true, async);
+        contains: promisified('_contains'),
+
+        containsSync: synchronized('_contains'),
+
+        _contains: function (key, async) {
+            return this._cacheMethod('GET', key, true, async);
         },
 
-        get             : function(key, async) {
+        get: promisified('_get'),
+
+        getSync: synchronized('_get'),
+
+        _get: function (key, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
@@ -5023,20 +5043,24 @@
             }
 
             var result = Backendless._ajax({
-                method      : 'GET',
-                url         : this.restUrl + key,
-                isAsync     : isAsync,
+                method: 'GET',
+                url: this.restUrl + key,
+                isAsync: isAsync,
                 asyncHandler: responder
             });
 
             return isAsync ? result : parseResult(result);
         },
 
-        remove          : function(key, async) {
-            return this.cacheMethod('DELETE', key, false, async);
+        remove: promisified('_remove'),
+
+        removeSync: synchronized('_remove'),
+
+        _remove: function (key, async) {
+            return this._cacheMethod('DELETE', key, false, async);
         },
 
-        setObjectFactory: function(objectName, factoryMethod) {
+        setObjectFactory: function (objectName, factoryMethod) {
             FactoryMethods[objectName] = factoryMethod;
         }
     };
