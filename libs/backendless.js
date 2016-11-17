@@ -1573,40 +1573,6 @@
             }
         },
 
-        /**
-         * Defining the relation
-         *
-         * @param {string} columnName
-         * @param {string} childTableName
-         * @param {string} cardinality
-         * @returns {Promise}
-         **/
-
-        declareRelation: promisified('_declareRelation'),
-
-        /**
-         * Defining the relation (sync)
-         *
-         * @param {string} columnName
-         * @param {string} childTableName
-         * @param {string} cardinality
-         * @returns {*}
-         **/
-        declareRelationSync: synchronized('_declareRelation'),
-
-        _declareRelation: function(columnName, childTableName, cardinality, async) {
-            var responder = extractResponder(arguments);
-
-            Utils.throwError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
-
-            return Backendless._ajax({
-                method      : 'POST',
-                url         : this.restUrl + Utils.toUri(columnName, childTableName, cardinality),
-                isAsync     : !!responder,
-                asyncHandler: responder
-            });
-        },
-
         _validateDeclareRelationArgs: function(columnName, childTableName, cardinality) {
             var existsAndString = function (value) {
                 return !!value && Utils.isString(value);
