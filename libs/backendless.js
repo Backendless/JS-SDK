@@ -3216,15 +3216,27 @@
             return Backendless._ajax(data);
         },
 
-        runOnStayAction: function(geoFenceName, geoPoint, async) {
+        runOnStayAction: promisified('_runOnStayAction'),
+
+        runOnStayActionSync: synchronized('_runOnStayAction'),
+
+        _runOnStayAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onstay', geoFenceName, geoPoint, async);
         },
 
-        runOnExitAction: function(geoFenceName, geoPoint, async) {
+        runOnExitAction: promisified('_runOnExitAction'),
+
+        runOnExitActionSync: synchronized('_runOnExitAction'),
+
+        _runOnExitAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onexit', geoFenceName, geoPoint, async);
         },
 
-        runOnEnterAction: function(geoFenceName, geoPoint, async) {
+        runOnEnterAction: promisified('_runOnEnterAction'),
+
+        runOnEnterActionSync: synchronized('_runOnEnterAction'),
+
+        _runOnEnterAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onenter', geoFenceName, geoPoint, async);
         },
 
@@ -3619,11 +3631,19 @@
             }
         },
 
-        startGeofenceMonitoringWithInAppCallback : function(geofenceName, inAppCallback, async) {
+        startGeofenceMonitoringWithInAppCallback: promisified('_startGeofenceMonitoringWithInAppCallback'),
+
+        startGeofenceMonitoringWithInAppCallbackSync: synchronized('_startGeofenceMonitoringWithInAppCallback'),
+
+        _startGeofenceMonitoringWithInAppCallback : function(geofenceName, inAppCallback, async) {
             this._startMonitoring(geofenceName, inAppCallback, async);
         },
 
-        startGeofenceMonitoringWithRemoteCallback: function(geofenceName, geoPoint, async) {
+        startGeofenceMonitoringWithRemoteCallback: promisified('_startGeofenceMonitoringWithRemoteCallback'),
+
+        startGeofenceMonitoringWithRemoteCallbackSync: synchronized('_startGeofenceMonitoringWithRemoteCallback'),
+
+        _startGeofenceMonitoringWithRemoteCallback: function(geofenceName, geoPoint, async) {
             this._startMonitoring(geofenceName, geoPoint, async);
         },
 
@@ -4861,29 +4881,35 @@
         this.restUrl = Backendless.appPath + '/servercode/events';
     }
 
-    Events.prototype.dispatch = function(eventname, eventArgs, Async) {
-        if (!eventname || !Utils.isString(eventname)) {
-            throw new Error('Event Name must be provided and must be not an empty STRING!');
+    Events.prototype = {
+        dispatch: promisified('_dispatch'),
+
+        dispatchSync: synchronized('_dispatch'),
+
+        _dispatch: function (eventname, eventArgs, Async) {
+            if (!eventname || !Utils.isString(eventname)) {
+                throw new Error('Event Name must be provided and must be not an empty STRING!');
+            }
+
+            eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
+
+            var responder = extractResponder(arguments),
+                isAsync = responder != null;
+
+            if (responder) {
+                responder = wrapAsync(responder);
+            }
+
+            eventArgs = eventArgs instanceof Async ? {} : eventArgs;
+
+            return Backendless._ajax({
+                method: 'POST',
+                url: this.restUrl + '/' + eventname,
+                data: JSON.stringify(eventArgs),
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
         }
-
-        eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
-
-        var responder = extractResponder(arguments),
-            isAsync   = responder != null;
-
-        if (responder) {
-            responder = wrapAsync(responder);
-        }
-
-        eventArgs = eventArgs instanceof Async ? {} : eventArgs;
-
-        return Backendless._ajax({
-            method      : 'POST',
-            url         : this.restUrl + '/' + eventname,
-            data        : JSON.stringify(eventArgs),
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
     };
 
     var Cache = function () {
@@ -5274,7 +5300,11 @@
             return this.loggers[loggerName];
         },
 
-        flush: function() {
+        flush: promisified('_flush'),
+
+        flushSync: synchronized('_flush'),
+
+        _flush: function() {
             var async = extractResponder(arguments);
 
             if (this.logInfo.length) {
@@ -5321,7 +5351,7 @@
             var logging = this;
 
             this.flushInterval = setTimeout(function() {
-                logging.flush(new Async());
+                logging.flush();
             }, this.timeFrequency * 1000);
         },
 
@@ -5380,7 +5410,11 @@
     }
 
     CustomServices.prototype = {
-        invoke: function(serviceName, serviceVersion, method, parameters, async) {
+        invoke: promisified('_invoke'),
+
+        invokeSync: synchronized('_invoke'),
+
+        _invoke: function(serviceName, serviceVersion, method, parameters, async) {
             var responder = extractResponder(arguments),
                 isAsync   = responder != null;
 
@@ -5417,18 +5451,6 @@
             return fn.apply(context, arguments);
         };
     }
-
-    // function enablePromises() {
-    //     [
-    //         [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-    //         [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
-    //         [CustomServices.prototype, ['invoke']],
-    //         [Events.prototype, ['dispatch']],
-    //         [PollingProxy.prototype, ['poll']],
-    //         [Backendless.Logging, ['flush']]
-    //     ].forEach(promisifyPack);
-    //
-    // }
 
     Backendless.initApp = function(appId, secretKey) {
         Backendless.applicationId = appId;
