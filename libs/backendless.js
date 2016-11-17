@@ -226,16 +226,23 @@
     };
 
     /**
-     * @param {stirng} url
-     * @param {string} whereClause
+     * Create http query string
+     * @param params {Object} - map of params
+     * @param isFragment {boolean} - if set true method does not add sign '?' in the beginning of query string
      * @returns {string}
      */
-    Utils.addWhereClause = function(url, whereClause) {
-        if (whereClause) {
-            url += '?where=' + encodeURIComponent(whereClause);
+    Utils.toQueryParams = function(params, isFragment) {
+        var param;
+        var result = [];
+
+        for (var key in params) {
+            if (params.hasOwnProperty(key)) {
+               param =  params[key];
+               result.push(key + '=' + encodeURIComponent(param));
+            }
         }
 
-        return url;
+        return isFragment ? result.join('&') : '?' + result.join('&');
     };
 
     /**
@@ -2169,7 +2176,7 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
