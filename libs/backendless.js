@@ -1837,8 +1837,7 @@
                         async.fault(result.fault);
                     } else {
                         Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
-                        currentUser = this.Backendless.UserService._parseResponse(result);
-                        async.success(this.Backendless.UserService._getUserFromResponse(currentUser));
+                        async.success(result);
                     }
 
                     Utils.removeEvent('message', window);
