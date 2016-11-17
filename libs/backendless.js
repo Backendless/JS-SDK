@@ -1826,8 +1826,12 @@
         },
 
         _loginSocial: function(socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
+            if (!async) {
+                throw new Error('Social login can not be called as synchronous method')
+            }
+
             var socialContainer = new this._socialContainer(socialType, container);
-            async = async && this._wrapAsync(async);
+            async = this._wrapAsync(async);
 
             Utils.addEvent('message', window, function(e) {
                 if (e.origin == Backendless.serverURL) {
@@ -1836,7 +1840,6 @@
                     if (result.fault) {
                         async.fault(result.fault);
                     } else {
-                        Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                         async.success(result);
                     }
 
