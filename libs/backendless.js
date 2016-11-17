@@ -1372,28 +1372,6 @@
             });
         },
 
-        /**
-         * Defining the relation
-         *
-         * @param {string} columnName
-         * @param {string} childTableName
-         * @param {string} cardinality
-         * @param {Async} [async]
-         **/
-
-        declareRelation: function(columnName, childTableName, cardinality, async) {
-            var responder = extractResponder(arguments);
-
-            throwError(this._validateDeclareRelationArgs(columnName, childTableName, cardinality));
-
-            return Backendless._ajax({
-                method      : 'POST',
-                url         : this.restUrl + toUri(columnName, childTableName, cardinality),
-                isAsync     : !!responder,
-                asyncHandler: responder
-            });
-        },
-
         _validateDeclareRelationArgs: function(columnName, childTableName, cardinality) {
             var existsAndString = function (value) {
                 return !!value && Utils.isString(value);
@@ -4715,8 +4693,7 @@
             [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
             [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
             [DataStore.prototype, [
-                'save', 'remove', 'find', 'findById', 'loadRelations',
-                'declareRelation', 'setRelation', 'addRelation', 'deleteRelation'
+                'save', 'remove', 'find', 'findById', 'loadRelations', 'setRelation', 'addRelation', 'deleteRelation'
             ]],
             [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
             [persistence, ['describe', 'getView', 'callStoredProcedure']],
