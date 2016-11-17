@@ -1831,7 +1831,7 @@
             }
 
             var socialContainer = new this._socialContainer(socialType, container);
-            async = this._wrapAsync(async);
+            async = this._wrapAsync(async, stayLoggedIn);
 
             Utils.addEvent('message', window, function(e) {
                 if (e.origin == Backendless.serverURL) {
