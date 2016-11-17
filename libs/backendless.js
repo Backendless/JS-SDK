@@ -111,42 +111,6 @@
         return new Date().getTime();
     };
 
-    var throwError = function(errorMessage) {
-        if (errorMessage) {
-           throw new Error(errorMessage);
-        }
-    };
-
-    var addWhereClause = function(url, whereClause) {
-        if (whereClause) {
-            url += '?where=' + encodeURIComponent(whereClause);
-        }
-
-        return url;
-    };
-
-    var toUri = function() {
-        var uri = '';
-        var arg;
-
-        for (var i=0; i < arguments.length; i++) {
-            arg = arguments[i];
-
-            if (!arg) {
-                continue;
-            }
-
-            if (Utils.isArray(arg)) {
-                uri += toUri.apply(null, arg);
-            } else if (Utils.isString(arg)) {
-                uri += '/';
-                uri += encodeURIComponent(arg);
-            }
-        }
-
-        return uri;
-    };
-
     var promisesEnabled = false;
 
     Backendless.browser = browser;
@@ -180,6 +144,11 @@
         return Object.prototype.toString.call(obj).slice(8, -1) === 'Array';
     });
 
+
+    /**
+     * @param {*} value
+     * @returns {Array}
+     */
     Utils.castArray = function(value) {
         if (Utils.isArray(value)) {
             return value;
@@ -226,6 +195,11 @@
         }
     };
 
+    /**
+     * @param {Array} array
+     * @param {function|string} iteratee
+     * @returns {Array}
+     */
     Utils.map = function(array, iteratee) {
         var result = [];
         var item;
@@ -245,6 +219,58 @@
         }
 
         return result;
+    };
+
+    /**
+     * @param {string} errorMessage
+     */
+    Utils.throwError = function(errorMessage) {
+        if (errorMessage) {
+            throw new Error(errorMessage);
+        }
+    };
+
+    /**
+     * Create http query string
+     * @param params {Object} - map of params
+     * @param isFragment {boolean} - if set true method does not add sign '?' in the beginning of query string
+     * @returns {string}
+     */
+    Utils.toQueryParams = function(params, isFragment) {
+        var result = [];
+
+        for (var key in params) {
+            if (params.hasOwnProperty(key)) {
+               result.push(key + '=' + encodeURIComponent(params[key]));
+            }
+        }
+
+        return isFragment ? result.join('&') : '?' + result.join('&');
+    };
+
+    /**
+     * @returns {string}
+     */
+    Utils.toUri = function() {
+        var uri = '';
+        var arg;
+
+        for (var i=0; i < arguments.length; i++) {
+            arg = arguments[i];
+
+            if (!arg) {
+                continue;
+            }
+
+            if (Utils.isArray(arg)) {
+                uri += this.toUri.apply(this, arg);
+            } else if (Utils.isString(arg)) {
+                uri += '/';
+                uri += encodeURIComponent(arg);
+            }
+        }
+
+        return uri;
     };
 
     function initXHR() {
@@ -2227,31 +2253,25 @@
             }
 
             url = url.replace(/\?&/g, '?');
-            var self = this;
 
             var responderOverride = function(async) {
                 var success = function(data) {
-                    var geoCollection = data.collection;
+                    var geoCollection = [];
+                    var geoObject;
+                    var isCluster;
+                    var GeoItemType;
 
-                    for (var i = 0; i < geoCollection.length; i++) {
-                        var geoObject = null;
-                        if (geoCollection[i].hasOwnProperty('totalPoints')) {
-                            geoObject = new GeoCluster();
-                            geoObject.totalPoints = geoCollection[i].totalPoints;
-                            geoObject.geoQuery = query;
-                        } else {
-                            geoObject = new GeoPoint();
-                        }
-                        geoObject.categories = geoCollection[i].categories;
-                        geoObject.latitude = geoCollection[i].latitude;
-                        geoObject.longitude = geoCollection[i].longitude;
-                        geoObject.metadata = geoCollection[i].metadata;
-                        geoObject.objectId = geoCollection[i].objectId;
-                        geoObject.distance = geoCollection[i].distance;
-                        data.collection[i] = geoObject;
+                    for (var i = 0; i < data.collection.length; i++) {
+                        geoObject = data.collection[i];
+                        geoObject.geoQuery = query;
+
+                        isCluster = geoObject.hasOwnProperty('totalPoints');
+                        GeoItemType = isCluster ? GeoCluster : GeoPoint;
+
+                        geoCollection.push(new GeoItemType(geoObject))
                     }
 
-                    async.success(data);
+                    async.success(geoCollection);
                 };
 
                 var error = function(data) {
@@ -2343,20 +2363,12 @@
                 throw new Error("Method argument must be a valid instance of GeoCluster persisted on the server");
             }
 
-            var self = this;
-
             var responderOverride = function(async) {
                 var success = function(geoCollection) {
-                   for (var i = 0; i < geoCollection.length; i++) {
-                        var geoObject = null;
-                        geoObject = new GeoPoint();
-                        geoObject.categories = geoCollection[i].categories;
-                        geoObject.latitude = geoCollection[i].latitude;
-                        geoObject.longitude = geoCollection[i].longitude;
-                        geoObject.metadata = geoCollection[i].metadata;
-                        geoObject.objectId = geoCollection[i].objectId;
-                        data.collection.data[i] = geoObject;
+                    for (var i = 0; i < geoCollection.length; i++) {
+                        geoCollection[i] = new GeoPoint(geoCollection[i]);
                     }
+
                     async.success(geoCollection);
                 };
 
@@ -4793,6 +4805,7 @@
         this.longitude = args.longitude;
         this.metadata = args.metadata;
         this.objectId = args.objectId;
+        this.distance = args.distance;
     };
 
     var GeoCluster = function(args) {
@@ -4804,6 +4817,7 @@
         this.objectId = args.objectId;
         this.totalPoints = args.totalPoints;
         this.geoQuery = args.geoQuery;
+        this.distance = args.distance;
     };
 
     var PublishOptionsHeaders = { //PublishOptions headers namespace helper
