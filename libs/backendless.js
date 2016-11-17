@@ -2174,7 +2174,7 @@
                 asyncHandler: responder
             });
         },
-
+      
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
