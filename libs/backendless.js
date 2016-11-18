@@ -248,6 +248,11 @@
         return (results && results.length > 1) ? results[1] : '';
     };
 
+    /**
+     * Transform array to encoded string
+     * @param arr
+     * @returns {string}
+     */
     Utils.encodeArrayToUriComponent = function(arr) {
         var props = [], i, len;
         for (i = 0, len = arr.length; i < len; ++i) {
@@ -257,6 +262,11 @@
         return props.join(',');
     };
 
+    /**
+     *
+     * @param obj
+     * @returns {*}
+     */
     Utils.classWrapper = function(obj) {
         var wrapper = function(obj) {
             var wrapperName = null,
@@ -295,6 +305,13 @@
         return obj;
     };
 
+    /**
+     *
+     * @param destination
+     * @param source
+     * @returns {*}
+     */
+
     Utils.deepExtend = function(destination, source) {
         for (var property in source) {
             if (source[property] !== undefined && source.hasOwnProperty(property)) {
@@ -309,9 +326,21 @@
         return destination;
     };
 
+    /**
+     *
+     * @param obj
+     * @returns {Objetc\Array}
+     */
+
     Utils.cloneObject = function(obj) {
         return Utils.isArray(obj) ? obj.slice() : Utils.deepExtend({}, obj);
     };
+
+    /**
+     * extracts Async object from arguments
+     * @param args
+     * @returns {*}
+     */
 
     Utils.extractResponder = function(args) {
         var i, len;
@@ -323,6 +352,14 @@
 
         return null;
     };
+
+    /**
+     * wrap Async chandlers to apply custom parse logic
+     * @param async
+     * @param parser
+     * @param context
+     * @returns {Async}
+     */
 
     Utils.wrapAsync = function(async, parser, context) {
         var success = function(data) {
