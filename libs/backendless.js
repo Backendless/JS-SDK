@@ -173,10 +173,9 @@
     /**
      * Create http query string
      * @param params {Object} - map of params
-     * @param isFragment {boolean} - if set true method does not add sign '?' in the beginning of query string
      * @returns {string}
      */
-    Utils.toQueryParams = function(params, isFragment) {
+    Utils.toQueryParams = function(params) {
         var result = [];
 
         for (var key in params) {
@@ -185,7 +184,7 @@
             }
         }
 
-        return isFragment ? result.join('&') : '?' + result.join('&');
+        return result.join('&');
     };
 
     /**
