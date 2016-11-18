@@ -1126,7 +1126,7 @@
         },
 
         find: function(queryBuilder) {
-            throwError(this._validateFindArguments(arguments));
+            Utils.throwError(this._validateFindArguments(arguments));
 
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
@@ -4597,14 +4597,14 @@
 
     PagingQueryBuilder.prototype = {
         setPageSize: function(pageSize){
-            throwError(this.validatePageSize(pageSize));
+            Utils.throwError(this.validatePageSize(pageSize));
             this.pageSize = pageSize;
 
             return this;
         },
 
         setOffset: function(offset){
-            throwError(this.validateOffset(offset));
+            Utils.throwError(this.validateOffset(offset));
             this.offset = offset;
 
             return this;
