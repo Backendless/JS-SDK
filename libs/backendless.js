@@ -41,11 +41,6 @@
     Backendless.VERSION = '4.0.0';
     Backendless.serverURL = 'https://api.backendless.com';
 
-    Backendless.DEFAULTS = {
-        pageSize: 10,
-        offset: 0
-    };
-
     Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
         return this;
@@ -4573,9 +4568,14 @@
         }
     };
 
+    var PAGING_DEFAULTS = {
+        pageSize: 10,
+        offset: 0
+    };
+
     var PagingQueryBuilder = function() {
-        this.offset = Backendless.DEFAULTS.offset;
-        this.pageSize = Backendless.DEFAULTS.pageSize;
+        this.offset = PAGING_DEFAULTS.offset;
+        this.pageSize = PAGING_DEFAULTS.pageSize;
     };
 
     PagingQueryBuilder.prototype = {
