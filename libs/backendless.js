@@ -167,15 +167,6 @@
     };
 
     /**
-     * @param {string} errorMessage
-     */
-    Utils.throwError = function(errorMessage) {
-        if (errorMessage) {
-            throw new Error(errorMessage);
-        }
-    };
-
-    /**
      * Create http query string
      * @param params {Object} - map of params
      * @returns {string}
@@ -1126,7 +1117,7 @@
         },
 
         find: function(queryBuilder) {
-            Utils.throwError(this._validateFindArguments(arguments));
+            this._validateFindArguments(arguments);
 
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
@@ -1141,18 +1132,22 @@
 
             if (args.length === 1) {
                 if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Backendless.Async)) {
-                    return (
+                    throw new Error(
                         'Invalid find method argument. ' +
                         'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
                     );
                 }
             } else {
                 if (!(args[0] instanceof Backendless.DataQueryBuilder)) {
-                    return 'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder';
+                    throw new Error(
+                        'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder'
+                    );
                 }
 
                 if (!(args[1] instanceof Backendless.Async)) {
-                    return 'Invalid callback wrapper object. The argument should be instance of Backendless.Async';
+                    throw new Error(
+                        'Invalid callback wrapper object. The argument should be instance of Backendless.Async'
+                    );
                 }
             }
         },
@@ -4575,18 +4570,6 @@
 
         getOption: function(name) {
             return this.options && this.options[name];
-        },
-
-        toJSON: function () {
-            var result = {};
-
-            for (var key in this) {
-                if (this.hasOwnProperty(key)) {
-                    result[key] = this[key]
-                }
-            }
-
-            return result;
         }
     };
 
@@ -4597,14 +4580,20 @@
 
     PagingQueryBuilder.prototype = {
         setPageSize: function(pageSize){
-            Utils.throwError(this.validatePageSize(pageSize));
+            if (pageSize <= 0) {
+                return 'Page size must be a positive value.';
+            }
+
             this.pageSize = pageSize;
 
             return this;
         },
 
         setOffset: function(offset){
-            Utils.throwError(this.validateOffset(offset));
+            if (offset < 0) {
+                throw new Error('Offset cannot have a negative value.');
+            }
+
             this.offset = offset;
 
             return this;
@@ -4622,18 +4611,6 @@
             this.setOffset(newOffset);
 
             return this;
-        },
-
-        validateOffset: function(offset) {
-            if (offset < 0) {
-                return 'Offset cannot have a negative value.';
-            }
-        },
-
-        validatePageSize: function(pageSize) {
-            if (pageSize <= 0) {
-                return 'Page size must be a positive value.';
-            }
         },
 
         build: function() {
@@ -4731,7 +4708,7 @@
         build: function(){
             this._query.setOptions(this._paging.build());
 
-            return this._query.toJSON();
+            return this._query;
         }
     };
 
