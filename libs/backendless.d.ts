@@ -388,46 +388,35 @@ declare module __Backendless {
 
         constructor(name:string|Object|Function);
 
-        save(obj:Object, async:Backendless.Async):XMLHttpRequest;
-        save(obj:Object):Object;
-        save<Promise>(obj:Object):Promise;
+        save(obj:Object):Promise;
+        saveSync(obj:Object):Object;
 
-        remove(id:Object|string, async:Backendless.Async):XMLHttpRequest;
-        remove(obj:Object|string):Object;
-        remove<Promise>(obj:Object|string):Promise;
+        remove(id:Object|string):Promise;
+        removeSync(obj:Object|string):Object;
 
-        find():Array<Object>;
-        find(async:Backendless.Async):XMLHttpRequest;
-        find(obj:Backendless.DataQueryBuilder):Array<Object>;
-        find(obj:Backendless.DataQueryBuilder, async:Backendless.Async):XMLHttpRequest;
-        find<Promise>():Promise;
-        find<Promise>(obj:Backendless.DataQueryBuilder):Promise;
+        find():Promise;
+        find(obj:Backendless.DataQueryBuilder):Promise;
+        findSync():Array<Object>;
+        findSync(obj:Backendless.DataQueryBuilder):Array<Object>;
 
-        findById(query:DataQueryValueI|string):Object;
-        findById(query:DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
-        findById<Promise>(query:DataQueryValueI|string):Promise;
+        findById(query:Object|string):Promise;
+        findByIdSync(query:Object|string):Object;
 
-        findFirst():Object;
-        findFirst(async:Backendless.Async):XMLHttpRequest;
-        findFirst(query:DataQueryValueI):Object;
-        findFirst(query:DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
-        findFirst<Promise>():Promise;
-        findFirst<Promise>(query:DataQueryValueI):Promise;
+        findFirst():Promise;
+        findFirst(query:Object):Promise;
+        findFirstSync():Object;
+        findFirstSync(query:Object):Object;
 
-        findLast():Object;
-        findLast(async:Backendless.Async):XMLHttpRequest;
-        findLast(query:DataQueryValueI):Object;
-        findLast(query:DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
-        findLast<Promise>():Promise;
-        findLast<Promise>(query:DataQueryValueI):Promise;
+        findLast():Promise;
+        findLast(query:Object):Promise;
+        findLastSync():Object;
+        findLastSync(query:Object):Object;
 
-        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
-        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder, async:Backendless.Async):XMLHttpRequest;
-        loadRelations<Promise>(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
+        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
+        loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
 
-        declareRelation(columnName:string, childTableName:string, cardinality:string):void;
-        declareRelation(columnName:string, childTableName:string, cardinality:string, async:Backendless.Async):XMLHttpRequest;
-        declareRelation<Promise>(columnName:string, childTableName:string, cardinality:string):Promise;
+        declareRelation(columnName:string, childTableName:string, cardinality:string):Promise;
+        declareRelationSync(columnName:string, childTableName:string, cardinality:string):void;
 
         setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
         setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
