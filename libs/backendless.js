@@ -46,35 +46,6 @@
         return this;
     };
 
-    if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function(searchElement, fromIndex) {
-            var k;
-            if (this == null) {
-                throw new TypeError('"this" is null or not defined');
-            }
-            var O = Object(this);
-            var len = O.length >>> 0;
-            if (len === 0) {
-                return -1;
-            }
-            var n = +fromIndex || 0;
-            if (Math.abs(n) === Infinity) {
-                n = 0;
-            }
-            if (n >= len) {
-                return -1;
-            }
-            k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
-            while (k < len) {
-                if (k in O && O[k] === searchElement) {
-                    return k;
-                }
-                k++;
-            }
-            return -1;
-        };
-    }
-
     initXHR();
 
     var browser = (function() {
@@ -114,7 +85,7 @@
         return promisesEnabled;
     };
 
-    var Utils = Backendless.Utils = {
+    var Utils = {
         isObject  : function(obj) {
             return obj === Object(obj);
         },
@@ -191,32 +162,6 @@
     };
 
     /**
-     * @param {Array} array
-     * @param {function|string} iteratee
-     * @returns {Array}
-     */
-    Utils.map = function(array, iteratee) {
-        var result = [];
-        var item;
-
-        if (Utils.isArray(array)) {
-            for (var i = 0; i < array.length; i++) {
-                item = array[i];
-
-                if (Utils.isFunction(iteratee)) {
-                    item = iteratee(item);
-                } else if (Utils.isString(iteratee) && Utils.isObject(item)) {
-                    item = item[iteratee];
-                }
-
-                result.push(item);
-            }
-        }
-
-        return result;
-    };
-
-    /**
      * @param {string} errorMessage
      */
     Utils.throwError = function(errorMessage) {
@@ -268,6 +213,133 @@
         return uri;
     };
 
+    /**
+     * Parse JSON if it possible if not returns the input parameter
+     * @param s
+     * @returns {*}
+     */
+
+    Utils.tryParseJSON = function(s) {
+        try {
+            return typeof s === 'string' ? JSON.parse(s) : s;
+        } catch (e) {
+            return s;
+        }
+    };
+
+    /**
+     * Returns the class name of instance
+     * @param obj
+     * @returns {string}
+     */
+
+    Utils.getClassName = function(obj) {
+        if (obj.prototype && obj.prototype.___class) {
+            return obj.prototype.___class;
+        }
+
+        if (Utils.isFunction(obj) && obj.name) {
+            return obj.name;
+        }
+
+        var instStringified = (Utils.isFunction(obj) ? obj.toString() : obj.constructor.toString()),
+            results         = instStringified.match(/function\s+(\w+)/);
+
+        return (results && results.length > 1) ? results[1] : '';
+    };
+
+    Utils.encodeArrayToUriComponent = function(arr) {
+        var props = [], i, len;
+        for (i = 0, len = arr.length; i < len; ++i) {
+            props.push(encodeURIComponent(arr[i]));
+        }
+
+        return props.join(',');
+    };
+
+    Utils.classWrapper = function(obj) {
+        var wrapper = function(obj) {
+            var wrapperName = null,
+                Wrapper = null;
+
+            for (var property in obj) {
+                if (obj.hasOwnProperty(property)) {
+                    if (property === "___class") {
+                        wrapperName = obj[property];
+                        break;
+                    }
+                }
+            }
+
+            if (wrapperName) {
+                try {
+                    Wrapper = eval(wrapperName);
+                    obj = Utils.deepExtend(new Wrapper(), obj);
+                } catch (e) {
+                }
+            }
+
+            return obj;
+        };
+
+        if (Utils.isObject(obj) && obj != null) {
+            if (Utils.isArray(obj)) {
+                for (var i = obj.length; i--;) {
+                    obj[i] = wrapper(obj[i]);
+                }
+            } else {
+                obj = wrapper(obj);
+            }
+        }
+
+        return obj;
+    };
+
+    Utils.deepExtend = function(destination, source) {
+        for (var property in source) {
+            if (source[property] !== undefined && source.hasOwnProperty(property)) {
+                destination[property] = destination[property] || {};
+                destination[property] = Utils.classWrapper(source[property]);
+                if (destination[property] && destination[property].hasOwnProperty(property) && destination[property][property] && destination[property][property].hasOwnProperty("__originSubID")) {
+                    destination[property][property] = Utils.classWrapper(destination[property]);
+                }
+            }
+        }
+
+        return destination;
+    };
+
+    Utils.cloneObject = function(obj) {
+        return Utils.isArray(obj) ? obj.slice() : Utils.deepExtend({}, obj);
+    };
+
+    Utils.extractResponder = function(args) {
+        var i, len;
+        for (i = 0, len = args.length; i < len; ++i) {
+            if (args[i] instanceof Async) {
+                return args[i];
+            }
+        }
+
+        return null;
+    };
+
+    Utils.wrapAsync = function(async, parser, context) {
+        var success = function(data) {
+            if (parser) {
+                data = parser.call(context, data);
+            }
+
+            async.success(data);
+        };
+
+        var error = function(data) {
+            async.fault(data);
+        };
+
+        return new Async(success, error);
+    };
+
     function initXHR() {
         try {
             if (typeof XMLHttpRequest.prototype.sendAsBinary == 'undefined') {
@@ -282,14 +354,6 @@
             }
         }
         catch (e) {
-        }
-    }
-
-    function tryParseJSON(s) {
-        try {
-            return typeof s === 'string' ? JSON.parse(s) : s;
-        } catch (e) {
-            return s;
         }
     }
 
@@ -374,7 +438,7 @@
                     var result = true;
 
                     if (xhr.responseText) {
-                        result = tryParseJSON(xhr.responseText);
+                        result = Utils.tryParseJSON(xhr.responseText);
                     }
 
                     return result;
@@ -396,7 +460,7 @@
                 };
 
                 var cacheHandler = function(response) {
-                    response = cloneObject(response);
+                    response = Utils.cloneObject(response);
                     if (config.method == 'GET' && config.cacheActive) {
                         response.cachePolicy = config.cachePolicy;
                         Backendless.LocalCache.set(config.urlBlueprint, response);
@@ -520,7 +584,7 @@
                     var contentType = res.headers['content-type'];
 
                     if (buffer !== undefined && contentType && contentType.indexOf('application/json') !== -1) {
-                        buffer = tryParseJSON(buffer);
+                        buffer = Utils.tryParseJSON(buffer);
                     }
 
                     callback(buffer);
@@ -538,113 +602,6 @@
     };
 
     Backendless._ajax = isBrowser ? Backendless._ajax_for_browser : Backendless._ajax_for_nodejs;
-
-    var getClassName = function() {
-        if (this.prototype && this.prototype.___class) {
-            return this.prototype.___class;
-        }
-
-        if (Utils.isFunction(this) && this.name) {
-            return this.name;
-        }
-
-        var instStringified = (Utils.isFunction(this) ? this.toString() : this.constructor.toString()),
-            results         = instStringified.match(/function\s+(\w+)/);
-
-        return (results && results.length > 1) ? results[1] : '';
-    };
-
-    var encodeArrayToUriComponent = function(arr) {
-        var props = [], i, len;
-        for (i = 0, len = arr.length; i < len; ++i) {
-            props.push(encodeURIComponent(arr[i]));
-        }
-
-        return props.join(',');
-    };
-
-    var classWrapper = function(obj) {
-        var wrapper = function(obj) {
-            var wrapperName = null,
-                Wrapper = null;
-
-            for (var property in obj) {
-                if (obj.hasOwnProperty(property)) {
-                    if (property === "___class") {
-                        wrapperName = obj[property];
-                        break;
-                    }
-                }
-            }
-
-            if (wrapperName) {
-                try {
-                    Wrapper = eval(wrapperName);
-                    obj = deepExtend(new Wrapper(), obj);
-                } catch (e) {
-                }
-            }
-
-            return obj;
-        };
-
-        if (Utils.isObject(obj) && obj != null) {
-            if (Utils.isArray(obj)) {
-                for (var i = obj.length; i--;) {
-                    obj[i] = wrapper(obj[i]);
-                }
-            } else {
-                obj = wrapper(obj);
-            }
-        }
-
-        return obj;
-    };
-
-    var deepExtend = function(destination, source) {
-        for (var property in source) {
-            if (source[property] !== undefined && source.hasOwnProperty(property)) {
-                destination[property] = destination[property] || {};
-                destination[property] = classWrapper(source[property]);
-                if (destination[property] && destination[property].hasOwnProperty(property) && destination[property][property] && destination[property][property].hasOwnProperty("__originSubID")) {
-                    destination[property][property] = classWrapper(destination[property]);
-                }
-            }
-        }
-
-        return destination;
-    };
-
-    var cloneObject = function(obj) {
-        return Utils.isArray(obj) ? obj.slice() : deepExtend({}, obj);
-    };
-
-    var extractResponder = function(args) {
-        var i, len;
-        for (i = 0, len = args.length; i < len; ++i) {
-            if (args[i] instanceof Async) {
-                return args[i];
-            }
-        }
-
-        return null;
-    };
-
-    var wrapAsync = function(async, parser, context) {
-        var success = function(data) {
-            if (parser) {
-                data = parser.call(context, data);
-            }
-
-            async.success(data);
-        };
-
-        var error = function(data) {
-            async.fault(data);
-        };
-
-        return new Async(success, error);
-    };
 
     function Async(successCallback, faultCallback, context) {
         if (!(faultCallback instanceof Function)) {
@@ -903,7 +860,7 @@
         this.model = Utils.isString(model) ? function() {
         } : model;
 
-        this.className = getClassName.call(model);
+        this.className = Utils.getClassName(model);
 
         if ((typeof model).toLowerCase() === "string") {
             this.className = model;
@@ -940,7 +897,7 @@
                 if (Utils.isString(options.sortBy)) {
                     params.push('sortBy=' + encodeURIComponent(options.sortBy));
                 } else if (Utils.isArray(options.sortBy)) {
-                    params.push('sortBy=' + encodeArrayToUriComponent(options.sortBy));
+                    params.push('sortBy=' + Utils.encodeArrayToUriComponent(options.sortBy));
                 }
             }
 
@@ -952,7 +909,7 @@
 
             if (options.relations) {
                 if (Utils.isArray(options.relations)) {
-                    params.push('loadRelations=' + (options.relations.length ? encodeArrayToUriComponent(options.relations) : "*"));
+                    params.push('loadRelations=' + (options.relations.length ? Utils.encodeArrayToUriComponent(options.relations) : "*"));
                 }
             }
 
@@ -963,7 +920,7 @@
             response = response.fields || response;
             item = new _Model();
 
-            deepExtend(item, response);
+            Utils.deepExtend(item, response);
             return this._formCircDeps(item);
         },
 
@@ -973,14 +930,14 @@
             if (Utils.isArray(response)) {
                 for (i = 0, len = response.length; i < len; ++i) {
                     response[i] = response[i].fields || response[i];
-                    response[i] = deepExtend(new _Model(), response[i]);
+                    response[i] = Utils.deepExtend(new _Model(), response[i]);
                 }
 
                 return this._formCircDeps(response);
             } else {
                 response = response.fields || response;
                 item = Utils.isString(_Model) ? {} : new _Model();
-                deepExtend(item, response);
+                Utils.deepExtend(item, response);
 
                 return this._formCircDeps(item);
             }
@@ -988,11 +945,11 @@
 
         _load: function(url, async) {
             if (url) {
-                var responder = extractResponder(arguments), isAsync = false;
+                var responder = Utils.extractResponder(arguments), isAsync = false;
 
                 if (responder != null) {
                     isAsync = true;
-                    responder = wrapAsync(responder, this._parseResponse, this);
+                    responder = Utils.wrapAsync(responder, this._parseResponse, this);
                 }
 
                 var result = Backendless._ajax({
@@ -1066,7 +1023,7 @@
 
         save: function(obj, async) {
             this._replCircDeps(obj);
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = false,
                 method    = 'PUT',
                 url       = this.restUrl,
@@ -1074,7 +1031,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, this._parseResponse, this);
+                responder = Utils.wrapAsync(responder, this._parseResponse, this);
             }
 
             var result = Backendless._ajax({
@@ -1086,7 +1043,7 @@
             });
 
             if (!isAsync) {
-                deepExtend(objRef, this._parseResponse(result));
+                Utils.deepExtend(objRef, this._parseResponse(result));
             }
 
             return isAsync ? result : objRef;
@@ -1097,11 +1054,11 @@
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, this._parseResponse, this);
+                responder = Utils.wrapAsync(responder, this._parseResponse, this);
             }
 
             var result;
@@ -1134,12 +1091,12 @@
                 options,
                 query     = [],
                 url       = this.restUrl,
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 result;
 
             if (dataQuery.properties && dataQuery.properties.length) {
-                props = 'props=' + encodeArrayToUriComponent(dataQuery.properties);
+                props = 'props=' + Utils.encodeArrayToUriComponent(dataQuery.properties);
             }
 
             if (dataQuery.condition) {
@@ -1149,7 +1106,7 @@
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
-            responder != null && (responder = wrapAsync(responder, this._parseFindResponse, this));
+            responder != null && (responder = Utils.wrapAsync(responder, this._parseFindResponse, this));
             options && query.push(options);
             whereClause && query.push(whereClause);
             props && query.push(props);
@@ -1217,7 +1174,7 @@
                 return this.find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
-                var responder = extractResponder(arguments),
+                var responder = Utils.extractResponder(arguments),
                     url       = this.restUrl,
                     isAsync   = responder != null,
                     send      = "/pk?";
@@ -1226,11 +1183,11 @@
                     send += key + '=' + argsObj[key] + '&';
                 }
 
-                responder != null && (responder = wrapAsync(responder, this._parseResponse, this));
+                responder != null && (responder = Utils.wrapAsync(responder, this._parseResponse, this));
 
                 var result;
 
-                if (getClassName.call(arguments[0]) == 'Object') {
+                if (Utils.getClassName(arguments[0]) == 'Object') {
                     result = Backendless._ajax({
                         method      : 'GET',
                         url         : url + send.replace(/&$/, ""),
@@ -1283,7 +1240,7 @@
                 data  : JSON.stringify(argsObj)
             });
 
-            deepExtend(obj, result);
+            Utils.deepExtend(obj, result);
         },
 
         findFirst: function() {
@@ -1305,7 +1262,7 @@
 
     var persistence = {
         save: function(className, obj, async) {
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (Utils.isString(className)) {
                 var url = Backendless.appPath + '/data/' + className;
@@ -1323,7 +1280,7 @@
             }
         },
         getView: function(viewName, whereClause, pageSize, offset, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             if (Utils.isString(viewName)) {
@@ -1360,7 +1317,7 @@
             }
         },
         callStoredProcedure: function(spName, argumentValues, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             if (Utils.isString(spName)) {
@@ -1390,7 +1347,7 @@
                 }
                 tableName = model;
             } else {
-                tableName = getClassName.call(model);
+                tableName = Utils.getClassName(model);
             }
             var store = dataStoreCache[tableName];
             if (!store) {
@@ -1401,8 +1358,8 @@
             return store;
         },
         describe: function(className, async) {
-            className = Utils.isString(className) ? className : getClassName.call(className);
-            var responder = extractResponder(arguments), isAsync = (responder != null);
+            className = Utils.isString(className) ? className : Utils.getClassName(className);
+            var responder = Utils.extractResponder(arguments), isAsync = (responder != null);
 
             return Backendless._ajax({
                 method      : 'GET',
@@ -1421,7 +1378,7 @@
         };
 
         this.sendRequest = function(userid, rolename, dataObject, permission, permissionType, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 data      = {
                     "permission": permission
@@ -1526,7 +1483,7 @@
     UserService.prototype = {
         _wrapAsync: function(async, stayLoggedIn) {
             var me   = this, success = function(data) {
-                currentUser = me._parseResponse(tryParseJSON(data), stayLoggedIn);
+                currentUser = me._parseResponse(Utils.tryParseJSON(data), stayLoggedIn);
                 async.success(me._getUserFromResponse(currentUser));
             }, error = function(data) {
                 async.fault(data);
@@ -1537,7 +1494,7 @@
 
         _parseResponse: function(data, stayLoggedIn) {
             var user = new Backendless.User();
-            deepExtend(user, data);
+            Utils.deepExtend(user, data);
 
             if (stayLoggedIn) {
                 Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
@@ -1551,7 +1508,7 @@
                 throw new Error('Only Backendless.User accepted');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -1570,7 +1527,7 @@
         },
 
         getUserRoles: function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -1596,7 +1553,7 @@
                 throw new Error('Rolename can not be empty');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
 
             return Backendless._ajax({
                 method      : 'POST',
@@ -1630,7 +1587,7 @@
             Backendless.LocalCache.remove("current-user-id");
             Backendless.LocalCache.set("stayLoggedIn", false);
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -1683,7 +1640,7 @@
         },
 
         describeUserClass: function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -1698,7 +1655,7 @@
             if (!emailAddress) {
                 throw 'Username can not be empty';
             }
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -1710,7 +1667,7 @@
         },
 
         logout: function(async) {
-            var responder       = extractResponder(arguments),
+            var responder       = Utils.extractResponder(arguments),
                 isAsync         = responder != null,
                 errorCallback   = isAsync ? responder.fault : null,
                 successCallback = isAsync ? responder.success : null,
@@ -1780,7 +1737,7 @@
         },
 
         update: function(user, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -1799,17 +1756,17 @@
         },
 
         loginWithFacebook      : function(facebookFieldsMapping, permissions, async, stayLoggedIn) {
-            async = extractResponder(arguments);
+            async = Utils.extractResponder(arguments);
             this._loginSocial('Facebook', facebookFieldsMapping, permissions, async, null, stayLoggedIn);
         },
 
         loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, async, container, stayLoggedIn) {
-            async = extractResponder(arguments);
+            async = Utils.extractResponder(arguments);
             this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, async, container, stayLoggedIn);
         },
 
         loginWithTwitter       : function(twitterFieldsMapping, async, stayLoggedIn) {
-            async = extractResponder(arguments);
+            async = Utils.extractResponder(arguments);
             this._loginSocial('Twitter', twitterFieldsMapping, null, async, null, stayLoggedIn);
         },
 
@@ -1982,7 +1939,7 @@
 
         isValidLogin: function(async) {
             var userToken = Backendless.LocalCache.get("user-token");
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (userToken) {
@@ -2022,7 +1979,7 @@
             if(!emailAddress || emailAddress instanceof Async) {
                 throw "Email cannot be empty";
             }
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
 
             return Backendless._ajax({
@@ -2049,7 +2006,7 @@
         },
 
         _load           : function(url, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             return Backendless._ajax({
@@ -2084,7 +2041,7 @@
             },
             'categories': function(arg) {
                 arg = Utils.isString(arg) ? [arg] : arg;
-                return 'categories=' + encodeArrayToUriComponent(arg);
+                return 'categories=' + Utils.encodeArrayToUriComponent(arg);
             },
             'includeMetadata': function(arg) {
                 return 'includemetadata=' + arg;
@@ -2142,7 +2099,7 @@
                 url += '/' + objectId;
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var responderOverride = function(async) {
                 var success = function(data) {
@@ -2182,7 +2139,7 @@
 
         findUtil        : function(query, async) {
             var url       = query["url"],
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = false;
 
             if (query.searchRectangle && query.radius) {
@@ -2252,7 +2209,7 @@
 
         loadMetadata    : function(geoObject, async) {
             var url       = this.restUrl + '/points/',
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = false;
             if (geoObject.objectId) {
                 if (geoObject instanceof GeoCluster) {
@@ -2290,7 +2247,7 @@
 
         getClusterPoints: function(geoObject, async) {
             var url       = this.restUrl + '/clusters/',
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = false;
 
             if (geoObject.objectId) {
@@ -2357,7 +2314,7 @@
                 throw new Error('Category name is required.');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var result = Backendless._ajax({
@@ -2371,7 +2328,7 @@
         },
 
         getCategories: function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -2387,7 +2344,7 @@
                 throw new Error('Category name is required.');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var result = {};
 
@@ -2415,7 +2372,7 @@
             }
 
             var pointId   = Utils.isString(point) ? point : point.objectId,
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 result = {};
 
@@ -2461,7 +2418,7 @@
                 throw new Error("Method argument must be a valid instance of GeoPoint persisted on the server");
             }
 
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 data      = {
                     method      : 'POST',
@@ -2952,7 +2909,7 @@
 
     PollingProxy.prototype = new Proxy();
 
-    deepExtend(PollingProxy.prototype, {
+    Utils.deepExtend(PollingProxy.prototype, {
         onMessage: function(data) {
             clearTimeout(this.timeout);
             var self = this;
@@ -3033,7 +2990,7 @@
 
     SocketProxy.prototype = new Proxy();
 
-    deepExtend(SocketProxy.prototype, {
+    Utils.deepExtend(SocketProxy.prototype, {
         onMessage    : function() {
             this.fireEvent('messageReceived', data);
         },
@@ -3062,7 +3019,7 @@
 
     Subscription.prototype = {
         _subscribe        : function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var self = this;
 
@@ -3133,7 +3090,7 @@
 
     Messaging.prototype = {
         _getProperties  : function(channelName, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var props = this.channelProperties[channelName];
@@ -3158,7 +3115,7 @@
             return result;
         },
         subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (isAsync) {
@@ -3191,7 +3148,7 @@
             }
         },
         publish         : function(channelName, message, publishOptions, deliveryTarget, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var data = {
@@ -3203,7 +3160,7 @@
                     throw "Use PublishOption as publishOptions argument";
                 }
 
-                deepExtend(data, publishOptions);
+                Utils.deepExtend(data, publishOptions);
             }
 
             if (deliveryTarget) {
@@ -3211,7 +3168,7 @@
                     throw "Use DeliveryOptions as deliveryTarget argument";
                 }
 
-                deepExtend(data, deliveryTarget);
+                Utils.deepExtend(data, deliveryTarget);
             }
 
             return Backendless._ajax({
@@ -3223,7 +3180,7 @@
             });
         },
         sendEmail       : function(subject, bodyParts, recipients, attachments, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var data = {};
 
@@ -3276,7 +3233,7 @@
         },
 
         registerDevice  : function(channels, expiration, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var device = isBrowser ? window.device : NodeDevice;
 
@@ -3326,7 +3283,7 @@
 
         getRegistrations: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -3339,7 +3296,7 @@
 
         unregisterDevice: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var result = Backendless._ajax({
@@ -3530,7 +3487,7 @@
         },
 
         sendRequest: function(type, url, permissionType, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 data      = {
                     "permission": permissionType
@@ -3663,7 +3620,7 @@
         },
 
         listing   : function(path, pattern, recursively, pagesize, offset, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 url       = this.restUrl + '/' + path;
 
@@ -3739,7 +3696,7 @@
         },
 
         _doAction : function(actionType, parameters, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -3752,7 +3709,7 @@
         },
 
         remove    : function(fileURL, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var url = fileURL.indexOf("http://") === 0 || fileURL.indexOf("https://") === 0 ? fileURL : this.restUrl + '/' + fileURL;
 
@@ -3769,7 +3726,7 @@
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
 
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 url       = this.restUrl + '/exists/' + path;
 
@@ -3782,7 +3739,7 @@
         },
 
         removeDirectory: function(path, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -3809,11 +3766,11 @@
             }
         }
 
-        var responder = extractResponder(arguments),
+        var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
 
         if (responder) {
-            responder = wrapAsync(responder);
+            responder = Utils.wrapAsync(responder);
         }
 
         return Backendless._ajax({
@@ -3835,11 +3792,11 @@
             }
         }
 
-        var responder = extractResponder(arguments),
+        var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
 
         if (responder) {
-            responder = wrapAsync(responder);
+            responder = Utils.wrapAsync(responder);
         }
 
         return Backendless._ajax({
@@ -3861,11 +3818,11 @@
             }
         }
 
-        var responder = extractResponder(arguments),
+        var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
 
         if (responder) {
-            responder = wrapAsync(responder);
+            responder = Utils.wrapAsync(responder);
         }
 
         return Backendless._ajax({
@@ -3887,11 +3844,11 @@
 
         eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
 
-        var responder = extractResponder(arguments),
+        var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
 
         if (responder) {
-            responder = wrapAsync(responder);
+            responder = Utils.wrapAsync(responder);
         }
 
         eventArgs = eventArgs instanceof Backendless.Async ? {} : eventArgs;
@@ -3930,14 +3887,14 @@
             }
 
             if (Utils.isObject(value) && value.constructor !== Object) {
-                value.___class = value.___class || getClassName.call(value);
+                value.___class = value.___class || Utils.getClassName(value);
             }
 
-            var responder = extractResponder([async]), isAsync = false;
+            var responder = Utils.extractResponder([async]), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -3952,10 +3909,10 @@
         expireIn        : function(key, seconds, async) {
             if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
                 seconds = (Utils.isDate(seconds)) ? seconds.getTime() : seconds;
-                var responder = extractResponder(arguments), isAsync = false;
+                var responder = Utils.extractResponder(arguments), isAsync = false;
                 if (responder != null) {
                     isAsync = true;
-                    responder = wrapAsync(responder);
+                    responder = Utils.wrapAsync(responder);
                 }
 
                 return Backendless._ajax({
@@ -3973,10 +3930,10 @@
         expireAt        : function(key, timestamp, async) {
             if (Utils.isString(key) && (Utils.isNumber(timestamp) || Utils.isDate(timestamp)) && timestamp) {
                 timestamp = (Utils.isDate(timestamp)) ? timestamp.getTime() : timestamp;
-                var responder = extractResponder(arguments), isAsync = false;
+                var responder = Utils.extractResponder(arguments), isAsync = false;
                 if (responder != null) {
                     isAsync = true;
-                    responder = wrapAsync(responder);
+                    responder = Utils.wrapAsync(responder);
                 }
 
                 return Backendless._ajax({
@@ -3996,11 +3953,11 @@
                 throw new Error('The "key" argument must be String');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4034,11 +3991,11 @@
                 return result;
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, parseResult, this);
+                responder = Utils.wrapAsync(responder, parseResult, this);
             }
 
             var result = Backendless._ajax({
@@ -4090,11 +4047,11 @@
         },
 
         implementMethod         : function(method, urlPart, async) {
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4138,11 +4095,11 @@
         get                     : function(counterName, async) {
             this.counterNameValidation(counterName, async);
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4162,11 +4119,11 @@
                 throw new Error('Invalid value for the "value" argument. The argument must contain only numeric values');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4200,11 +4157,11 @@
                 throw new Error('Missing value for the "expected" and/or "updated" arguments. The arguments must contain a numeric value');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4268,7 +4225,7 @@
         },
 
         flush: function() {
-            var async = extractResponder(arguments);
+            var async = Utils.extractResponder(arguments);
 
             if (this.logInfo.length) {
                 this.flushInterval && clearTimeout(this.flushInterval);
@@ -4374,7 +4331,7 @@
 
     CustomServices.prototype = {
         invoke: function(serviceName, serviceVersion, method, parameters, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             return Backendless._ajax({
