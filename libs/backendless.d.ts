@@ -131,8 +131,8 @@ declare module __Backendless {
     }
 
     /**
-     * @public
-     * @class Backendless.DataQuery
+     * @private
+     * @class DataQuery
      * @constructor
      */
     class DataQuery implements Backendless.DataQueryValueI {
@@ -142,6 +142,52 @@ declare module __Backendless {
         url:string;
 
         addProperty(prop:string):void;
+        setOption(name:string, value:string|Array<string>|number):void;
+        setOptions(options:Object):void;
+        getOption(name:string):string|Array<string>|number;
+        toJSON():Object;
+    }
+
+    /**
+     * @public
+     * @class Backendless.DataQueryBuilder
+     * @constructor
+     */
+    class DataQueryBuilder {
+        static create():Backendless.DataQueryBuilder;
+
+        setPageSize(pageSize:number):Backendless.DataQueryBuilder;
+        setOffset(offset:number):Backendless.DataQueryBuilder;
+        prepareNextPage():Backendless.DataQueryBuilder;
+        preparePreviousPage():Backendless.DataQueryBuilder;
+        getProperties():Array<string>;
+        setProperties(properties:string):Backendless.DataQueryBuilder;
+        addProperty(properties:string):Backendless.DataQueryBuilder;
+        getWhereClause():string;
+        setWhereClause(whereClause:string):Backendless.DataQueryBuilder;
+        getSortBy():Array<string>;
+        setSortBy(sortBy:string|Array<string>):Backendless.DataQueryBuilder;
+        getRelated():Array<string>;
+        setRelated(relations:string|Array<string>):Backendless.DataQueryBuilder;
+        getRelationsDepth():number;
+        setRelationsDepth(relationsDepth:number):Backendless.DataQueryBuilder;
+        build():Backendless.DataQueryValueI;
+    }
+
+    /**
+     * @private
+     * @class PagingQueryBuilder
+     * @constructor
+     */
+    class PagingQueryBuilder {
+        offset:number;
+        pageSize:number;
+
+        setPageSize(pageSize:number):PagingQueryBuilder;
+        setOffset(offset:number):PagingQueryBuilder;
+        prepareNextPage():PagingQueryBuilder;
+        preparePreviousPage():PagingQueryBuilder;
+        build():Object;
     }
 
     /**
@@ -329,28 +375,28 @@ declare module __Backendless {
 
         find():Array<Object>;
         find(async:Backendless.Async):XMLHttpRequest;
-        find(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Array<Object>;
-        find(id:Backendless.DataQuery|Backendless.DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
+        find(obj:Backendless.DataQueryBuilder):Array<Object>;
+        find(obj:Backendless.DataQueryBuilder, async:Backendless.Async):XMLHttpRequest;
         find<Promise>():Promise;
-        find<Promise>(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Promise;
+        find<Promise>(obj:Backendless.DataQueryBuilder):Promise;
 
-        findById(query:Backendless.DataQuery|DataQueryValueI|string):Object;
-        findById(query:Backendless.DataQuery|DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
-        findById<Promise>(query:Backendless.DataQuery|DataQueryValueI|string):Promise;
+        findById(query:DataQueryValueI|string):Object;
+        findById(query:DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
+        findById<Promise>(query:DataQueryValueI|string):Promise;
 
         findFirst():Object;
         findFirst(async:Backendless.Async):XMLHttpRequest;
-        findFirst(query:Backendless.DataQuery|DataQueryValueI):Object;
-        findFirst(query:Backendless.DataQuery|DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
+        findFirst(query:DataQueryValueI):Object;
+        findFirst(query:DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
         findFirst<Promise>():Promise;
-        findFirst<Promise>(query:Backendless.DataQuery|DataQueryValueI):Promise;
+        findFirst<Promise>(query:DataQueryValueI):Promise;
 
         findLast():Object;
         findLast(async:Backendless.Async):XMLHttpRequest;
-        findLast(query:Backendless.DataQuery|DataQueryValueI):Object;
-        findLast(query:Backendless.DataQuery|DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
+        findLast(query:DataQueryValueI):Object;
+        findLast(query:DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
         findLast<Promise>():Promise;
-        findLast<Promise>(query:Backendless.DataQuery|DataQueryValueI):Promise;
+        findLast<Promise>(query:DataQueryValueI):Promise;
 
         loadRelations(query:Backendless.DataQuery|DataQueryValueI|string):void;
         loadRelations(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):void;
