@@ -41,11 +41,6 @@ declare module __Backendless {
     function enablePromises():void;
 
     /**
-     * @namespace Backendless.Utils
-     **/
-    var Utils:Backendless.UtilsI;
-
-    /**
      * @namespace Backendless.LocalCache
      **/
     var LocalCache:Backendless.LocalCacheI;
@@ -193,24 +188,6 @@ declare module __Backendless {
         prepareNextPage():PagingQueryBuilder;
         preparePreviousPage():PagingQueryBuilder;
         build():Object;
-    }
-
-    /**
-     * @public
-     * @class Backendless.LoadRelationsQueryBuilder
-     * @constructor
-     */
-
-    class LoadRelationsQueryBuilder {
-        static create():Backendless.LoadRelationsQueryBuilder;
-        static of(RelationModel:Object):Backendless.LoadRelationsQueryBuilder;
-
-        setRelationName(relationName:string):Backendless.LoadRelationsQueryBuilder;
-        setPageSize(pageSize:number):Backendless.LoadRelationsQueryBuilder;
-        setOffset(offset:number):Backendless.LoadRelationsQueryBuilder;
-        prepareNextPage():Backendless.LoadRelationsQueryBuilder;
-        preparePreviousPage():Backendless.LoadRelationsQueryBuilder;
-        build():Backendless.DataQueryValueI;
     }
 
     /**
@@ -1028,31 +1005,6 @@ declare module __Backendless {
 
         resendEmailConfirmation(email:string, async?:Backendless.Async):XMLHttpRequest;
         resendEmailConfirmation<Promise>(email:string):Promise;
-    }
-
-
-    interface UtilsI {
-        isObject(value:any):boolean;
-
-        isString(value:any):boolean;
-
-        isNumber(value:any):boolean;
-
-        isFunction(value:any):boolean;
-
-        isBoolean(value:any):boolean;
-
-        isDate(value:any):boolean;
-
-        isArray(value:any):boolean;
-
-        isEmpty(value:any):boolean;
-
-        addEvent(eventName:string, domElement:HTMLElement, callback:(ev:Event) => any):void;
-
-        removeEvent(eventName:string, domElement:HTMLElement):void;
-
-        forEach(object:Object, iterator:(value:any, key:any, obj:Object) => any, context:Object):void;
     }
 
     interface LoggingI {

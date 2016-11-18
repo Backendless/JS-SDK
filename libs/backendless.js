@@ -1,4 +1,4 @@
-// Backendless.js 3.1.18
+// Backendless.js 4.0.0
 
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
@@ -38,47 +38,13 @@
         emptyFn     = (function() {
         });
 
-    Backendless.VERSION = '3.1.18';
+    Backendless.VERSION = '4.0.0';
     Backendless.serverURL = 'https://api.backendless.com';
-
-    Backendless.DEFAULTS = {
-        pageSize: 10,
-        offset: 0
-    };
 
     Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
         return this;
     };
-
-    if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function(searchElement, fromIndex) {
-            var k;
-            if (this == null) {
-                throw new TypeError('"this" is null or not defined');
-            }
-            var O = Object(this);
-            var len = O.length >>> 0;
-            if (len === 0) {
-                return -1;
-            }
-            var n = +fromIndex || 0;
-            if (Math.abs(n) === Infinity) {
-                n = 0;
-            }
-            if (n >= len) {
-                return -1;
-            }
-            k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
-            while (k < len) {
-                if (k in O && O[k] === searchElement) {
-                    return k;
-                }
-                k++;
-            }
-            return -1;
-        };
-    }
 
     initXHR();
 
@@ -113,7 +79,7 @@
 
     Backendless.browser = browser;
 
-    var Utils = Backendless.Utils = {
+    var Utils = {
         isObject  : function(obj) {
             return obj === Object(obj);
         },
@@ -190,51 +156,20 @@
     };
 
     /**
-     * @param {Array} array
-     * @param {function|string} iteratee
-     * @returns {Array}
+     * Create http query string
+     * @param params {Object} - map of params
+     * @returns {string}
      */
-    Utils.map = function(array, iteratee) {
+    Utils.toQueryParams = function(params) {
         var result = [];
-        var item;
 
-        if (Utils.isArray(array)) {
-            for (var i = 0; i < array.length; i++) {
-                item = array[i];
-
-                if (Utils.isFunction(iteratee)) {
-                    item = iteratee(item);
-                } else if (Utils.isString(iteratee) && Utils.isObject(item)) {
-                    item = item[iteratee];
-                }
-
-                result.push(item);
+        for (var key in params) {
+            if (params.hasOwnProperty(key)) {
+               result.push(key + '=' + encodeURIComponent(params[key]));
             }
         }
 
-        return result;
-    };
-
-    /**
-     * @param {string} errorMessage
-     */
-    Utils.throwError = function(errorMessage) {
-        if (errorMessage) {
-            throw new Error(errorMessage);
-        }
-    };
-
-    /**
-     * @param {stirng} url
-     * @param {string} whereClause
-     * @returns {string}
-     */
-    Utils.addWhereClause = function(url, whereClause) {
-        if (whereClause) {
-            url += '?where=' + encodeURIComponent(whereClause);
-        }
-
-        return url;
+        return result.join('&');
     };
 
     /**
@@ -262,6 +197,170 @@
         return uri;
     };
 
+    /**
+     * Parse JSON if it possible if not returns the input parameter
+     * @param s
+     * @returns {*}
+     */
+
+    Utils.tryParseJSON = function(s) {
+        try {
+            return typeof s === 'string' ? JSON.parse(s) : s;
+        } catch (e) {
+            return s;
+        }
+    };
+
+    /**
+     * Returns the class name of instance
+     * @param obj
+     * @returns {string}
+     */
+
+    Utils.getClassName = function(obj) {
+        if (obj.prototype && obj.prototype.___class) {
+            return obj.prototype.___class;
+        }
+
+        if (Utils.isFunction(obj) && obj.name) {
+            return obj.name;
+        }
+
+        var instStringified = (Utils.isFunction(obj) ? obj.toString() : obj.constructor.toString()),
+            results         = instStringified.match(/function\s+(\w+)/);
+
+        return (results && results.length > 1) ? results[1] : '';
+    };
+
+    /**
+     * Transform array to encoded string
+     * @param arr
+     * @returns {string}
+     */
+    Utils.encodeArrayToUriComponent = function(arr) {
+        var props = [], i, len;
+        for (i = 0, len = arr.length; i < len; ++i) {
+            props.push(encodeURIComponent(arr[i]));
+        }
+
+        return props.join(',');
+    };
+
+    /**
+     *
+     * @param obj
+     * @returns {*}
+     */
+    Utils.classWrapper = function(obj) {
+        var wrapper = function(obj) {
+            var wrapperName = null,
+                Wrapper = null;
+
+            for (var property in obj) {
+                if (obj.hasOwnProperty(property)) {
+                    if (property === "___class") {
+                        wrapperName = obj[property];
+                        break;
+                    }
+                }
+            }
+
+            if (wrapperName) {
+                try {
+                    Wrapper = eval(wrapperName);
+                    obj = Utils.deepExtend(new Wrapper(), obj);
+                } catch (e) {
+                }
+            }
+
+            return obj;
+        };
+
+        if (Utils.isObject(obj) && obj != null) {
+            if (Utils.isArray(obj)) {
+                for (var i = obj.length; i--;) {
+                    obj[i] = wrapper(obj[i]);
+                }
+            } else {
+                obj = wrapper(obj);
+            }
+        }
+
+        return obj;
+    };
+
+    /**
+     *
+     * @param destination
+     * @param source
+     * @returns {*}
+     */
+
+    Utils.deepExtend = function(destination, source) {
+        for (var property in source) {
+            if (source[property] !== undefined && source.hasOwnProperty(property)) {
+                destination[property] = destination[property] || {};
+                destination[property] = Utils.classWrapper(source[property]);
+                if (destination[property] && destination[property].hasOwnProperty(property) && destination[property][property] && destination[property][property].hasOwnProperty("__originSubID")) {
+                    destination[property][property] = Utils.classWrapper(destination[property]);
+                }
+            }
+        }
+
+        return destination;
+    };
+
+    /**
+     *
+     * @param obj
+     * @returns {Objetc\Array}
+     */
+
+    Utils.cloneObject = function(obj) {
+        return Utils.isArray(obj) ? obj.slice() : Utils.deepExtend({}, obj);
+    };
+
+    /**
+     * extracts Async object from arguments
+     * @param args
+     * @returns {*}
+     */
+
+    Utils.extractResponder = function(args) {
+        var i, len;
+        for (i = 0, len = args.length; i < len; ++i) {
+            if (args[i] instanceof Async) {
+                return args[i];
+            }
+        }
+
+        return null;
+    };
+
+    /**
+     * wrap Async chandlers to apply custom parse logic
+     * @param async
+     * @param parser
+     * @param context
+     * @returns {Async}
+     */
+
+    Utils.wrapAsync = function(async, parser, context) {
+        var success = function(data) {
+            if (parser) {
+                data = parser.call(context, data);
+            }
+
+            async.success(data);
+        };
+
+        var error = function(data) {
+            async.fault(data);
+        };
+
+        return new Async(success, error);
+    };
+
     function initXHR() {
         try {
             if (typeof XMLHttpRequest.prototype.sendAsBinary == 'undefined') {
@@ -276,14 +375,6 @@
             }
         }
         catch (e) {
-        }
-    }
-
-    function tryParseJSON(s) {
-        try {
-            return typeof s === 'string' ? JSON.parse(s) : s;
-        } catch (e) {
-            return s;
         }
     }
 
@@ -368,7 +459,7 @@
                     var result = true;
 
                     if (xhr.responseText) {
-                        result = tryParseJSON(xhr.responseText);
+                        result = Utils.tryParseJSON(xhr.responseText);
                     }
 
                     return result;
@@ -390,7 +481,7 @@
                 };
 
                 var cacheHandler = function(response) {
-                    response = cloneObject(response);
+                    response = Utils.cloneObject(response);
                     if (config.method == 'GET' && config.cacheActive) {
                         response.cachePolicy = config.cachePolicy;
                         Backendless.LocalCache.set(config.urlBlueprint, response);
@@ -514,7 +605,7 @@
                     var contentType = res.headers['content-type'];
 
                     if (buffer !== undefined && contentType && contentType.indexOf('application/json') !== -1) {
-                        buffer = tryParseJSON(buffer);
+                        buffer = Utils.tryParseJSON(buffer);
                     }
 
                     callback(buffer);
@@ -532,113 +623,6 @@
     };
 
     Backendless._ajax = isBrowser ? Backendless._ajax_for_browser : Backendless._ajax_for_nodejs;
-
-    var getClassName = function() {
-        if (this.prototype && this.prototype.___class) {
-            return this.prototype.___class;
-        }
-
-        if (Utils.isFunction(this) && this.name) {
-            return this.name;
-        }
-
-        var instStringified = (Utils.isFunction(this) ? this.toString() : this.constructor.toString()),
-            results         = instStringified.match(/function\s+(\w+)/);
-
-        return (results && results.length > 1) ? results[1] : '';
-    };
-
-    var encodeArrayToUriComponent = function(arr) {
-        var props = [], i, len;
-        for (i = 0, len = arr.length; i < len; ++i) {
-            props.push(encodeURIComponent(arr[i]));
-        }
-
-        return props.join(',');
-    };
-
-    var classWrapper = function(obj) {
-        var wrapper = function(obj) {
-            var wrapperName = null,
-                Wrapper = null;
-
-            for (var property in obj) {
-                if (obj.hasOwnProperty(property)) {
-                    if (property === "___class") {
-                        wrapperName = obj[property];
-                        break;
-                    }
-                }
-            }
-
-            if (wrapperName) {
-                try {
-                    Wrapper = eval(wrapperName);
-                    obj = deepExtend(new Wrapper(), obj);
-                } catch (e) {
-                }
-            }
-
-            return obj;
-        };
-
-        if (Utils.isObject(obj) && obj != null) {
-            if (Utils.isArray(obj)) {
-                for (var i = obj.length; i--;) {
-                    obj[i] = wrapper(obj[i]);
-                }
-            } else {
-                obj = wrapper(obj);
-            }
-        }
-
-        return obj;
-    };
-
-    var deepExtend = function(destination, source) {
-        for (var property in source) {
-            if (source[property] !== undefined && source.hasOwnProperty(property)) {
-                destination[property] = destination[property] || {};
-                destination[property] = classWrapper(source[property]);
-                if (destination[property] && destination[property].hasOwnProperty(property) && destination[property][property] && destination[property][property].hasOwnProperty("__originSubID")) {
-                    destination[property][property] = classWrapper(destination[property]);
-                }
-            }
-        }
-
-        return destination;
-    };
-
-    var cloneObject = function(obj) {
-        return Utils.isArray(obj) ? obj.slice() : deepExtend({}, obj);
-    };
-
-    var extractResponder = function(args) {
-        var i, len;
-        for (i = 0, len = args.length; i < len; ++i) {
-            if (args[i] instanceof Async) {
-                return args[i];
-            }
-        }
-
-        return null;
-    };
-
-    var wrapAsync = function(async, parser, context) {
-        var success = function(data) {
-            if (parser) {
-                data = parser.call(context, data);
-            }
-
-            async.success(data);
-        };
-
-        var error = function(data) {
-            async.fault(data);
-        };
-
-        return new Async(success, error);
-    };
 
     function Async(successCallback, faultCallback, context) {
         if (!(faultCallback instanceof Function)) {
@@ -895,7 +879,7 @@
         this.model = Utils.isString(model) ? function() {
         } : model;
 
-        this.className = getClassName.call(model);
+        this.className = Utils.getClassName(model);
 
         if ((typeof model).toLowerCase() === "string") {
             this.className = model;
@@ -933,7 +917,7 @@
                 if (Utils.isString(options.sortBy)) {
                     params.push('sortBy=' + encodeURIComponent(options.sortBy));
                 } else if (Utils.isArray(options.sortBy)) {
-                    params.push('sortBy=' + encodeArrayToUriComponent(options.sortBy));
+                    params.push('sortBy=' + Utils.encodeArrayToUriComponent(options.sortBy));
                 }
             }
 
@@ -945,7 +929,7 @@
 
             if (options.relations) {
                 if (Utils.isArray(options.relations)) {
-                    params.push('loadRelations=' + (options.relations.length ? encodeArrayToUriComponent(options.relations) : "*"));
+                    params.push('loadRelations=' + (options.relations.length ? Utils.encodeArrayToUriComponent(options.relations) : "*"));
                 }
             }
 
@@ -956,7 +940,7 @@
             response = response.fields || response;
             item = new _Model();
 
-            deepExtend(item, response);
+            Utils.deepExtend(item, response);
             return this._formCircDeps(item);
         },
 
@@ -969,11 +953,11 @@
 
                 response  = response.fields || response;
 
-                return deepExtend(item, response);
+                return Utils.deepExtend(item, response);
             };
 
             if (Utils.isArray(response)) {
-                result = Utils.map(response, sanitizeResponseItem);
+                result = response.map(sanitizeResponseItem);
             } else {
                 result = sanitizeResponseItem(response);
             }
@@ -983,11 +967,11 @@
 
         _load: function(url, async) {
             if (url) {
-                var responder = extractResponder(arguments), isAsync = false;
+                var responder = Utils.extractResponder(arguments), isAsync = false;
 
                 if (responder != null) {
                     isAsync = true;
-                    responder = wrapAsync(responder, this._parseResponse, this);
+                    responder = Utils.wrapAsync(responder, this._parseResponse, this);
                 }
 
                 var result = Backendless._ajax({
@@ -1065,7 +1049,7 @@
 
         _save: function(obj, async) {
             this._replCircDeps(obj);
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = false,
                 method    = 'PUT',
                 url       = this.restUrl,
@@ -1073,7 +1057,7 @@
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, this._parseResponse, this);
+                responder = Utils.wrapAsync(responder, this._parseResponse, this);
             }
 
             var result = Backendless._ajax({
@@ -1085,7 +1069,7 @@
             });
 
             if (!isAsync) {
-                deepExtend(objRef, this._parseResponse(result));
+                Utils.deepExtend(objRef, this._parseResponse(result));
             }
 
             return isAsync ? result : objRef;
@@ -1100,11 +1084,11 @@
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, this._parseResponse, this);
+                responder = Utils.wrapAsync(responder, this._parseResponse, this);
             }
 
             var result;
@@ -1135,7 +1119,7 @@
         findSync: synchronized('_find'),
 
         _find: function(queryBuilder) {
-            Utils.throwError(this._validateFindArguments(arguments));
+            this._validateFindArguments(arguments);
 
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
@@ -1177,12 +1161,12 @@
                 options,
                 query     = [],
                 url       = this.restUrl,
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 result;
 
             if (dataQuery.properties && dataQuery.properties.length) {
-                props = 'props=' + encodeArrayToUriComponent(dataQuery.properties);
+                props = 'props=' + Utils.encodeArrayToUriComponent(dataQuery.properties);
             }
 
             if (dataQuery.condition) {
@@ -1192,8 +1176,7 @@
             if (dataQuery.options) {
                 options = this._extractQueryOptions(dataQuery.options);
             }
-
-            responder != null && (responder = wrapAsync(responder, this._parseFindResponse, this));
+            responder != null && (responder = Utils.wrapAsync(responder, this._parseFindResponse, this));
             options && query.push(options);
             whereClause && query.push(whereClause);
             props && query.push(props);
@@ -1265,7 +1248,7 @@
                 return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
-                var responder = extractResponder(arguments),
+                var responder = Utils.extractResponder(arguments),
                     url       = this.restUrl,
                     isAsync   = responder != null,
                     send      = "/pk?";
@@ -1274,11 +1257,11 @@
                     send += key + '=' + argsObj[key] + '&';
                 }
 
-                responder != null && (responder = wrapAsync(responder, this._parseResponse, this));
+                responder != null && (responder = Utils.wrapAsync(responder, this._parseResponse, this));
 
                 var result;
 
-                if (getClassName.call(arguments[0]) == 'Object') {
+                if (Utils.getClassName(arguments[0]) == 'Object') {
                     result = Backendless._ajax({
                         method      : 'GET',
                         url         : url + send.replace(/&$/, ""),
@@ -1413,7 +1396,7 @@
             dataQuery = dataQuery || {};
 
             var url       = this.restUrl + '/count';
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync   = responder != null;
 
             if (dataQuery.condition) {
@@ -1742,7 +1725,7 @@
 
         _manageRelation: function(method, args) {
             var relation = this._formRelationObject(args);
-            var responder = extractResponder(args);
+            var responder = Utils.extractResponder(args);
             var validationError = this._validateRelationObject(relation);
 
             if (validationError) {
@@ -1774,7 +1757,7 @@
         saveSync: synchronized('_save'),
 
         _save: function(className, obj, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
 
             if (Utils.isString(className)) {
@@ -1798,7 +1781,7 @@
         getViewSync: synchronized('_getView'),
 
         _getView: function(viewName, whereClause, pageSize, offset, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             if (Utils.isString(viewName)) {
@@ -1840,7 +1823,7 @@
         callStoredProcedureSync: synchronized('_callStoredProcedure'),
 
         _callStoredProcedure: function(spName, argumentValues, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             if (Utils.isString(spName)) {
@@ -1871,7 +1854,7 @@
                 }
                 tableName = model;
             } else {
-                tableName = getClassName.call(model);
+                tableName = Utils.getClassName(model);
             }
             var store = dataStoreCache[tableName];
             if (!store) {
@@ -1888,7 +1871,7 @@
 
         _describe: function(className, async) {
             className = Utils.isString(className) ? className : getClassName.call(className);
-            var responder = extractResponder(arguments), isAsync = (responder != null);
+            var responder = Utils.extractResponder(arguments), isAsync = (responder != null);
 
             return Backendless._ajax({
                 method      : 'GET',
@@ -2046,7 +2029,7 @@
     UserService.prototype = {
         _wrapAsync: function(async, stayLoggedIn) {
             var me   = this, success = function(data) {
-                currentUser = me._parseResponse(tryParseJSON(data), stayLoggedIn);
+                currentUser = me._parseResponse(Utils.tryParseJSON(data), stayLoggedIn);
                 async.success(me._getUserFromResponse(currentUser));
             }, error = function(data) {
                 async.fault(data);
@@ -2057,7 +2040,7 @@
 
         _parseResponse: function(data, stayLoggedIn) {
             var user = new Backendless.User();
-            deepExtend(user, data);
+            Utils.deepExtend(user, data);
 
             if (stayLoggedIn) {
                 Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
@@ -2075,7 +2058,7 @@
                 throw new Error('Only Backendless.User accepted');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -2098,7 +2081,7 @@
         getUserRolesSync: synchronized('_getUserRoles'),
 
         _getUserRoles: function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -2124,7 +2107,7 @@
                 throw new Error('Rolename can not be empty');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
 
             return Backendless._ajax({
                 method      : 'POST',
@@ -2170,7 +2153,7 @@
             Backendless.LocalCache.remove("current-user-id");
             Backendless.LocalCache.set("stayLoggedIn", false);
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -2227,7 +2210,7 @@
         describeUserClassSync: synchronized('_describeUserClass'),
 
         _describeUserClass: function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -2246,7 +2229,7 @@
             if (!emailAddress) {
                 throw 'Username can not be empty';
             }
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -2262,7 +2245,7 @@
         logoutSync: synchronized('_logout'),
 
         _logout: function(async) {
-            var responder       = extractResponder(arguments),
+            var responder       = Utils.extractResponder(arguments),
                 isAsync         = responder != null,
                 errorCallback   = isAsync ? responder.fault : null,
                 successCallback = isAsync ? responder.success : null,
@@ -2340,7 +2323,7 @@
         updateSync: synchronized('_update'),
 
         _update: function(user, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (responder) {
@@ -2563,7 +2546,7 @@
 
         _isValidLogin: function(async) {
             var userToken = Backendless.LocalCache.get("user-token");
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
 
             if (userToken) {
@@ -2606,7 +2589,7 @@
             if(!emailAddress || emailAddress instanceof Async) {
                 throw "Email cannot be empty";
             }
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
 
             return Backendless._ajax({
@@ -2633,7 +2616,7 @@
         },
 
         _load           : function(url, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             return Backendless._ajax({
@@ -2668,7 +2651,7 @@
             },
             'categories': function(arg) {
                 arg = Utils.isString(arg) ? [arg] : arg;
-                return 'categories=' + encodeArrayToUriComponent(arg);
+                return 'categories=' + Utils.encodeArrayToUriComponent(arg);
             },
             'includeMetadata': function(arg) {
                 return 'includemetadata=' + arg;
@@ -2756,7 +2739,7 @@
                 url += '/' + objectId;
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var responderOverride = function(async) {
                 var success = function(data) {
@@ -2795,7 +2778,7 @@
         },
 
         _findUtil        : function(query, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = false;
 
             var url = query.url + (query.searchRectangle ? '/rect' : '/points') + this._buildUrlQueryParams(query);
@@ -2859,7 +2842,7 @@
 
         _loadMetadata    : function(geoObject, async) {
             var url       = this.restUrl + '/points/',
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = false;
             if (geoObject.objectId) {
                 if (geoObject instanceof GeoCluster) {
@@ -2901,7 +2884,7 @@
 
         _getClusterPoints: function(geoObject, async) {
             var url       = this.restUrl + '/clusters/',
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = false;
 
             if (geoObject.objectId) {
@@ -2976,7 +2959,7 @@
                 throw new Error('Category name is required.');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var result = Backendless._ajax({
@@ -2994,7 +2977,7 @@
         getCategorySync: synchronized('_getCategories'),
 
         _getCategories: function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -3014,7 +2997,7 @@
                 throw new Error('Category name is required.');
             }
 
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var result = {};
 
@@ -3046,7 +3029,7 @@
             }
 
             var pointId   = Utils.isString(point) ? point : point.objectId,
-                responder = extractResponder(arguments),
+                responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 result = {};
 
@@ -3169,7 +3152,7 @@
                 throw new Error("Method argument must be a valid instance of GeoPoint persisted on the server");
             }
 
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 data      = {
                     method      : 'POST',
@@ -3680,7 +3663,7 @@
 
     PollingProxy.prototype = new Proxy();
 
-    deepExtend(PollingProxy.prototype, {
+    Utils.deepExtend(PollingProxy.prototype, {
         onMessage: function(data) {
             clearTimeout(this.timeout);
             var self = this;
@@ -3761,7 +3744,7 @@
 
     SocketProxy.prototype = new Proxy();
 
-    deepExtend(SocketProxy.prototype, {
+    Utils.deepExtend(SocketProxy.prototype, {
         onMessage    : function() {
             this.fireEvent('messageReceived', data);
         },
@@ -3790,7 +3773,7 @@
 
     Subscription.prototype = {
         _subscribe        : function(async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var self = this;
 
@@ -3861,7 +3844,7 @@
 
     Messaging.prototype = {
         _getProperties  : function(channelName, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var props = this.channelProperties[channelName];
@@ -3891,7 +3874,7 @@
         subscribeSync: synchronized('_subscribe'),
 
         _subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (isAsync) {
@@ -3929,7 +3912,7 @@
         publishSync: synchronized('_publish'),
 
         _publish         : function(channelName, message, publishOptions, deliveryTarget, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var data = {
@@ -3941,7 +3924,7 @@
                     throw "Use PublishOption as publishOptions argument";
                 }
 
-                deepExtend(data, publishOptions);
+                Utils.deepExtend(data, publishOptions);
             }
 
             if (deliveryTarget) {
@@ -3949,7 +3932,7 @@
                     throw "Use DeliveryOptions as deliveryTarget argument";
                 }
 
-                deepExtend(data, deliveryTarget);
+                Utils.deepExtend(data, deliveryTarget);
             }
 
             return Backendless._ajax({
@@ -3966,7 +3949,7 @@
         sendEmailSync: synchronized('_sendEmail'),
 
         _sendEmail       : function(subject, bodyParts, recipients, attachments, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var data = {};
 
@@ -4027,7 +4010,7 @@
         registerDeviceSync: synchronized('_registerDevice'),
 
         _registerDevice  : function(channels, expiration, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var device = isBrowser ? window.device : NodeDevice;
 
@@ -4081,7 +4064,7 @@
 
         _getRegistrations: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -4098,7 +4081,7 @@
 
         _unregisterDevice: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var result = Backendless._ajax({
@@ -4492,7 +4475,7 @@
         listingSync: synchronized('_listing'),
 
         _listing   : function(path, pattern, recursively, pagesize, offset, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 url       = this.restUrl + '/' + path;
 
@@ -4580,7 +4563,7 @@
         },
 
         _doAction : function(actionType, parameters, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
 
             return Backendless._ajax({
@@ -4597,7 +4580,7 @@
         removeSync: synchronized('_remove'),
 
         _remove    : function(fileURL, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var url = fileURL.indexOf("http://") === 0 || fileURL.indexOf("https://") === 0 ? fileURL : this.restUrl + '/' + fileURL;
 
@@ -4618,7 +4601,7 @@
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
 
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 url       = this.restUrl + '/' + path + '?action=exists';
 
@@ -4635,7 +4618,7 @@
         removeDirectorySync: synchronized('_removeDirectory'),
 
         _removeDirectory: function(path, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
@@ -4671,7 +4654,7 @@
         getFileCountSync: synchronized('_getFileCount'),
 
         _getFileCount: function(path, pattern, recursive, countDirectories, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
             var query = this._buildCountQueryObject(arguments, isAsync);
             var queryString = this._getQueryParamsString(query);
@@ -4770,12 +4753,12 @@
                 }
             }
 
-            var responder = extractResponder(arguments),
-                isAsync = responder != null;
+        var responder = Utils.extractResponder(arguments),
+            isAsync   = responder != null;
 
-            if (responder) {
-                responder = wrapAsync(responder);
-            }
+        if (responder) {
+            responder = Utils.wrapAsync(responder);
+        }
 
             return Backendless._ajax({
                 method: 'GET',
@@ -4800,12 +4783,12 @@
                 }
             }
 
-            var responder = extractResponder(arguments),
-                isAsync = responder != null;
+        var responder = Utils.extractResponder(arguments),
+            isAsync   = responder != null;
 
-            if (responder) {
-                responder = wrapAsync(responder);
-            }
+        if (responder) {
+            responder = Utils.wrapAsync(responder);
+        }
 
             return Backendless._ajax({
                 method: 'POST',
@@ -4830,12 +4813,12 @@
                 }
             }
 
-            var responder = extractResponder(arguments),
-                isAsync = responder != null;
+        var responder = Utils.extractResponder(arguments),
+            isAsync   = responder != null;
 
-            if (responder) {
-                responder = wrapAsync(responder);
-            }
+        if (responder) {
+            responder = Utils.wrapAsync(responder);
+        }
 
             return Backendless._ajax({
                 method: 'GET',
@@ -4862,12 +4845,12 @@
 
             eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
 
-            var responder = extractResponder(arguments),
-                isAsync = responder != null;
+        var responder = Utils.extractResponder(arguments),
+            isAsync   = responder != null;
 
-            if (responder) {
-                responder = wrapAsync(responder);
-            }
+        if (responder) {
+            responder = Utils.wrapAsync(responder);
+        }
 
             eventArgs = eventArgs instanceof Async ? {} : eventArgs;
 
@@ -4910,14 +4893,14 @@
             }
 
             if (Utils.isObject(value) && value.constructor !== Object) {
-                value.___class = value.___class || getClassName.call(value);
+                value.___class = value.___class || Utils.getClassName(value);
             }
 
-            var responder = extractResponder([async]), isAsync = false;
+            var responder = Utils.extractResponder([async]), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -4936,10 +4919,10 @@
         _expireIn: function (key, seconds, async) {
             if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
                 seconds = (Utils.isDate(seconds)) ? seconds.getTime() : seconds;
-                var responder = extractResponder(arguments), isAsync = false;
+                var responder = Utils.extractResponder(arguments), isAsync = false;
                 if (responder != null) {
                     isAsync = true;
-                    responder = wrapAsync(responder);
+                    responder = Utils.wrapAsync(responder);
                 }
 
                 return Backendless._ajax({
@@ -4961,10 +4944,10 @@
         _expireAt: function (key, timestamp, async) {
             if (Utils.isString(key) && (Utils.isNumber(timestamp) || Utils.isDate(timestamp)) && timestamp) {
                 timestamp = (Utils.isDate(timestamp)) ? timestamp.getTime() : timestamp;
-                var responder = extractResponder(arguments), isAsync = false;
+                var responder = Utils.extractResponder(arguments), isAsync = false;
                 if (responder != null) {
                     isAsync = true;
-                    responder = wrapAsync(responder);
+                    responder = Utils.wrapAsync(responder);
                 }
 
                 return Backendless._ajax({
@@ -4984,11 +4967,11 @@
                 throw new Error('The "key" argument must be String');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -5030,11 +5013,11 @@
                 return result;
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder, parseResult, this);
+                responder = Utils.wrapAsync(responder, parseResult, this);
             }
 
             var result = Backendless._ajax({
@@ -5079,11 +5062,11 @@
         },
 
         _implementMethod: function (method, urlPart, async) {
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -5103,11 +5086,11 @@
                 throw new Error('Invalid value for the "value" argument. The argument must contain only numeric values');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -5163,11 +5146,11 @@
         getSync: synchronized('_get'),
 
         _get: function (async) {
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -5207,11 +5190,11 @@
                 throw new Error('Missing value for the "expected" and/or "updated" arguments. The arguments must contain a numeric value');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
+            var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
                 isAsync = true;
-                responder = wrapAsync(responder);
+                responder = Utils.wrapAsync(responder);
             }
 
             return Backendless._ajax({
@@ -5274,7 +5257,7 @@
         flushSync: synchronized('_flush'),
 
         _flush: function() {
-            var async = extractResponder(arguments);
+            var async = Utils.extractResponder(arguments);
 
             if (this.logInfo.length) {
                 this.flushInterval && clearTimeout(this.flushInterval);
@@ -5384,7 +5367,7 @@
         invokeSync: synchronized('_invoke'),
 
         _invoke: function(serviceName, serviceVersion, method, parameters, async) {
-            var responder = extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             return Backendless._ajax({
@@ -5472,36 +5455,35 @@
 
         getOption: function(name) {
             return this.options && this.options[name];
-        },
-
-        toJSON: function () {
-            var result = {};
-
-            for (var key in this) {
-                if (this.hasOwnProperty(key)) {
-                    result[key] = this[key]
-                }
-            }
-
-            return result;
         }
     };
 
+    var PAGING_DEFAULTS = {
+        pageSize: 10,
+        offset: 0
+    };
+
     var PagingQueryBuilder = function() {
-        this.offset = Backendless.DEFAULTS.offset;
-        this.pageSize = Backendless.DEFAULTS.pageSize;
+        this.offset = PAGING_DEFAULTS.offset;
+        this.pageSize = PAGING_DEFAULTS.pageSize;
     };
 
     PagingQueryBuilder.prototype = {
         setPageSize: function(pageSize){
-            Utils.throwError(this.validatePageSize(pageSize));
+            if (pageSize <= 0) {
+                return 'Page size must be a positive value.';
+            }
+
             this.pageSize = pageSize;
 
             return this;
         },
 
         setOffset: function(offset){
-            Utils.throwError(this.validateOffset(offset));
+            if (offset < 0) {
+                throw new Error('Offset cannot have a negative value.');
+            }
+
             this.offset = offset;
 
             return this;
@@ -5519,18 +5501,6 @@
             this.setOffset(newOffset);
 
             return this;
-        },
-
-        validateOffset: function(offset) {
-            if (offset < 0) {
-                return 'Offset cannot have a negative value.';
-            }
-        },
-
-        validatePageSize: function(pageSize) {
-            if (pageSize <= 0) {
-                return 'Page size must be a positive value.';
-            }
         },
 
         build: function() {
@@ -5628,56 +5598,7 @@
         build: function(){
             this._query.setOptions(this._paging.build());
 
-            return this._query.toJSON();
-        }
-    };
-
-    var LoadRelationsQueryBuilder = function(RelationModel) {
-        this._query = new DataQuery();
-        this._query.relationModel = RelationModel;
-        this._paging = new PagingQueryBuilder();
-    };
-
-    LoadRelationsQueryBuilder.create = function() {
-       return  new LoadRelationsQueryBuilder();
-    };
-
-    LoadRelationsQueryBuilder.of = function(RelationModel) {
-        return  new LoadRelationsQueryBuilder(RelationModel);
-    };
-
-    LoadRelationsQueryBuilder.prototype = {
-        setRelationName: function(relationName) {
-            this._query.setOption('relationName', relationName);
-            return this;
-        },
-
-        setPageSize: function(pageSize){
-            this._paging.setPageSize(pageSize);
-            return this;
-        },
-
-        setOffset: function(offset){
-            this._paging.setOffset(offset);
-            return this;
-        },
-
-        prepareNextPage: function(){
-            this._paging.prepareNextPage();
-
-            return this;
-        },
-
-        preparePreviousPage: function(){
-            this._paging.preparePreviousPage();
-
-            return this;
-        },
-
-        build: function(){
-            this._query.setOptions(this._paging.build());
-
-            return this._query.toJSON();
+            return this._query;
         }
     };
 
