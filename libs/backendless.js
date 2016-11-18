@@ -1309,7 +1309,7 @@
 
             var dataQuery = queryBuilder.build();
             var relationModel = dataQuery.relationModel || null;
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
             var relationName = dataQuery.options.relationName;
             var query = this._extractQueryOptions(dataQuery.options);
@@ -3089,7 +3089,7 @@
         getGeopointCountSync: synchronized('_getGeopointCount'),
 
         _getGeopointCount: function (fenceName, query, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
             query = this._buildCountQueryObject(arguments, isAsync);
             var url = this.restUrl + '/count' + this._buildUrlQueryParams(query);
