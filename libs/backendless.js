@@ -1143,13 +1143,16 @@
             return this._findUtil(dataQuery, args.async);
         },
 
-        _validateFindArguments: function(args) {
+        _validateFindArguments: function (args) {
             if (args.length === 0) {
                 return;
             }
 
-            if (!(args[0] instanceof Backendless.DataQueryBuilder)) {
-                return 'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder';
+            if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Backendless.Async)) {
+                throw new Error(
+                    'Invalid find method argument. ' +
+                    'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
+                );
             }
         },
 
