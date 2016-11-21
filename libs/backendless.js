@@ -3805,7 +3805,7 @@
 
             var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
-                url       = this.restUrl + '/exists/' + path;
+                url       = this.restUrl + '/' + path + '?action=exists';
 
             return Backendless._ajax({
                 method      : 'GET',
