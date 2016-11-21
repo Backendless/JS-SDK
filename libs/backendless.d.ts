@@ -501,18 +501,13 @@ declare module __Backendless {
 
         of(model:string|Object|Function):Backendless.DataStore;
 
-        save(model:Backendless.DataStore|string, data:Object):Object;
-        save(model:Backendless.DataStore|string, data:Object, async:Backendless.Async):XMLHttpRequest;
-        save<Promise>(model:Backendless.DataStore|string, data:Object):Promise;
+        save(model:Backendless.DataStore|string, data:Object):Promise;
+        saveSync(model:Backendless.DataStore|string, data:Object):Object;
 
-        getView(viewName:string):Object;
-        getView(viewName:string, async:Object):XMLHttpRequest;
-        getView(viewName:string, whereClause:string):Object;
-        getView(viewName:string, whereClause:string, async:Object):XMLHttpRequest;
-        getView(viewName:string, whereClause:string, pageSize:number):Object;
-        getView(viewName:string, whereClause:string, pageSize:number, async:Object):XMLHttpRequest;
-        getView(viewName:string, whereClause:string, pageSize:number, offset:number):Object;
-        getView(viewName:string, whereClause:string, pageSize:number, offset:number, async:Object):XMLHttpRequest;
+        getViewSync(viewName:string):Object;
+        getViewSync(viewName:string, whereClause:string):Object;
+        getViewSync(viewName:string, whereClause:string, pageSize:number):Object;
+        getViewSync(viewName:string, whereClause:string, pageSize:number, offset:number):Object;
         getView<Promise>(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Promise;
 
         describe(model:string|Object|Function, async):XMLHttpRequest;
