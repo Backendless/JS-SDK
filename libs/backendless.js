@@ -1344,7 +1344,7 @@
          */
 
         bulkCreate: function(objectsArray, async) {
-            throwError(this._validateBulkCreateArg(objectsArray));
+            this._validateBulkCreateArg(objectsArray);
 
             return Backendless._ajax({
                 method      : 'POST',
@@ -1365,11 +1365,11 @@
          */
 
         bulkUpdate: function(templateObject, whereClause, async) {
-            throwError(this._validateBulkUpdateArgs(templateObject, whereClause));
+            this._validateBulkUpdateArgs(templateObject, whereClause);
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : addWhereClause(this.bulkRestUrl, whereClause),
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
                 data        : JSON.stringify(templateObject),
                 isAsync     : !!async,
                 asyncHandler: async
@@ -1385,7 +1385,7 @@
          */
 
         bulkDelete: function(objectsArray, async) {
-            throwError(this._validateBulkDeleteArg(objectsArray));
+            this._validateBulkDeleteArg(objectsArray);
 
             var whereClause;
             var objects;
@@ -1393,14 +1393,14 @@
             if (Utils.isString(objectsArray)) {
                 whereClause = objectsArray;
             } else if (Utils.isArray(objectsArray)) {
-                objects = Utils.map(objectsArray, function(obj) {
+                objects = objectsArray.map(function(obj) {
                     return Utils.isString(obj) ? obj : obj.objectId;
                 });
             }
 
             return Backendless._ajax({
                 method      : 'DELETE',
-                url         : addWhereClause(this.bulkRestUrl, whereClause),
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
                 data        : objects && JSON.stringify(objects),
                 isAsync     : !!async,
                 asyncHandler: async
@@ -1414,12 +1414,12 @@
             );
 
             if (!Utils.isArray(objectsArray)) {
-                return MSG_ERROR;
+                throw new Error(MSG_ERROR);
             }
 
             for(var i=0; i < objectsArray.length; i++) {
                 if (!Utils.isObject(objectsArray[i])) {
-                    return MSG_ERROR;
+                    throw new Error(MSG_ERROR);
                 }
             }
         },
@@ -1427,11 +1427,11 @@
 
         _validateBulkUpdateArgs: function(templateObject, whereClause) {
             if (!templateObject || !Utils.isObject(templateObject)) {
-                return 'Invalid templateObject argument. The first argument must contain object';
+                throw new Error('Invalid templateObject argument. The first argument must contain object');
             }
 
             if (!whereClause || !Utils.isString(whereClause)) {
-                return 'Invalid whereClause argument. The first argument must contain "whereClause" string.';
+                throw new Error('Invalid whereClause argument. The first argument must contain "whereClause" string.');
             }
         },
 
@@ -1441,17 +1441,13 @@
                 'The first argument must contain array of objects or array of id or "whereClause" string'
             );
 
-            if (!arg) {
-                return MSG_ERROR;
-            }
-
-            if (!Utils.isArray(arg) && !Utils.isString(arg)) {
-                return MSG_ERROR;
+            if (!arg || (!Utils.isArray(arg) && !Utils.isString(arg))) {
+                throw new Error(MSG_ERROR);
             }
 
             for(var i=0; i < arg.length; i++) {
                 if (!Utils.isObject(arg[i]) && !Utils.isString(arg[i])) {
-                    return MSG_ERROR;
+                    throw new Error(MSG_ERROR);
                 }
             }
         }
