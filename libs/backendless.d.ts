@@ -824,71 +824,58 @@ declare module __Backendless {
     class UserServiceClass {
         restUrl:string;
 
+        registerSync(user:Backendless.User):Backendless.User;
         register(user:Backendless.User):Promise<Backendless.User>;
-        register(user:Backendless.User):Backendless.User;
-        register(user:Backendless.User, async:Backendless.Async):XMLHttpRequest;
 
-        getUserRoles():Backendless.User ;
-        getUserRoles(async:Backendless.Async):XMLHttpRequest;
-        getUserRoles<Promise>():Promise;
+        getUserRolesSync():Backendless.User;
+        getUserRoles():Promise<Backendless.User>;
 
-        describeUserClass():Backendless.User ;
-        describeUserClass(async:Backendless.Async):XMLHttpRequest;
-        describeUserClass<Promise>():Promise;
+        describeUserClassSync():Backendless.User ;
+        describeUserClass():Promise<Backendless.User>;
 
-        restorePassword(email:string):Backendless.User ;
-        restorePassword(email:string, async:Backendless.Async):XMLHttpRequest;
-        restorePassword<Promise>(email:string):Promise;
+        restorePasswordSync(email:string):Backendless.User;
+        restorePassword(email:string):Promise<Backendless.User>;
 
-        assignRole(identity:string, roleName:string):Backendless.User ;
-        assignRole(identity:string, roleName:string, async:Backendless.Async):XMLHttpRequest;
-        assignRole<Promise>(identity:string, roleName:string):Promise;
+        assignRoleSync(identity:string, roleName:string):Backendless.User;
+        assignRole(identity:string, roleName:string):Promise<Backendless.User>;
 
-        unassignRole(identity:string, roleName:string):Backendless.User ;
-        unassignRole(identity:string, roleName:string, async:Backendless.Async):XMLHttpRequest;
-        unassignRole<Promise>(identity:string, roleName:string):Promise;
+        unassignRoleSync(identity:string, roleName:string):Backendless.User;
+        unassignRole(identity:string, roleName:string):Promise<Backendless.User>;
 
-        login(userName:string, password:string):Backendless.User;
-        login(userName:string, password:string, stayLoggedIn:boolean):Backendless.User ;
-        login(userName:string, password:string, stayLoggedIn:boolean, async:Backendless.Async):XMLHttpRequest;
-        login<Promise>(userName:string, password:string):Promise;
-        login<Promise>(userName:string, password:string, stayLoggedIn:boolean):Promise;
+        login(userName:string, password:string, stayLoggedIn?:boolean):Backendless.User;
+        login(userName:string, password:string, stayLoggedIn?:boolean):Promise<Backendless.User>;
 
         loggedInUser():boolean;
 
-        logout():void;
-        logout(async:Backendless.Async):XMLHttpRequest;
-        logout<Promise>():Promise;
+        logoutSync():void;
+        logout():Promise<void>;
 
-        getCurrentUser():Backendless.User;
-        getCurrentUser<Promise>():Promise;
-        getCurrentUser(async?:Backendless.Async):void;
+        getCurrentUserSync():Backendless.User;
+        getCurrentUser():Promise<Backendless.User>;
 
-        update(user:Backendless.User):Backendless.User ;
-        update(user:Backendless.User, async:Backendless.Async):XMLHttpRequest;
-        update<Promise>(user:Backendless.User):Promise;
+        updateSync(user:Backendless.User):Backendless.User;
+        update(user:Backendless.User):Promise<Backendless.User>;
 
-        loginWithFacebook(fields?:Object, permissions?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):void;
-        loginWithFacebook<Promise>(fields?:Object, permissions?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):Promise;
+        loginWithFacebookSync(fields?:Object, permissions?:Object, stayLoggedIn?:boolean):void;
+        loginWithFacebook(fields?:Object, permissions?:Object, stayLoggedIn?:boolean):Promise<void>;
 
-        loginWithGooglePlus(fields?:Object, permissions?:Object, container?:HTMLElement, async?:Backendless.Async, stayLoggedIn?:boolean):void;
-        loginWithGooglePlus<Promise>(fields?:Object, permissions?:Object, container?:HTMLElement, async?:Backendless.Async, stayLoggedIn?:boolean):Promise;
+        loginWithGooglePlusSync(fields?:Object, permissions?:Object, container?:HTMLElement, stayLoggedIn?:boolean):void;
+        loginWithGooglePlus(fields?:Object, permissions?:Object, container?:HTMLElement, stayLoggedIn?:boolean):Promise<void>;
 
-        loginWithTwitter(fields?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):void;
-        loginWithTwitter<Promise>(fields?:Object, async?:Backendless.Async, stayLoggedIn?:boolean):Promise;
+        loginWithTwitterSync(fields?:Object, stayLoggedIn?:boolean):void;
+        loginWithTwitter(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
 
-        loginWithFacebookSdk(fields?:Object, stayLoggedIn?:boolean, async?:Backendless.Async):void;
-        loginWithFacebookSdk<Promise>(fields?:Object, stayLoggedIn?:boolean, async?:Backendless.Async):Promise;
+        loginWithFacebookSdkSync(fields?:Object, stayLoggedIn?:boolean):void;
+        loginWithFacebookSdk(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
 
-        loginWithGooglePlusSdk(fields?:Object, stayLoggedIn?:boolean, async?:Backendless.Async):void;
-        loginWithGooglePlusSdk<Promise>(fields?:Object, stayLoggedIn?:boolean, async?:Backendless.Async):Promise;
+        loginWithGooglePlusSdkSync(fields?:Object, stayLoggedIn?:boolean):void;
+        loginWithGooglePlusSdk(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
 
-        isValidLogin():boolean;
-        isValidLogin<Promise>():Promise;
-        isValidLogin(async:Backendless.Async):XMLHttpRequest;
+        isValidLoginSync():boolean;
+        isValidLogin():Promise<boolean>;
 
-        resendEmailConfirmation(email:string, async?:Backendless.Async):XMLHttpRequest;
-        resendEmailConfirmation<Promise>(email:string):Promise;
+        resendEmailConfirmationSync(email:string):void;
+        resendEmailConfirmation(email:string):Promise<void>;
     }
 
     interface LoggingI {
