@@ -35,12 +35,6 @@ declare module __Backendless {
     function setUIState(state:string):void;
 
     /**
-     * @public
-     * @type: Function
-     **/
-    function enablePromises():void;
-
-    /**
      * @namespace Backendless.LocalCache
      **/
     var LocalCache:Backendless.LocalCacheI;
@@ -504,19 +498,14 @@ declare module __Backendless {
         save(model:Backendless.DataStore|string, data:Object):Promise;
         saveSync(model:Backendless.DataStore|string, data:Object):Object;
 
-        getViewSync(viewName:string):Object;
-        getViewSync(viewName:string, whereClause:string):Object;
-        getViewSync(viewName:string, whereClause:string, pageSize:number):Object;
-        getViewSync(viewName:string, whereClause:string, pageSize:number, offset:number):Object;
-        getView<Promise>(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Promise;
+        getView(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Promise;
+        getViewSync(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Object;
 
-        describe(model:string|Object|Function, async):XMLHttpRequest;
-        describe(model:string|Object|Function):Object;
-        describe<Promise>(model:string|Object|Function):Promise;
+        describe(model:string|Object|Function):Promise;
+        describeSync(model:string|Object|Function):Object;
 
-        callStoredProcedure(spName:string, argumentValues:Object|string, async:Backendless.Async):XMLHttpRequest;
-        callStoredProcedure(spName:string, argumentValues:Object|string):Object;
-        callStoredProcedure<Promise>(spName:string, argumentValues:Object|string):Promise;
+        callStoredProcedure(spName:string, argumentValues:Object|string):Promise;
+        callStoredProcedureSync(spName:string, argumentValues:Object|string):Object;
     }
 
     /**
