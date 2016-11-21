@@ -3939,7 +3939,7 @@
 
             delete query.path;
 
-            var url = this.restUrl + '/' + path + '?action=count&' + Utils.toQueryParams(query);
+            var url = this.restUrl + '/' + path + '?' + Utils.toQueryParams(query);
 
             return Backendless._ajax({
                 method: 'GET',
@@ -3953,6 +3953,7 @@
             args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
 
             return {
+                action: 'count',
                 path: args[0],
                 pattern: args[1] !== undefined ? args[1] : '*',
                 recursive: args[2] !== undefined ? args[2] : false,
