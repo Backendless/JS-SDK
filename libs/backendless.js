@@ -2542,7 +2542,7 @@
          * @return {*}
          */
         getGeopointCount: function (fenceName, query, async) {
-            var responder = extractResponder(arguments);
+            var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
             var query = this._buildCountQueryObject(arguments, isAsync);
 
