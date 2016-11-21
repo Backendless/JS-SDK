@@ -824,9 +824,9 @@ declare module __Backendless {
     class UserServiceClass {
         restUrl:string;
 
+        register(user:Backendless.User):Promise<Backendless.User>;
         register(user:Backendless.User):Backendless.User;
         register(user:Backendless.User, async:Backendless.Async):XMLHttpRequest;
-        register<Promise>(user:Backendless.User):Promise;
 
         getUserRoles():Backendless.User ;
         getUserRoles(async:Backendless.Async):XMLHttpRequest;
