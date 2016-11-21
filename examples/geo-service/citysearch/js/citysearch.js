@@ -77,6 +77,7 @@ Backendless.Geo.startGeofenceMonitoringWithInAppCallback(null, inAppCallBack);
 
 
 var $resultBlock;
+var $count;
 var $thead;
 var $tbody;
 var $geoQuery;
@@ -97,6 +98,7 @@ $(function () {
     });
 
     $resultBlock = $('#result-block');
+    $count = $('#total-count');
     $thead = $('#thead');
     $tbody = $('#tbody');
 
@@ -122,10 +124,16 @@ function searchGeoPoints() {
     startLoading();
 
     $tbody.empty();
+    $count.text('loading...');
     $resultBlock.hide();
 
     $geoQuery.radius = $('#radius-value').text();
     Backendless.Geo.find($geoQuery, new Backendless.Async(onResult, onFault, this));
+    Backendless.Geo.getGeopointCount($geoQuery, new Backendless.Async(onCountResult, onFault, this));
+}
+
+function onCountResult(count) {
+    $count.text(count);
 }
 
 function onResult(result) {
