@@ -392,50 +392,38 @@ declare module __Backendless {
         loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
         loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
 
-        declareRelation(columnName:string, childTableName:string, cardinality:string):Promise;
-        declareRelationSync(columnName:string, childTableName:string, cardinality:string):void;
+        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
+        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
+        setRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
+        setRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
+        setRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
+        setRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
 
-        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
-        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
-        setRelation(parentObject:Object, columnName:string, whereClause:string):void;
-        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
-        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>, async:Backendless.Async):XMLHttpRequest;
-        setRelation(parentObject:Object, columnName:string, whereClause:string, async:Backendless.Async):XMLHttpRequest;
-        setRelation<Promise>(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        setRelation<Promise>(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        setRelation<Promise>(parentObject:Object, columnName:string, whereClause:string):Promise;
+        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
+        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
+        addRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
+        addRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
+        addRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
+        addRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
 
-        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
-        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
-        addRelation(parentObject:Object, columnName:string, whereClause:string):void;
-        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
-        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>, async:Backendless.Async):XMLHttpRequest;
-        addRelation(parentObject:Object, columnName:string, whereClause:string, async:Backendless.Async):XMLHttpRequest;
-        addRelation<Promise>(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        addRelation<Promise>(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        addRelation<Promise>(parentObject:Object, columnName:string, whereClause:string):Promise;
 
-        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
-        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
-        deleteRelation(parentObject:Object, columnName:string, whereClause:string):void;
-        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
-        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>, async:Backendless.Async):XMLHttpRequest;
-        deleteRelation(parentObject:Object, columnName:string, whereClause:string, async:Backendless.Async):XMLHttpRequest;
-        deleteRelation<Promise>(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        deleteRelation<Promise>(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        deleteRelation<Promise>(parentObject:Object, columnName:string, whereClause:string):Promise;
 
-        bulkCreate(objectsArray:Array<Object>):void;
-        bulkCreate(objectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
-        bulkCreate<Promise>(objectsArray:Array<Object>):Promise;
+        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
+        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
+        deleteRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
+        deleteRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
+        deleteRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
+        deleteRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
 
-        bulkUpdate(templateObject:Object, whereClause:string):void;
-        bulkUpdate(templateObject:Object, whereClause:string, async:Backendless.Async):XMLHttpRequest;
-        bulkUpdate<Promise>(templateObject:Object, whereClause:string):Promise;
+        bulkCreate(objectsArray:Array<Object>):Promise;
+        bulkCreateSync(objectsArray:Array<Object>):void;
 
-        bulkDelete(objectsArray:string|Array<string>|Array<Object>):void;
-        bulkDelete(objectsArray:string|Array<string>|Array<Object>, async:Backendless.Async):XMLHttpRequest;
-        bulkDelete<Promise>(objectsArray:string|Array<string>|Array<Object>):Promise;
+        bulkUpdate(templateObject:Object, whereClause:string):Promise;
+        bulkUpdateSync(templateObject:Object, whereClause:string):void;
+
+        bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise;
+        bulkDeleteSync(objectsArray:string|Array<string>|Array<Object>):void;
+
     }
 
     /**
