@@ -1,11 +1,11 @@
 // Backendless.js 4.0.0
 
-(function (factory) {
+(function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
         (typeof global == 'object' && global.global === global && global);
 
     if (typeof define === "function" && define.amd) {
-        define([], function () {
+        define([], function() {
             return root.Backendless = factory(root);
         });
 
@@ -15,14 +15,14 @@
         root.Backendless = factory(root);
     }
 
-})(function (root) {
+})(function(root) {
     'use strict';
 
     var NodeDevice = {
-        name: 'NODEJS',
+        name    : 'NODEJS',
         platform: 'NODEJS',
-        uuid: 'someId',
-        version: '1'
+        uuid    : 'someId',
+        version : '1'
     };
 
     var isBrowser = (new Function("try {return this===window;}catch(e){ return false;}"))();
@@ -35,27 +35,27 @@
     var previousBackendless = root.Backendless;
 
     var Backendless = {},
-        emptyFn = (function () {
+        emptyFn     = (function() {
         });
 
     Backendless.VERSION = '4.0.0';
     Backendless.serverURL = 'https://api.backendless.com';
 
-    Backendless.noConflict = function () {
+    Backendless.noConflict = function() {
         root.Backendless = previousBackendless;
         return this;
     };
 
     initXHR();
 
-    var browser = (function () {
+    var browser = (function() {
         var ua = 'NodeJS';
 
         if (isBrowser) {
             ua = navigator.userAgent ? navigator.userAgent.toLowerCase() : 'hybrid-app';
         }
 
-        var match = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
+        var match   = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
             /(webkit)[ \/]([\w.]+)/.exec(ua) ||
             /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
             /(msie) ([\w.]+)/.exec(ua) ||
@@ -73,7 +73,7 @@
         return browser;
     })();
 
-    var getNow = function () {
+    var getNow = function() {
         return new Date().getTime();
     };
 
@@ -81,32 +81,32 @@
 
     Backendless.browser = browser;
     Backendless.enablePromises = enablePromises;
-    Backendless.promisesEnabled = function () {
+    Backendless.promisesEnabled = function() {
         return promisesEnabled;
     };
 
     var Utils = {
-        isObject: function (obj) {
+        isObject  : function(obj) {
             return obj === Object(obj);
         },
-        isString: function (obj) {
+        isString  : function(obj) {
             return Object.prototype.toString.call(obj).slice(8, -1) === 'String';
         },
-        isNumber: function (obj) {
+        isNumber  : function(obj) {
             return Object.prototype.toString.call(obj).slice(8, -1) === 'Number';
         },
-        isFunction: function (obj) {
+        isFunction: function(obj) {
             return Object.prototype.toString.call(obj).slice(8, -1) === 'Function';
         },
-        isBoolean: function (obj) {
+        isBoolean : function(obj) {
             return Object.prototype.toString.call(obj).slice(8, -1) === 'Boolean';
         },
-        isDate: function (obj) {
+        isDate    : function(obj) {
             return Object.prototype.toString.call(obj).slice(8, -1) === 'Date';
         }
     };
 
-    Utils.isArray = (Array.isArray || function (obj) {
+    Utils.isArray = (Array.isArray || function(obj) {
         return Object.prototype.toString.call(obj).slice(8, -1) === 'Array';
     });
 
@@ -115,7 +115,7 @@
      * @param {*} value
      * @returns {Array}
      */
-    Utils.castArray = function (value) {
+    Utils.castArray = function(value) {
         if (Utils.isArray(value)) {
             return value;
         }
@@ -123,7 +123,7 @@
         return [value];
     };
 
-    Utils.addEvent = function (evnt, elem, func) {
+    Utils.addEvent = function(evnt, elem, func) {
         if (elem.addEventListener) {
             elem.addEventListener(evnt, func, false);
         }
@@ -135,8 +135,8 @@
         }
     };
 
-    Utils.isEmpty = function (obj) {
-        if (obj == null) {
+    Utils.isEmpty = function(obj) {
+        if (obj == null)  {
             return true;
         }
         if (Utils.isArray(obj) || Utils.isString(obj)) {
@@ -151,7 +151,7 @@
         return true;
     };
 
-    Utils.removeEvent = function (evnt, elem) {
+    Utils.removeEvent = function(evnt, elem) {
         if (elem.removeEventListener) {
             elem.removeEventListener(evnt, null, false);
         } else if (elem.detachEvent) {
@@ -166,12 +166,12 @@
      * @param params {Object} - map of params
      * @returns {string}
      */
-    Utils.toQueryParams = function (params) {
+    Utils.toQueryParams = function(params) {
         var result = [];
 
         for (var key in params) {
             if (params.hasOwnProperty(key)) {
-                result.push(key + '=' + encodeURIComponent(params[key]));
+               result.push(key + '=' + encodeURIComponent(params[key]));
             }
         }
 
@@ -181,11 +181,11 @@
     /**
      * @returns {string}
      */
-    Utils.toUri = function () {
+    Utils.toUri = function() {
         var uri = '';
         var arg;
 
-        for (var i = 0; i < arguments.length; i++) {
+        for (var i=0; i < arguments.length; i++) {
             arg = arguments[i];
 
             if (!arg) {
@@ -209,7 +209,7 @@
      * @returns {*}
      */
 
-    Utils.tryParseJSON = function (s) {
+    Utils.tryParseJSON = function(s) {
         try {
             return typeof s === 'string' ? JSON.parse(s) : s;
         } catch (e) {
@@ -223,7 +223,7 @@
      * @returns {string}
      */
 
-    Utils.getClassName = function (obj) {
+    Utils.getClassName = function(obj) {
         if (obj.prototype && obj.prototype.___class) {
             return obj.prototype.___class;
         }
@@ -233,7 +233,7 @@
         }
 
         var instStringified = (Utils.isFunction(obj) ? obj.toString() : obj.constructor.toString()),
-            results = instStringified.match(/function\s+(\w+)/);
+            results         = instStringified.match(/function\s+(\w+)/);
 
         return (results && results.length > 1) ? results[1] : '';
     };
@@ -243,7 +243,7 @@
      * @param arr
      * @returns {string}
      */
-    Utils.encodeArrayToUriComponent = function (arr) {
+    Utils.encodeArrayToUriComponent = function(arr) {
         var props = [], i, len;
         for (i = 0, len = arr.length; i < len; ++i) {
             props.push(encodeURIComponent(arr[i]));
@@ -257,8 +257,8 @@
      * @param obj
      * @returns {*}
      */
-    Utils.classWrapper = function (obj) {
-        var wrapper = function (obj) {
+    Utils.classWrapper = function(obj) {
+        var wrapper = function(obj) {
             var wrapperName = null,
                 Wrapper = null;
 
@@ -302,7 +302,7 @@
      * @returns {*}
      */
 
-    Utils.deepExtend = function (destination, source) {
+    Utils.deepExtend = function(destination, source) {
         for (var property in source) {
             if (source[property] !== undefined && source.hasOwnProperty(property)) {
                 destination[property] = destination[property] || {};
@@ -322,7 +322,7 @@
      * @returns {Objetc\Array}
      */
 
-    Utils.cloneObject = function (obj) {
+    Utils.cloneObject = function(obj) {
         return Utils.isArray(obj) ? obj.slice() : Utils.deepExtend({}, obj);
     };
 
@@ -332,7 +332,7 @@
      * @returns {*}
      */
 
-    Utils.extractResponder = function (args) {
+    Utils.extractResponder = function(args) {
         var i, len;
         for (i = 0, len = args.length; i < len; ++i) {
             if (args[i] instanceof Async) {
@@ -351,8 +351,8 @@
      * @returns {Async}
      */
 
-    Utils.wrapAsync = function (async, parser, context) {
-        var success = function (data) {
+    Utils.wrapAsync = function(async, parser, context) {
+        var success = function(data) {
             if (parser) {
                 data = parser.call(context, data);
             }
@@ -360,7 +360,7 @@
             async.success(data);
         };
 
-        var error = function (data) {
+        var error = function(data) {
             async.fault(data);
         };
 
@@ -370,7 +370,7 @@
     function initXHR() {
         try {
             if (typeof XMLHttpRequest.prototype.sendAsBinary == 'undefined') {
-                XMLHttpRequest.prototype.sendAsBinary = function (text) {
+                XMLHttpRequest.prototype.sendAsBinary = function(text) {
                     var data = new ArrayBuffer(text.length);
                     var ui8a = new Uint8Array(data, 0);
                     for (var i = 0; i < text.length; i++) {
@@ -384,7 +384,7 @@
         }
     }
 
-    Backendless.setUIState = function (stateName) {
+    Backendless.setUIState = function(stateName) {
         if (stateName === undefined) {
             throw new Error('UI state name must be defined or explicitly set to null');
         } else {
@@ -392,17 +392,17 @@
         }
     };
 
-    Backendless._ajax_for_browser = function (config) {
+    Backendless._ajax_for_browser = function(config) {
         var cashingAllowedArr = [
                 'cacheOnly', 'remoteDataOnly', 'fromCacheOrRemote', 'fromRemoteOrCache', 'fromCacheAndRemote'],
-            cacheMethods = {
-                ignoreCache: function (config) {
+            cacheMethods      = {
+                ignoreCache       : function(config) {
                     return sendRequest(config);
                 },
-                cacheOnly: function (config) {
+                cacheOnly         : function(config) {
                     var cachedResult = Backendless.LocalCache.get(config.url.replace(/([^A-Za-z0-9])/g, '')),
-                        cacheError = {
-                            message: 'error: cannot find data in Backendless.LocalCache',
+                        cacheError   = {
+                            message   : 'error: cannot find data in Backendless.LocalCache',
                             statusCode: 404
                         };
                     if (cachedResult) {
@@ -416,10 +416,10 @@
                         }
                     }
                 },
-                remoteDataOnly: function (config) {
+                remoteDataOnly    : function(config) {
                     return sendRequest(config);
                 },
-                fromCacheOrRemote: function (config) {
+                fromCacheOrRemote : function(config) {
                     var cachedResult = Backendless.LocalCache.get(config.url.replace(/([^A-Za-z0-9])/g, ''));
 
                     if (cachedResult) {
@@ -429,14 +429,14 @@
                         return sendRequest(config);
                     }
                 },
-                fromRemoteOrCache: function (config) {
+                fromRemoteOrCache : function(config) {
                     return sendRequest(config);
                 },
-                fromCacheAndRemote: function (config) {
-                    var result = {},
+                fromCacheAndRemote: function(config) {
+                    var result       = {},
                         cachedResult = Backendless.LocalCache.get(config.url.replace(/([^A-Za-z0-9])/g, '')),
-                        cacheError = {
-                            message: 'error: cannot find data in Backendless.LocalCache',
+                        cacheError   = {
+                            message   : 'error: cannot find data in Backendless.LocalCache',
                             statusCode: 404
                         };
 
@@ -456,12 +456,12 @@
                     return result;
                 }
             },
-            sendRequest = function (config) {
-                var xhr = new XMLHttpRequest(),
+            sendRequest       = function(config) {
+                var xhr         = new XMLHttpRequest(),
                     contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded',
                     response;
 
-                var parseResponse = function (xhr) {
+                var parseResponse = function(xhr) {
                     var result = true;
 
                     if (xhr.responseText) {
@@ -471,7 +471,7 @@
                     return result;
                 };
 
-                var badResponse = function (xhr) {
+                var badResponse = function(xhr) {
                     var result = {};
 
                     try {
@@ -486,7 +486,7 @@
                     return result;
                 };
 
-                var cacheHandler = function (response) {
+                var cacheHandler = function(response) {
                     response = Utils.cloneObject(response);
                     if (config.method == 'GET' && config.cacheActive) {
                         response.cachePolicy = config.cachePolicy;
@@ -503,7 +503,7 @@
                     }
                 };
 
-                var checkInCache = function () {
+                var checkInCache = function() {
                     return config.cacheActive && config.cachePolicy.policy == 'fromRemoteOrCache' && Backendless.LocalCache.exists(config.urlBlueprint);
                 };
 
@@ -521,7 +521,7 @@
                 }
 
                 if (config.isAsync) {
-                    xhr.onreadystatechange = function () {
+                    xhr.onreadystatechange = function() {
                         if (xhr.readyState == 4) {
                             if (xhr.status >= 200 && xhr.status < 300) {
                                 response = parseResponse(xhr);
@@ -564,7 +564,7 @@
         }
     };
 
-    Backendless._ajax_for_nodejs = function (config) {
+    Backendless._ajax_for_nodejs = function(config) {
         config.data = config.data || "";
         config.asyncHandler = config.asyncHandler || {};
         config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
@@ -581,13 +581,13 @@
         var https = u.protocol === 'https:';
 
         var options = {
-            host: u.hostname,
-            port: u.port || (https ? 443 : 80),
-            method: config.method || "GET",
-            path: u.path,
+            host   : u.hostname,
+            port   : u.port || (https ? 443 : 80),
+            method : config.method || "GET",
+            path   : u.path,
             headers: {
                 "Content-Length": config.data ? Buffer.byteLength(config.data) : 0,
-                "Content-Type": config.data ? 'application/json' : 'application/x-www-form-urlencoded'
+                "Content-Type"  : config.data ? 'application/json' : 'application/x-www-form-urlencoded'
             }
         };
 
@@ -599,12 +599,12 @@
 
         var buffer;
         var httpx = require(https ? 'https' : 'http');
-        var req = httpx.request(options, function (res) {
+        var req = httpx.request(options, function(res) {
             res.setEncoding('utf8');
-            res.on('data', function (chunk) {
+            res.on('data', function(chunk) {
                 buffer = buffer ? buffer + chunk : chunk;
             });
-            res.on('end', function () {
+            res.on('end', function() {
                 var callback = config.asyncHandler[res.statusCode >= 200 && res.statusCode < 300 ? "success" : "fault"];
 
                 if (Utils.isFunction(callback)) {
@@ -619,7 +619,7 @@
             });
         });
 
-        req.on('error', function (e) {
+        req.on('error', function(e) {
             config.asyncHandler.fault && config.asyncHandler.fault(e);
         });
 
@@ -636,46 +636,46 @@
             faultCallback = emptyFn;
         }
 
-        this.success = function (data) {
+        this.success = function(data) {
             successCallback && successCallback.call(context, data);
         };
-        this.fault = function (data) {
+        this.fault = function(data) {
             faultCallback && faultCallback.call(context, data);
         };
     }
 
     function setCache() {
-        var store = {},
+        var store   = {},
             storage = {};
 
         store.enabled = false;
 
-        store.exists = function (key) {
+        store.exists = function(key) {
             return store.get(key) !== undefined;
         };
 
-        store.set = function (key, value) {
+        store.set = function(key, value) {
             return storage[key] = store.serialize(value);
         };
 
-        store.get = function (key) {
+        store.get = function(key) {
             var result = storage[key];
 
             return result && store.deserialize(result);
         };
 
-        store.remove = function (key) {
+        store.remove = function(key) {
             return delete storage[key];
         };
 
-        store.clear = function () {
+        store.clear = function() {
             storage = {};
         };
 
-        store.flushExpired = function () {
+        store.flushExpired = function() {
         };
 
-        store.getCachePolicy = function (key) {
+        store.getCachePolicy = function(key) {
         };
 
         store.getAll = function () {
@@ -690,11 +690,11 @@
             return result;
         };
 
-        store.serialize = function (value) {
+        store.serialize = function(value) {
             return JSON.stringify(value);
         };
 
-        store.deserialize = function (value) {
+        store.deserialize = function(value) {
             if (typeof value != 'string') {
                 return undefined;
             }
@@ -729,13 +729,13 @@
     function extendToLocalStorageCache(store) {
         var storage = window[localStorageName];
 
-        var createBndlsStorage = function () {
+        var createBndlsStorage = function() {
             if (!(storage.getItem('Backendless'))) {
                 storage.setItem('Backendless', store.serialize({}));
             }
         };
 
-        var expired = function (obj) {
+        var expired = function(obj) {
             var result = false;
             if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
                 if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy'] && obj['cachePolicy']['timeToLive'] != -1 && 'created' in obj['cachePolicy']) {
@@ -746,7 +746,7 @@
             return result;
         };
 
-        var addTimestamp = function (obj) {
+        var addTimestamp = function(obj) {
             if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
                 if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
                     obj['cachePolicy']['created'] = new Date().getTime();
@@ -758,11 +758,11 @@
 
         store.enabled = true;
 
-        store.exists = function (key) {
+        store.exists = function(key) {
             return store.get(key) !== undefined;
         };
 
-        store.set = function (key, val) {
+        store.set = function(key, val) {
             if (val === undefined) {
                 return store.remove(key);
             }
@@ -786,12 +786,12 @@
             return val;
         };
 
-        store.get = function (key) {
+        store.get = function(key) {
             createBndlsStorage();
 
             var backendlessObj = store.deserialize(storage.getItem('Backendless')),
-                obj = backendlessObj[key],
-                result = obj;
+                obj            = backendlessObj[key],
+                result         = obj;
 
             if (expired(obj)) {
                 delete backendlessObj[key];
@@ -806,7 +806,7 @@
             return result;
         };
 
-        store.remove = function (key) {
+        store.remove = function(key) {
             var result;
 
             createBndlsStorage();
@@ -824,11 +824,11 @@
             return result;
         };
 
-        store.clear = function () {
+        store.clear = function() {
             storage.setItem('Backendless', store.serialize({}));
         };
 
-        store.getAll = function () {
+        store.getAll = function() {
             createBndlsStorage();
 
             var backendlessObj = store.deserialize(storage.getItem('Backendless'));
@@ -846,7 +846,7 @@
             return ret;
         };
 
-        store.flushExpired = function () {
+        store.flushExpired = function() {
             createBndlsStorage();
 
             var backendlessObj = store.deserialize(storage.getItem('Backendless')),
@@ -863,7 +863,7 @@
             }
         };
 
-        store.getCachePolicy = function (key) {
+        store.getCachePolicy = function(key) {
             createBndlsStorage();
 
             var backendlessObj = store.deserialize(storage.getItem('Backendless'));
@@ -884,7 +884,7 @@
     Backendless.Async = Async;
 
     function DataStore(model) {
-        this.model = Utils.isString(model) ? function () {
+        this.model = Utils.isString(model) ? function() {
         } : model;
 
         this.className = Utils.getClassName(model);
@@ -901,7 +901,7 @@
     }
 
     DataStore.prototype = {
-        _extractQueryOptions: function (options) {
+        _extractQueryOptions: function(options) {
             var params = [];
 
             if (typeof options.pageSize != 'undefined') {
@@ -942,7 +942,7 @@
 
             return params.join('&');
         },
-        _parseResponse: function (response) {
+        _parseResponse: function(response) {
             var _Model = this.model, item;
             response = response.fields || response;
             item = new _Model();
@@ -951,7 +951,7 @@
             return this._formCircDeps(item);
         },
 
-        _parseFindResponse: function (response) {
+        _parseFindResponse: function(response) {
             var i, len, _Model = this.model, item;
 
             if (Utils.isArray(response)) {
@@ -970,7 +970,7 @@
             }
         },
 
-        _load: function (url, async) {
+        _load: function(url, async) {
             if (url) {
                 var responder = Utils.extractResponder(arguments), isAsync = false;
 
@@ -980,9 +980,9 @@
                 }
 
                 var result = Backendless._ajax({
-                    method: 'GET',
-                    url: url,
-                    isAsync: isAsync,
+                    method      : 'GET',
+                    url         : url,
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
 
@@ -990,17 +990,17 @@
             }
         },
 
-        _replCircDeps: function (obj) {
+        _replCircDeps       : function(obj) {
             var objMap = [obj];
             var pos;
 
-            var genID = function () {
+            var genID = function() {
                 for (var b = '', a = b; a++ < 36; b += a * 51 && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
                 }
                 return b;
             };
 
-            var _replCircDepsHelper = function (obj) {
+            var _replCircDepsHelper = function(obj) {
                 for (var prop in obj) {
                     if (obj.hasOwnProperty(prop) && typeof obj[prop] == "object" && obj[prop] != null) {
                         if ((pos = objMap.indexOf(obj[prop])) != -1) {
@@ -1019,10 +1019,10 @@
             _replCircDepsHelper(obj);
         },
 
-        _formCircDeps: function (obj) {
-            var circDepsIDs = {},
-                result = new obj.constructor(),
-                _formCircDepsHelper = function (obj, result) {
+        _formCircDeps: function(obj) {
+            var circDepsIDs         = {},
+                result              = new obj.constructor(),
+                _formCircDepsHelper = function(obj, result) {
                     if (obj.hasOwnProperty("__subID")) {
                         circDepsIDs[obj["__subID"]] = result;
                         delete obj["__subID"];
@@ -1048,13 +1048,13 @@
             return result;
         },
 
-        save: function (obj, async) {
+        save: function(obj, async) {
             this._replCircDeps(obj);
             var responder = Utils.extractResponder(arguments),
-                isAsync = false,
-                method = 'PUT',
-                url = this.restUrl,
-                objRef = obj;
+                isAsync   = false,
+                method    = 'PUT',
+                url       = this.restUrl,
+                objRef    = obj;
 
             if (responder != null) {
                 isAsync = true;
@@ -1062,10 +1062,10 @@
             }
 
             var result = Backendless._ajax({
-                method: method,
-                url: url,
-                data: JSON.stringify(obj),
-                isAsync: isAsync,
+                method      : method,
+                url         : url,
+                data        : JSON.stringify(obj),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
 
@@ -1076,7 +1076,7 @@
             return isAsync ? result : objRef;
         },
 
-        remove: function (objId, async) {
+        remove: function(objId, async) {
             if (!Utils.isObject(objId) && !Utils.isString(objId)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
@@ -1093,17 +1093,17 @@
             if (Utils.isString(objId) || objId.objectId) {
                 objId = objId.objectId || objId;
                 result = Backendless._ajax({
-                    method: 'DELETE',
-                    url: this.restUrl + '/' + objId,
-                    isAsync: isAsync,
+                    method      : 'DELETE',
+                    url         : this.restUrl + '/' + objId,
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } else {
                 result = Backendless._ajax({
-                    method: 'DELETE',
-                    url: this.restUrl,
-                    data: JSON.stringify(objId),
-                    isAsync: isAsync,
+                    method      : 'DELETE',
+                    url         : this.restUrl,
+                    data        : JSON.stringify(objId),
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             }
@@ -1111,7 +1111,7 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        find: function (queryBuilder) {
+        find: function(queryBuilder) {
             this._validateFindArguments(arguments);
 
             var args = this._parseFindArguments(arguments);
@@ -1120,7 +1120,7 @@
             return this._find(dataQuery, args.async);
         },
 
-        _validateFindArguments: function (args) {
+        _validateFindArguments: function(args) {
             if (args.length === 0) {
                 return;
             }
@@ -1147,29 +1147,29 @@
             }
         },
 
-        _parseFindArguments: function (args) {
-            var result = {
-                queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-                async: args[0] instanceof Backendless.Async ? args[0] : null
-            };
+        _parseFindArguments: function(args) {
+          var result = {
+              queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
+              async       : args[0] instanceof Backendless.Async ? args[0] : null
+          };
 
-            if (args.length > 1) {
-                result.async = args[1];
-            }
+          if (args.length > 1) {
+              result.async = args[1];
+          }
 
-            return result;
+          return result;
         },
 
-        _find: function (dataQuery) {
+        _find: function(dataQuery) {
             dataQuery = dataQuery || {};
 
             var props,
                 whereClause,
                 options,
-                query = [],
-                url = this.restUrl,
+                query     = [],
+                url       = this.restUrl,
                 responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
+                isAsync   = responder != null,
                 result;
 
             if (dataQuery.properties && dataQuery.properties.length) {
@@ -1198,19 +1198,19 @@
             }
 
             result = Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder,
-                cachePolicy: dataQuery.cachePolicy
+                cachePolicy : dataQuery.cachePolicy
             });
 
             return isAsync ? result : this._parseFindResponse(result);
         },
 
-        _buildArgsObject: function () {
+        _buildArgsObject: function() {
             var args = {},
-                i = arguments.length,
+                i    = arguments.length,
                 type = "";
             for (; i--;) {
                 type = Object.prototype.toString.call(arguments[i]).toLowerCase().match(/[a-z]+/g)[1];
@@ -1239,7 +1239,7 @@
             return args;
         },
 
-        findById: function () {
+        findById: function() {
             var argsObj;
 
             if (Utils.isString(arguments[0])) {
@@ -1252,9 +1252,9 @@
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
                 var responder = Utils.extractResponder(arguments),
-                    url = this.restUrl,
-                    isAsync = responder != null,
-                    send = "/pk?";
+                    url       = this.restUrl,
+                    isAsync   = responder != null,
+                    send      = "/pk?";
 
                 for (var key in argsObj) {
                     send += key + '=' + argsObj[key] + '&';
@@ -1266,17 +1266,17 @@
 
                 if (Utils.getClassName(arguments[0]) == 'Object') {
                     result = Backendless._ajax({
-                        method: 'GET',
-                        url: url + send.replace(/&$/, ""),
-                        isAsync: isAsync,
+                        method      : 'GET',
+                        url         : url + send.replace(/&$/, ""),
+                        isAsync     : isAsync,
                         asyncHandler: responder
                     });
                 } else {
                     result = Backendless._ajax({
-                        method: 'PUT',
-                        url: url,
-                        data: JSON.stringify(argsObj),
-                        isAsync: isAsync,
+                        method      : 'PUT',
+                        url         : url,
+                        data        : JSON.stringify(argsObj),
+                        isAsync     : isAsync,
                         asyncHandler: responder
                     });
                 }
@@ -1287,7 +1287,7 @@
             }
         },
 
-        loadRelations: function (obj) {
+        loadRelations: function(obj) {
             if (!obj) {
                 throw new Error('missing object argument for method loadRelations()');
             }
@@ -1313,21 +1313,21 @@
 
             var result = Backendless._ajax({
                 method: 'PUT',
-                url: url,
-                data: JSON.stringify(argsObj)
+                url   : url,
+                data  : JSON.stringify(argsObj)
             });
 
             Utils.deepExtend(obj, result);
         },
 
-        findFirst: function () {
+        findFirst: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'first';
 
             return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
         },
 
-        findLast: function () {
+        findLast: function() {
             var argsObj = this._buildArgsObject.apply(this, arguments);
             argsObj.url = 'last';
 
@@ -1342,21 +1342,21 @@
          *
          * @return {*}
          */
-        getObjectCount: function (dataQueryBuilder, async) {
+        getObjectCount: function(dataQueryBuilder, async) {
             var dataQuery = dataQueryBuilder ? dataQueryBuilder.build() : {};
 
-            var url = this.restUrl + '/count';
+            var url       = this.restUrl + '/count';
             var responder = Utils.extractResponder(arguments);
-            var isAsync = !!responder;
+            var isAsync   = !!responder;
 
             if (dataQuery.condition) {
                 url += '?where=' + encodeURIComponent(dataQuery.condition);
             }
 
             return Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         }
@@ -1365,16 +1365,16 @@
     var dataStoreCache = {};
 
     var persistence = {
-        save: function (className, obj, async) {
+        save: function(className, obj, async) {
             var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (Utils.isString(className)) {
                 var url = Backendless.appPath + '/data/' + className;
                 return Backendless._ajax({
-                    method: 'POST',
-                    url: url,
-                    data: JSON.stringify(obj),
-                    isAsync: isAsync,
+                    method      : 'POST',
+                    url         : url,
+                    data        : JSON.stringify(obj),
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             }
@@ -1383,9 +1383,9 @@
                 return new DataStore(className).save(className, obj, async);
             }
         },
-        getView: function (viewName, whereClause, pageSize, offset, async) {
+        getView: function(viewName, whereClause, pageSize, offset, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null;
+                isAsync   = responder != null;
 
             if (Utils.isString(viewName)) {
                 var url = Backendless.appPath + '/data/' + viewName;
@@ -1411,21 +1411,21 @@
                 }
 
                 return Backendless._ajax({
-                    method: 'GET',
-                    url: url,
-                    isAsync: isAsync,
+                    method      : 'GET',
+                    url         : url,
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } else {
                 throw new Error('View name is required string parameter');
             }
         },
-        callStoredProcedure: function (spName, argumentValues, async) {
+        callStoredProcedure: function(spName, argumentValues, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null;
+                isAsync   = responder != null;
 
             if (Utils.isString(spName)) {
-                var url = Backendless.appPath + '/data/' + spName,
+                var url  = Backendless.appPath + '/data/' + spName,
                     data = {};
 
                 if (Utils.isObject(argumentValues)) {
@@ -1433,17 +1433,17 @@
                 }
 
                 return Backendless._ajax({
-                    method: 'POST',
-                    url: url,
-                    data: data,
-                    isAsync: isAsync,
+                    method      : 'POST',
+                    url         : url,
+                    data        : data,
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } else {
                 throw new Error('Stored Procedure name is required string parameter');
             }
         },
-        of: function (model) {
+        of: function(model) {
             var tableName;
             if (Utils.isString(model)) {
                 if (model.toLowerCase() === 'users') {
@@ -1461,14 +1461,14 @@
 
             return store;
         },
-        describe: function (className, async) {
+        describe: function(className, async) {
             className = Utils.isString(className) ? className : Utils.getClassName(className);
             var responder = Utils.extractResponder(arguments), isAsync = (responder != null);
 
             return Backendless._ajax({
-                method: 'GET',
-                url: Backendless.appPath + '/data/' + className + '/properties',
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : Backendless.appPath + '/data/' + className + '/properties',
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         }
@@ -1477,14 +1477,14 @@
     function DataPermissions() {
         this.restUrl = Backendless.appPath + '/data';
 
-        this.getRestUrl = function (dataObject, permissionType) {
+        this.getRestUrl = function(dataObject, permissionType) {
             return this.restUrl + '/' + encodeURIComponent(dataObject.___class) + '/permissions/' + encodeURIComponent(permissionType) + '/' + encodeURIComponent(dataObject.objectId);
         };
 
-        this.sendRequest = function (userid, rolename, dataObject, permission, permissionType, async) {
+        this.sendRequest = function(userid, rolename, dataObject, permission, permissionType, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
-                data = {
+                isAsync   = responder != null,
+                data      = {
                     "permission": permission
                 };
 
@@ -1499,73 +1499,73 @@
             }
 
             return Backendless._ajax({
-                method: 'PUT',
-                url: this.getRestUrl(dataObject, permissionType),
-                data: JSON.stringify(data),
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.getRestUrl(dataObject, permissionType),
+                data        : JSON.stringify(data),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         };
     }
 
     DataPermissions.prototype = {
-        FIND: {
-            grantUser: function (userid, dataObject, Async) {
+        FIND  : {
+            grantUser: function(userid, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'FIND', 'GRANT', Async);
             },
-            grantRole: function (rolename, dataObject, Async) {
+            grantRole: function(rolename, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'FIND', 'GRANT', Async);
             },
-            grant: function (dataObject, Async) {
+            grant    : function(dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'FIND', 'GRANT', Async);
             },
-            denyUser: function (userid, dataObject, Async) {
+            denyUser : function(userid, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'FIND', 'DENY', Async);
             },
-            denyRole: function (rolename, dataObject, Async) {
+            denyRole : function(rolename, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'FIND', 'DENY', Async);
             },
-            deny: function (dataObject, Async) {
+            deny     : function(dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'FIND', 'DENY', Async);
             }
         },
         REMOVE: {
-            grantUser: function (userid, dataObject, Async) {
+            grantUser: function(userid, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'REMOVE', 'GRANT', Async);
             },
-            grantRole: function (rolename, dataObject, Async) {
+            grantRole: function(rolename, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'REMOVE', 'GRANT', Async);
             },
-            grant: function (dataObject, Async) {
+            grant    : function(dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'REMOVE', 'GRANT', Async);
             },
-            denyUser: function (userid, dataObject, Async) {
+            denyUser : function(userid, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'REMOVE', 'DENY', Async);
             },
-            denyRole: function (rolename, dataObject, Async) {
+            denyRole : function(rolename, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'REMOVE', 'DENY', Async);
             },
-            deny: function (dataObject, Async) {
+            deny     : function(dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'REMOVE', 'DENY', Async);
             }
         },
         UPDATE: {
-            grantUser: function (userid, dataObject, Async) {
+            grantUser: function(userid, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'UPDATE', 'GRANT', Async);
             },
-            grantRole: function (rolename, dataObject, Async) {
+            grantRole: function(rolename, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'UPDATE', 'GRANT', Async);
             },
-            grant: function (dataObject, Async) {
+            grant    : function(dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'UPDATE', 'GRANT', Async);
             },
-            denyUser: function (userid, dataObject, Async) {
+            denyUser : function(userid, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'UPDATE', 'DENY', Async);
             },
-            denyRole: function (rolename, dataObject, Async) {
+            denyRole : function(rolename, dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'UPDATE', 'DENY', Async);
             },
-            deny: function (dataObject, Async) {
+            deny     : function(dataObject, Async) {
                 return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'UPDATE', 'DENY', Async);
             }
         }
@@ -1580,23 +1580,23 @@
 
     var currentUser = null;
 
-    var UserService = function () {
+    var UserService = function() {
         this.restUrl = Backendless.appPath + '/users';
     };
 
     UserService.prototype = {
-        _wrapAsync: function (async, stayLoggedIn) {
-            var me = this, success = function (data) {
+        _wrapAsync: function(async, stayLoggedIn) {
+            var me   = this, success = function(data) {
                 currentUser = me._parseResponse(Utils.tryParseJSON(data), stayLoggedIn);
                 async.success(me._getUserFromResponse(currentUser));
-            }, error = function (data) {
+            }, error = function(data) {
                 async.fault(data);
             };
 
             return new Async(success, error);
         },
 
-        _parseResponse: function (data, stayLoggedIn) {
+        _parseResponse: function(data, stayLoggedIn) {
             var user = new Backendless.User();
             Utils.deepExtend(user, data);
 
@@ -1607,7 +1607,7 @@
             return user;
         },
 
-        register: function (user, async) {
+        register: function(user, async) {
             if (!(user instanceof Backendless.User)) {
                 throw new Error('Only Backendless.User accepted');
             }
@@ -1620,17 +1620,17 @@
             }
 
             var result = Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + '/register',
-                isAsync: isAsync,
+                method      : 'POST',
+                url         : this.restUrl + '/register',
+                isAsync     : isAsync,
                 asyncHandler: responder,
-                data: JSON.stringify(user)
+                data        : JSON.stringify(user)
             });
 
             return isAsync ? result : this._parseResponse(result);
         },
 
-        getUserRoles: function (async) {
+        getUserRoles: function(async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -1639,16 +1639,16 @@
             }
 
             var result = Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + '/userroles',
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + '/userroles',
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
 
             return isAsync ? result : this._parseResponse(result);
         },
 
-        roleHelper: function (identity, rolename, async, operation) {
+        roleHelper: function(identity, rolename, async, operation) {
             if (!identity) {
                 throw new Error('User identity can not be empty');
             }
@@ -1660,23 +1660,23 @@
             var responder = Utils.extractResponder(arguments);
 
             return Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + '/' + operation,
-                isAsync: !!responder,
+                method      : 'POST',
+                url         : this.restUrl + '/' + operation,
+                isAsync     : !!responder,
                 asyncHandler: responder,
-                data: JSON.stringify({user: identity, roleName: rolename})
+                data        : JSON.stringify({user : identity, roleName: rolename})
             });
         },
 
-        assignRole: function (identity, rolename, async) {
+        assignRole: function(identity, rolename, async) {
             return this.roleHelper(identity, rolename, async, 'assignRole');
         },
 
-        unassignRole: function (identity, rolename, async) {
+        unassignRole: function(identity, rolename, async) {
             return this.roleHelper(identity, rolename, async, 'unassignRole');
         },
 
-        login: function (username, password, stayLoggedIn, async) {
+        login: function(username, password, stayLoggedIn, async) {
             if (!username) {
                 throw new Error('Username can not be empty');
             }
@@ -1699,16 +1699,16 @@
             }
 
             var data = {
-                login: username,
+                login   : username,
                 password: password
             };
 
             var result = Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + '/login',
-                isAsync: isAsync,
+                method      : 'POST',
+                url         : this.restUrl + '/login',
+                isAsync     : isAsync,
                 asyncHandler: responder,
-                data: JSON.stringify(data)
+                data        : JSON.stringify(data)
             });
 
             if (!isAsync && result) {
@@ -1719,7 +1719,7 @@
             return result;
         },
 
-        _getUserFromResponse: function (user) {
+        _getUserFromResponse: function(user) {
             Backendless.LocalCache.set("current-user-id", user.objectId);
 
             var newUser = new Backendless.User();
@@ -1739,23 +1739,23 @@
             return newUser;
         },
 
-        loggedInUser: function () {
+        loggedInUser: function() {
             return Backendless.LocalCache.get("current-user-id");
         },
 
-        describeUserClass: function (async) {
+        describeUserClass: function(async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + '/userclassprops',
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + '/userclassprops',
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        restorePassword: function (emailAddress, async) {
+        restorePassword: function(emailAddress, async) {
             if (!emailAddress) {
                 throw 'Username can not be empty';
             }
@@ -1763,35 +1763,35 @@
             var isAsync = responder != null;
 
             return Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + '/restorepassword/' + encodeURIComponent(emailAddress),
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + '/restorepassword/' + encodeURIComponent(emailAddress),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        logout: function (async) {
-            var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
-                errorCallback = isAsync ? responder.fault : null,
+        logout: function(async) {
+            var responder       = Utils.extractResponder(arguments),
+                isAsync         = responder != null,
+                errorCallback   = isAsync ? responder.fault : null,
                 successCallback = isAsync ? responder.success : null,
                 result = {},
 
-                logoutUser = function () {
+                logoutUser      = function() {
                     Backendless.LocalCache.remove("user-token");
                     Backendless.LocalCache.remove("current-user-id");
                     Backendless.LocalCache.remove("stayLoggedIn");
                     currentUser = null;
                 },
 
-                onLogoutSuccess = function () {
+                onLogoutSuccess = function() {
                     logoutUser();
                     if (Utils.isFunction(successCallback)) {
                         successCallback();
                     }
                 },
 
-                onLogoutError = function (e) {
+                onLogoutError   = function(e) {
                     if (Utils.isObject(e) && [3064, 3091, 3090, 3023].indexOf(e.code) != -1) {
                         logoutUser();
                     }
@@ -1807,9 +1807,9 @@
 
             try {
                 result = Backendless._ajax({
-                    method: 'GET',
-                    url: this.restUrl + '/logout',
-                    isAsync: isAsync,
+                    method      : 'GET',
+                    url         : this.restUrl + '/logout',
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } catch (e) {
@@ -1823,7 +1823,7 @@
             }
         },
 
-        getCurrentUser: function (async) {
+        getCurrentUser: function(async) {
             if (currentUser) {
                 var userFromResponse = this._getUserFromResponse(currentUser);
 
@@ -1840,7 +1840,7 @@
             return async ? async.success(null) : null;
         },
 
-        update: function (user, async) {
+        update: function(user, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -1849,32 +1849,32 @@
             }
 
             var result = Backendless._ajax({
-                method: 'PUT',
-                url: this.restUrl + '/' + user.objectId,
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.restUrl + '/' + user.objectId,
+                isAsync     : isAsync,
                 asyncHandler: responder,
-                data: JSON.stringify(user)
+                data        : JSON.stringify(user)
             });
 
             return isAsync ? result : this._parseResponse(result);
         },
 
-        loginWithFacebook: function (facebookFieldsMapping, permissions, async, stayLoggedIn) {
+        loginWithFacebook      : function(facebookFieldsMapping, permissions, async, stayLoggedIn) {
             async = Utils.extractResponder(arguments);
             this._loginSocial('Facebook', facebookFieldsMapping, permissions, async, null, stayLoggedIn);
         },
 
-        loginWithGooglePlus: function (googlePlusFieldsMapping, permissions, async, container, stayLoggedIn) {
+        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, async, container, stayLoggedIn) {
             async = Utils.extractResponder(arguments);
             this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, async, container, stayLoggedIn);
         },
 
-        loginWithTwitter: function (twitterFieldsMapping, async, stayLoggedIn) {
+        loginWithTwitter       : function(twitterFieldsMapping, async, stayLoggedIn) {
             async = Utils.extractResponder(arguments);
             this._loginSocial('Twitter', twitterFieldsMapping, null, async, null, stayLoggedIn);
         },
 
-        _socialContainer: function (socialType, container) {
+        _socialContainer       : function(socialType, container) {
             var loadingMsg;
 
             if (container) {
@@ -1886,16 +1886,16 @@
                 container.appendChild(loadingMsg);
                 container.style.cursor = 'wait';
 
-                this.closeContainer = function () {
+                this.closeContainer = function() {
                     container.style.cursor = 'default';
                     container.removeChild(client);
                 };
 
-                this.removeLoading = function () {
+                this.removeLoading = function() {
                     container.removeChild(loadingMsg);
                 };
 
-                this.doAuthorizationActivity = function (url) {
+                this.doAuthorizationActivity = function(url) {
                     this.removeLoading();
                     client = document.createElement('iframe');
                     client.frameBorder = 0;
@@ -1904,7 +1904,7 @@
                     client.id = "SocialAuthFrame";
                     client.setAttribute("src", url + "&amp;output=embed");
                     container.appendChild(client);
-                    client.onload = function () {
+                    client.onload = function() {
                         container.style.cursor = 'default';
                     };
                 };
@@ -1915,28 +1915,28 @@
                 loadingMsg = "Loading...";
                 container.document.getElementsByTagName('html')[0].style.cursor = 'wait';
 
-                this.closeContainer = function () {
+                this.closeContainer = function() {
                     container.close();
                 };
 
-                this.removeLoading = function () {
+                this.removeLoading = function() {
                     loadingMsg = null;
                 };
 
-                this.doAuthorizationActivity = function (url) {
+                this.doAuthorizationActivity = function(url) {
                     container.location.href = url;
-                    container.onload = function () {
+                    container.onload = function() {
                         container.document.getElementsByTagName("html")[0].style.cursor = 'default';
                     };
                 };
             }
         },
 
-        _loginSocial: function (socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
+        _loginSocial: function(socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
             var socialContainer = new this._socialContainer(socialType, container);
             async = async && this._wrapAsync(async);
 
-            Utils.addEvent('message', window, function (e) {
+            Utils.addEvent('message', window, function(e) {
                 if (e.origin == Backendless.serverURL) {
                     var result = JSON.parse(e.data);
 
@@ -1953,9 +1953,9 @@
                 }
             });
 
-            var interimCallback = new Backendless.Async(function (r) {
+            var interimCallback = new Backendless.Async(function(r) {
                 socialContainer.doAuthorizationActivity(r);
-            }, function (e) {
+            }, function(e) {
                 socialContainer.closeContainer();
                 async.fault(e);
             });
@@ -1965,15 +1965,15 @@
             request.permissions = permissions || [];
 
             Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + "/social/oauth/" + socialType.toLowerCase() + "/request_url",
-                isAsync: true,
+                method      : 'POST',
+                url         : this.restUrl + "/social/oauth/" + socialType.toLowerCase() + "/request_url",
+                isAsync     : true,
                 asyncHandler: interimCallback,
-                data: JSON.stringify(request)
+                data        : JSON.stringify(request)
             });
         },
 
-        loginWithFacebookSdk: function (fieldsMapping, stayLoggedIn, options, async) {
+        loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options, async) {
             if (!FB) {
                 throw new Error("Facebook SDK not found");
             }
@@ -1987,18 +1987,18 @@
             }
 
             var me = this;
-            FB.getLoginStatus(function (response) {
+            FB.getLoginStatus(function(response) {
                 if (response.status === 'connected') {
                     me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, stayLoggedIn, async);
                 } else {
-                    FB.login(function (response) {
+                    FB.login(function(response) {
                         me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, stayLoggedIn, async);
                     }, options);
                 }
             });
         },
 
-        loginWithGooglePlusSdk: function (fieldsMapping, stayLoggedIn, async) {
+        loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
             if (!gapi) {
                 throw new Error("Google Plus SDK not found");
             }
@@ -2012,36 +2012,36 @@
 
             gapi.auth.authorize({
                 client_id: fieldsMapping.client_id,
-                scope: "https://www.googleapis.com/auth/plus.login"
-            }, function (response) {
+                scope    : "https://www.googleapis.com/auth/plus.login"
+            }, function(response) {
                 delete response['g-oauth-window'];
                 me._sendSocialLoginRequest(me, response, "googleplus", fieldsMapping, stayLoggedIn, async);
             });
         },
 
-        _sendSocialLoginRequest: function (context, response, socialType, fieldsMapping, stayLoggedIn, async) {
+        _sendSocialLoginRequest: function(context, response, socialType, fieldsMapping, stayLoggedIn, async) {
             if (fieldsMapping) {
                 response["fieldsMapping"] = fieldsMapping;
             }
 
-            var interimCallback = new Backendless.Async(function (r) {
+            var interimCallback = new Backendless.Async(function(r) {
                 currentUser = context._parseResponse(r);
                 Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                 async.success(context._getUserFromResponse(currentUser));
-            }, function (e) {
+            }, function(e) {
                 async.fault(e);
             });
 
             Backendless._ajax({
-                method: 'POST',
-                url: context.restUrl + "/social/" + socialType + "/login/" + Backendless.applicationId,
-                isAsync: true,
+                method      : 'POST',
+                url         : context.restUrl + "/social/" + socialType + "/login/" + Backendless.applicationId,
+                isAsync     : true,
                 asyncHandler: interimCallback,
-                data: JSON.stringify(response)
+                data        : JSON.stringify(response)
             });
         },
 
-        isValidLogin: function (async) {
+        isValidLogin: function(async) {
             var userToken = Backendless.LocalCache.get("user-token");
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
@@ -2051,7 +2051,7 @@
                     try {
                         var result = Backendless._ajax({
                             method: 'GET',
-                            url: this.restUrl + '/isvalidusertoken/' + userToken
+                            url   : this.restUrl + '/isvalidusertoken/' + userToken
                         });
                         return !!result;
                     } catch (e) {
@@ -2059,9 +2059,9 @@
                     }
                 } else {
                     Backendless._ajax({
-                        method: 'GET',
-                        url: this.restUrl + '/isvalidusertoken/' + userToken,
-                        isAsync: isAsync,
+                        method      : 'GET',
+                        url         : this.restUrl + '/isvalidusertoken/' + userToken,
+                        isAsync     : isAsync,
                         asyncHandler: responder
                     });
                 }
@@ -2070,7 +2070,7 @@
 
                 if (isAsync) {
                     //if async need to put it to the end of the stack
-                    setTimeout(function () {
+                    setTimeout(function() {
                         responder.success(!!user);
                     }, 0);
                 } else {
@@ -2079,17 +2079,17 @@
             }
         },
 
-        resendEmailConfirmation: function (emailAddress, async) {
-            if (!emailAddress || emailAddress instanceof Async) {
+        resendEmailConfirmation: function(emailAddress, async) {
+            if(!emailAddress || emailAddress instanceof Async) {
                 throw "Email cannot be empty";
             }
             var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
 
             return Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + "/resendconfirmation/" + emailAddress,
-                isAsync: isAsync,
+                method      : 'POST',
+                url         : this.restUrl + "/resendconfirmation/" + emailAddress,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         }
@@ -2101,94 +2101,94 @@
     }
 
     Geo.prototype = {
-        UNITS: {
-            METERS: 'METERS',
+        UNITS           : {
+            METERS    : 'METERS',
             KILOMETERS: 'KILOMETERS',
-            MILES: 'MILES',
-            YARDS: 'YARDS',
-            FEET: 'FEET'
+            MILES     : 'MILES',
+            YARDS     : 'YARDS',
+            FEET      : 'FEET'
         },
 
-        _load: function (url, async) {
+        _load           : function(url, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null;
+                isAsync   = responder != null;
 
             return Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        _findHelpers: {
-            'searchRectangle': function (arg) {
+        _findHelpers    : {
+            'searchRectangle': function(arg) {
                 var rect = [
                     'nwlat=' + arg[0], 'nwlon=' + arg[1], 'selat=' + arg[2], 'selon=' + arg[3]
                 ];
                 return rect.join('&');
             },
-            'latitude': function (arg) {
+            'latitude'  : function(arg) {
                 return 'lat=' + arg;
             },
-            'longitude': function (arg) {
+            'longitude' : function(arg) {
                 return 'lon=' + arg;
             },
-            'metadata': function (arg) {
+            'metadata'  : function(arg) {
                 return 'metadata=' + JSON.stringify(arg);
             },
-            'units': function (arg) {
+            'units'     : function(arg) {
                 return 'units=' + arg;
             },
-            'radius': function (arg) {
+            'radius'    : function(arg) {
                 return 'r=' + arg;
             },
-            'categories': function (arg) {
+            'categories': function(arg) {
                 arg = Utils.isString(arg) ? [arg] : arg;
                 return 'categories=' + Utils.encodeArrayToUriComponent(arg);
             },
-            'includeMetadata': function (arg) {
+            'includeMetadata': function(arg) {
                 return 'includemetadata=' + arg;
             },
-            'pageSize': function (arg) {
+            'pageSize': function(arg) {
                 if (arg < 1 || arg > 100) {
                     throw new Error('PageSize can not be less then 1 or greater than 100');
                 } else {
                     return 'pagesize=' + arg;
                 }
             },
-            'offset': function (arg) {
+            'offset'  : function(arg) {
                 if (arg < 0) {
                     throw new Error('Offset can not be less then 0');
                 } else {
                     return 'offset=' + arg;
                 }
             },
-            'relativeFindPercentThreshold': function (arg) {
+            'relativeFindPercentThreshold': function(arg) {
                 if (arg <= 0) {
                     throw new Error('Threshold can not be less then or equal 0');
                 } else {
                     return 'relativeFindPercentThreshold=' + arg;
                 }
             },
-            'relativeFindMetadata': function (arg) {
+            'relativeFindMetadata': function(arg) {
                 return 'relativeFindMetadata=' + encodeURIComponent(JSON.stringify(arg));
             },
-            'condition': function (arg) {
+            'condition'           : function(arg) {
                 return 'whereClause=' + encodeURIComponent(arg);
             },
-            'degreePerPixel': function (arg) {
+            'degreePerPixel'      : function(arg) {
                 return 'dpp=' + arg;
             },
-            'clusterGridSize': function (arg) {
+            'clusterGridSize'     : function(arg) {
                 return 'clustergridsize=' + arg;
             },
-            'geoFence': function (arg) {
+            'geoFence'            : function(arg) {
                 return 'geoFence=' + arg;
             }
         },
 
-        _validateQueryObject: function (query) {
+        _validateQueryObject: function(query) {
             if (!(query instanceof GeoQuery)) {
                 throw new Error('Invalid Geo Query. Query should be instance of Backendless.GeoQuery');
             }
@@ -2214,7 +2214,7 @@
             var params = [];
 
             if (query.units) {
-                params.push('units=' + query.units);
+               params.push('units=' + query.units);
             }
 
             for (var prop in query) {
@@ -2226,7 +2226,7 @@
             return params.join('&');
         },
 
-        savePoint: function (geopoint, async) {
+        savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
             }
@@ -2243,8 +2243,8 @@
 
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
-            var responderOverride = function (async) {
-                var success = function (data) {
+            var responderOverride = function(async) {
+                var success = function(data) {
                     var geoObject = data.geopoint;
                     var geoPoint = new GeoPoint();
                     geoPoint.categories = geoObject.categories;
@@ -2256,7 +2256,7 @@
 
                     async.success(data);
                 };
-                var error = function (data) {
+                var error = function(data) {
                     async.fault(data);
                 };
 
@@ -2266,29 +2266,29 @@
             responder = responderOverride(responder);
 
             return Backendless._ajax({
-                method: method,
-                url: url,
-                data: JSON.stringify(geopoint),
-                isAsync: isAsync,
+                method      : method,
+                url         : url,
+                data        : JSON.stringify(geopoint),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
         /** @deprecated */
-        addPoint: function (geopoint, async) {
-            return this.savePoint.apply(this, arguments);
+        addPoint: function(geopoint, async) {
+          return this.savePoint.apply(this, arguments);
         },
 
-        findUtil: function (query, async) {
+        findUtil        : function(query, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = false;
+                isAsync   = false;
 
             this._validateQueryObject(query);
 
             var url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + this._toQueryParams(query);
 
-            var responderOverride = function (async) {
-                var success = function (data) {
+            var responderOverride = function(async) {
+                var success = function(data) {
                     var geoCollection = [];
                     var geoObject;
                     var isCluster;
@@ -2307,7 +2307,7 @@
                     async.success(geoCollection);
                 };
 
-                var error = function (data) {
+                var error = function(data) {
                     async.fault(data);
                 };
 
@@ -2321,23 +2321,23 @@
             responder = responderOverride(responder);
 
             return Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        find: function (query, async) {
+        find            : function(query, async) {
             query["url"] = this.restUrl;
 
             return this.findUtil(query, async);
         },
 
-        loadMetadata: function (geoObject, async) {
-            var url = this.restUrl + '/points/',
+        loadMetadata    : function(geoObject, async) {
+            var url       = this.restUrl + '/points/',
                 responder = Utils.extractResponder(arguments),
-                isAsync = false;
+                isAsync   = false;
             if (geoObject.objectId) {
                 if (geoObject instanceof GeoCluster) {
                     if (geoObject.geoQuery instanceof GeoQuery) {
@@ -2365,17 +2365,17 @@
             }
 
             return Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        getClusterPoints: function (geoObject, async) {
-            var url = this.restUrl + '/clusters/',
+        getClusterPoints: function(geoObject, async) {
+            var url       = this.restUrl + '/clusters/',
                 responder = Utils.extractResponder(arguments),
-                isAsync = false;
+                isAsync   = false;
 
             if (geoObject.objectId) {
                 if (geoObject instanceof GeoCluster) {
@@ -2396,8 +2396,8 @@
                 throw new Error("Method argument must be a valid instance of GeoCluster persisted on the server");
             }
 
-            var responderOverride = function (async) {
-                var success = function (geoCollection) {
+            var responderOverride = function(async) {
+                var success = function(geoCollection) {
                     for (var i = 0; i < geoCollection.length; i++) {
                         geoCollection[i] = new GeoPoint(geoCollection[i]);
                     }
@@ -2405,7 +2405,7 @@
                     async.success(geoCollection);
                 };
 
-                var error = function (data) {
+                var error = function(data) {
                     async.fault(data);
                 };
 
@@ -2419,14 +2419,14 @@
             responder = responderOverride(responder);
 
             return Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        relativeFind: function (query, async) {
+        relativeFind: function(query, async) {
             if (!(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
                 throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata");
             } else {
@@ -2436,7 +2436,7 @@
             }
         },
 
-        addCategory: function (name, async) {
+        addCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
@@ -2445,28 +2445,28 @@
             var isAsync = responder != null;
 
             var result = Backendless._ajax({
-                method: 'PUT',
-                url: this.restUrl + '/categories/' + name,
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.restUrl + '/categories/' + name,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
 
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        getCategories: function (async) {
+        getCategories: function(async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + '/categories',
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + '/categories',
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        deleteCategory: function (name, async) {
+        deleteCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
@@ -2477,9 +2477,9 @@
 
             try {
                 result = Backendless._ajax({
-                    method: 'DELETE',
-                    url: this.restUrl + '/categories/' + name,
-                    isAsync: isAsync,
+                    method      : 'DELETE',
+                    url         : this.restUrl + '/categories/' + name,
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } catch (e) {
@@ -2493,21 +2493,21 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        deletePoint: function (point, async) {
+        deletePoint: function(point, async) {
             if (!point || Utils.isFunction(point)) {
                 throw new Error('Point argument name is required, must be string (object Id), or point object');
             }
 
-            var pointId = Utils.isString(point) ? point : point.objectId,
+            var pointId   = Utils.isString(point) ? point : point.objectId,
                 responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
+                isAsync   = responder != null,
                 result = {};
 
             try {
                 result = Backendless._ajax({
-                    method: 'DELETE',
-                    url: this.restUrl + '/points/' + pointId,
-                    isAsync: isAsync,
+                    method      : 'DELETE',
+                    url         : this.restUrl + '/points/' + pointId,
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } catch (e) {
@@ -2521,7 +2521,7 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        getFencePoints: function (geoFenceName, query, async) {
+        getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
 
             query.geoFence = geoFenceName;
@@ -2557,7 +2557,7 @@
             });
         },
 
-        _buildCountQueryObject: function (args, isAsync) {
+        _buildCountQueryObject: function(args, isAsync) {
             args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
 
             var query;
@@ -2577,7 +2577,7 @@
             return query;
         },
 
-        _runFenceAction: function (action, geoFenceName, geoPoint, async) {
+        _runFenceAction: function(action, geoFenceName, geoPoint, async) {
             if (!Utils.isString(geoFenceName)) {
                 throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
             }
@@ -2587,11 +2587,11 @@
             }
 
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
-                data = {
-                    method: 'POST',
-                    url: this.restUrl + '/fence/' + action + '?geoFence=' + geoFenceName,
-                    isAsync: isAsync,
+                isAsync   = responder != null,
+                data      = {
+                    method      : 'POST',
+                    url         : this.restUrl + '/fence/' + action + '?geoFence=' + geoFenceName,
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 };
 
@@ -2602,28 +2602,28 @@
             return Backendless._ajax(data);
         },
 
-        runOnStayAction: function (geoFenceName, geoPoint, async) {
+        runOnStayAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onstay', geoFenceName, geoPoint, async);
         },
 
-        runOnExitAction: function (geoFenceName, geoPoint, async) {
+        runOnExitAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onexit', geoFenceName, geoPoint, async);
         },
 
-        runOnEnterAction: function (geoFenceName, geoPoint, async) {
+        runOnEnterAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onenter', geoFenceName, geoPoint, async);
         },
 
-        _getFences: function (geoFence) {
+        _getFences: function(geoFence) {
             return Backendless._ajax({
                 method: 'GET',
-                url: this.restUrl + '/fences' + ((geoFence) ? '?geoFence=' + geoFence : '')
+                url   : this.restUrl + '/fences' + ((geoFence) ? '?geoFence=' + geoFence : '')
             });
         },
 
         EARTH_RADIUS: 6378100.0,
 
-        _distance: function (lat1, lon1, lat2, lon2) {
+        _distance: function(lat1, lon1, lat2, lon2) {
             var deltaLon = lon1 - lon2;
             deltaLon = (deltaLon * Math.PI) / 180;
             lat1 = (lat1 * Math.PI) / 180;
@@ -2632,7 +2632,7 @@
             return this.EARTH_RADIUS * Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(deltaLon));
         },
 
-        _updateDegree: function (degree) {
+        _updateDegree: function(degree) {
             degree += 180;
             while (degree < 0) {
                 degree += 360;
@@ -2641,23 +2641,23 @@
             return degree === 0 ? 180 : degree % 360 - 180;
         },
 
-        _countLittleRadius: function (latitude) {
+        _countLittleRadius: function(latitude) {
             var h = Math.abs(latitude) / 180 * this.EARTH_RADIUS;
             var diametre = 2 * this.EARTH_RADIUS;
             var l_2 = (Math.pow(diametre, 2) - diametre * Math.sqrt(Math.pow(diametre, 2) - 4 * Math.pow(h, 2))) / 2;
             return diametre / 2 - Math.sqrt(l_2 - Math.pow(h, 2));
         },
 
-        _isDefiniteRect: function (nwPoint, sePoint) {
+        _isDefiniteRect: function(nwPoint, sePoint) {
             return nwPoint != null && sePoint != null;
         },
 
-        _getOutRectangle: function () {
+        _getOutRectangle: function() {
             return (arguments.length == 1) ? this._getOutRectangleNodes(arguments[1]) : this._getOutRectangleCircle(arguments[0],
                 arguments[1]);
         },
 
-        _getOutRectangleCircle: function (center, bounded) {
+        _getOutRectangleCircle: function(center, bounded) {
             var radius = this._distance(center.latitude, center.longitude, bounded.latitude, bounded.longitude);
             var boundLat = center.latitude + (180 * radius) / (Math.PI * this.EARTH_RADIUS) * (center.latitude > 0 ? 1 : -1);
             var littleRadius = this._countLittleRadius(boundLat);
@@ -2684,7 +2684,7 @@
             return [Math.min(northLat, 90), westLong, Math.max(southLat, -90), eastLong];
         },
 
-        _getOutRectangleNodes: function (geoPoints) {
+        _getOutRectangleNodes: function(geoPoints) {
             var nwLat = geoPoints[0].latitude;
             var nwLon = geoPoints[0].longitude;
             var seLat = geoPoints[0].latitude;
@@ -2739,7 +2739,7 @@
             return [nwLat, nwLon, seLat, seLon];
         },
 
-        _getPointPosition: function (point, first, second) {
+        _getPointPosition: function(point, first, second) {
             var delta = second.longitude - first.longitude;
 
             if (delta < 0 && delta > -180 || delta > 180) {
@@ -2768,7 +2768,7 @@
             return 'NO_INTERSECT';
         },
 
-        _isPointInRectangular: function (currentPosition, nwPoint, sePoint) {
+        _isPointInRectangular: function(currentPosition, nwPoint, sePoint) {
             if (currentPosition.latitude > nwPoint.latitude || currentPosition.latitude < sePoint.latitude) {
                 return false;
             }
@@ -2780,12 +2780,12 @@
             }
         },
 
-        _isPointInCircle: function (currentPosition, center, radius) {
+        _isPointInCircle: function(currentPosition, center, radius) {
             return this._distance(currentPosition.latitude, currentPosition.longitude, center.latitude,
                     center.longitude) <= radius;
         },
 
-        _isPointInShape: function (point, shape) {
+        _isPointInShape: function(point, shape) {
             var count = 0;
 
             function getIndex(i, shape) {
@@ -2795,7 +2795,8 @@
             for (var i = 0; i < shape.length; i++) {
                 var position = this._getPointPosition(point, shape[i], shape[getIndex(i, shape)]);
                 switch (position) {
-                    case 'INTERSECT': {
+                    case 'INTERSECT':
+                    {
                         count++;
                         break;
                     }
@@ -2809,7 +2810,7 @@
             return count % 2 == 1;
         },
 
-        _isPointInFence: function (geoPoint, geoFence) {
+        _isPointInFence: function(geoPoint, geoFence) {
             return this._isPointInRectangular(geoPoint, geoFence.nwPoint, geoFence.sePoint) ||
                 geoFence.type == 'CIRCLE' && this._isPointInCircle(geoPoint, geoFence.nodes[0],
                     this._distance(geoFence.nodes[0].latitude, geoFence.nodes[0].longitude, geoFence.nodes[1].latitude,
@@ -2818,38 +2819,38 @@
         },
 
         _typesMapper: {
-            'RECT': function (fence) {
+            'RECT'  : function(fence) {
                 fence.nwPoint = fence.nodes[0];
                 fence.sePoint = fence.nodes[1];
             },
-            'CIRCLE': function (fence, self) {
+            'CIRCLE': function(fence, self) {
                 var outRect = self._getOutRectangle(fence.nodes[0], fence.nodes[1]);
                 fence.nwPoint = {
-                    latitude: outRect[0],
+                    latitude : outRect[0],
                     longitude: outRect[1]
                 };
                 fence.sePoint = {
-                    latitude: outRect[2],
+                    latitude : outRect[2],
                     longitude: outRect[3]
                 };
             },
-            'SHAPE': function (fence, self) {
+            'SHAPE' : function(fence, self) {
                 var outRect = self._getOutRectangle(fence.nodes[0], fence.nodes[1]);
                 fence.nwPoint = {
-                    latitude: outRect[0],
+                    latitude : outRect[0],
                     longitude: outRect[1]
                 };
                 fence.sePoint = {
-                    latitude: outRect[2],
+                    latitude : outRect[2],
                     longitude: outRect[3]
                 };
             }
         },
 
-        _maxDuration: 5000,
-        _timers: {},
+        _maxDuration  : 5000,
+        _timers       : {},
 
-        _checkPosition: function (geofenceName, coords, fences, geoPoint, GeoFenceCallback, lastResults, async) {
+        _checkPosition: function(geofenceName, coords, fences, geoPoint, GeoFenceCallback, lastResults, async) {
             var self = this;
 
             for (var k = 0; k < self._trackedFences.length; k++) {
@@ -2868,9 +2869,9 @@
                 }
 
                 if (rule) {
-                    var duration = self._trackedFences[k].onStayDuration * 1000,
-                        timeoutFuncInApp = function (savedK, savedCoords, duration) {
-                            var callBack = function () {
+                    var duration          = self._trackedFences[k].onStayDuration * 1000,
+                        timeoutFuncInApp  = function(savedK, savedCoords, duration) {
+                            var callBack = function() {
                                 GeoFenceCallback['onstay'](self._trackedFences[savedK].geofenceName,
                                     self._trackedFences[savedK].objectId, savedCoords.latitude, savedCoords.longitude);
                             };
@@ -2878,8 +2879,8 @@
                             self._timers[self._trackedFences[savedK].geofenceName] = setTimeout(callBack, duration);
                         },
 
-                        timeoutFuncRemote = function (savedK, savedCoords, duration, geoPoint) {
-                            var callBack = function () {
+                        timeoutFuncRemote = function(savedK, savedCoords, duration, geoPoint) {
+                            var callBack = function() {
                                 self._runFenceAction('onstay', self._trackedFences[savedK].geofenceName, geoPoint,
                                     async);
                             };
@@ -2893,7 +2894,7 @@
                                 coords.latitude, coords.longitude);
 
                             if (duration > -1) {
-                                (function (k, coords, duration) {
+                                (function(k, coords, duration) {
                                     return timeoutFuncInApp(k, coords, duration);
                                 })(k, coords, duration);
                             } else {
@@ -2913,7 +2914,7 @@
                             self._runFenceAction(rule, self._trackedFences[k].geofenceName, geoPoint, async);
 
                             if (duration > -1) {
-                                (function (k, coords, duration, geoPoint) {
+                                (function(k, coords, duration, geoPoint) {
                                     return timeoutFuncRemote(k, coords, duration, geoPoint);
                                 })(k, coords, duration, geoPoint);
                             } else {
@@ -2928,9 +2929,9 @@
             }
         },
 
-        _mobilecheck: function () {
+        _mobilecheck: function() {
             var check = false;
-            (function (a) {
+            (function(a) {
                 if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,
                         4))) {
                     check = true;
@@ -2940,10 +2941,10 @@
             return check;
         },
 
-        _trackedFences: [],
-        _lastResults: {},
+        _trackedFences  : [],
+        _lastResults    : {},
 
-        _startMonitoring: function (geofenceName, secondParam, async) {
+        _startMonitoring: function(geofenceName, secondParam, async) {
             var self = this;
             var isGeoPoint = false;
 
@@ -2986,7 +2987,7 @@
 
             function getCurPos() {
                 navigator.geolocation.getCurrentPosition(getPosition, errorCallback, {
-                    timeout: 5000,
+                    timeout           : 5000,
                     enableHighAccuracy: true
                 });
             }
@@ -2995,7 +2996,7 @@
                 if (fences.length) {
                     this.monitoringId = (!this._mobilecheck()) ? setInterval(getCurPos,
                         self._maxDuration) : navigator.geolocation.watchPosition(getPosition, errorCallback, {
-                        timeout: self._maxDuration,
+                        timeout           : self._maxDuration,
                         enableHighAccuracy: true
                     });
                 } else {
@@ -3004,15 +3005,15 @@
             }
         },
 
-        startGeofenceMonitoringWithInAppCallback: function (geofenceName, inAppCallback, async) {
+        startGeofenceMonitoringWithInAppCallback : function(geofenceName, inAppCallback, async) {
             this._startMonitoring(geofenceName, inAppCallback, async);
         },
 
-        startGeofenceMonitoringWithRemoteCallback: function (geofenceName, geoPoint, async) {
+        startGeofenceMonitoringWithRemoteCallback: function(geofenceName, geoPoint, async) {
             this._startMonitoring(geofenceName, geoPoint, async);
         },
 
-        stopGeofenceMonitoring: function (geofenceName) {
+        stopGeofenceMonitoring: function(geofenceName) {
             var self = this;
             //removed = [];
             if (geofenceName) {
@@ -3042,7 +3043,7 @@
     }
 
     Proxy.prototype = {
-        on: function (eventName, handler) {
+        on       : function(eventName, handler) {
             if (!eventName) {
                 throw new Error('Event name not specified');
             }
@@ -3054,7 +3055,7 @@
             this.eventHandlers[eventName] = this.eventHandlers[eventName] || [];
             this.eventHandlers[eventName].push(handler);
         },
-        fireEvent: function (eventName, data) {
+        fireEvent: function(eventName, data) {
             var handlers = this.eventHandlers[eventName] || [], len, i;
             for (i = 0, len = handlers.length; i < len; ++i) {
                 handlers[i](data);
@@ -3077,44 +3078,44 @@
     PollingProxy.prototype = new Proxy();
 
     Utils.deepExtend(PollingProxy.prototype, {
-        onMessage: function (data) {
+        onMessage: function(data) {
             clearTimeout(this.timeout);
             var self = this;
 
-            this.timer = setTimeout(function () {
+            this.timer = setTimeout(function() {
                 self.poll();
             }, this.interval);
 
             this.fireEvent('messageReceived', data);
         },
 
-        poll: function () {
+        poll     : function() {
             var self = this;
 
-            this.timeout = setTimeout(function () {
+            this.timeout = setTimeout(function() {
                 self.onTimeout();
             }, 30 * 1000);
 
             this.xhr = Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl,
-                isAsync: true,
+                method      : 'GET',
+                url         : this.restUrl,
+                isAsync     : true,
                 asyncHandler: this.responder
             });
         },
 
-        close: function () {
+        close    : function() {
             clearTimeout(this.timer);
             clearTimeout(this.timeout);
             this.needReconnect = false;
             this.xhr && this.xhr.abort();
         },
 
-        onTimeout: function () {
+        onTimeout: function() {
             this.xhr && this.xhr.abort();
         },
 
-        onError: function () {
+        onError  : function() {
             clearTimeout(this.timer);
             clearTimeout(this.timeout);
 
@@ -3122,7 +3123,7 @@
                 var self = this;
                 this.xhr = null;
 
-                this.timer = setTimeout(function () {
+                this.timer = setTimeout(function() {
                     self.poll();
                 }, this.interval);
             }
@@ -3135,21 +3136,21 @@
 
         try {
             var socket = this.socket = new WebSocket(url);
-            socket.onopen = function () {
+            socket.onopen = function() {
                 return self.sockOpen();
             };
-            socket.onerror = function (error) {
+            socket.onerror = function(error) {
                 return self.sockError(error);
             };
-            socket.onclose = function () {
+            socket.onclose = function() {
                 self.onSocketClose();
             };
 
-            socket.onmessage = function (event) {
+            socket.onmessage = function(event) {
                 return self.onMessage(event);
             };
         } catch (e) {
-            setTimeout(function () {
+            setTimeout(function() {
                 self.onSocketClose();
             }, 100);
         }
@@ -3158,17 +3159,17 @@
     SocketProxy.prototype = new Proxy();
 
     Utils.deepExtend(SocketProxy.prototype, {
-        onMessage: function () {
+        onMessage    : function() {
             this.fireEvent('messageReceived', data);
         },
 
-        onSocketClose: function (data) {
+        onSocketClose: function(data) {
             if (this.reconnectWithPolling) {
                 this.fireEvent('socketClose', data);
             }
         },
 
-        close: function () {
+        close        : function() {
             this.reconnectWithPolling = false;
             this.socket.close();
         }
@@ -3185,23 +3186,23 @@
     }
 
     Subscription.prototype = {
-        _subscribe: function (async) {
+        _subscribe        : function(async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var self = this;
 
-            var _async = new Async(function (data) {
+            var _async = new Async(function(data) {
                 self.subscriptionId = data.subscriptionId;
                 self._startSubscription();
-            }, function (e) {
+            }, function(e) {
                 responder.fault(e);
             });
 
             var subscription = Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + '/subscribe',
-                isAsync: isAsync,
-                data: JSON.stringify(this.options),
+                method      : 'POST',
+                url         : this.restUrl + '/subscribe',
+                isAsync     : isAsync,
+                data        : JSON.stringify(this.options),
                 asyncHandler: _async
             });
 
@@ -3211,18 +3212,18 @@
             }
         },
 
-        _startSubscription: function () {
+        _startSubscription: function() {
             var self = this;
 
             if (WebSocket) {
                 var url = this.channelProperties['websocket'] + '/' + this.subscriptionId;
                 this.proxy = new SocketProxy(url);
 
-                this.proxy.on('socketClose', function () {
+                this.proxy.on('socketClose', function() {
                     self._switchToPolling();
                 });
 
-                this.proxy.on('messageReceived', function () {
+                this.proxy.on('messageReceived', function() {
                     self.responder();
                 });
             } else {
@@ -3232,17 +3233,17 @@
             this._startSubscription = emptyFn;
         },
 
-        cancelSubscription: function () {
+        cancelSubscription: function() {
             this.proxy && this.proxy.close();
             this._startSubscription = emptyFn;
         },
 
-        _switchToPolling: function () {
+        _switchToPolling  : function() {
             var url = this.restUrl + '/' + this.subscriptionId;
             this.proxy = new PollingProxy(url);
             var self = this;
 
-            this.proxy.on('messageReceived', function (data) {
+            this.proxy.on('messageReceived', function(data) {
                 if (data.messages.length) {
                     self.responder(data);
                 }
@@ -3256,7 +3257,7 @@
     }
 
     Messaging.prototype = {
-        _getProperties: function (channelName, async) {
+        _getProperties  : function(channelName, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -3271,9 +3272,9 @@
             }
 
             var result = Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + '/' + channelName + '/properties',
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + '/' + channelName + '/properties',
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
 
@@ -3281,23 +3282,23 @@
 
             return result;
         },
-        subscribe: function (channelName, subscriptionCallback, subscriptionOptions, async) {
+        subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             if (isAsync) {
                 var that = this;
 
-                var callback = new Async(function (props) {
+                var callback = new Async(function(props) {
                     async.success(new Subscription({
-                        channelName: channelName,
-                        options: subscriptionOptions,
+                        channelName      : channelName,
+                        options          : subscriptionOptions,
                         channelProperties: props,
-                        responder: subscriptionCallback,
-                        restUrl: that.restUrl,
-                        onSubscribe: responder
+                        responder        : subscriptionCallback,
+                        restUrl          : that.restUrl,
+                        onSubscribe      : responder
                     }));
-                }, function (data) {
+                }, function(data) {
                     responder.fault(data);
                 });
 
@@ -3306,15 +3307,15 @@
                 var props = this._getProperties(channelName);
 
                 return new Subscription({
-                    channelName: channelName,
-                    options: subscriptionOptions,
+                    channelName      : channelName,
+                    options          : subscriptionOptions,
                     channelProperties: props,
-                    responder: subscriptionCallback,
-                    restUrl: this.restUrl
+                    responder        : subscriptionCallback,
+                    restUrl          : this.restUrl
                 });
             }
         },
-        publish: function (channelName, message, publishOptions, deliveryTarget, async) {
+        publish         : function(channelName, message, publishOptions, deliveryTarget, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -3339,14 +3340,14 @@
             }
 
             return Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + '/' + channelName,
-                isAsync: isAsync,
+                method      : 'POST',
+                url         : this.restUrl + '/' + channelName,
+                isAsync     : isAsync,
                 asyncHandler: responder,
-                data: JSON.stringify(data)
+                data        : JSON.stringify(data)
             });
         },
-        sendEmail: function (subject, bodyParts, recipients, attachments, async) {
+        sendEmail       : function(subject, bodyParts, recipients, attachments, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var data = {};
@@ -3380,35 +3381,35 @@
             }
 
             return Backendless._ajax({
-                method: 'POST',
-                url: this.restUrl + '/email',
-                isAsync: isAsync,
+                method      : 'POST',
+                url         : this.restUrl + '/email',
+                isAsync     : isAsync,
                 asyncHandler: responder,
-                data: JSON.stringify(data)
+                data        : JSON.stringify(data)
             });
         },
 
-        cancel: function (messageId, async) {
+        cancel          : function(messageId, async) {
             var isAsync = async != null;
 
             return Backendless._ajax({
-                method: 'DELETE',
-                url: this.restUrl + '/' + messageId,
-                isAsync: isAsync,
+                method      : 'DELETE',
+                url         : this.restUrl + '/' + messageId,
+                isAsync     : isAsync,
                 asyncHandler: new Async(emptyFn)
             });
         },
 
-        registerDevice: function (channels, expiration, async) {
+        registerDevice  : function(channels, expiration, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var device = isBrowser ? window.device : NodeDevice;
 
             var data = {
                 deviceToken: null, //This value will set in callback
-                deviceId: device.uuid,
-                os: device.platform,
-                osVersion: device.version
+                deviceId   : device.uuid,
+                os         : device.platform,
+                osVersion  : device.version
             };
 
             if (Utils.isArray(channels)) {
@@ -3424,52 +3425,52 @@
 
             var url = this.restUrl + '/registrations';
 
-            var success = function (deviceToken) {
+            var success = function(deviceToken) {
                 data.deviceToken = deviceToken;
 
                 Backendless._ajax({
-                    method: 'POST',
-                    url: url,
-                    data: JSON.stringify(data),
-                    isAsync: isAsync,
+                    method      : 'POST',
+                    url         : url,
+                    data        : JSON.stringify(data),
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             };
 
-            var fail = function (status) {
+            var fail = function(status) {
                 console.warn(JSON.stringify(['failed to register ', status]));
             };
 
             var config = {
                 projectid: "http://backendless.com",
-                appid: Backendless.applicationId
+                appid    : Backendless.applicationId
             };
 
             cordova.exec(success, fail, "PushNotification", "registerDevice", [config]);
         },
 
-        getRegistrations: function (async) {
+        getRegistrations: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + '/registrations/' + deviceId,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + '/registrations/' + deviceId,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        unregisterDevice: function (async) {
+        unregisterDevice: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             var result = Backendless._ajax({
-                method: 'DELETE',
-                url: this.restUrl + '/registrations/' + deviceId,
-                isAsync: isAsync,
+                method      : 'DELETE',
+                url         : this.restUrl + '/registrations/' + deviceId,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
 
@@ -3484,8 +3485,8 @@
     };
     function getBuilder(filename, filedata, boundary) {
         var dashdash = '--',
-            crlf = '\r\n',
-            builder = '';
+            crlf     = '\r\n',
+            builder  = '';
 
         builder += dashdash;
         builder += boundary;
@@ -3510,10 +3511,10 @@
     }
 
     function send(e) {
-        var xhr = new XMLHttpRequest(),
-            boundary = '-backendless-multipart-form-boundary-' + getNow(),
-            builder = getBuilder(this.fileName, e.target.result, boundary),
-            badResponse = function (xhr) {
+        var xhr         = new XMLHttpRequest(),
+            boundary    = '-backendless-multipart-form-boundary-' + getNow(),
+            builder     = getBuilder(this.fileName, e.target.result, boundary),
+            badResponse = function(xhr) {
                 var result = {};
                 try {
                     result = JSON.parse(xhr.responseText);
@@ -3540,7 +3541,7 @@
         var asyncHandler = this.asyncHandler;
 
         if (asyncHandler) {
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         asyncHandler.success(JSON.parse(xhr.responseText));
@@ -3565,9 +3566,9 @@
     }
 
     function sendEncoded(e) {
-        var xhr = new XMLHttpRequest(),
-            boundary = '-backendless-multipart-form-boundary-' + getNow(),
-            badResponse = function (xhr) {
+        var xhr         = new XMLHttpRequest(),
+            boundary    = '-backendless-multipart-form-boundary-' + getNow(),
+            badResponse = function(xhr) {
                 var result = {};
                 try {
                     result = JSON.parse(xhr.responseText);
@@ -3588,7 +3589,7 @@
         var asyncHandler = this.asyncHandler;
 
         if (asyncHandler) {
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         asyncHandler.success(JSON.parse(xhr.responseText));
@@ -3617,56 +3618,56 @@
     }
 
     FilePermissions.prototype = {
-        grantUser: function (userid, url, permissionType, async) {
+        grantUser  : function(userid, url, permissionType, async) {
             this.varType = 'user';
             this.id = userid;
 
             return this.grant(url, permissionType, async);
         },
 
-        grantRole: function (rolename, url, permissionType, async) {
+        grantRole  : function(rolename, url, permissionType, async) {
             this.varType = 'role';
             this.id = rolename;
 
             return this.grant(url, permissionType, async);
         },
 
-        grant: function (url, permissionType, async) {
+        grant      : function(url, permissionType, async) {
             return this.sendRequest('GRANT', url, permissionType, async);
         },
 
-        denyUser: function (rolename, url, permissionType, async) {
+        denyUser   : function(rolename, url, permissionType, async) {
             this.varType = 'role';
             this.id = rolename;
 
             return this.deny(url, permissionType, async);
         },
 
-        denyRole: function (rolename, url, permissionType, async) {
+        denyRole   : function(rolename, url, permissionType, async) {
             this.varType = 'role';
             this.id = rolename;
 
             return this.deny(url, permissionType, async);
         },
 
-        deny: function (url, permissionType, async) {
+        deny       : function(url, permissionType, async) {
             return this.sendRequest('DENY', url, permissionType, async);
         },
 
-        sendRequest: function (type, url, permissionType, async) {
+        sendRequest: function(type, url, permissionType, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
-                data = {
+                isAsync   = responder != null,
+                data      = {
                     "permission": permissionType
                 };
 
             data[this.varType] = this.id || "*";
 
             return Backendless._ajax({
-                method: 'PUT',
-                url: this.restUrl + '/' + type + '/' + encodeURIComponent(url),
-                data: JSON.stringify(data),
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.restUrl + '/' + type + '/' + encodeURIComponent(url),
+                data        : JSON.stringify(data),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         }
@@ -3677,7 +3678,7 @@
     }
 
     Files.prototype = {
-        saveFile: function (path, fileName, fileContent, overwrite, async) {
+        saveFile  : function(path, fileName, fileContent, overwrite, async) {
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
@@ -3711,7 +3712,7 @@
                     reader.asyncHandler = async;
                 }
 
-                reader.onerror = function (evn) {
+                reader.onerror = function(evn) {
                     async.fault(evn);
                 };
 
@@ -3725,7 +3726,7 @@
             }
         },
 
-        upload: function (files, path, overwrite, async) {
+        upload    : function(files, path, overwrite, async) {
             files = files.files || files;
             var baseUrl = this.restUrl + '/' + path + '/';
             var overwriting = '';
@@ -3749,7 +3750,7 @@
                             reader.uploadPath = baseUrl + reader.fileName + overwriting;
                             reader.onloadend = send;
                             reader.asyncHandler = async;
-                            reader.onerror = function (evn) {
+                            reader.onerror = function(evn) {
                                 async.fault(evn);
                             };
                             reader.readAsBinaryString(files[i]);
@@ -3772,8 +3773,8 @@
                     form.method = 'POST';
                     document.body.appendChild(form);
                     form.appendChild(files);
-                    var fileName = encodeURIComponent(files.value).replace(/'/g, "%27").replace(/"/g, "%22"),
-                        index = fileName.lastIndexOf('\\');
+                    var fileName      = encodeURIComponent(files.value).replace(/'/g, "%27").replace(/"/g, "%22"),
+                        index         = fileName.lastIndexOf('\\');
 
                     if (index) {
                         fileName = fileName.substring(index + 1);
@@ -3786,10 +3787,10 @@
             }
         },
 
-        listing: function (path, pattern, recursively, pagesize, offset, async) {
+        listing   : function(path, pattern, recursively, pagesize, offset, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
-                url = this.restUrl + '/' + path;
+                isAsync   = responder != null,
+                url       = this.restUrl + '/' + path;
 
             if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
                 url += "?";
@@ -3812,25 +3813,25 @@
             }
 
             return Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        renameFile: function (oldPathName, newName, async) {
+        renameFile: function(oldPathName, newName, async) {
             this._checkPath(oldPathName);
 
             var parameters = {
                 oldPathName: oldPathName,
-                newName: newName
+                newName    : newName
             };
 
             return this._doAction("rename", parameters, async);
         },
 
-        moveFile: function (sourcePath, targetPath, async) {
+        moveFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
 
@@ -3842,7 +3843,7 @@
             return this._doAction("move", parameters, async);
         },
 
-        copyFile: function (sourcePath, targetPath, async) {
+        copyFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
 
@@ -3854,7 +3855,7 @@
             return this._doAction("copy", parameters, async);
         },
 
-        _checkPath: function (path) {
+        _checkPath: function(path) {
             if (!(/^\//).test(path)) {
                 path = "/" + path;
             }
@@ -3862,57 +3863,57 @@
             return path;
         },
 
-        _doAction: function (actionType, parameters, async) {
+        _doAction : function(actionType, parameters, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
-                method: 'PUT',
-                url: this.restUrl + '/' + actionType,
-                data: JSON.stringify(parameters),
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.restUrl + '/' + actionType,
+                data        : JSON.stringify(parameters),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        remove: function (fileURL, async) {
+        remove    : function(fileURL, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var url = fileURL.indexOf("http://") === 0 || fileURL.indexOf("https://") === 0 ? fileURL : this.restUrl + '/' + fileURL;
 
             Backendless._ajax({
-                method: 'DELETE',
-                url: url,
-                isAsync: isAsync,
+                method      : 'DELETE',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        exists: function (path, async) {
+        exists    : function(path, async) {
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
 
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null,
-                url = this.restUrl + '/' + path + '?action=exists';
+                isAsync   = responder != null,
+                url       = this.restUrl + '/' + path + '?action=exists';
 
             return Backendless._ajax({
-                method: 'GET',
-                url: url,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        removeDirectory: function (path, async) {
+        removeDirectory: function(path, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
             return Backendless._ajax({
-                method: 'DELETE',
-                url: this.restUrl + '/' + path,
-                isAsync: isAsync,
+                method      : 'DELETE',
+                url         : this.restUrl + '/' + path,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
@@ -3981,7 +3982,7 @@
         this.restUrl = Backendless.appPath + '/commerce/googleplay';
     }
 
-    Commerce.prototype.validatePlayPurchase = function (packageName, productId, token, async) {
+    Commerce.prototype.validatePlayPurchase = function(packageName, productId, token, async) {
         if (arguments.length < 3) {
             throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
         }
@@ -3993,21 +3994,21 @@
         }
 
         var responder = Utils.extractResponder(arguments),
-            isAsync = responder != null;
+            isAsync   = responder != null;
 
         if (responder) {
             responder = Utils.wrapAsync(responder);
         }
 
         return Backendless._ajax({
-            method: 'GET',
-            url: this.restUrl + '/validate/' + packageName + '/inapp/' + productId + '/purchases/' + token,
-            isAsync: isAsync,
+            method      : 'GET',
+            url         : this.restUrl + '/validate/' + packageName + '/inapp/' + productId + '/purchases/' + token,
+            isAsync     : isAsync,
             asyncHandler: responder
         });
     };
 
-    Commerce.prototype.cancelPlaySubscription = function (packageName, subscriptionId, token, Async) {
+    Commerce.prototype.cancelPlaySubscription = function(packageName, subscriptionId, token, Async) {
         if (arguments.length < 3) {
             throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
         }
@@ -4019,21 +4020,21 @@
         }
 
         var responder = Utils.extractResponder(arguments),
-            isAsync = responder != null;
+            isAsync   = responder != null;
 
         if (responder) {
             responder = Utils.wrapAsync(responder);
         }
 
         return Backendless._ajax({
-            method: 'POST',
-            url: this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token + '/cancel',
-            isAsync: isAsync,
+            method      : 'POST',
+            url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token + '/cancel',
+            isAsync     : isAsync,
             asyncHandler: responder
         });
     };
 
-    Commerce.prototype.getPlaySubscriptionStatus = function (packageName, subscriptionId, token, Async) {
+    Commerce.prototype.getPlaySubscriptionStatus = function(packageName, subscriptionId, token, Async) {
         if (arguments.length < 3) {
             throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
         }
@@ -4045,16 +4046,16 @@
         }
 
         var responder = Utils.extractResponder(arguments),
-            isAsync = responder != null;
+            isAsync   = responder != null;
 
         if (responder) {
             responder = Utils.wrapAsync(responder);
         }
 
         return Backendless._ajax({
-            method: 'GET',
-            url: this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token,
-            isAsync: isAsync,
+            method      : 'GET',
+            url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token,
+            isAsync     : isAsync,
             asyncHandler: responder
         });
     };
@@ -4063,7 +4064,7 @@
         this.restUrl = Backendless.appPath + '/servercode/events';
     }
 
-    Events.prototype.dispatch = function (eventname, eventArgs, Async) {
+    Events.prototype.dispatch = function(eventname, eventArgs, Async) {
         if (!eventname || !Utils.isString(eventname)) {
             throw new Error('Event Name must be provided and must be not an empty STRING!');
         }
@@ -4071,7 +4072,7 @@
         eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
 
         var responder = Utils.extractResponder(arguments),
-            isAsync = responder != null;
+            isAsync   = responder != null;
 
         if (responder) {
             responder = Utils.wrapAsync(responder);
@@ -4080,22 +4081,22 @@
         eventArgs = eventArgs instanceof Backendless.Async ? {} : eventArgs;
 
         return Backendless._ajax({
-            method: 'POST',
-            url: this.restUrl + '/' + eventname,
-            data: JSON.stringify(eventArgs),
-            isAsync: isAsync,
+            method      : 'POST',
+            url         : this.restUrl + '/' + eventname,
+            data        : JSON.stringify(eventArgs),
+            isAsync     : isAsync,
             asyncHandler: responder
         });
     };
 
-    var Cache = function () {
+    var Cache = function() {
         this.restUrl = Backendless.appPath + '/cache/';
     };
 
     var FactoryMethods = {};
 
     Cache.prototype = {
-        put: function (key, value, timeToLive, async) {
+        put             : function(key, value, timeToLive, async) {
             if (!Utils.isString(key)) {
                 throw new Error('You can use only String as key to put into Cache');
             }
@@ -4124,15 +4125,15 @@
             }
 
             return Backendless._ajax({
-                method: 'PUT',
-                url: this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
-                data: JSON.stringify(value),
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+                data        : JSON.stringify(value),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        expireIn: function (key, seconds, async) {
+        expireIn        : function(key, seconds, async) {
             if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
                 seconds = (Utils.isDate(seconds)) ? seconds.getTime() : seconds;
                 var responder = Utils.extractResponder(arguments), isAsync = false;
@@ -4142,10 +4143,10 @@
                 }
 
                 return Backendless._ajax({
-                    method: 'PUT',
-                    url: this.restUrl + key + '/expireIn?timeout=' + seconds,
-                    data: JSON.stringify({}),
-                    isAsync: isAsync,
+                    method      : 'PUT',
+                    url         : this.restUrl + key + '/expireIn?timeout=' + seconds,
+                    data        : JSON.stringify({}),
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } else {
@@ -4153,7 +4154,7 @@
             }
         },
 
-        expireAt: function (key, timestamp, async) {
+        expireAt        : function(key, timestamp, async) {
             if (Utils.isString(key) && (Utils.isNumber(timestamp) || Utils.isDate(timestamp)) && timestamp) {
                 timestamp = (Utils.isDate(timestamp)) ? timestamp.getTime() : timestamp;
                 var responder = Utils.extractResponder(arguments), isAsync = false;
@@ -4163,10 +4164,10 @@
                 }
 
                 return Backendless._ajax({
-                    method: 'PUT',
-                    url: this.restUrl + key + '/expireAt?timestamp=' + timestamp,
-                    data: JSON.stringify({}),
-                    isAsync: isAsync,
+                    method      : 'PUT',
+                    url         : this.restUrl + key + '/expireAt?timestamp=' + timestamp,
+                    data        : JSON.stringify({}),
+                    isAsync     : isAsync,
                     asyncHandler: responder
                 });
             } else {
@@ -4174,7 +4175,7 @@
             }
         },
 
-        cacheMethod: function (method, key, contain, async) {
+        cacheMethod     : function(method, key, contain, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
@@ -4187,18 +4188,18 @@
             }
 
             return Backendless._ajax({
-                method: method,
-                url: this.restUrl + key + (contain ? '/check' : ''),
-                isAsync: isAsync,
+                method      : method,
+                url         : this.restUrl + key + (contain ? '/check' : ''),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        contains: function (key, async) {
+        contains        : function(key, async) {
             return this.cacheMethod('GET', key, true, async);
         },
 
-        get: function (key, async) {
+        get             : function(key, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
@@ -4225,42 +4226,42 @@
             }
 
             var result = Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + key,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + key,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
 
             return isAsync ? result : parseResult(result);
         },
 
-        remove: function (key, async) {
+        remove          : function(key, async) {
             return this.cacheMethod('DELETE', key, false, async);
         },
 
-        setObjectFactory: function (objectName, factoryMethod) {
+        setObjectFactory: function(objectName, factoryMethod) {
             FactoryMethods[objectName] = factoryMethod;
         }
     };
 
-    var Counters = function () {
+    var Counters = function() {
         this.restUrl = Backendless.appPath + '/counters/';
     };
 
-    var AtomicInstance = function (counterName) {
+    var AtomicInstance = function(counterName) {
         this.name = counterName;
     };
 
     Counters.prototype = {
-        of: function (counterName) {
+        of                      : function(counterName) {
             return new AtomicInstance(counterName);
         },
 
-        getConstructor: function () {
+        getConstructor          : function() {
             return this;
         },
 
-        counterNameValidation: function (counterName) {
+        counterNameValidation   : function(counterName) {
             if (!counterName) {
                 throw new Error('Missing value for the "counterName" argument. The argument must contain a string value.');
             }
@@ -4272,7 +4273,7 @@
             this.name = counterName;
         },
 
-        implementMethod: function (method, urlPart, async) {
+        implementMethod         : function(method, urlPart, async) {
             var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
@@ -4281,44 +4282,44 @@
             }
 
             return Backendless._ajax({
-                method: method,
-                url: this.restUrl + this.name + urlPart,
-                isAsync: isAsync,
+                method      : method,
+                url         : this.restUrl + this.name + urlPart,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        incrementAndGet: function (counterName, async) {
+        incrementAndGet         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
 
             return this.implementMethod('PUT', '/increment/get', async);
         },
 
-        getAndIncrement: function (counterName, async) {
+        getAndIncrement         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
 
             return this.implementMethod('PUT', '/get/increment', async);
         },
 
-        decrementAndGet: function (counterName, async) {
+        decrementAndGet         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
 
             return this.implementMethod('PUT', '/decrement/get', async);
         },
 
-        getAndDecrement: function (counterName, async) {
+        getAndDecrement         : function(counterName, async) {
             this.counterNameValidation(counterName, async);
 
             return this.implementMethod('PUT', '/get/decrement', async);
         },
 
-        reset: function (counterName, async) {
+        reset                   : function(counterName, async) {
             this.counterNameValidation(counterName, async);
 
             return this.implementMethod('PUT', '/reset', async);
         },
 
-        get: function (counterName, async) {
+        get                     : function(counterName, async) {
             this.counterNameValidation(counterName, async);
 
             var responder = Utils.extractResponder(arguments), isAsync = false;
@@ -4329,14 +4330,14 @@
             }
 
             return Backendless._ajax({
-                method: 'GET',
-                url: this.restUrl + this.name,
-                isAsync: isAsync,
+                method      : 'GET',
+                url         : this.restUrl + this.name,
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        implementMethodWithValue: function (urlPart, value, async) {
+        implementMethodWithValue: function(urlPart, value, async) {
             if (!value) {
                 throw new Error('Missing value for the "value" argument. The argument must contain a numeric value.');
             }
@@ -4353,26 +4354,26 @@
             }
 
             return Backendless._ajax({
-                method: 'PUT',
-                url: this.restUrl + this.name + urlPart + ((value) ? value : ''),
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.restUrl + this.name + urlPart + ((value) ? value : ''),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         },
 
-        addAndGet: function (counterName, value, async) {
+        addAndGet               : function(counterName, value, async) {
             this.counterNameValidation(counterName, async);
 
             return this.implementMethodWithValue('/get/incrementby?value=', value, async);
         },
 
-        getAndAdd: function (counterName, value, async) {
+        getAndAdd               : function(counterName, value, async) {
             this.counterNameValidation(counterName, async);
 
             return this.implementMethodWithValue('/incrementby/get?value=', value, async);
         },
 
-        compareAndSet: function (counterName, expected, updated, async) {
+        compareAndSet           : function(counterName, expected, updated, async) {
             this.counterNameValidation(counterName, async);
 
             if (!expected || !updated) {
@@ -4391,40 +4392,40 @@
             }
 
             return Backendless._ajax({
-                method: 'PUT',
-                url: this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
-                isAsync: isAsync,
+                method      : 'PUT',
+                url         : this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         }
     };
 
     AtomicInstance.prototype = {
-        incrementAndGet: function (async) {
+        incrementAndGet: function(async) {
             return Counters.prototype.getConstructor().incrementAndGet(this.name, async);
         },
-        getAndIncrement: function (async) {
+        getAndIncrement: function(async) {
             return Counters.prototype.getConstructor().getAndIncrement(this.name, async);
         },
-        decrementAndGet: function (async) {
+        decrementAndGet: function(async) {
             return Counters.prototype.getConstructor().decrementAndGet(this.name, async);
         },
-        getAndDecrement: function (async) {
+        getAndDecrement: function(async) {
             return Counters.prototype.getConstructor().getAndDecrement(this.name, async);
         },
-        reset: function (async) {
+        reset          : function(async) {
             return Counters.prototype.getConstructor().reset(this.name, async);
         },
-        get: function (async) {
+        get            : function(async) {
             return Counters.prototype.getConstructor().get(this.name, async);
         },
-        addAndGet: function (value, async) {
+        addAndGet      : function(value, async) {
             return Counters.prototype.getConstructor().addAndGet(this.name, value, async);
         },
-        getAndAdd: function (value, async) {
+        getAndAdd      : function(value, async) {
             return Counters.prototype.getConstructor().getAndAdd(this.name, value, async);
         },
-        compareAndSet: function (expected, updated, async) {
+        compareAndSet  : function(expected, updated, async) {
             return Counters.prototype.getConstructor().getAndAdd(this.name, expected, updated, async);
         }
     };
@@ -4432,13 +4433,13 @@
     var lastFlushListeners;
 
     Backendless.Logging = {
-        restUrl: root.url,
-        loggers: {},
-        logInfo: [],
-        messagesCount: 0,
-        numOfMessages: 10,
-        timeFrequency: 1,
-        getLogger: function (loggerName) {
+        restUrl              : root.url,
+        loggers              : {},
+        logInfo              : [],
+        messagesCount        : 0,
+        numOfMessages        : 10,
+        timeFrequency        : 1,
+        getLogger            : function(loggerName) {
             if (!Utils.isString(loggerName)) {
                 throw new Error("Invalid 'loggerName' value. LoggerName must be a string value");
             }
@@ -4450,15 +4451,15 @@
             return this.loggers[loggerName];
         },
 
-        flush: function () {
+        flush: function() {
             var async = Utils.extractResponder(arguments);
 
             if (this.logInfo.length) {
                 this.flushInterval && clearTimeout(this.flushInterval);
 
                 var listeners;
-                var cb = function (method) {
-                    return function () {
+                var cb = function(method) {
+                    return function() {
                         for (var i = 0; i < listeners.length; i++) {
                             listeners[i][method].apply(null, arguments);
                         }
@@ -4475,11 +4476,11 @@
                 }
 
                 Backendless._ajax({
-                    method: 'PUT',
-                    isAsync: !!async,
+                    method      : 'PUT',
+                    isAsync     : !!async,
                     asyncHandler: async && new Async(cb('success'), cb('fault')),
-                    url: Backendless.appPath + '/log',
-                    data: JSON.stringify(this.logInfo)
+                    url         : Backendless.appPath + '/log',
+                    data        : JSON.stringify(this.logInfo)
                 });
 
                 this.logInfo = [];
@@ -4493,21 +4494,21 @@
             }
         },
 
-        sendRequest: function () {
+        sendRequest          : function() {
             var logging = this;
 
-            this.flushInterval = setTimeout(function () {
+            this.flushInterval = setTimeout(function() {
                 logging.flush(new Backendless.Async());
             }, this.timeFrequency * 1000);
         },
 
-        checkMessagesLen: function () {
+        checkMessagesLen     : function() {
             if (this.messagesCount > (this.numOfMessages - 1)) {
                 this.sendRequest();
             }
         },
 
-        setLogReportingPolicy: function (numOfMessages, timeFrequency) {
+        setLogReportingPolicy: function(numOfMessages, timeFrequency) {
             this.numOfMessages = numOfMessages;
             this.timeFrequency = timeFrequency;
             this.checkMessagesLen();
@@ -4531,22 +4532,22 @@
     }
 
     Logging.prototype = {
-        debug: function (message) {
+        debug: function(message) {
             return setLogMessage(this.name, "DEBUG", message);
         },
-        info: function (message) {
+        info : function(message) {
             return setLogMessage(this.name, "INFO", message);
         },
-        warn: function (message, exception) {
+        warn : function(message, exception) {
             return setLogMessage(this.name, "WARN", message, exception);
         },
-        error: function (message, exception) {
+        error: function(message, exception) {
             return setLogMessage(this.name, "ERROR", message, exception);
         },
-        fatal: function (message, exception) {
+        fatal: function(message, exception) {
             return setLogMessage(this.name, "FATAL", message, exception);
         },
-        trace: function (message) {
+        trace: function(message) {
             return setLogMessage(this.name, "TRACE", message);
         }
     };
@@ -4556,26 +4557,26 @@
     }
 
     CustomServices.prototype = {
-        invoke: function (serviceName, serviceVersion, method, parameters, async) {
+        invoke: function(serviceName, serviceVersion, method, parameters, async) {
             var responder = Utils.extractResponder(arguments),
-                isAsync = responder != null;
+                isAsync   = responder != null;
 
             return Backendless._ajax({
-                method: "POST",
-                url: this.restUrl + [serviceName, serviceVersion, method].join('/'),
-                data: JSON.stringify(parameters),
-                isAsync: isAsync,
+                method      : "POST",
+                url         : this.restUrl + [serviceName, serviceVersion, method].join('/'),
+                data        : JSON.stringify(parameters),
+                isAsync     : isAsync,
                 asyncHandler: responder
             });
         }
     };
 
     function promisify(fn) {
-        return function () {
+        return function() {
             var context = this;
             var args = [].slice.call(arguments);
 
-            return new Promise(function (resolve, reject) {
+            return new Promise(function(resolve, reject)  {
                 args.push(new Async(resolve, reject, context));
                 fn.apply(context, args);
             });
@@ -4586,7 +4587,7 @@
         var obj = data[0];
         var methods = data[1];
 
-        methods.forEach(function (name) {
+        methods.forEach(function(name) {
             obj[name] = promisify(obj[name]);
         });
     }
@@ -4620,16 +4621,16 @@
             [PollingProxy.prototype, ['poll']],
             [Backendless.Logging, ['flush']],
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                'getRegistrations', 'unregisterDevice']],
+                                   'getRegistrations', 'unregisterDevice']],
             [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
+                             'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
-                'resendEmailConfirmation']]
+                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
+                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
+                                     'resendEmailConfirmation']]
         ].forEach(promisifyPack);
 
-        UserService.prototype.getCurrentUser = function () {
+        UserService.prototype.getCurrentUser = function() {
             if (currentUser) {
                 return Promise.resolve(this._getUserFromResponse(currentUser));
             }
@@ -4640,11 +4641,11 @@
             return currentUserId && persistence.of(User).findById(currentUserId) || Promise.resolve(null);
         };
 
-        UserService.prototype.isValidLogin = function () {
+        UserService.prototype.isValidLogin = function() {
             var userToken = Backendless.LocalCache.get("user-token");
 
             if (userToken) {
-                return new Promise(function (resolve, reject) {
+                return new Promise(function(resolve, reject) {
                     return Backendless._ajax({
                         method: 'GET',
                         url: this.restUrl + '/isvalidusertoken/' + userToken,
@@ -4655,15 +4656,15 @@
             }
 
             return Backendless.UserService.getCurrentUser()
-                .then(function (user) {
+                .then(function(user) {
                     return Promise.resolve(!!user);
-                }, function () {
+                }, function() {
                     return Promise.resolve(false);
                 });
         };
     }
 
-    Backendless.initApp = function (appId, secretKey) {
+    Backendless.initApp = function(appId, secretKey) {
         Backendless.applicationId = appId;
         Backendless.secretKey = secretKey;
         Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/');
@@ -4685,7 +4686,7 @@
         currentUser = null;
     };
 
-    var DataQuery = function () {
+    var DataQuery = function() {
         this.properties = [];
         this.condition = null;
         this.options = null;
@@ -4693,18 +4694,18 @@
     };
 
     DataQuery.prototype = {
-        addProperty: function (prop) {
+        addProperty: function(prop) {
             this.properties = this.properties || [];
             this.properties.push(prop);
         },
 
-        setOption: function (name, value) {
+        setOption: function(name, value) {
             this.options = this.options || {};
 
             this.options[name] = value;
         },
 
-        setOptions: function (options) {
+        setOptions: function(options) {
             for (var key in options) {
                 if (options.hasOwnProperty(key)) {
                     this.setOption(key, options[key]);
@@ -4712,7 +4713,7 @@
             }
         },
 
-        getOption: function (name) {
+        getOption: function(name) {
             return this.options && this.options[name];
         }
     };
@@ -4722,13 +4723,13 @@
         offset: 0
     };
 
-    var PagingQueryBuilder = function () {
+    var PagingQueryBuilder = function() {
         this.offset = PAGING_DEFAULTS.offset;
         this.pageSize = PAGING_DEFAULTS.pageSize;
     };
 
     PagingQueryBuilder.prototype = {
-        setPageSize: function (pageSize) {
+        setPageSize: function(pageSize){
             if (pageSize <= 0) {
                 return 'Page size must be a positive value.';
             }
@@ -4738,7 +4739,7 @@
             return this;
         },
 
-        setOffset: function (offset) {
+        setOffset: function(offset){
             if (offset < 0) {
                 throw new Error('Offset cannot have a negative value.');
             }
@@ -4748,13 +4749,13 @@
             return this;
         },
 
-        prepareNextPage: function () {
+        prepareNextPage: function(){
             this.setOffset(this.offset + this.pageSize);
 
             return this;
         },
 
-        preparePreviousPage: function () {
+        preparePreviousPage: function(){
             var newOffset = this.offset > this.pageSize ? this.offset - this.pageSize : 0;
 
             this.setOffset(newOffset);
@@ -4762,7 +4763,7 @@
             return this;
         },
 
-        build: function () {
+        build: function() {
             return {
                 pageSize: this.pageSize,
                 offset: this.offset
@@ -4770,98 +4771,98 @@
         }
     };
 
-    var DataQueryBuilder = function () {
+    var DataQueryBuilder = function() {
         this._query = new DataQuery();
         this._paging = new PagingQueryBuilder();
     };
 
-    DataQueryBuilder.create = function () {
+    DataQueryBuilder.create = function() {
         return new DataQueryBuilder();
     };
 
     DataQueryBuilder.prototype = {
-        setPageSize: function (pageSize) {
+        setPageSize: function(pageSize){
             this._paging.setPageSize(pageSize);
             return this;
         },
 
-        setOffset: function (offset) {
+        setOffset: function(offset){
             this._paging.setOffset(offset);
             return this;
         },
 
-        prepareNextPage: function () {
+        prepareNextPage: function(){
             this._paging.prepareNextPage();
 
             return this;
         },
 
-        preparePreviousPage: function () {
+        preparePreviousPage: function(){
             this._paging.preparePreviousPage();
 
             return this;
         },
 
-        getProperties: function () {
+        getProperties: function(){
             return this._query.properties;
         },
 
-        setProperties: function (properties) {
+        setProperties: function(properties){
             this._query.properties = Utils.castArray(properties);
             return this;
         },
 
-        addProperty: function (property) {
+        addProperty: function(property){
             this._query.addProperty(property);
             return this;
         },
 
-        getWhereClause: function () {
+        getWhereClause: function(){
             return this._query.condition;
         },
 
-        setWhereClause: function (whereClause) {
+        setWhereClause: function(whereClause){
             this._query.condition = whereClause;
             return this;
         },
 
-        getSortBy: function () {
+        getSortBy: function(){
             return this._query.getOption('sortBy');
         },
 
-        setSortBy: function (sortBy) {
+        setSortBy: function(sortBy){
             this._query.setOption('sortBy', Utils.castArray(sortBy));
 
             return this;
         },
 
-        getRelated: function () {
+        getRelated: function(){
             return this._query.getOption('relations');
         },
 
-        setRelated: function (relations) {
+        setRelated: function(relations){
             this._query.setOption('relations', Utils.castArray(relations));
 
             return this;
         },
 
-        getRelationsDepth: function () {
+        getRelationsDepth: function(){
             return this._query.getOption('relationsDepth');
         },
 
-        setRelationsDepth: function (relationsDepth) {
+        setRelationsDepth: function(relationsDepth){
             this._query.setOption('relationsDepth', relationsDepth);
             return this;
         },
 
-        build: function () {
+        build: function(){
             this._query.setOptions(this._paging.build());
 
             return this._query;
         }
     };
 
-    var GeoQuery = function () {
+    var GeoQuery = function() {
         this.searchRectangle = undefined;
         this.categories = [];
         this.includeMetadata = true;
@@ -4879,16 +4880,16 @@
     };
 
     GeoQuery.prototype = {
-        addCategory: function () {
+        addCategory        : function() {
             this.categories = this.categories || [];
             this.categories.push();
         },
 
-        setClusteringParams: function (westLongitude, eastLongitude, mapWidth, clusterGridSize) {
+        setClusteringParams: function(westLongitude, eastLongitude, mapWidth, clusterGridSize) {
             clusterGridSize = clusterGridSize || 0;
-            var parsedWestLongitude = parseFloat(westLongitude),
-                parsedEastLongitude = parseFloat(eastLongitude),
-                parsedMapWidth = parseInt(mapWidth),
+            var parsedWestLongitude   = parseFloat(westLongitude),
+                parsedEastLongitude   = parseFloat(eastLongitude),
+                parsedMapWidth        = parseInt(mapWidth),
                 parsedClusterGridSize = parseInt(clusterGridSize);
 
             if (!isFinite(parsedWestLongitude) || parsedWestLongitude < -180 || parsedWestLongitude > 180) {
@@ -4916,7 +4917,7 @@
         }
     };
 
-    var GeoPoint = function (args) {
+    var GeoPoint = function(args) {
         args = args || {};
         this.___class = "GeoPoint";
         this.categories = args.categories;
@@ -4927,7 +4928,7 @@
         this.distance = args.distance;
     };
 
-    var GeoCluster = function (args) {
+    var GeoCluster = function(args) {
         args = args || {};
         this.categories = args.categories;
         this.latitude = args.latitude;
@@ -4940,34 +4941,34 @@
     };
 
     var PublishOptionsHeaders = { //PublishOptions headers namespace helper
-        'MESSAGE_TAG': 'message',
-        'IOS_ALERT_TAG': 'ios-alert',
-        'IOS_BADGE_TAG': 'ios-badge',
-        'IOS_SOUND_TAG': 'ios-sound',
-        'ANDROID_TICKER_TEXT_TAG': 'android-ticker-text',
-        'ANDROID_CONTENT_TITLE_TAG': 'android-content-title',
-        'ANDROID_CONTENT_TEXT_TAG': 'android-content-text',
-        'ANDROID_ACTION_TAG': 'android-action',
-        'WP_TYPE_TAG': 'wp-type',
-        'WP_TITLE_TAG': 'wp-title',
-        'WP_TOAST_SUBTITLE_TAG': 'wp-subtitle',
-        'WP_TOAST_PARAMETER_TAG': 'wp-parameter',
-        'WP_TILE_BACKGROUND_IMAGE': 'wp-backgroundImage',
-        'WP_TILE_COUNT': 'wp-count',
-        'WP_TILE_BACK_TITLE': 'wp-backTitle',
+        'MESSAGE_TAG'                  : 'message',
+        'IOS_ALERT_TAG'                : 'ios-alert',
+        'IOS_BADGE_TAG'                : 'ios-badge',
+        'IOS_SOUND_TAG'                : 'ios-sound',
+        'ANDROID_TICKER_TEXT_TAG'      : 'android-ticker-text',
+        'ANDROID_CONTENT_TITLE_TAG'    : 'android-content-title',
+        'ANDROID_CONTENT_TEXT_TAG'     : 'android-content-text',
+        'ANDROID_ACTION_TAG'           : 'android-action',
+        'WP_TYPE_TAG'                  : 'wp-type',
+        'WP_TITLE_TAG'                 : 'wp-title',
+        'WP_TOAST_SUBTITLE_TAG'        : 'wp-subtitle',
+        'WP_TOAST_PARAMETER_TAG'       : 'wp-parameter',
+        'WP_TILE_BACKGROUND_IMAGE'     : 'wp-backgroundImage',
+        'WP_TILE_COUNT'                : 'wp-count',
+        'WP_TILE_BACK_TITLE'           : 'wp-backTitle',
         'WP_TILE_BACK_BACKGROUND_IMAGE': 'wp-backImage',
-        'WP_TILE_BACK_CONTENT': 'wp-backContent',
-        'WP_RAW_DATA': 'wp-raw'
+        'WP_TILE_BACK_CONTENT'         : 'wp-backContent',
+        'WP_RAW_DATA'                  : 'wp-raw'
     };
 
-    var PublishOptions = function (args) {
+    var PublishOptions = function(args) {
         args = args || {};
         this.publisherId = args.publisherId || undefined;
         this.headers = args.headers || undefined;
         this.subtopic = args.subtopic || undefined;
     };
 
-    var DeliveryOptions = function (args) {
+    var DeliveryOptions = function(args) {
         args = args || {};
         this.pushPolicy = args.pushPolicy || undefined;
         this.pushBroadcast = args.pushBroadcast || undefined;
@@ -4977,13 +4978,13 @@
         this.repeatExpiresAt = args.repeatExpiresAt || undefined;
     };
 
-    var Bodyparts = function (args) {
+    var Bodyparts = function(args) {
         args = args || {};
         this.textmessage = args.textmessage || undefined;
         this.htmlmessage = args.htmlmessage || undefined;
     };
 
-    var SubscriptionOptions = function (args) {
+    var SubscriptionOptions = function(args) {
         args = args || {};
         this.subscriberId = args.subscriberId || undefined;
         this.subtopic = args.subtopic || undefined;
