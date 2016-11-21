@@ -192,6 +192,24 @@ declare module __Backendless {
 
     /**
      * @public
+     * @class Backendless.LoadRelationsQueryBuilder
+     * @constructor
+     */
+
+    class LoadRelationsQueryBuilder {
+        static create():Backendless.LoadRelationsQueryBuilder;
+        static of(RelationModel:Object):Backendless.LoadRelationsQueryBuilder;
+
+        setRelationName(relationName:string):Backendless.LoadRelationsQueryBuilder;
+        setPageSize(pageSize:number):Backendless.LoadRelationsQueryBuilder;
+        setOffset(offset:number):Backendless.LoadRelationsQueryBuilder;
+        prepareNextPage():Backendless.LoadRelationsQueryBuilder;
+        preparePreviousPage():Backendless.LoadRelationsQueryBuilder;
+        build():Backendless.DataQueryValueI;
+    }
+
+    /**
+     * @public
      * @class Backendless.GeoPoint
      * @constructor
      */
@@ -405,8 +423,6 @@ declare module __Backendless {
         addRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
         addRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
         addRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
-
-
 
         deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
         deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
