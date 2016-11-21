@@ -60,7 +60,7 @@
         Backendless.Persistence.of(FileItem).remove(id);
     }
 
-    function refreshCountOfList() {
+    function refreshCounter() {
         var countContainer = $('#count');
 
         countContainer.text('loading...');
@@ -83,7 +83,7 @@
     function refreshItemsList() {
         var items = getItemsFromPersistance();
 
-        refreshCountOfList();
+        refreshCounter();
 
         $('.thumbnails').empty();
 

@@ -1112,8 +1112,6 @@
         },
 
         find: function(queryBuilder) {
-            this._validateFindArguments(arguments);
-
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
 
@@ -1147,17 +1145,19 @@
             }
         },
 
-        _parseFindArguments: function(args) {
-          var result = {
-              queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-              async       : args[0] instanceof Backendless.Async ? args[0] : null
-          };
+        _parseFindArguments: function (args) {
+            this._validateFindArguments(args);
 
-          if (args.length > 1) {
-              result.async = args[1];
-          }
+            var result = {
+                queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
+                async: args[0] instanceof Backendless.Async ? args[0] : null
+            };
 
-          return result;
+            if (args.length > 1) {
+                result.async = args[1];
+            }
+
+            return result;
         },
 
         _find: function(dataQuery) {
@@ -1343,8 +1343,6 @@
          * @return {*}
          */
         getObjectCount: function(queryBuilder, async) {
-            this._validateFindArguments(arguments);
-
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
             var url       = this.restUrl + '/count';
@@ -2195,7 +2193,7 @@
             }
 
             if (query.geoFence !== undefined && !Utils.isString(query.geoFence)) {
-                throw new Error('Invalid value for parameter "geoFenceName". Geo Fence Name must be a String');
+                throw new Error('Invalid value for argument "geoFenceName". Geo Fence Name must be a String');
             }
 
             if (query.searchRectangle && query.radius) {
