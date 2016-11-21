@@ -377,108 +377,57 @@ declare module __Backendless {
 
         constructor(name:string|Object|Function);
 
-        save(obj:Object):Promise;
+        save(obj:Object):Promise<Object>;
         saveSync(obj:Object):Object;
 
-        remove(id:Object|string):Promise;
+        remove(id:Object|string):Promise<Object>;
         removeSync(obj:Object|string):Object;
 
-        find():Promise;
-        find(obj:Backendless.DataQueryBuilder):Promise;
-        findSync():Array<Object>;
-        findSync(obj:Backendless.DataQueryBuilder):Array<Object>;
+        find(obj?:Backendless.DataQueryBuilder):Promise<Object>;
+        findSync(obj?:Backendless.DataQueryBuilder):Array<Object>;
 
-        findById(query:Object|string):Promise;
+        findById(query:Object|string):Promise<Object>;
         findByIdSync(query:Object|string):Object;
 
-        findFirst():Promise;
-        findFirst(query:Object):Promise;
-        findFirstSync():Object;
-        findFirstSync(query:Object):Object;
+        findFirst(query?:Object):Promise<Object>;
+        findFirstSync(query?:Object):Object;
 
-        findLast():Promise;
-        findLast(query:Object):Promise;
-        findLastSync():Object;
-        findLastSync(query:Object):Object;
+        findLast(query?:Object):Promise<Object>;
+        findLastSync(query?:Object):Object;
 
-        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
-        loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
+        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise<Array<Object>>;
+        loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Array<Object>;
 
-        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        setRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
-        setRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
-        setRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
-        setRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
+        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
+        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
+        setRelation(parentObject:Object, columnName:string, whereClause:string):Promise<string>;
+        setRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):string;
+        setRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):string;
+        setRelationSync(parentObject:Object, columnName:string, whereClause:string):string;
 
-        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        addRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
-        addRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
-        addRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
-        addRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
+        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
+        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
+        addRelation(parentObject:Object, columnName:string, whereClause:string):Promise<string>;
+        addRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):string;
+        addRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):string;
+        addRelationSync(parentObject:Object, columnName:string, whereClause:string):string;
 
-        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        deleteRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
-        deleteRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
-        deleteRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
-        deleteRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
+        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
+        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
+        deleteRelation(parentObject:Object, columnName:string, whereClause:string):Promise<string>;
+        deleteRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):string;
+        deleteRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):string;
+        deleteRelationSync(parentObject:Object, columnName:string, whereClause:string):string;
 
-        bulkCreate(objectsArray:Array<Object>):Promise;
-        bulkCreateSync(objectsArray:Array<Object>):void;
+        bulkCreate(objectsArray:Array<Object>):Promise<string>;
+        bulkCreateSync(objectsArray:Array<Object>):string;
 
-        bulkUpdate(templateObject:Object, whereClause:string):Promise;
-        bulkUpdateSync(templateObject:Object, whereClause:string):void;
+        bulkUpdate(templateObject:Object, whereClause:string):Promise<string>;
+        bulkUpdateSync(templateObject:Object, whereClause:string):string;
 
-        bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise;
-        bulkDeleteSync(objectsArray:string|Array<string>|Array<Object>):void;
+        bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise<string>;
+        bulkDeleteSync(objectsArray:string|Array<string>|Array<Object>):string;
 
-    }
-
-    /**
-     * @private
-     * @class AtomicInstance
-     */
-    class AtomicInstance {
-
-        constructor(counterName:string);
-
-        get():number;
-        get(async:Backendless.Async):XMLHttpRequest;
-        get<Promise>():Promise;
-
-        getAndIncrement():number;
-        getAndIncrement(async:Backendless.Async):XMLHttpRequest;
-        getAndIncrement<Promise>():Promise;
-
-        incrementAndGet():number;
-        incrementAndGet(async:Backendless.Async):XMLHttpRequest;
-        incrementAndGet<Promise>():Promise;
-
-        getAndDecrement():number;
-        getAndDecrement(async:Backendless.Async):XMLHttpRequest;
-        getAndDecrement<Promise>():Promise;
-
-        decrementAndGet():number;
-        decrementAndGet(async:Backendless.Async):XMLHttpRequest;
-        decrementAndGet<Promise>():Promise;
-
-        addAndGet(value:number):number;
-        addAndGet(value:number, async:Backendless.Async):XMLHttpRequest;
-        addAndGet<Promise>(value:number):Promise;
-
-        getAndAdd(value:number):number;
-        getAndAdd(value:number, async:Backendless.Async):XMLHttpRequest;
-        getAndAdd<Promise>(value:number):Promise;
-
-        compareAndSet(expected:number, updated:number):number;
-        compareAndSet(expected:number, updated:number, async:Backendless.Async):XMLHttpRequest;
-        compareAndSet<Promise>(expected:number, updated:number):Promise;
-
-        reset():number;
-        reset(async:Backendless.Async):XMLHttpRequest;
-        reset<Promise>():Promise;
     }
 
     /**
@@ -495,16 +444,16 @@ declare module __Backendless {
 
         of(model:string|Object|Function):Backendless.DataStore;
 
-        save(model:Backendless.DataStore|string, data:Object):Promise;
+        save(model:Backendless.DataStore|string, data:Object):Promise<Object>;
         saveSync(model:Backendless.DataStore|string, data:Object):Object;
 
-        getView(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Promise;
+        getView(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Promise<Object>;
         getViewSync(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Object;
 
-        describe(model:string|Object|Function):Promise;
+        describe(model:string|Object|Function):Promise<Object>;
         describeSync(model:string|Object|Function):Object;
 
-        callStoredProcedure(spName:string, argumentValues:Object|string):Promise;
+        callStoredProcedure(spName:string, argumentValues:Object|string):Promise<Object>;
         callStoredProcedureSync(spName:string, argumentValues:Object|string):Object;
     }
 
@@ -518,83 +467,9 @@ declare module __Backendless {
 
         getRestUrl(obj:DataItemI, type:string):string;
 
-        FIND:{
-            grantUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grantUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grantUser<Promise>(userId:string, dataItem:ExistDataItemI):Promise;
-
-            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grantRole<Promise>(roleName:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            grant(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grant(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grant<Promise>(dataItem:Backendless.ExistDataItemI):Promise;
-
-            denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            denyUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            denyUser<Promise>(userId:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            denyRole<Promise>(roleName:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            deny(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            deny(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            deny<Promise>(dataItem:Backendless.ExistDataItemI):Promise;
-        };
-
-        REMOVE:{
-            grantUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grantUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grantUser<Promise>(userId:string, dataItem:ExistDataItemI):Promise;
-
-            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grantRole<Promise>(roleName:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            grant(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grant(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grant<Promise>(dataItem:Backendless.ExistDataItemI):Promise;
-
-            denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            denyUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            denyUser<Promise>(userId:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            denyRole<Promise>(roleName:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            deny(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            deny(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            deny<Promise>(dataItem:Backendless.ExistDataItemI):Promise;
-        };
-
-        UPDATE:{
-            grantUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grantUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grantUser<Promise>(userId:string, dataItem:ExistDataItemI):Promise;
-
-            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grantRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grantRole<Promise>(roleName:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            grant(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            grant(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            grant<Promise>(dataItem:Backendless.ExistDataItemI):Promise;
-
-            denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            denyUser(userId:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            denyUser<Promise>(userId:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            denyRole(roleName:string, dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            denyRole<Promise>(roleName:string, dataItem:Backendless.ExistDataItemI):Promise;
-
-            deny(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-            deny(dataItem:Backendless.ExistDataItemI, async:Backendless.Async):XMLHttpRequest;
-            deny<Promise>(dataItem:Backendless.ExistDataItemI):Promise;
-        };
+        FIND:PersistencePermissionI;
+        REMOVE:PersistencePermissionI;
+        UPDATE:PersistencePermissionI;
     }
 
     /**
@@ -608,66 +483,50 @@ declare module __Backendless {
         UNITS:Object;
         EARTH_RADIUS:number;
 
-        addPoint(point:Backendless.GeoPoint):Backendless.GeoPoint;
-        addPoint(point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
-        addPoint<Promise>(point:Backendless.GeoPoint):Promise;
+        savePointSync(point:Backendless.GeoPoint):Backendless.GeoPoint;
+        savePoint(point:Backendless.GeoPoint):Promise<Backendless.GeoPoint>;
 
-        find(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        find(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
+        findSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         find<Promise>(query:Backendless.GeoQueryI):Promise;
 
-        deletePoint(pointId:string):string;
-        deletePoint(point:Backendless.GeoPoint):string;
-        deletePoint(pointId:string, async:Backendless.Async):XMLHttpRequest;
-        deletePoint(point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
-        deletePoint<Promise>(pointId:string):Promise;
-        deletePoint<Promise>(point:Backendless.GeoPoint):Promise;
+        deletePointSync(point:string|Backendless.GeoPoint):string;
+        deletePoint(point:string|Backendless.GeoPoint):Promise<string>;
 
-        loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster):Object;
-        loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
-        loadMetadata<Promise>(point:Backendless.GeoPoint|Backendless.GeoCluster):Promise;
+        loadMetadataSync(point:Backendless.GeoPoint|Backendless.GeoCluster):Object;
+        loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster):Promise<Object>;
 
-        getClusterPoints(cluster:Backendless.GeoCluster):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        getClusterPoints(cluster:Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
-        getClusterPoints<Promise>(cluster:Backendless.GeoCluster):Promise;
+        getClusterPointsSync(cluster:Backendless.GeoCluster):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
+        getClusterPoints(cluster:Backendless.GeoCluster):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
 
-        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        getFencePoints(fenceName:string, query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
-        getFencePoints<Promise>(fenceName:string, query:Backendless.GeoQueryI):Promise;
+        getFencePointsSync(fenceName:string, query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
+        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
 
-        relativeFind(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        relativeFind(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
-        relativeFind<Promise>(query:Backendless.GeoQueryI):Promise;
+        relativeFindSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
+        relativeFind(query:Backendless.GeoQueryI):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
 
-        addCategory(name:string):Backendless.GeoCategoryI;
-        addCategory(name:string, async:Backendless.Async):XMLHttpRequest;
-        addCategory<Promise>(name:string):Promise;
+        addCategorySync(name:string):Backendless.GeoCategoryI;
+        addCategory(name:string):Promise<Backendless.GeoCategoryI>;
 
-        deleteCategory(name:string):boolean;
-        deleteCategory(name:string, async:Backendless.Async):XMLHttpRequest;
-        deleteCategory<Promise>(name:string):Promise;
+        deleteCategorySync(name:string):boolean;
+        deleteCategory(name:string):Promise<boolean>;
 
-        getCategories():Backendless.GeoCategoryI[];
-        getCategories(async:Backendless.Async):XMLHttpRequest;
-        getCategories<Promise>():Promise;
+        getCategoriesSync():Array<Backendless.GeoCategoryI>;
+        getCategories():Promise<Array<Backendless.GeoCategoryI>>;
 
-        runOnStayAction(fenceName:string, point:Backendless.GeoPoint):Object;
-        runOnStayAction(fenceName:string, point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
-        runOnStayAction<Promise>(fenceName:string, point:Backendless.GeoPoint):Promise;
+        runOnStayActionSync(fenceName:string, point:Backendless.GeoPoint):Object;
+        runOnStayAction(fenceName:string, point:Backendless.GeoPoint):Promise<Object>;
 
-        runOnExitAction(fenceName:string, point:Backendless.GeoPoint):Object;
-        runOnExitAction(fenceName:string, point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
-        runOnExitAction<Promise>(fenceName:string, point:Backendless.GeoPoint):Promise;
+        runOnExitActionSync(fenceName:string, point:Backendless.GeoPoint):Object;
+        runOnExitAction(fenceName:string, point:Backendless.GeoPoint):Promise<Object>;
 
-        runOnEnterAction(fenceName:string, point:Backendless.GeoPoint):Object;
-        runOnEnterAction(fenceName:string, point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
-        runOnEnterAction<Promise>(fenceName:string, point:Backendless.GeoPoint):Promise;
+        runOnEnterActionSync(fenceName:string, point:Backendless.GeoPoint):Object;
+        runOnEnterAction(fenceName:string, point:Backendless.GeoPoint):Promise<Object>;
 
-        startGeofenceMonitoringWithInAppCallback(fenceName:string, inAppCallback:Backendless.GeofenceMonitoringCallbacksI, async?:Backendless.Async):void;
-        startGeofenceMonitoringWithInAppCallback<Promise>(fenceName:string, inAppCallback:Backendless.GeofenceMonitoringCallbacksI):Promise;
+        startGeofenceMonitoringWithInAppCallbackSync(fenceName:string, inAppCallback:Backendless.GeofenceMonitoringCallbacksI):void;
+        startGeofenceMonitoringWithInAppCallback(fenceName:string, inAppCallback:Backendless.GeofenceMonitoringCallbacksI):Promise<void>;
 
-        startGeofenceMonitoringWithRemoteCallback(fenceName:string, point:Backendless.GeoPoint, async?:Backendless.Async):void;
-        startGeofenceMonitoringWithRemoteCallback<Promise>(fenceName:string, point:Backendless.GeoPoint):Promise;
+        startGeofenceMonitoringWithRemoteCallbackSync(fenceName:string, point:Backendless.GeoPoint):void;
+        startGeofenceMonitoringWithRemoteCallback(fenceName:string, point:Backendless.GeoPoint):Promise<void>;
 
         stopGeofenceMonitoring(fenceName:string):void;
     }
@@ -733,17 +592,8 @@ declare module __Backendless {
         upload(files:File|File[], path:string, overwrite:boolean, async?:Backendless.Async):void;
         upload<Promise>(files:File|File[], path:string, overwrite:boolean):Promise;
 
-        listing(path:string):Object;
-        listing(path:string, async:Backendless.Async):XMLHttpRequest;
-        listing(path:string, pattern:string):Object;
-        listing(path:string, pattern:string, async:Backendless.Async):XMLHttpRequest;
-        listing(path:string, pattern:string, recursively:boolean):Object;
-        listing(path:string, pattern:string, recursively:boolean, async:Backendless.Async):XMLHttpRequest;
-        listing(path:string, pattern:string, recursively:boolean, pageSize:number):Object;
-        listing(path:string, pattern:string, recursively:boolean, pageSize:number, async:Backendless.Async):XMLHttpRequest;
-        listing(path:string, pattern:string, recursively:boolean, pageSize:number, offset:number):Object;
-        listing(path:string, pattern:string, recursively:boolean, pageSize:number, offset:number, async:Backendless.Async):XMLHttpRequest;
-        listing<Promise>(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Promise;
+        listing(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Object;
+        listing(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Promise<Object>;
 
         renameFile(oldPathName:string, newName:string):Object;
         renameFile(oldPathName:string, newName:string, async:Backendless.Async):void;
@@ -863,6 +713,52 @@ declare module __Backendless {
         remove(key:string, async:Backendless.Async):XMLHttpRequest;
         remove<Promise>(key:string):Promise;
     }
+
+    /**
+     * @private
+     * @class AtomicInstance
+     */
+    class AtomicInstance {
+
+        constructor(counterName:string);
+
+        get():number;
+        get(async:Backendless.Async):XMLHttpRequest;
+        get<Promise>():Promise;
+
+        getAndIncrement():number;
+        getAndIncrement(async:Backendless.Async):XMLHttpRequest;
+        getAndIncrement<Promise>():Promise;
+
+        incrementAndGet():number;
+        incrementAndGet(async:Backendless.Async):XMLHttpRequest;
+        incrementAndGet<Promise>():Promise;
+
+        getAndDecrement():number;
+        getAndDecrement(async:Backendless.Async):XMLHttpRequest;
+        getAndDecrement<Promise>():Promise;
+
+        decrementAndGet():number;
+        decrementAndGet(async:Backendless.Async):XMLHttpRequest;
+        decrementAndGet<Promise>():Promise;
+
+        addAndGet(value:number):number;
+        addAndGet(value:number, async:Backendless.Async):XMLHttpRequest;
+        addAndGet<Promise>(value:number):Promise;
+
+        getAndAdd(value:number):number;
+        getAndAdd(value:number, async:Backendless.Async):XMLHttpRequest;
+        getAndAdd<Promise>(value:number):Promise;
+
+        compareAndSet(expected:number, updated:number):number;
+        compareAndSet(expected:number, updated:number, async:Backendless.Async):XMLHttpRequest;
+        compareAndSet<Promise>(expected:number, updated:number):Promise;
+
+        reset():number;
+        reset(async:Backendless.Async):XMLHttpRequest;
+        reset<Promise>():Promise;
+    }
+
 
     /**
      * @private
@@ -1006,6 +902,26 @@ declare module __Backendless {
         setLogReportingPolicy(numOfMessages:number, timeFrequencySec:number):void;
 
         getLogger(name):Backendless.Logger;
+    }
+
+    interface PersistencePermissionI {
+        grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+        grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+        grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+        grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+        denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+        denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+        deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
     }
 
     interface DataQueryValueI {
