@@ -1826,12 +1826,8 @@
         },
 
         _loginSocial: function(socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
-            if (!async) {
-                throw new Error('Social login can not be called as synchronous method')
-            }
-
             var socialContainer = new this._socialContainer(socialType, container);
-            async = this._wrapAsync(async, stayLoggedIn);
+            async = async && this._wrapAsync(async);
 
             Utils.addEvent('message', window, function(e) {
                 if (e.origin == Backendless.serverURL) {
@@ -1840,7 +1836,9 @@
                     if (result.fault) {
                         async.fault(result.fault);
                     } else {
-                        async.success(result);
+                        Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
+                        currentUser = this.Backendless.UserService._parseResponse(result);
+                        async.success(this.Backendless.UserService._getUserFromResponse(currentUser));
                     }
 
                     Utils.removeEvent('message', window);
@@ -3429,7 +3427,7 @@
         }
     }
 
-    function sendEncoded(e) {
+    function sendEncoded(e1, e2) {
         var xhr         = new XMLHttpRequest(),
             boundary    = '-backendless-multipart-form-boundary-' + getNow(),
             badResponse = function(xhr) {
@@ -3443,17 +3441,25 @@
                 return result;
             };
 
-        xhr.open("PUT", this.uploadPath, true);
+
+        xhr.open("PUT", e2.uploadPath, true);
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.setRequestHeader('application-id', Backendless.applicationId);
         xhr.setRequestHeader("secret-key", Backendless.secretKey);
         xhr.setRequestHeader("application-type", "JS");
 
+
+        if ((currentUser != null && currentUser["user-token"])) {
+            xhr.setRequestHeader("user-token", currentUser["user-token"]);
+        } else if (Backendless.LocalCache.exists("user-token")) {
+            xhr.setRequestHeader("user-token", Backendless.LocalCache.get("user-token"));
+        }
+
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
         }
 
-        var asyncHandler = this.asyncHandler;
+        var asyncHandler = e2.asyncHandler;
 
         if (asyncHandler) {
             xhr.onreadystatechange = function() {
@@ -3467,7 +3473,7 @@
             };
         }
 
-        xhr.send(e.target.result.split(',')[1]);
+        xhr.send(e1.target.result.split(',')[1]);
 
         if (asyncHandler) {
             return xhr;
@@ -3568,12 +3574,16 @@
             }
 
             var baseUrl = this.restUrl + '/binary/' + path + ((Utils.isString(fileName)) ? '/' + fileName : '') + ((overwrite) ? '?overwrite=true' : '');
-
             try {
                 var reader = new FileReader();
                 reader.fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
                 reader.uploadPath = baseUrl;
-                reader.onloadend = sendEncoded;
+                reader.baseUrl = baseUrl;
+                reader.onloadend =  (function(f) {
+            return function(e){
+                sendEncoded(e,f);
+            }
+        })(reader);
 
                 if (async) {
                     reader.asyncHandler = async;
@@ -3620,7 +3630,7 @@
                             reader.onerror = function(evn) {
                                 async.fault(evn);
                             };
-                            reader.readAsArrayBuffer(files[i]);
+                            reader.readAsBinaryString(files[i]);
 
                         } catch (err) {
                             filesError++;
