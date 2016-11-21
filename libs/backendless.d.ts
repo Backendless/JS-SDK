@@ -9,7 +9,6 @@ declare module __Backendless {
     var serverURL:string;
     var applicationId:string;
     var secretKey:string;
-    var appVersion:string;
     var appPath:string;
 
     var browser:{
@@ -27,7 +26,7 @@ declare module __Backendless {
      * @public
      * @type: Function
      **/
-    function initApp(applicationId:string, jsSecretKey:string, applicationVersion:string):void;
+    function initApp(applicationId:string, jsSecretKey:string):void;
 
     /**
      * @public
@@ -40,11 +39,6 @@ declare module __Backendless {
      * @type: Function
      **/
     function enablePromises():void;
-
-    /**
-     * @namespace Backendless.Utils
-     **/
-    var Utils:Backendless.UtilsI;
 
     /**
      * @namespace Backendless.LocalCache
@@ -137,8 +131,8 @@ declare module __Backendless {
     }
 
     /**
-     * @public
-     * @class Backendless.DataQuery
+     * @private
+     * @class DataQuery
      * @constructor
      */
     class DataQuery implements Backendless.DataQueryValueI {
@@ -148,6 +142,52 @@ declare module __Backendless {
         url:string;
 
         addProperty(prop:string):void;
+        setOption(name:string, value:string|Array<string>|number):void;
+        setOptions(options:Object):void;
+        getOption(name:string):string|Array<string>|number;
+        toJSON():Object;
+    }
+
+    /**
+     * @public
+     * @class Backendless.DataQueryBuilder
+     * @constructor
+     */
+    class DataQueryBuilder {
+        static create():Backendless.DataQueryBuilder;
+
+        setPageSize(pageSize:number):Backendless.DataQueryBuilder;
+        setOffset(offset:number):Backendless.DataQueryBuilder;
+        prepareNextPage():Backendless.DataQueryBuilder;
+        preparePreviousPage():Backendless.DataQueryBuilder;
+        getProperties():Array<string>;
+        setProperties(properties:string):Backendless.DataQueryBuilder;
+        addProperty(properties:string):Backendless.DataQueryBuilder;
+        getWhereClause():string;
+        setWhereClause(whereClause:string):Backendless.DataQueryBuilder;
+        getSortBy():Array<string>;
+        setSortBy(sortBy:string|Array<string>):Backendless.DataQueryBuilder;
+        getRelated():Array<string>;
+        setRelated(relations:string|Array<string>):Backendless.DataQueryBuilder;
+        getRelationsDepth():number;
+        setRelationsDepth(relationsDepth:number):Backendless.DataQueryBuilder;
+        build():Backendless.DataQueryValueI;
+    }
+
+    /**
+     * @private
+     * @class PagingQueryBuilder
+     * @constructor
+     */
+    class PagingQueryBuilder {
+        offset:number;
+        pageSize:number;
+
+        setPageSize(pageSize:number):PagingQueryBuilder;
+        setOffset(offset:number):PagingQueryBuilder;
+        prepareNextPage():PagingQueryBuilder;
+        preparePreviousPage():PagingQueryBuilder;
+        build():Object;
     }
 
     /**
@@ -333,30 +373,30 @@ declare module __Backendless {
         remove(obj:Object|string):Object;
         remove<Promise>(obj:Object|string):Promise;
 
-        find():Object;
+        find():Array<Object>;
         find(async:Backendless.Async):XMLHttpRequest;
-        find(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Object;
-        find(id:Backendless.DataQuery|Backendless.DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
+        find(obj:Backendless.DataQueryBuilder):Array<Object>;
+        find(obj:Backendless.DataQueryBuilder, async:Backendless.Async):XMLHttpRequest;
         find<Promise>():Promise;
-        find<Promise>(obj:Backendless.DataQuery|Backendless.DataQueryValueI|string):Promise;
+        find<Promise>(obj:Backendless.DataQueryBuilder):Promise;
 
-        findById(query:Backendless.DataQuery|DataQueryValueI|string):Object;
-        findById(query:Backendless.DataQuery|DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
-        findById<Promise>(query:Backendless.DataQuery|DataQueryValueI|string):Promise;
+        findById(query:DataQueryValueI|string):Object;
+        findById(query:DataQueryValueI|string, async:Backendless.Async):XMLHttpRequest;
+        findById<Promise>(query:DataQueryValueI|string):Promise;
 
         findFirst():Object;
         findFirst(async:Backendless.Async):XMLHttpRequest;
-        findFirst(query:Backendless.DataQuery|DataQueryValueI):Object;
-        findFirst(query:Backendless.DataQuery|DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
+        findFirst(query:DataQueryValueI):Object;
+        findFirst(query:DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
         findFirst<Promise>():Promise;
-        findFirst<Promise>(query:Backendless.DataQuery|DataQueryValueI):Promise;
+        findFirst<Promise>(query:DataQueryValueI):Promise;
 
         findLast():Object;
         findLast(async:Backendless.Async):XMLHttpRequest;
-        findLast(query:Backendless.DataQuery|DataQueryValueI):Object;
-        findLast(query:Backendless.DataQuery|DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
+        findLast(query:DataQueryValueI):Object;
+        findLast(query:DataQueryValueI, async:Backendless.Async):XMLHttpRequest;
         findLast<Promise>():Promise;
-        findLast<Promise>(query:Backendless.DataQuery|DataQueryValueI):Promise;
+        findLast<Promise>(query:DataQueryValueI):Promise;
 
         loadRelations(query:Backendless.DataQuery|DataQueryValueI|string):void;
         loadRelations(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):void;
@@ -562,7 +602,7 @@ declare module __Backendless {
         addPoint(point:Backendless.GeoPoint, async:Backendless.Async):XMLHttpRequest;
         addPoint<Promise>(point:Backendless.GeoPoint):Promise;
 
-        find(query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        find(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         find(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
         find<Promise>(query:Backendless.GeoQueryI):Promise;
 
@@ -577,15 +617,15 @@ declare module __Backendless {
         loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
         loadMetadata<Promise>(point:Backendless.GeoPoint|Backendless.GeoCluster):Promise;
 
-        getClusterPoints(cluster:Backendless.GeoCluster):GeoCollectionResultI;
+        getClusterPoints(cluster:Backendless.GeoCluster):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         getClusterPoints(cluster:Backendless.GeoCluster, async:Backendless.Async):XMLHttpRequest;
         getClusterPoints<Promise>(cluster:Backendless.GeoCluster):Promise;
 
-        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         getFencePoints(fenceName:string, query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
         getFencePoints<Promise>(fenceName:string, query:Backendless.GeoQueryI):Promise;
 
-        relativeFind(query:Backendless.GeoQueryI):Backendless.GeoCollectionResultI;
+        relativeFind(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         relativeFind(query:Backendless.GeoQueryI, async:Backendless.Async):XMLHttpRequest;
         relativeFind<Promise>(query:Backendless.GeoQueryI):Promise;
 
@@ -945,31 +985,6 @@ declare module __Backendless {
         resendEmailConfirmation<Promise>(email:string):Promise;
     }
 
-
-    interface UtilsI {
-        isObject(value:any):boolean;
-
-        isString(value:any):boolean;
-
-        isNumber(value:any):boolean;
-
-        isFunction(value:any):boolean;
-
-        isBoolean(value:any):boolean;
-
-        isDate(value:any):boolean;
-
-        isArray(value:any):boolean;
-
-        isEmpty(value:any):boolean;
-
-        addEvent(eventName:string, domElement:HTMLElement, callback:(ev:Event) => any):void;
-
-        removeEvent(eventName:string, domElement:HTMLElement):void;
-
-        forEach(object:Object, iterator:(value:any, key:any, obj:Object) => any, context:Object):void;
-    }
-
     interface LoggingI {
         restUrl:string;
         loggers:Object;
@@ -1070,18 +1085,6 @@ declare module __Backendless {
         longitude:number;
         radius:number;
         units:string;
-    }
-
-    interface CollectionResultI {
-        offset: number;
-        totalObjects: number;
-        getPage : (offset:number, pageSize:number, async:Backendless.Async)=>any;
-        nextPage: (async:Backendless.Async)=>any;
-        data: Object[];
-    }
-
-    interface GeoCollectionResultI extends CollectionResultI {
-        data:Array<Backendless.GeoPoint|Backendless.GeoCluster>;
     }
 }
 
