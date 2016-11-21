@@ -21,7 +21,7 @@ jQuery(function( $ ) {
 		init: function() {
             //Backendless: initialize API
             if( !Defaults.APPLICATION_ID || !Defaults.SECRET_KEY)
-                alert( "Missing application ID and secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in app.js" );
+                alert( "Missing application ID or secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in app.js" );
 
             Backendless.initApp(Defaults.APPLICATION_ID, Defaults.SECRET_KEY);
 
