@@ -383,61 +383,61 @@ declare module __Backendless {
 
         constructor(name:string|Object|Function);
 
-        save(obj:Object):Promise;
+        save(obj:Object):Promise<any>;
         saveSync(obj:Object):Object;
 
-        remove(id:Object|string):Promise;
+        remove(id:Object|string):Promise<any>;
         removeSync(obj:Object|string):Object;
 
-        find():Promise;
-        find(obj:Backendless.DataQueryBuilder):Promise;
+        find():Promise<any>;
+        find(obj:Backendless.DataQueryBuilder):Promise<any>;
         findSync():Array<Object>;
         findSync(obj:Backendless.DataQueryBuilder):Array<Object>;
 
-        findById(query:Object|string):Promise;
+        findById(query:Object|string):Promise<any>;
         findByIdSync(query:Object|string):Object;
 
-        findFirst():Promise;
-        findFirst(query:Object):Promise;
+        findFirst():Promise<any>;
+        findFirst(query:Object):Promise<any>;
         findFirstSync():Object;
         findFirstSync(query:Object):Object;
 
-        findLast():Promise;
-        findLast(query:Object):Promise;
+        findLast():Promise<any>;
+        findLast(query:Object):Promise<any>;
         findLastSync():Object;
         findLastSync(query:Object):Object;
 
-        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
+        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise<any>;
         loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
 
-        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        setRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
+        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<any>;
+        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<any>;
+        setRelation(parentObject:Object, columnName:string, whereClause:string):Promise<any>;
         setRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
         setRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
         setRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
 
-        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        addRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
+        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<any>;
+        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<any>;
+        addRelation(parentObject:Object, columnName:string, whereClause:string):Promise<any>;
         addRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
         addRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
         addRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
 
-        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
-        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
-        deleteRelation(parentObject:Object, columnName:string, whereClause:string):Promise;
+        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<any>;
+        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<any>;
+        deleteRelation(parentObject:Object, columnName:string, whereClause:string):Promise<any>;
         deleteRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
         deleteRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
         deleteRelationSync(parentObject:Object, columnName:string, whereClause:string):void;
 
-        bulkCreate(objectsArray:Array<Object>):Promise;
+        bulkCreate(objectsArray:Array<Object>):Promise<any>;
         bulkCreateSync(objectsArray:Array<Object>):void;
 
-        bulkUpdate(templateObject:Object, whereClause:string):Promise;
+        bulkUpdate(templateObject:Object, whereClause:string):Promise<any>;
         bulkUpdateSync(templateObject:Object, whereClause:string):void;
 
-        bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise;
+        bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise<any>;
         bulkDeleteSync(objectsArray:string|Array<string>|Array<Object>):void;
 
     }
@@ -501,7 +501,7 @@ declare module __Backendless {
 
         of(model:string|Object|Function):Backendless.DataStore;
 
-        save(model:Backendless.DataStore|string, data:Object):Promise;
+        save(model:Backendless.DataStore|string, data:Object):Promise<any>;
         saveSync(model:Backendless.DataStore|string, data:Object):Object;
 
         getViewSync(viewName:string):Object;
@@ -939,9 +939,9 @@ declare module __Backendless {
     class UserServiceClass {
         restUrl:string;
 
+        register(user:Backendless.User):Promise<Backendless.User>;
         register(user:Backendless.User):Backendless.User;
         register(user:Backendless.User, async:Backendless.Async):XMLHttpRequest;
-        register<Promise>(user:Backendless.User):Promise;
 
         getUserRoles():Backendless.User ;
         getUserRoles(async:Backendless.Async):XMLHttpRequest;
