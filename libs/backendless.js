@@ -1115,7 +1115,7 @@
             this._validateFindArguments(arguments);
 
             var args = this._parseFindArguments(arguments);
-            var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
 
             return this._find(dataQuery, args.async);
         },
@@ -1342,12 +1342,13 @@
          *
          * @return {*}
          */
-        getObjectCount: function(dataQueryBuilder, async) {
-            var dataQuery = dataQueryBuilder ? dataQueryBuilder.build() : {};
+        getObjectCount: function(queryBuilder, async) {
+            this._validateFindArguments(arguments);
 
+            var args = this._parseFindArguments(arguments);
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
             var url       = this.restUrl + '/count';
-            var responder = Utils.extractResponder(arguments);
-            var isAsync   = !!responder;
+            var isAsync   = !!args.async;
 
             if (dataQuery.condition) {
                 url += '?where=' + encodeURIComponent(dataQuery.condition);
@@ -1357,7 +1358,7 @@
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
-                asyncHandler: responder
+                asyncHandler: args.async
             });
         }
     };
