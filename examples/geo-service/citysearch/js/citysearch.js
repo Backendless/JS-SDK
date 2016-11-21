@@ -140,13 +140,13 @@ function onResult(result) {
     finishLoading();
     $resultBlock.show();
 
-    if (!result.collection.length) {
+    if (!result.length) {
         $thead.hide();
         $tbody.append("<h3 style='text-align: center'>No geo points found</h3>");
         return;
     }
 
-    $.each(result.collection, function () {
+    $.each(result, function () {
         var cells = [
             "<td>" + this.metadata.city + "</td>", "<td>" + this.latitude + "</td>", "<td>" + this.longitude + "</td>"
         ];
