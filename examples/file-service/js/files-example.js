@@ -70,7 +70,7 @@
                 countContainer.text(count);
             },
             function(error) {
-                countContainer.text('NaN');
+                countContainer.text('-');
                 console.error(error);
             })
         );
@@ -112,8 +112,6 @@
     function getItemsFromPersistance() {
         var db = Backendless.Persistence.of(FileItem);
         try {
-            var dataQuery = new Backendless.DataQuery();
-            dataQuery.condition = 'deviceId == ' + DEVICE_ID;
             return db.find();
         }
         catch (e) {
