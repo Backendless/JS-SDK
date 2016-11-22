@@ -100,6 +100,19 @@ declare module __Backendless {
     var Logging:LoggingI;
 
     /**
+     * @private
+     * @class Async
+     * @constructor
+     */
+    class Async {
+        constructor(onSuccess?:(data?:Object) => void, onError?:((data:Object) => void) | Object, context?:Object);
+
+        success(data:Object):void;
+
+        fault(data:Object):void;
+    }
+
+    /**
      * @public
      * @class Backendless.User
      * @constructor
@@ -325,7 +338,7 @@ declare module __Backendless {
         interval:number;
         xhr:XMLHttpRequest;
         needReconnect:boolean;
-        responder:Backendless.Async;
+        responder:Async;
 
         onMessage(data:any):void;
 
