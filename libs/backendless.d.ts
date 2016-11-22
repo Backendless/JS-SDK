@@ -100,8 +100,8 @@ declare module __Backendless {
     var Logging:LoggingI;
 
     /**
-     * @public
-     * @class Backendless.Async
+     * @private
+     * @class Async
      * @constructor
      */
     class Async {
@@ -338,7 +338,7 @@ declare module __Backendless {
         interval:number;
         xhr:XMLHttpRequest;
         needReconnect:boolean;
-        responder:Backendless.Async;
+        responder:Async;
 
         onMessage(data:any):void;
 
@@ -487,7 +487,7 @@ declare module __Backendless {
         savePoint(point:Backendless.GeoPoint):Promise<Backendless.GeoPoint>;
 
         findSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        find<Promise>(query:Backendless.GeoQueryI):Promise;
+        find(query:Backendless.GeoQueryI):Promise;
 
         deletePointSync(point:string|Backendless.GeoPoint):string;
         deletePoint(point:string|Backendless.GeoPoint):Promise<string>;
@@ -540,33 +540,26 @@ declare module __Backendless {
         restUrl:string;
         channelProperties:Object;
 
-        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
-        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
-        subscribe<Promise>(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise;
+        subscribeSync(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
+        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise<Backendless.SubscriptionI>;
 
-        publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
-        publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions, async:Backendless.Async):XMLHttpRequest;
-        publish<Promise>(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Promise;
+        publishSync(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
+        publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Promise<Object>;
 
-        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Object;
-        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[], async:Backendless.Async):XMLHttpRequest;
-        sendEmail<Promise>(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Promise;
+        sendEmailSync(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Object;
+        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Promise<Object>;
 
-        cancel(messageId:string):boolean;
-        cancel(messageId:string, async:Backendless.Async):XMLHttpRequest;
-        cancel<Promise>(messageId:string):Promise;
+        cancelSync(messageId:string):boolean;
+        cancel(messageId:string):Promise<boolean>;
 
-        registerDevice(channels:string[], expiration:number|Date):Object;
-        registerDevice(channels:string[], expiration:number|Date, async:Backendless.Async):XMLHttpRequest;
-        registerDevice<Promise>(channels:string[], expiration:number|Date):Promise;
+        registerDeviceSync(channels:string[], expiration:number|Date):Object;
+        registerDevice(channels:string[], expiration:number|Date):Promise<Object>;
 
-        getRegistrations():Object;
-        getRegistrations(async:Backendless.Async):XMLHttpRequest;
-        getRegistrations<Promise>():Promise;
+        getRegistrationsSync():Object;
+        getRegistrations():Promise<Object>;
 
-        unregisterDevice():Object;
-        unregisterDevice(async:Backendless.Async):XMLHttpRequest;
-        unregisterDevice<Promise>():Promise;
+        unregisterDeviceSync():Object;
+        unregisterDevice():Promise<Object>;
     }
 
     /**
@@ -582,42 +575,32 @@ declare module __Backendless {
 
         restUrl:string;
 
-        saveFile(path:string, fileName:string, fileContent:Blob):boolean;
-        saveFile(path:string, fileName:string, fileContent:Blob, async:Backendless.Async):void;
-        saveFile(path:string, fileName:string, fileContent:Blob, overwrite:boolean):boolean;
-        saveFile(path:string, fileName:string, fileContent:Blob, overwrite:boolean, async:Backendless.Async):void;
-        saveFile<Promise>(path:string, fileName:string, fileContent:Blob):Promise;
-        saveFile<Promise>(path:string, fileName:string, fileContent:Blob, overwrite:boolean):Promise;
+        saveFileSync(path:string, fileName:string, fileContent:Blob, overwrite?:boolean):boolean;
+        saveFile(path:string, fileName:string, fileContent:Blob, overwrite?:boolean):Promise<boolean>;
 
-        upload(files:File|File[], path:string, overwrite:boolean, async?:Backendless.Async):void;
-        upload<Promise>(files:File|File[], path:string, overwrite:boolean):Promise;
+        uploadSync(files:File|File[], path:string, overwrite:boolean):void;
+        upload(files:File|File[], path:string, overwrite:boolean):Promise<void>;
 
-        listing(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Object;
+        listingSync(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Object;
         listing(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Promise<Object>;
 
-        renameFile(oldPathName:string, newName:string):Object;
-        renameFile(oldPathName:string, newName:string, async:Backendless.Async):void;
-        renameFile<Promise>(oldPathName:string, newName:string):Promise;
+        renameFileSync(oldPathName:string, newName:string):Object;
+        renameFile(oldPathName:string, newName:string):Promise<Object>;
 
-        moveFile(sourcePath:string, targetPath:string):Object;
-        moveFile(sourcePath:string, targetPath:string, async:Backendless.Async):void;
-        moveFile<Promise>(sourcePath:string, targetPath:string):Promise;
+        moveFileSync(sourcePath:string, targetPath:string):Object;
+        moveFile(sourcePath:string, targetPath:string):Promise<Object>;
 
-        copyFile(sourcePath:string, targetPath:string):Object;
-        copyFile(sourcePath:string, targetPath:string, async:Backendless.Async):void;
-        copyFile<Promise>(sourcePath:string, targetPath:string):Promise;
+        copyFileSync(sourcePath:string, targetPath:string):Object;
+        copyFile(sourcePath:string, targetPath:string):Promise<Object>;
 
-        remove(fileURL:string):void;
-        remove(fileURL:string, async:Backendless.Async):void;
-        remove<Promise>(fileURL:string):Promise;
+        removeSync(fileURL:string):void;
+        remove(fileURL:string):Promise<void>;
 
-        exists(path:string):Object;
-        exists(path:string, async:Backendless.Async):XMLHttpRequest;
-        exists<Promise>(path:string):Promise;
+        existsSync(path:string):Object;
+        exists(path:string):Promise<Object>;
 
-        removeDirectory(path:string):void;
-        removeDirectory(path:string, async:Backendless.Async):void;
-        removeDirectory<Promise>(path:string):Promise;
+        removeDirectorySync(path:string):void;
+        removeDirectory(path:string):Promise<void>;
     }
 
     /**
@@ -628,21 +611,17 @@ declare module __Backendless {
     class FilesPermissions {
         restUrl:string;
 
-        grantUser(userId:string, url:string, permissionType:string):Object;
-        grantUser(userId:string, url:string, permissionType:string, async:Backendless.Async):XMLHttpRequest;
-        grantUser<Promise>(userId:string, url:string, permissionType:string):Promise;
+        grantUserSync(userId:string, url:string, permissionType:string):Object;
+        grantUser(userId:string, url:string, permissionType:string):Promise<Object>;
 
-        grantRole(roleName:string, url:string, permissionType:string):Object;
-        grantRole(roleName:string, url:string, permissionType:string, async:Backendless.Async):XMLHttpRequest;
-        grantRole<Promise>(roleName:string, url:string, permissionType:string):Promise;
+        grantRoleSync(roleName:string, url:string, permissionType:string):Object;
+        grantRole(roleName:string, url:string, permissionType:string):Promise<Object>;
 
-        denyUser(userId:string, url:string, permissionType:string):Object;
-        denyUser(userId:string, url:string, permissionType:string, async:Backendless.Async):XMLHttpRequest;
-        denyUser<Promise>(userId:string, url:string, permissionType:string):Promise;
+        denyUserSync(userId:string, url:string, permissionType:string):Object;
+        denyUser(userId:string, url:string, permissionType:string):Promise<Object>;
 
-        denyRole(roleName:string, url:string, permissionType:string):Object;
-        denyRole(roleName:string, url:string, permissionType:string, async:Backendless.Async):XMLHttpRequest;
-        denyRole<Promise>(roleName:string, url:string, permissionType:string):Promise;
+        denyRoleSync(roleName:string, url:string, permissionType:string):Object;
+        denyRole(roleName:string, url:string, permissionType:string):Promise<Object>;
     }
 
     /**
@@ -653,17 +632,14 @@ declare module __Backendless {
     class CommerceClass {
         restUrl:string;
 
-        validatePlayPurchase(packageName:string, productId:string, token:string):Object;
-        validatePlayPurchase(packageName:string, productId:string, token:string, async:Backendless.Async):XMLHttpRequest;
-        validatePlayPurchase<Promise>(packageName:string, productId:string, token:string):Promise;
+        validatePlayPurchaseSync(packageName:string, productId:string, token:string):Object;
+        validatePlayPurchase(packageName:string, productId:string, token:string):Promise<Object>;
 
-        cancelPlaySubscription(packageName:string, subscriptionId:string, token:string):Object;
-        cancelPlaySubscription(packageName:string, subscriptionId:string, token:string, async:Backendless.Async):XMLHttpRequest;
-        cancelPlaySubscription<Promise>(packageName:string, subscriptionId:string, token:string):Promise;
+        cancelPlaySubscriptionSync(packageName:string, subscriptionId:string, token:string):Object;
+        cancelPlaySubscription(packageName:string, subscriptionId:string, token:string):Promise<Object>;
 
-        getPlaySubscriptionStatus(packageName:string, subscriptionId:string, token:string):Object;
-        getPlaySubscriptionStatus(packageName:string, subscriptionId:string, token:string, async:Backendless.Async):XMLHttpRequest;
-        getPlaySubscriptionStatus<Promise>(packageName:string, subscriptionId:string, token:string):Promise;
+        getPlaySubscriptionStatusSync(packageName:string, subscriptionId:string, token:string):Object;
+        getPlaySubscriptionStatus(packageName:string, subscriptionId:string, token:string):Promise<Object>;
     }
 
     /**
@@ -674,9 +650,8 @@ declare module __Backendless {
     class EventsClass {
         restUrl:string;
 
-        dispatch(eventName:string, eventArgs:Object):Object;
-        dispatch(eventName:string, eventArgs:Object, async:Backendless.Async):XMLHttpRequest;
-        dispatch<Promise>(eventName:string, eventArgs:Object):Promise;
+        dispatchSync(eventName:string, eventArgs:Object):Object;
+        dispatch(eventName:string, eventArgs:Object):Promise<Object>;
     }
 
     /**
@@ -685,78 +660,59 @@ declare module __Backendless {
      * @refers {@link Backendless.Cache}
      */
     class CacheClass {
-        put(key:string, value:any):Object;
-        put(key:string, value:any, timeToLive:number):Object;
-        put(key:string, value:any, async:Backendless.Async):XMLHttpRequest;
-        put(key:string, value:any, timeToLive:number):Object;
-        put(key:string, value:any, timeToLive:number, async:Backendless.Async):XMLHttpRequest;
-        put<Promise>(key:string, value:any, timeToLive:number):Promise;
-        put<Promise>(key:string, value:any):Promise;
+        putSync(key:string, value:any, timeToLive?:number):Object;
+        put(key:string, value:any, timeToLive?:number):Promise<Object>;
 
-        expireIn(key:string, time:number|Date):Object;
-        expireIn(key:string, time:number|Date, async:Backendless.Async):XMLHttpRequest;
-        expireIn<Promise>(key:string, time:number|Date):Promise;
+        expireInSync(key:string, time:number|Date):Object;
+        expireIn(key:string, time:number|Date):Promise<Object>;
 
-        expireAt(key:string, time:number|Date):Object;
-        expireAt(key:string, time:number|Date, async:Backendless.Async):XMLHttpRequest;
-        expireAt<Promise>(key:string, time:number|Date):Promise;
+        expireAtSync(key:string, time:number|Date):Object;
+        expireAt(key:string, time:number|Date):Promise<Object>;
 
-        contains(key:string):Object;
-        contains(key:string, async:Backendless.Async):XMLHttpRequest;
-        contains<Promise>(key:string):Promise;
+        containsSync(key:string):Object;
+        contains(key:string):Promise<Object>;
 
-        get(key:string):Object;
-        get(key:string, async:Backendless.Async):XMLHttpRequest;
-        get<Promise>(key:string):Promise;
+        getSync(key:string):Object;
+        get(key:string):Promise<Object>;
 
-        remove(key:string):Object;
-        remove(key:string, async:Backendless.Async):XMLHttpRequest;
-        remove<Promise>(key:string):Promise;
+        removeSync(key:string):Object;
+        remove(key:string):Promise<Object>;
     }
 
     /**
      * @private
-     * @class AtomicInstance
+     * @class Counter
      */
-    class AtomicInstance {
+    class Counter {
 
-        constructor(counterName:string);
+        constructor(name:string, restUrl:string);
 
-        get():number;
-        get(async:Backendless.Async):XMLHttpRequest;
-        get<Promise>():Promise;
+        getSync():number;
+        get():Promise<number>;
 
-        getAndIncrement():number;
-        getAndIncrement(async:Backendless.Async):XMLHttpRequest;
-        getAndIncrement<Promise>():Promise;
+        getAndIncrementSync():number;
+        getAndIncrement():Promise<number>;
 
-        incrementAndGet():number;
-        incrementAndGet(async:Backendless.Async):XMLHttpRequest;
-        incrementAndGet<Promise>():Promise;
+        incrementAndGetSync():number;
+        incrementAndGet():Promise<number>;
 
-        getAndDecrement():number;
-        getAndDecrement(async:Backendless.Async):XMLHttpRequest;
-        getAndDecrement<Promise>():Promise;
+        getAndDecrementSync():number;
+        getAndDecrement():Promise<number>;
 
-        decrementAndGet():number;
-        decrementAndGet(async:Backendless.Async):XMLHttpRequest;
-        decrementAndGet<Promise>():Promise;
+        decrementAndGetSync():number;
+        decrementAndGet():Promise<number>;
 
-        addAndGet(value:number):number;
-        addAndGet(value:number, async:Backendless.Async):XMLHttpRequest;
-        addAndGet<Promise>(value:number):Promise;
+        addAndGetSync(value:number):number;
+        addAndGet(value:number):Promise<number>;
 
-        getAndAdd(value:number):number;
-        getAndAdd(value:number, async:Backendless.Async):XMLHttpRequest;
-        getAndAdd<Promise>(value:number):Promise;
+        getAndAddSync(value:number):number;
+        getAndAdd(value:number):Promise<number>
 
-        compareAndSet(expected:number, updated:number):number;
-        compareAndSet(expected:number, updated:number, async:Backendless.Async):XMLHttpRequest;
-        compareAndSet<Promise>(expected:number, updated:number):Promise;
+        compareAndSetSync(expected:number, updated:number):number;
+        compareAndSet(expected:number, updated:number):Promise<number>;
 
-        reset():number;
-        reset(async:Backendless.Async):XMLHttpRequest;
-        reset<Promise>():Promise;
+        resetSync():number;
+        reset():Promise<number>;
     }
 
 
@@ -766,43 +722,34 @@ declare module __Backendless {
      * @refers {@link Backendless.Counters}
      */
     class CountersClass {
-        of(counterName:string):Backendless.AtomicInstance;
+        of(counterName:string):Counter;
 
-        get(counterName:string):number;
-        get(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        get<Promise>(counterName:string):Promise;
+        getSync(counterName:string):number;
+        get(counterName:string):Promise<number>;
 
-        getAndIncrement(counterName:string):number;
-        getAndIncrement(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        getAndIncrement<Promise>(counterName:string):Promise;
+        getAndIncrementSync(counterName:string):number;
+        getAndIncrement(counterName:string):Promise<number>;
 
-        incrementAndGet(counterName:string):number;
-        incrementAndGet(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        incrementAndGet<Promise>(counterName:string):Promise;
+        incrementAndGetSync(counterName:string):number;
+        incrementAndGet(counterName:string):Promise<number>;
 
-        getAndDecrement(counterName:string):number;
-        getAndDecrement(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        getAndDecrement<Promise>(counterName:string):Promise;
+        getAndDecrementSync(counterName:string):number;
+        getAndDecrement(counterName:string):Promise<number>;
 
-        decrementAndGet(counterName:string):number;
-        decrementAndGet(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        decrementAndGet<Promise>(counterName:string):Promise;
+        decrementAndGetSync(counterName:string):number;
+        decrementAndGet(counterName:string):Promise<number>;
 
-        addAndGet(counterName:string, value:number):number;
-        addAndGet(counterName:string, value:number, async:Backendless.Async):XMLHttpRequest;
-        addAndGet<Promise>(counterName:string, value:number):Promise;
+        addAndGetSync(counterName:string, value:number):number;
+        addAndGet(counterName:string, value:number):Promise<number>;
 
-        getAndAdd(counterName:string, value:number):number;
-        getAndAdd(counterName:string, value:number, async:Backendless.Async):XMLHttpRequest;
-        getAndAdd<Promise>(counterName:string, value:number):Promise;
+        getAndAddSync(counterName:string, value:number):number;
+        getAndAdd(counterName:string, value:number):Promise<number>
 
-        compareAndSet(counterName:string, expected:number, updated:number):number;
-        compareAndSet(counterName:string, expected:number, updated:number, async:Backendless.Async):XMLHttpRequest;
-        compareAndSet<Promise>(counterName:string, expected:number, updated:number):Promise;
+        compareAndSetSync(counterName:string, expected:number, updated:number):number;
+        compareAndSet(counterName:string, expected:number, updated:number):Promise<number>;
 
-        reset(counterName:string):number;
-        reset(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        reset<Promise>(counterName:string):Promise;
+        resetSync(counterName:string):number;
+        reset(counterName:string):Promise<number>;
     }
 
     /**
@@ -811,9 +758,8 @@ declare module __Backendless {
      * @refers {@link Backendless.CustomServices}
      */
     class CustomServicesClass {
-        invoke(serviceName:string, serviceVersion:string, method:string, parameters:Object):Object;
-        invoke(serviceName:string, serviceVersion:string, method:string, parameters:Object, async:Backendless.Async):XMLHttpRequest;
-        invoke<Promise>(serviceName:string, serviceVersion:string, method:string, parameters:Object):Promise;
+        invokeSync(serviceName:string, serviceVersion:string, method:string, parameters:Object):any;
+        invoke(serviceName:string, serviceVersion:string, method:string, parameters:Object):Promise<any>;
     }
 
     /**
