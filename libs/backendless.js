@@ -1119,10 +1119,8 @@
         findSync: synchronized('_find'),
 
         _find: function(queryBuilder) {
-            this._validateFindArguments(arguments);
-
             var args = this._parseFindArguments(arguments);
-            var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
 
             return this._findUtil(dataQuery, args.async);
         },
@@ -1140,10 +1138,12 @@
             }
         },
 
-        _parseFindArguments: function(args) {
+        _parseFindArguments: function (args) {
+            this._validateFindArguments(args);
+
             var result = {
                 queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-                async       : args[0] instanceof Async ? args[0] : null
+                async: args[0] instanceof Backendless.Async ? args[0] : null
             };
 
             if (args.length > 1) {
@@ -1305,26 +1305,25 @@
         loadRelationsSync: synchronized('_loadRelations'),
 
         _loadRelations: function (parentObjectId, queryBuilder, async) {
-            Utils.throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
+            this._validateLoadRelationsArguments(parentObjectId, queryBuilder);
 
             var dataQuery = queryBuilder.build();
             var relationModel = dataQuery.relationModel || null;
             var responder = Utils.extractResponder(arguments);
-            var isAsync = !!responder;
             var relationName = dataQuery.options.relationName;
             var query = this._extractQueryOptions(dataQuery.options);
             var url = this.restUrl + Utils.toUri(parentObjectId, relationName);
 
-            responder = responder && wrapAsync(responder, function(response){
-                    return this._parseFindResponse(response, relationModel);
-                }, this);
+            responder = responder && Utils.wrapAsync(responder, function(response){
+                return this._parseFindResponse(response, relationModel);
+            }, this);
 
             url += query ? '?' + query : '';
 
             var result = Backendless._ajax({
                 method: 'GET',
                 url: url,
-                isAsync: isAsync,
+                isAsync: !!responder,
                 asyncHandler: responder
             });
 
@@ -1333,11 +1332,11 @@
 
         _validateLoadRelationsArguments: function(parentObjectId, queryBuilder) {
             if (!parentObjectId || !Utils.isString(parentObjectId)) {
-                return 'The parentObjectId is required argument and must be a nonempty string';
+                throw new Error('The parentObjectId is required argument and must be a nonempty string');
             }
 
             if (!queryBuilder || !(queryBuilder instanceof Backendless.LoadRelationsQueryBuilder)) {
-                return (
+                throw new Error(
                     'Invalid queryBuilder object.' +
                     'The queryBuilder is required and must be instance of the Backendless.LoadRelationsQueryBuilder'
                 );
@@ -1348,7 +1347,7 @@
             var relationName = dataQuery.options && dataQuery.options.relationName;
 
             if (!relationName || !Utils.isString(relationName)) {
-                return 'The options relationName is required and must contain string value';
+                throw new Error('The options relationName is required and must contain string value');
             }
         },
 
@@ -1429,7 +1428,7 @@
         bulkCreateSync: synchronized('_bulkCreate'),
 
         _bulkCreate: function(objectsArray, async) {
-            Utils.throwError(this._validateBulkCreateArg(objectsArray));
+            this._validateBulkCreateArg(objectsArray);
 
             return Backendless._ajax({
                 method      : 'POST',
@@ -1459,7 +1458,7 @@
         bulkUpdateSync: synchronized('_bulkUpdate'),
 
         _bulkUpdate: function(templateObject, whereClause, async) {
-            Utils.throwError(this._validateBulkUpdateArgs(templateObject, whereClause));
+            this._validateBulkUpdateArgs(templateObject, whereClause);
 
             return Backendless._ajax({
                 method      : 'PUT',
@@ -1663,13 +1662,12 @@
             return this._manageRelation('DELETE', arguments);
         },
 
-        _formRelationObject: function (args) {
+        _collectRelationObject: function (args) {
             var relation = {
                 columnName: args[1]
             };
 
             var parent = args[0];
-            var child;
 
             if (Utils.isString(parent)) {
                 relation.parentId = parent
@@ -1682,18 +1680,9 @@
             if (Utils.isString(children)) {
                 relation.whereClause = children
             } else if (Utils.isArray(children)) {
-                relation.childrenIds = [];
-
-                for (var i = 0; i < children.length; i++) {
-                    child = children[i];
-
-                    if (Utils.isString(child)) {
-                        relation.childrenIds.push(child)
-                    } else if (Utils.isObject(child)) {
-                        relation.childrenIds.push(child.objectId)
-                    }
-
-                }
+                relation.childrenIds = children.map(function(child) {
+                    return Utils.isObject(child) ? child.objectId : child;
+                });
             }
 
             return relation;
@@ -1701,21 +1690,21 @@
 
         _validateRelationObject: function(relation) {
             if (!relation.parentId) {
-                return (
+                throw new Error(
                     'Invalid value for the "parent" argument. ' +
                     'The argument is required and must contain only string or object values.'
                 );
             }
 
             if (!relation.columnName) {
-                return (
+                throw new Error(
                     'Invalid value for the "columnName" argument. ' +
                     'The argument is required and must contain only string values.'
                 );
             }
 
             if (!relation.whereClause && !relation.childrenIds) {
-                return (
+                throw new Error(
                     'Invalid value for the third argument. ' +
                     'The argument is required and must contain string values if it sets whereClause ' +
                     'or array if it sets childObjects.'
@@ -1724,13 +1713,10 @@
         },
 
         _manageRelation: function(method, args) {
-            var relation = this._formRelationObject(args);
+            var relation = this._collectRelationObject(args);
             var responder = Utils.extractResponder(args);
-            var validationError = this._validateRelationObject(relation);
 
-            if (validationError) {
-                throw new Error(validationError);
-            }
+            this._validateRelationObject(relation);
 
             return Backendless._ajax({
                 method      : method,
@@ -1744,7 +1730,168 @@
         _buildRelationUrl: function (relation) {
             var url = this.restUrl + Utils.toUri(relation.parentId, relation.columnName);
 
-            return Utils.addWhereClause(url, relation.whereClause);
+            if (relation.whereClause) {
+                url += '?' + Utils.toQueryParams({ where: relation.whereClause });
+            }
+
+            return url;
+        },
+
+        findFirst: function() {
+            var argsObj = this._buildArgsObject.apply(this, arguments);
+            argsObj.url = 'first';
+
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        },
+
+        findLast: function() {
+            var argsObj = this._buildArgsObject.apply(this, arguments);
+            argsObj.url = 'last';
+
+            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        },
+
+        /**
+         * Count of object
+         *
+         * @param {DataQueryBuilder} [dataQueryBuilder]
+         * @param {Async} [async]
+         *
+         * @return {*}
+         */
+        getObjectCount: function(queryBuilder, async) {
+            var args = this._parseFindArguments(arguments);
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
+            var url       = this.restUrl + '/count';
+            var isAsync   = !!args.async;
+
+            if (dataQuery.condition) {
+                url += '?where=' + encodeURIComponent(dataQuery.condition);
+            }
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
+                asyncHandler: args.async
+            });
+        },
+
+        /**
+         * Create of several objects
+         *
+         * @param {object[]} objectsArray - array of objects
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkCreate: function(objectsArray, async) {
+            this._validateBulkCreateArg(objectsArray);
+
+            return Backendless._ajax({
+                method      : 'POST',
+                url         : this.bulkRestUrl,
+                data        : JSON.stringify(objectsArray),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        /**
+         * Update of several objects by template
+         *
+         * @param {object} templateObject
+         * @param {string} whereClause
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkUpdate: function(templateObject, whereClause, async) {
+            this._validateBulkUpdateArgs(templateObject, whereClause);
+
+            return Backendless._ajax({
+                method      : 'PUT',
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
+                data        : JSON.stringify(templateObject),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        /**
+         * Delete of several objects
+         *
+         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkDelete: function(objectsArray, async) {
+            this._validateBulkDeleteArg(objectsArray);
+
+            var whereClause;
+            var objects;
+
+            if (Utils.isString(objectsArray)) {
+                whereClause = objectsArray;
+            } else if (Utils.isArray(objectsArray)) {
+                objects = objectsArray.map(function(obj) {
+                    return Utils.isString(obj) ? obj : obj.objectId;
+                });
+            }
+
+            return Backendless._ajax({
+                method      : 'DELETE',
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
+                data        : objects && JSON.stringify(objects),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        _validateBulkCreateArg: function(objectsArray) {
+            var MSG_ERROR = (
+                'Invalid value for the "objectsArray" argument. ' +
+                'The argument must contain only array of objects.'
+            );
+
+            if (!Utils.isArray(objectsArray)) {
+                throw new Error(MSG_ERROR);
+            }
+
+            for(var i=0; i < objectsArray.length; i++) {
+                if (!Utils.isObject(objectsArray[i])) {
+                    throw new Error(MSG_ERROR);
+                }
+            }
+        },
+
+
+        _validateBulkUpdateArgs: function(templateObject, whereClause) {
+            if (!templateObject || !Utils.isObject(templateObject)) {
+                throw new Error('Invalid templateObject argument. The first argument must contain object');
+            }
+
+            if (!whereClause || !Utils.isString(whereClause)) {
+                throw new Error('Invalid whereClause argument. The first argument must contain "whereClause" string.');
+            }
+        },
+
+        _validateBulkDeleteArg: function(arg) {
+            var MSG_ERROR = (
+                'Invalid bulkDelete argument. ' +
+                'The first argument must contain array of objects or array of id or "whereClause" string'
+            );
+
+            if (!arg || (!Utils.isArray(arg) && !Utils.isString(arg))) {
+                throw new Error(MSG_ERROR);
+            }
+
+            for(var i=0; i < arg.length; i++) {
+                if (!Utils.isObject(arg[i]) && !Utils.isString(arg[i])) {
+                    throw new Error(MSG_ERROR);
+                }
+            }
         }
     };
 
@@ -2694,8 +2841,14 @@
             }
         },
 
-        _buildUrlQueryParams: function (query) {
-            var params = '?';
+        _validateQueryObject: function(query) {
+            if (!(query instanceof GeoQuery)) {
+                throw new Error('Invalid Geo Query. Query should be instance of Backendless.GeoQuery');
+            }
+
+            if (query.geoFence !== undefined && !Utils.isString(query.geoFence)) {
+                throw new Error('Invalid value for argument "geoFenceName". Geo Fence Name must be a String');
+            }
 
             if (query.searchRectangle && query.radius) {
                 throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
@@ -2708,16 +2861,22 @@
             if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
                 throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
             }
+        },
 
-            params += query.units ? 'units=' + query.units : '';
+        _toQueryParams: function (query) {
+            var params = [];
+
+            if (query.units) {
+               params.push('units=' + query.units);
+            }
 
             for (var prop in query) {
                 if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
-                    params += '&' + this._findHelpers[prop](query[prop]);
+                    params.push(this._findHelpers[prop](query[prop]));
                 }
             }
 
-            return params.replace(/\?&/g, '?');
+            return params.join('&');
         },
 
         savePoint: promisified('_savePoint'),
@@ -2781,9 +2940,9 @@
             var responder = Utils.extractResponder(arguments),
                 isAsync   = false;
 
-            var url = query.url + (query.searchRectangle ? '/rect' : '/points') + this._buildUrlQueryParams(query);
+            this._validateQueryObject(query);
 
-            var self = this;
+            var url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + this._toQueryParams(query);
 
             var responderOverride = function(async) {
                 var success = function(data) {
@@ -3058,11 +3217,8 @@
         _getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
 
-            this._validateFenceName(geoFenceName);
-            this._validateQuery(query);
-
-            query["geoFence"] = geoFenceName;
-            query["url"] = this.restUrl;
+            query.geoFence = geoFenceName;
+            query.url = this.restUrl;
 
             return this._findUtil(query, async);
         },
@@ -3091,8 +3247,11 @@
         _getGeopointCount: function (fenceName, query, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
-            query = this._buildCountQueryObject(arguments, isAsync);
-            var url = this.restUrl + '/count' + this._buildUrlQueryParams(query);
+            var query = this._buildCountQueryObject(arguments, isAsync);
+
+            this._validateQueryObject(query);
+
+            var url = this.restUrl + '/count?' + this._toQueryParams(query);
 
             return Backendless._ajax({
                 method: 'GET',
@@ -3100,22 +3259,6 @@
                 isAsync: isAsync,
                 asyncHandler: responder
             });
-        },
-
-        _validateQuery: function(query) {
-            var MSG_INVALID_QUERY = 'Invalid Geo Query. Query should be instance of Backendless.GeoQuery';
-
-            if (!(query instanceof GeoQuery)) {
-                throw new Error(MSG_INVALID_QUERY);
-            }
-        },
-
-        _validateFenceName: function(fenceName) {
-            var MSG_INVALID_FENCE_NAME = 'Invalid value for parameter "geoFenceName". Geo Fence Name must be a String';
-
-            if (!Utils.isString(fenceName)) {
-                throw new Error(MSG_INVALID_FENCE_NAME);
-            }
         },
 
         _buildCountQueryObject: function(args, isAsync) {
@@ -3126,16 +3269,11 @@
 
             if (args.length === 1) {
                 query = args[0];
-
-                this._validateQuery(query);
             }
 
             if (args.length === 2) {
                 fenceName = args[0];
                 query = args[1];
-
-                this._validateQuery(query);
-                this._validateFenceName(fenceName);
 
                 query["geoFence"] = fenceName;
             }
@@ -4653,81 +4791,52 @@
          */
         getFileCountSync: synchronized('_getFileCount'),
 
-        _getFileCount: function(path, pattern, recursive, countDirectories, async) {
+        _getFileCount: function (path, pattern, recursive, countDirectories, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
             var query = this._buildCountQueryObject(arguments, isAsync);
-            var queryString = this._getQueryParamsString(query);
 
-            return Backendless._ajax({
-                method      : 'GET',
-                url         : this.restUrl + queryString,
-                isAsync     : isAsync,
-                asyncHandler: responder
-            });
-        },
-
-        _getQueryParamsString: function(query) {
-            var params = '/' + query.path + '?action=count';
+            this._validateCountQueryObject(query);
 
             delete query.path;
 
-            for (var prop in query) {
-                if (query.hasOwnProperty(prop) && query[prop] != null) {
-                    params += '&' + prop + '=' + encodeURIComponent(query[prop]);
-                }
-            }
+            var url = this.restUrl + '/' + path + '?' + Utils.toQueryParams(query);
 
-            return params;
+            return Backendless._ajax({
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
         },
 
         _buildCountQueryObject: function (args, isAsync) {
             args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
 
-            var query = {
+            return {
+                action: 'count',
                 path: args[0],
                 pattern: args[1] !== undefined ? args[1] : '*',
                 recursive: args[2] !== undefined ? args[2] : false,
                 countDirectories: args[3] !== undefined ? args[3] : false
             };
-
-            this._validatePath(query.path);
-            this._validatePattern(query.pattern);
-            this._validateRecursive(query.recursive);
-            this._validateCountDirectories(query.countDirectories);
-
-            return query;
         },
 
-        _validatePath: function(path) {
-            var MSG_ERROR = 'Missing value for the "path" argument. The argument must contain a string value';
-
-            if (!path || !Utils.isString(path)) {
-                throw new Error(MSG_ERROR);
+        _validateCountQueryObject: function (query) {
+            if (!query.path || !Utils.isString(query.path)) {
+                throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
-        },
 
-        _validatePattern: function(pattern) {
-            var MSG_ERROR = 'Missing value for the "pattern" argument. The argument must contain a string value';
-
-            if (!pattern || !Utils.isString(pattern)) {
-                throw new Error(MSG_ERROR);
+            if (!query.pattern || !Utils.isString(query.pattern)) {
+                throw new Error('Missing value for the "pattern" argument. The argument must contain a string value');
             }
-        },
 
-        _validateRecursive: function(recursive) {
-            var MSG_ERROR = 'Missing value for the "recursive" argument. The argument must contain a boolean value';
-
-            if (!Utils.isBoolean(recursive)) {
-                throw new Error(MSG_ERROR);
+            if (!Utils.isBoolean(query.recursive)) {
+                throw new Error('Missing value for the "recursive" argument. The argument must contain a boolean value');
             }
-        },
 
-        _validateCountDirectories: function(countDirectories) {
-            var MSG_ERROR = 'Missing value for the "countDirectories" argument. The argument must contain a boolean value';
-
-            if (!Utils.isBoolean(countDirectories)) {
-                throw new Error(MSG_ERROR);
+            if (!Utils.isBoolean(query.countDirectories)) {
+                throw new Error('Missing value for the "countDirectories" argument. The argument must contain a boolean value');
             }
         }
     };

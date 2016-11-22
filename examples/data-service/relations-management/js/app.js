@@ -1,8 +1,8 @@
 (function ($, H, bless) {
-    var APP_ID = 'A9F6CF0B-6B7F-1403-FFF5-385DFD6D5000';
-    var SECRET_KEY = '9E0406F0-0A91-4D41-FF4A-421A613DD300';
+    var APP_ID = '';
+    var SECRET_KEY = '';
     var TABLE_NAME = 'Parent';
-    var OBJECT_ID = '352292C3-9417-26BB-FF64-F434B1D91A00';
+    var OBJECT_ID = '';
     var COLUMN = 'subscriptions';
 
     var App = {
@@ -23,13 +23,11 @@
         },
 
         toBind: [
-            'onInitState',
             'search',
             'renderSubscriptions',
             'renderSearchResults',
             'addSubscriptions',
             'removeSubscription',
-            'declareRelation',
             'onAddSubscriptionsSuccess',
             'onAddSubscriptionsError',
             'onRemoveSubscriptionsSuccess',
@@ -76,27 +74,7 @@
         },
 
         setInitialState: function () {
-            this.ui.container.hide();
             this.ui.searchResults.hide();
-
-            this.declareRelation().then(
-                this.onInitState,
-                this.onFail
-            );
-        },
-
-        declareRelation: function () {
-            return bless.Persistence.of(TABLE_NAME).declareRelation(
-                COLUMN,
-                TABLE_NAME,
-                'one_to_many'
-            );
-        },
-
-        onInitState: function () {
-            this.ui.container.show();
-
-            this.refreshSubscriptionsList();
         },
 
         search: function (e) {
@@ -132,7 +110,7 @@
 
                 bless.Persistence.of(TABLE_NAME).addRelation(
                     OBJECT_ID,
-                    COLUMN,
+                    COLUMN + ':' + TABLE_NAME,
                     list
                 ).then(this.onAddSubscriptionsSuccess, this.onAddSubscriptionsError);
             }

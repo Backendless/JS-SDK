@@ -60,7 +60,7 @@
         return bless.Persistence.of(FileItem).remove(id);
     }
 
-    function refreshCountOfList() {
+    function refreshCounter() {
         var countContainer = $('#count');
 
         countContainer.text('loading...');
@@ -69,8 +69,8 @@
             function (count) {
                 countContainer.text(count);
             },
-            function (error) {
-                countContainer.text('NaN');
+            function(error) {
+                countContainer.text('-');
                 console.error(error);
             }
         );
@@ -84,8 +84,7 @@
         getItemsFromPersistance().then(renderItems);
     }
 
-    function renderItems(items) {
-        refreshCountOfList();
+        refreshCounter();
 
         $('.thumbnails').empty();
 
