@@ -2972,9 +2972,9 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        getCategory: promisified('_getCategories'),
+        getCategories: promisified('_getCategories'),
 
-        getCategorySync: synchronized('_getCategories'),
+        getCategoriesSync: synchronized('_getCategories'),
 
         _getCategories: function(async) {
             var responder = Utils.extractResponder(arguments);
