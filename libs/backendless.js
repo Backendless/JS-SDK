@@ -1453,7 +1453,11 @@
         _buildRelationUrl: function (relation) {
             var url = this.restUrl + Utils.toUri(relation.parentId, relation.columnName);
 
-            return url + '?' + Utils.toQueryParams({ where: relation.whereClause });
+            if (relation.whereClause) {
+                url += '?' + Utils.toQueryParams({ where: relation.whereClause });
+            }
+
+            return url;
         },
 
         findFirst: function() {
