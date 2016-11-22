@@ -564,7 +564,7 @@
         config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
 
         if (!config.isAsync) {
-            throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
+            throw new Error('Use Async type of request using Backendless with NodeJS. Add Async(successCallback, errorCallback) as last argument');
         }
 
         if (typeof config.data !== "string") {
@@ -1135,7 +1135,7 @@
             if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Async)) {
                 throw new Error(
                     'Invalid find method argument. ' +
-                    'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
+                    'The argument should be instance of Backendless.DataQueryBuilder or Async'
                 );
             }
         },
