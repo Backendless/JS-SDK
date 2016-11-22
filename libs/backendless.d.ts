@@ -101,19 +101,6 @@ declare module __Backendless {
 
     /**
      * @public
-     * @class Backendless.Async
-     * @constructor
-     */
-    class Async {
-        constructor(onSuccess?:(data?:Object) => void, onError?:((data:Object) => void) | Object, context?:Object);
-
-        success(data:Object):void;
-
-        fault(data:Object):void;
-    }
-
-    /**
-     * @public
      * @class Backendless.User
      * @constructor
      */
@@ -540,33 +527,26 @@ declare module __Backendless {
         restUrl:string;
         channelProperties:Object;
 
-        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
-        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
-        subscribe<Promise>(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise;
+        subscribeSync(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
+        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise<Backendless.SubscriptionI>;
 
-        publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
-        publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions, async:Backendless.Async):XMLHttpRequest;
-        publish<Promise>(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Promise;
+        publishSync(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
+        publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Promise<Object>;
 
-        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Object;
-        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[], async:Backendless.Async):XMLHttpRequest;
-        sendEmail<Promise>(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Promise;
+        sendEmailSync(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Object;
+        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Promise<Object>;
 
-        cancel(messageId:string):boolean;
-        cancel(messageId:string, async:Backendless.Async):XMLHttpRequest;
-        cancel<Promise>(messageId:string):Promise;
+        cancelSync(messageId:string):boolean;
+        cancel(messageId:string):Promise<boolean>;
 
-        registerDevice(channels:string[], expiration:number|Date):Object;
-        registerDevice(channels:string[], expiration:number|Date, async:Backendless.Async):XMLHttpRequest;
-        registerDevice<Promise>(channels:string[], expiration:number|Date):Promise;
+        registerDeviceSync(channels:string[], expiration:number|Date):Object;
+        registerDevice(channels:string[], expiration:number|Date):Promise<Object>;
 
-        getRegistrations():Object;
-        getRegistrations(async:Backendless.Async):XMLHttpRequest;
-        getRegistrations<Promise>():Promise;
+        getRegistrationsSync():Object;
+        getRegistrations():Promise<Object>;
 
-        unregisterDevice():Object;
-        unregisterDevice(async:Backendless.Async):XMLHttpRequest;
-        unregisterDevice<Promise>():Promise;
+        unregisterDeviceSync():Object;
+        unregisterDevice():Promise<Object>;
     }
 
     /**
@@ -716,47 +696,38 @@ declare module __Backendless {
 
     /**
      * @private
-     * @class AtomicInstance
+     * @class Counter
      */
-    class AtomicInstance {
+    class Counter {
 
-        constructor(counterName:string);
+        constructor(name:string, restUrl:string);
 
-        get():number;
-        get(async:Backendless.Async):XMLHttpRequest;
-        get<Promise>():Promise;
+        getSync():number;
+        get():Promise<number>;
 
-        getAndIncrement():number;
-        getAndIncrement(async:Backendless.Async):XMLHttpRequest;
-        getAndIncrement<Promise>():Promise;
+        getAndIncrementSync():number;
+        getAndIncrement():Promise<number>;
 
-        incrementAndGet():number;
-        incrementAndGet(async:Backendless.Async):XMLHttpRequest;
-        incrementAndGet<Promise>():Promise;
+        incrementAndGetSync():number;
+        incrementAndGet():Promise<number>;
 
-        getAndDecrement():number;
-        getAndDecrement(async:Backendless.Async):XMLHttpRequest;
-        getAndDecrement<Promise>():Promise;
+        getAndDecrementSync():number;
+        getAndDecrement():Promise<number>;
 
-        decrementAndGet():number;
-        decrementAndGet(async:Backendless.Async):XMLHttpRequest;
-        decrementAndGet<Promise>():Promise;
+        decrementAndGetSync():number;
+        decrementAndGet():Promise<number>;
 
-        addAndGet(value:number):number;
-        addAndGet(value:number, async:Backendless.Async):XMLHttpRequest;
-        addAndGet<Promise>(value:number):Promise;
+        addAndGetSync(value:number):number;
+        addAndGet(value:number):Promise<number>;
 
-        getAndAdd(value:number):number;
-        getAndAdd(value:number, async:Backendless.Async):XMLHttpRequest;
-        getAndAdd<Promise>(value:number):Promise;
+        getAndAddSync(value:number):number;
+        getAndAdd(value:number):Promise<number>
 
-        compareAndSet(expected:number, updated:number):number;
-        compareAndSet(expected:number, updated:number, async:Backendless.Async):XMLHttpRequest;
-        compareAndSet<Promise>(expected:number, updated:number):Promise;
+        compareAndSetSync(expected:number, updated:number):number;
+        compareAndSet(expected:number, updated:number):Promise<number>;
 
-        reset():number;
-        reset(async:Backendless.Async):XMLHttpRequest;
-        reset<Promise>():Promise;
+        resetSync():number;
+        reset():Promise<number>;
     }
 
 
@@ -766,43 +737,34 @@ declare module __Backendless {
      * @refers {@link Backendless.Counters}
      */
     class CountersClass {
-        of(counterName:string):Backendless.AtomicInstance;
+        of(counterName:string):Counter;
 
-        get(counterName:string):number;
-        get(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        get<Promise>(counterName:string):Promise;
+        getSync(counterName:string):number;
+        get(counterName:string):Promise<number>;
 
-        getAndIncrement(counterName:string):number;
-        getAndIncrement(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        getAndIncrement<Promise>(counterName:string):Promise;
+        getAndIncrementSync(counterName:string):number;
+        getAndIncrement(counterName:string):Promise<number>;
 
-        incrementAndGet(counterName:string):number;
-        incrementAndGet(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        incrementAndGet<Promise>(counterName:string):Promise;
+        incrementAndGetSync(counterName:string):number;
+        incrementAndGet(counterName:string):Promise<number>;
 
-        getAndDecrement(counterName:string):number;
-        getAndDecrement(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        getAndDecrement<Promise>(counterName:string):Promise;
+        getAndDecrementSync(counterName:string):number;
+        getAndDecrement(counterName:string):Promise<number>;
 
-        decrementAndGet(counterName:string):number;
-        decrementAndGet(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        decrementAndGet<Promise>(counterName:string):Promise;
+        decrementAndGetSync(counterName:string):number;
+        decrementAndGet(counterName:string):Promise<number>;
 
-        addAndGet(counterName:string, value:number):number;
-        addAndGet(counterName:string, value:number, async:Backendless.Async):XMLHttpRequest;
-        addAndGet<Promise>(counterName:string, value:number):Promise;
+        addAndGetSync(counterName:string, value:number):number;
+        addAndGet(counterName:string, value:number):Promise<number>;
 
-        getAndAdd(counterName:string, value:number):number;
-        getAndAdd(counterName:string, value:number, async:Backendless.Async):XMLHttpRequest;
-        getAndAdd<Promise>(counterName:string, value:number):Promise;
+        getAndAddSync(counterName:string, value:number):number;
+        getAndAdd(counterName:string, value:number):Promise<number>
 
-        compareAndSet(counterName:string, expected:number, updated:number):number;
-        compareAndSet(counterName:string, expected:number, updated:number, async:Backendless.Async):XMLHttpRequest;
-        compareAndSet<Promise>(counterName:string, expected:number, updated:number):Promise;
+        compareAndSetSync(counterName:string, expected:number, updated:number):number;
+        compareAndSet(counterName:string, expected:number, updated:number):Promise<number>;
 
-        reset(counterName:string):number;
-        reset(counterName:string, async:Backendless.Async):XMLHttpRequest;
-        reset<Promise>(counterName:string):Promise;
+        resetSync(counterName:string):number;
+        reset(counterName:string):Promise<number>;
     }
 
     /**
@@ -811,9 +773,8 @@ declare module __Backendless {
      * @refers {@link Backendless.CustomServices}
      */
     class CustomServicesClass {
-        invoke(serviceName:string, serviceVersion:string, method:string, parameters:Object):Object;
-        invoke(serviceName:string, serviceVersion:string, method:string, parameters:Object, async:Backendless.Async):XMLHttpRequest;
-        invoke<Promise>(serviceName:string, serviceVersion:string, method:string, parameters:Object):Promise;
+        invokeSync(serviceName:string, serviceVersion:string, method:string, parameters:Object):any;
+        invoke(serviceName:string, serviceVersion:string, method:string, parameters:Object):Promise<any>;
     }
 
     /**
