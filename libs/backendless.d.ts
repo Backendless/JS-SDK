@@ -487,7 +487,7 @@ declare module __Backendless {
         savePoint(point:Backendless.GeoPoint):Promise<Backendless.GeoPoint>;
 
         findSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        find<Promise>(query:Backendless.GeoQueryI):Promise;
+        find(query:Backendless.GeoQueryI):Promise;
 
         deletePointSync(point:string|Backendless.GeoPoint):string;
         deletePoint(point:string|Backendless.GeoPoint):Promise<string>;
@@ -591,7 +591,7 @@ declare module __Backendless {
         moveFile(sourcePath:string, targetPath:string):Promise<Object>;
 
         copyFileSync(sourcePath:string, targetPath:string):Object;
-        copyFile<Promise>(sourcePath:string, targetPath:string):Promise<Object>;
+        copyFile(sourcePath:string, targetPath:string):Promise<Object>;
 
         removeSync(fileURL:string):void;
         remove(fileURL:string):Promise<void>;
@@ -618,10 +618,10 @@ declare module __Backendless {
         grantRole(roleName:string, url:string, permissionType:string):Promise<Object>;
 
         denyUserSync(userId:string, url:string, permissionType:string):Object;
-        denyUser<Promise>(userId:string, url:string, permissionType:string):Promise<Object>;
+        denyUser(userId:string, url:string, permissionType:string):Promise<Object>;
 
         denyRoleSync(roleName:string, url:string, permissionType:string):Object;
-        denyRole<Promise>(roleName:string, url:string, permissionType:string):Promise<Object>;
+        denyRole(roleName:string, url:string, permissionType:string):Promise<Object>;
     }
 
     /**
