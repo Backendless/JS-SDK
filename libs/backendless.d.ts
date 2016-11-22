@@ -788,7 +788,7 @@ declare module __Backendless {
         unassignRoleSync(identity:string, roleName:string):Backendless.User;
         unassignRole(identity:string, roleName:string):Promise<Backendless.User>;
 
-        login(userName:string, password:string, stayLoggedIn?:boolean):Backendless.User;
+        loginSync(userName:string, password:string, stayLoggedIn?:boolean):Backendless.User;
         login(userName:string, password:string, stayLoggedIn?:boolean):Promise<Backendless.User>;
 
         loggedInUser():boolean;
