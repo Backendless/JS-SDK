@@ -402,6 +402,18 @@ declare module __Backendless {
         loadRelations(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):void;
         loadRelations<Promise>(query:Backendless.DataQuery|DataQueryValueI|string):Promise;
         loadRelations<Promise>(query:Backendless.DataQuery|DataQueryValueI|string, relation:Array<string>):Promise;
+
+        bulkCreate(objectsArray:Array<Object>):void;
+        bulkCreate(objectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
+        bulkCreate<Promise>(objectsArray:Array<Object>):Promise;
+
+        bulkUpdate(templateObject:Object, whereClause:string):void;
+        bulkUpdate(templateObject:Object, whereClause:string, async:Backendless.Async):XMLHttpRequest;
+        bulkUpdate<Promise>(templateObject:Object, whereClause:string):Promise;
+
+        bulkDelete(objectsArray:string|Array<string>|Array<Object>):void;
+        bulkDelete(objectsArray:string|Array<string>|Array<Object>, async:Backendless.Async):XMLHttpRequest;
+        bulkDelete<Promise>(objectsArray:string|Array<string>|Array<Object>):Promise;
     }
 
     /**

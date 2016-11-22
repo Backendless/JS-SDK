@@ -898,6 +898,7 @@
         }
 
         this.restUrl = Backendless.appPath + '/data/' + this.className;
+        this.bulkRestUrl = Backendless.appPath + '/data/bulk/' + this.className;
     }
 
     DataStore.prototype = {
@@ -1358,6 +1359,123 @@
                 isAsync     : isAsync,
                 asyncHandler: args.async
             });
+        },
+
+        /**
+         * Create of several objects
+         *
+         * @param {object[]} objectsArray - array of objects
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkCreate: function(objectsArray, async) {
+            this._validateBulkCreateArg(objectsArray);
+
+            return Backendless._ajax({
+                method      : 'POST',
+                url         : this.bulkRestUrl,
+                data        : JSON.stringify(objectsArray),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        /**
+         * Update of several objects by template
+         *
+         * @param {object} templateObject
+         * @param {string} whereClause
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkUpdate: function(templateObject, whereClause, async) {
+            this._validateBulkUpdateArgs(templateObject, whereClause);
+
+            return Backendless._ajax({
+                method      : 'PUT',
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
+                data        : JSON.stringify(templateObject),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        /**
+         * Delete of several objects
+         *
+         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkDelete: function(objectsArray, async) {
+            this._validateBulkDeleteArg(objectsArray);
+
+            var whereClause;
+            var objects;
+
+            if (Utils.isString(objectsArray)) {
+                whereClause = objectsArray;
+            } else if (Utils.isArray(objectsArray)) {
+                objects = objectsArray.map(function(obj) {
+                    return Utils.isString(obj) ? obj : obj.objectId;
+                });
+            }
+
+            return Backendless._ajax({
+                method      : 'DELETE',
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
+                data        : objects && JSON.stringify(objects),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        _validateBulkCreateArg: function(objectsArray) {
+            var MSG_ERROR = (
+                'Invalid value for the "objectsArray" argument. ' +
+                'The argument must contain only array of objects.'
+            );
+
+            if (!Utils.isArray(objectsArray)) {
+                throw new Error(MSG_ERROR);
+            }
+
+            for(var i=0; i < objectsArray.length; i++) {
+                if (!Utils.isObject(objectsArray[i])) {
+                    throw new Error(MSG_ERROR);
+                }
+            }
+        },
+
+
+        _validateBulkUpdateArgs: function(templateObject, whereClause) {
+            if (!templateObject || !Utils.isObject(templateObject)) {
+                throw new Error('Invalid templateObject argument. The first argument must contain object');
+            }
+
+            if (!whereClause || !Utils.isString(whereClause)) {
+                throw new Error('Invalid whereClause argument. The first argument must contain "whereClause" string.');
+            }
+        },
+
+        _validateBulkDeleteArg: function(arg) {
+            var MSG_ERROR = (
+                'Invalid bulkDelete argument. ' +
+                'The first argument must contain array of objects or array of id or "whereClause" string'
+            );
+
+            if (!arg || (!Utils.isArray(arg) && !Utils.isString(arg))) {
+                throw new Error(MSG_ERROR);
+            }
+
+            for(var i=0; i < arg.length; i++) {
+                if (!Utils.isObject(arg[i]) && !Utils.isString(arg[i])) {
+                    throw new Error(MSG_ERROR);
+                }
+            }
         }
     };
 
