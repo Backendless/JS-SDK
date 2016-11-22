@@ -632,17 +632,14 @@ declare module __Backendless {
     class CommerceClass {
         restUrl:string;
 
-        validatePlayPurchase(packageName:string, productId:string, token:string):Object;
-        validatePlayPurchase(packageName:string, productId:string, token:string, async:Backendless.Async):XMLHttpRequest;
-        validatePlayPurchase<Promise>(packageName:string, productId:string, token:string):Promise;
+        validatePlayPurchaseSync(packageName:string, productId:string, token:string):Object;
+        validatePlayPurchase(packageName:string, productId:string, token:string):Promise<Object>;
 
-        cancelPlaySubscription(packageName:string, subscriptionId:string, token:string):Object;
-        cancelPlaySubscription(packageName:string, subscriptionId:string, token:string, async:Backendless.Async):XMLHttpRequest;
-        cancelPlaySubscription<Promise>(packageName:string, subscriptionId:string, token:string):Promise;
+        cancelPlaySubscriptionSync(packageName:string, subscriptionId:string, token:string):Object;
+        cancelPlaySubscription(packageName:string, subscriptionId:string, token:string):Promise<Object>;
 
-        getPlaySubscriptionStatus(packageName:string, subscriptionId:string, token:string):Object;
-        getPlaySubscriptionStatus(packageName:string, subscriptionId:string, token:string, async:Backendless.Async):XMLHttpRequest;
-        getPlaySubscriptionStatus<Promise>(packageName:string, subscriptionId:string, token:string):Promise;
+        getPlaySubscriptionStatusSync(packageName:string, subscriptionId:string, token:string):Object;
+        getPlaySubscriptionStatus(packageName:string, subscriptionId:string, token:string):Promise<Object>;
     }
 
     /**
@@ -663,33 +660,23 @@ declare module __Backendless {
      * @refers {@link Backendless.Cache}
      */
     class CacheClass {
-        put(key:string, value:any):Object;
-        put(key:string, value:any, timeToLive:number):Object;
-        put(key:string, value:any, async:Backendless.Async):XMLHttpRequest;
-        put(key:string, value:any, timeToLive:number):Object;
-        put(key:string, value:any, timeToLive:number, async:Backendless.Async):XMLHttpRequest;
-        put<Promise>(key:string, value:any, timeToLive:number):Promise;
-        put<Promise>(key:string, value:any):Promise;
+        putSync(key:string, value:any, timeToLive?:number):Object;
+        put(key:string, value:any, timeToLive?:number):Promise<Object>;
 
-        expireIn(key:string, time:number|Date):Object;
-        expireIn(key:string, time:number|Date, async:Backendless.Async):XMLHttpRequest;
-        expireIn<Promise>(key:string, time:number|Date):Promise;
+        expireInSync(key:string, time:number|Date):Object;
+        expireIn(key:string, time:number|Date):Promise<Object>;
 
-        expireAt(key:string, time:number|Date):Object;
-        expireAt(key:string, time:number|Date, async:Backendless.Async):XMLHttpRequest;
-        expireAt<Promise>(key:string, time:number|Date):Promise;
+        expireAtSync(key:string, time:number|Date):Object;
+        expireAt(key:string, time:number|Date):Promise<Object>;
 
-        contains(key:string):Object;
-        contains(key:string, async:Backendless.Async):XMLHttpRequest;
-        contains<Promise>(key:string):Promise;
+        containsSync(key:string):Object;
+        contains(key:string):Promise<Object>;
 
-        get(key:string):Object;
-        get(key:string, async:Backendless.Async):XMLHttpRequest;
-        get<Promise>(key:string):Promise;
+        getSync(key:string):Object;
+        get(key:string):Promise<Object>;
 
-        remove(key:string):Object;
-        remove(key:string, async:Backendless.Async):XMLHttpRequest;
-        remove<Promise>(key:string):Promise;
+        removeSync(key:string):Object;
+        remove(key:string):Promise<Object>;
     }
 
     /**
