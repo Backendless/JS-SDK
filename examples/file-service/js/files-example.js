@@ -60,12 +60,31 @@
         Backendless.Persistence.of(FileItem).remove(id);
     }
 
+    function refreshCounter() {
+        var countContainer = $('#count');
+
+        countContainer.text('loading...');
+
+        Backendless.Persistence.of(FileItem).getObjectCount(new Backendless.Async(
+            function(count){
+                countContainer.text(count);
+            },
+            function(error) {
+                countContainer.text('-');
+                console.error(error);
+            })
+        );
+    }
+
     function onClickFileItem() {
         $(this).toggleClass('selectedThumbnail');
     }
 
     function refreshItemsList() {
         var items = getItemsFromPersistance();
+
+        refreshCounter();
+
         $('.thumbnails').empty();
 
         $.each(items, function (index, value) {
@@ -93,8 +112,6 @@
     function getItemsFromPersistance() {
         var db = Backendless.Persistence.of(FileItem);
         try {
-            var dataQuery = new Backendless.DataQuery();
-            dataQuery.condition = 'deviceId == ' + DEVICE_ID;
             return db.find();
         }
         catch (e) {

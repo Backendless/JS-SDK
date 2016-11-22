@@ -898,6 +898,7 @@
         }
 
         this.restUrl = Backendless.appPath + '/data/' + this.className;
+        this.bulkRestUrl = Backendless.appPath + '/data/bulk/' + this.className;
     }
 
     DataStore.prototype = {
@@ -1114,10 +1115,8 @@
         },
 
         find: function(queryBuilder) {
-            this._validateFindArguments(arguments);
-
             var args = this._parseFindArguments(arguments);
-            var dataQuery = args.queryBuilder ? queryBuilder.build() : {};
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
 
             return this._find(dataQuery, args.async);
         },
@@ -1149,17 +1148,19 @@
             }
         },
 
-        _parseFindArguments: function(args) {
-          var result = {
-              queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-              async       : args[0] instanceof Backendless.Async ? args[0] : null
-          };
+        _parseFindArguments: function (args) {
+            this._validateFindArguments(args);
 
-          if (args.length > 1) {
-              result.async = args[1];
-          }
+            var result = {
+                queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
+                async: args[0] instanceof Backendless.Async ? args[0] : null
+            };
 
-          return result;
+            if (args.length > 1) {
+                result.async = args[1];
+            }
+
+            return result;
         },
 
         _find: function(dataQuery) {
@@ -1358,6 +1359,149 @@
             argsObj.url = 'last';
 
             return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        },
+
+        /**
+         * Count of object
+         *
+         * @param {DataQueryBuilder} [dataQueryBuilder]
+         * @param {Async} [async]
+         *
+         * @return {*}
+         */
+        getObjectCount: function(queryBuilder, async) {
+            var args = this._parseFindArguments(arguments);
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
+            var url       = this.restUrl + '/count';
+            var isAsync   = !!args.async;
+
+            if (dataQuery.condition) {
+                url += '?where=' + encodeURIComponent(dataQuery.condition);
+            }
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
+                asyncHandler: args.async
+            });
+        },
+
+        /**
+         * Create of several objects
+         *
+         * @param {object[]} objectsArray - array of objects
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkCreate: function(objectsArray, async) {
+            this._validateBulkCreateArg(objectsArray);
+
+            return Backendless._ajax({
+                method      : 'POST',
+                url         : this.bulkRestUrl,
+                data        : JSON.stringify(objectsArray),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        /**
+         * Update of several objects by template
+         *
+         * @param {object} templateObject
+         * @param {string} whereClause
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkUpdate: function(templateObject, whereClause, async) {
+            this._validateBulkUpdateArgs(templateObject, whereClause);
+
+            return Backendless._ajax({
+                method      : 'PUT',
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
+                data        : JSON.stringify(templateObject),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        /**
+         * Delete of several objects
+         *
+         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
+         * @param {Async} [async]
+         * @returns {*}
+         */
+
+        bulkDelete: function(objectsArray, async) {
+            this._validateBulkDeleteArg(objectsArray);
+
+            var whereClause;
+            var objects;
+
+            if (Utils.isString(objectsArray)) {
+                whereClause = objectsArray;
+            } else if (Utils.isArray(objectsArray)) {
+                objects = objectsArray.map(function(obj) {
+                    return Utils.isString(obj) ? obj : obj.objectId;
+                });
+            }
+
+            return Backendless._ajax({
+                method      : 'DELETE',
+                url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
+                data        : objects && JSON.stringify(objects),
+                isAsync     : !!async,
+                asyncHandler: async
+            });
+        },
+
+        _validateBulkCreateArg: function(objectsArray) {
+            var MSG_ERROR = (
+                'Invalid value for the "objectsArray" argument. ' +
+                'The argument must contain only array of objects.'
+            );
+
+            if (!Utils.isArray(objectsArray)) {
+                throw new Error(MSG_ERROR);
+            }
+
+            for(var i=0; i < objectsArray.length; i++) {
+                if (!Utils.isObject(objectsArray[i])) {
+                    throw new Error(MSG_ERROR);
+                }
+            }
+        },
+
+
+        _validateBulkUpdateArgs: function(templateObject, whereClause) {
+            if (!templateObject || !Utils.isObject(templateObject)) {
+                throw new Error('Invalid templateObject argument. The first argument must contain object');
+            }
+
+            if (!whereClause || !Utils.isString(whereClause)) {
+                throw new Error('Invalid whereClause argument. The first argument must contain "whereClause" string.');
+            }
+        },
+
+        _validateBulkDeleteArg: function(arg) {
+            var MSG_ERROR = (
+                'Invalid bulkDelete argument. ' +
+                'The first argument must contain array of objects or array of id or "whereClause" string'
+            );
+
+            if (!arg || (!Utils.isArray(arg) && !Utils.isString(arg))) {
+                throw new Error(MSG_ERROR);
+            }
+
+            for(var i=0; i < arg.length; i++) {
+                if (!Utils.isObject(arg[i]) && !Utils.isString(arg[i])) {
+                    throw new Error(MSG_ERROR);
+                }
+            }
         }
     };
 
@@ -2187,6 +2331,44 @@
             }
         },
 
+        _validateQueryObject: function(query) {
+            if (!(query instanceof GeoQuery)) {
+                throw new Error('Invalid Geo Query. Query should be instance of Backendless.GeoQuery');
+            }
+
+            if (query.geoFence !== undefined && !Utils.isString(query.geoFence)) {
+                throw new Error('Invalid value for argument "geoFenceName". Geo Fence Name must be a String');
+            }
+
+            if (query.searchRectangle && query.radius) {
+                throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
+            }
+
+            if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
+                throw new Error("Latitude and longitude should be provided to search in radius");
+            }
+
+            if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
+                throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
+            }
+        },
+
+        _toQueryParams: function (query) {
+            var params = [];
+
+            if (query.units) {
+               params.push('units=' + query.units);
+            }
+
+            for (var prop in query) {
+                if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
+                    params.push(this._findHelpers[prop](query[prop]));
+                }
+            }
+
+            return params.join('&');
+        },
+
         savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
@@ -2241,27 +2423,12 @@
         },
 
         findUtil        : function(query, async) {
-            var url       = query["url"],
-                responder = Utils.extractResponder(arguments),
+            var responder = Utils.extractResponder(arguments),
                 isAsync   = false;
 
-            if (query.searchRectangle && query.radius) {
-                throw new Error("Inconsistent geo query. Query should not contain both rectangle and radius search parameters.");
-            } else if (query.radius && (query.latitude === undefined || query.longitude === undefined)) {
-                throw new Error("Latitude and longitude should be provided to search in radius");
-            } else if ((query.relativeFindMetadata || query.relativeFindPercentThreshold) && !(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
-                throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata or none of them");
-            } else {
-                url += query.searchRectangle ? '/rect?' : '/points?';
-                url += query.units ? 'units=' + query.units : '';
-                for (var prop in query) {
-                    if (query.hasOwnProperty(prop) && this._findHelpers.hasOwnProperty(prop) && query[prop] != null) {
-                        url += '&' + this._findHelpers[prop](query[prop]);
-                    }
-                }
-            }
+            this._validateQueryObject(query);
 
-            url = url.replace(/\?&/g, '?');
+            var url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + this._toQueryParams(query);
 
             var responderOverride = function(async) {
                 var success = function(data) {
@@ -2499,17 +2666,58 @@
 
         getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
-            if (!Utils.isString(geoFenceName)) {
-                throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
-            }
-            if (!(query instanceof GeoQuery)) {
-                throw new Error("Invalid geo query. Query should be instance of Backendless.GeoQuery");
-            }
 
-            query["geoFence"] = geoFenceName;
-            query["url"] = this.restUrl;
+            query.geoFence = geoFenceName;
+            query.url = this.restUrl;
 
             return this.findUtil(query, async);
+        },
+
+
+        /**
+         * Count of points
+         *
+         * @param {(string|GeoQuery)} [fenceName] - fenceName name, or an GeoQuery.
+         * @param {GeoQuery} query
+         * @param {Async} [async]
+         *
+         * @return {*}
+         */
+        getGeopointCount: function (fenceName, query, async) {
+            var responder = Utils.extractResponder(arguments);
+            var isAsync = !!responder;
+            var query = this._buildCountQueryObject(arguments, isAsync);
+
+            this._validateQueryObject(query);
+
+            var url = this.restUrl + '/count?' + this._toQueryParams(query);
+
+            return Backendless._ajax({
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
+
+        _buildCountQueryObject: function(args, isAsync) {
+            args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
+
+            var query;
+            var fenceName;
+
+            if (args.length === 1) {
+                query = args[0];
+            }
+
+            if (args.length === 2) {
+                fenceName = args[0];
+                query = args[1];
+
+                query["geoFence"] = fenceName;
+            }
+
+            return query;
         },
 
         _runFenceAction: function(action, geoFenceName, geoPoint, async) {
@@ -3851,6 +4059,66 @@
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
+        },
+
+        /**
+         * Count of files
+         *
+         * @param {string} path
+         * @param {string} [pattern]
+         * @param {boolean} [recursive]
+         * @param {boolean} [countDirectories]
+         * @param {Async} [async]
+         *
+         * @return {*}
+         */
+        getFileCount: function (path, pattern, recursive, countDirectories, async) {
+            var responder = Utils.extractResponder(arguments);
+            var isAsync = !!responder;
+            var query = this._buildCountQueryObject(arguments, isAsync);
+
+            this._validateCountQueryObject(query);
+
+            delete query.path;
+
+            var url = this.restUrl + '/' + path + '?' + Utils.toQueryParams(query);
+
+            return Backendless._ajax({
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
+
+        _buildCountQueryObject: function (args, isAsync) {
+            args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args;
+
+            return {
+                action: 'count',
+                path: args[0],
+                pattern: args[1] !== undefined ? args[1] : '*',
+                recursive: args[2] !== undefined ? args[2] : false,
+                countDirectories: args[3] !== undefined ? args[3] : false
+            };
+        },
+
+        _validateCountQueryObject: function (query) {
+            if (!query.path || !Utils.isString(query.path)) {
+                throw new Error('Missing value for the "path" argument. The argument must contain a string value');
+            }
+
+            if (!query.pattern || !Utils.isString(query.pattern)) {
+                throw new Error('Missing value for the "pattern" argument. The argument must contain a string value');
+            }
+
+            if (!Utils.isBoolean(query.recursive)) {
+                throw new Error('Missing value for the "recursive" argument. The argument must contain a boolean value');
+            }
+
+            if (!Utils.isBoolean(query.countDirectories)) {
+                throw new Error('Missing value for the "countDirectories" argument. The argument must contain a boolean value');
+            }
         }
     };
 
@@ -4485,10 +4753,10 @@
             [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
             [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
             [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
-            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory']],
+            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
             [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
             [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations']],
+            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations', 'getObjectCount']],
             [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
             [persistence, ['describe', 'getView', 'callStoredProcedure']],
             [FilePermissions.prototype, ['sendRequest']],
@@ -4499,7 +4767,7 @@
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
                                    'getRegistrations', 'unregisterDevice']],
             [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                             'getCategories', 'deleteCategory', 'deletePoint']],
+                             'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
                                      'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
                                      'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
