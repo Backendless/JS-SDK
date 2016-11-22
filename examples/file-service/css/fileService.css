@@ -1,6 +1,10 @@
-        body {
+body {
     padding-bottom: 0px;
     color: #5a5a5a;
+}
+
+input[type="file"] {
+    line-height: 1;
 }
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
