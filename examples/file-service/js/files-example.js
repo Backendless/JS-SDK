@@ -1,4 +1,4 @@
-(function (bless, $) {
+(function (Backendless, $) {
 
     var APPLICATION_ID = '';
     var SECRET_KEY = '';
@@ -14,8 +14,8 @@
     function init() {
         $('.carousel').carousel({interval: false});
 
-        bless.enablePromises();
-        bless.initApp(APPLICATION_ID, SECRET_KEY, VERSION);
+        Backendless.enablePromises();
+        Backendless.initApp(APPLICATION_ID, SECRET_KEY, VERSION);
 
         initHandlers();
     }
@@ -56,11 +56,11 @@
         var record = new FileItem();
         record.url = fileUrl;
 
-        return bless.Persistence.of(FileItem).save(record);
+        return Backendless.Persistence.of(FileItem).save(record);
     }
 
     function deleteItem(id) {
-        return bless.Persistence.of(FileItem).remove(id);
+        return Backendless.Persistence.of(FileItem).remove(id);
     }
 
     function onClickFileItem() {
@@ -97,7 +97,7 @@
     }
 
     function getItemsFromPersistance() {
-        return bless.Persistence.of(FileItem).find().catch(function (e) {
+        return Backendless.Persistence.of(FileItem).find().catch(function (e) {
             alert(e.code == 1009 ? 'Please upload a file first' : e.message);
             return [];
         });
@@ -111,7 +111,7 @@
         $('#upload-btn').text('Uploading...');
 
         var requests = files.map(function (file) {
-            return bless.Files.upload(file, TEST_FOLDER, true).then(
+            return Backendless.Files.upload(file, TEST_FOLDER, true).then(
                 function (result) {
                     return createNewItem(result.fileURL);
                 }
@@ -144,7 +144,7 @@
         $('#delete-btn').text('Deleting...');
 
         $selectedElements.each(function (index, element) {
-            removeRequests.push(bless.Files.remove(element.src).then(
+            removeRequests.push(Backendless.Files.remove(element.src).then(
                 function () {
                     return deleteItem(element.id);
                 }
