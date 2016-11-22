@@ -1143,7 +1143,7 @@
 
             var result = {
                 queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-                async: args[0] instanceof Backendless.Async ? args[0] : null
+                async: args[0] instanceof Async ? args[0] : null
             };
 
             if (args.length > 1) {
