@@ -9,7 +9,7 @@
     var files = [];
 
     if (!APPLICATION_ID || !SECRET_KEY || !VERSION)
-        alert("Missing application ID and secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in FilesExample.js");
+        alert("Missing application ID and secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in files-example.js");
 
     function init() {
         $('.carousel').carousel({interval: false});
