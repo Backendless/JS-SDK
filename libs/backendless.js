@@ -3443,7 +3443,9 @@
                 return result;
             };
 
-        xhr.open("PUT", this.uploadPath, true);
+        var asyncHandler = this.asyncHandler;
+
+        xhr.open("PUT", this.uploadPath, !!asyncHandler);
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.setRequestHeader('application-id', Backendless.applicationId);
         xhr.setRequestHeader("secret-key", Backendless.secretKey);
@@ -3452,8 +3454,6 @@
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
         }
-
-        var asyncHandler = this.asyncHandler;
 
         if (asyncHandler) {
             xhr.onreadystatechange = function() {
