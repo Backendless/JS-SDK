@@ -1132,7 +1132,7 @@
                 return;
             }
 
-            if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Backendless.Async)) {
+            if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Async)) {
                 throw new Error(
                     'Invalid find method argument. ' +
                     'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
