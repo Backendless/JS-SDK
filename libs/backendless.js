@@ -1376,7 +1376,7 @@
         /**
          * Count of object
          *
-         * @param {DataQuery} [dataQuery]
+         * @param {DataQueryBuilder} [queryBuilder]
          *
          * @return {Promise}
          */
@@ -1385,18 +1385,17 @@
         /**
          * Count of object (sync)
          *
-         * @param {DataQuery} [dataQuery]
+         * @param {DataQueryBuilder} [queryBuilder]
          *
          * @return {number}
          */
         getObjectCountSync: synchronized('_getObjectCount'),
 
-        _getObjectCount: function(dataQuery, async) {
-            dataQuery = dataQuery || {};
-
+        _getObjectCount: function(queryBuilder, async) {
+            var args = this._parseFindArguments(arguments);
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
             var url       = this.restUrl + '/count';
-            var responder = Utils.extractResponder(arguments);
-            var isAsync   = responder != null;
+            var isAsync   = !!args.async;
 
             if (dataQuery.condition) {
                 url += '?where=' + encodeURIComponent(dataQuery.condition);
@@ -1406,184 +1405,8 @@
                 method      : 'GET',
                 url         : url,
                 isAsync     : isAsync,
-                asyncHandler: responder,
-                cachePolicy : dataQuery.cachePolicy
+                asyncHandler: args.async
             });
-        },
-
-        /**
-         * Create of several objects
-         *
-         * @param {object[]} objectsArray - array of objects
-         * @returns {Promise}
-         */
-        bulkCreate: promisified('_bulkCreate'),
-
-        /**
-         * Create of several objects (sync)
-         *
-         * @param {object[]} objectsArray - array of objects
-         * @returns {*}
-         */
-        bulkCreateSync: synchronized('_bulkCreate'),
-
-        _bulkCreate: function(objectsArray, async) {
-            this._validateBulkCreateArg(objectsArray);
-
-            return Backendless._ajax({
-                method      : 'POST',
-                url         : this.bulkRestUrl,
-                data        : JSON.stringify(objectsArray),
-                isAsync     : !!async,
-                asyncHandler: async
-            });
-        },
-
-        /**
-         * Update of several objects by template
-         *
-         * @param {object} templateObject
-         * @param {string} whereClause
-         * @returns {Promise}
-         */
-        bulkUpdate: promisified('_bulkUpdate'),
-
-        /**
-         * Update of several objects by template (sync)
-         *
-         * @param {object} templateObject
-         * @param {string} whereClause
-         * @returns {*}
-         */
-        bulkUpdateSync: synchronized('_bulkUpdate'),
-
-        _bulkUpdate: function(templateObject, whereClause, async) {
-            this._validateBulkUpdateArgs(templateObject, whereClause);
-
-            return Backendless._ajax({
-                method      : 'PUT',
-                url         : Utils.addWhereClause(this.bulkRestUrl, whereClause),
-                data        : JSON.stringify(templateObject),
-                isAsync     : !!async,
-                asyncHandler: async
-            });
-        },
-
-        /**
-         * Delete of several objects
-         *
-         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
-         * @returns {Promise}
-         */
-
-        bulkDelete: promisified('_bulkDelete'),
-
-        /**
-         * Delete of several objects (sync)
-         *
-         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
-         * @returns {*}
-         */
-        bulkDeleteSync: synchronized('_bulkDelete'),
-
-        _bulkDelete: function(objectsArray, async) {
-            Utils.throwError(this._validateBulkDeleteArg(objectsArray));
-
-            var whereClause;
-            var objects;
-
-            if (Utils.isString(objectsArray)) {
-                whereClause = objectsArray;
-            } else if (Utils.isArray(objectsArray)) {
-                objects = Utils.map(objectsArray, function(obj) {
-                    return Utils.isString(obj) ? obj : obj.objectId;
-                });
-            }
-
-            return Backendless._ajax({
-                method      : 'DELETE',
-                url         : Utils.addWhereClause(this.bulkRestUrl, whereClause),
-                data        : objects && JSON.stringify(objects),
-                isAsync     : !!async,
-                asyncHandler: async
-            });
-        },
-
-        _validateBulkCreateArg: function(objectsArray) {
-            var MSG_ERROR = (
-                'Invalid value for the "objectsArray" argument. ' +
-                'The argument must contain only array of objects.'
-            );
-
-            if (!Utils.isArray(objectsArray)) {
-                return MSG_ERROR;
-            }
-
-            for(var i=0; i < objectsArray.length; i++) {
-                if (!Utils.isObject(objectsArray[i])) {
-                    return MSG_ERROR;
-                }
-            }
-        },
-
-
-        _validateBulkUpdateArgs: function(templateObject, whereClause) {
-            if (!templateObject || !Utils.isObject(templateObject)) {
-                return 'Invalid templateObject argument. The first argument must contain object';
-            }
-
-            if (!whereClause || !Utils.isString(whereClause)) {
-                return 'Invalid whereClause argument. The first argument must contain "whereClause" string.';
-            }
-        },
-
-        _validateBulkDeleteArg: function(arg) {
-            var MSG_ERROR = (
-                'Invalid bulkDelete argument. ' +
-                'The first argument must contain array of objects or array of id or "whereClause" string'
-            );
-
-            if (!arg) {
-                return MSG_ERROR;
-            }
-
-            if (!Utils.isArray(arg) && !Utils.isString(arg)) {
-                return MSG_ERROR;
-            }
-
-            for(var i=0; i < arg.length; i++) {
-                if (!Utils.isObject(arg[i]) && !Utils.isString(arg[i])) {
-                    return MSG_ERROR;
-                }
-            }
-        },
-
-        _validateDeclareRelationArgs: function(columnName, childTableName, cardinality) {
-            var existsAndString = function (value) {
-                return !!value && Utils.isString(value);
-            };
-
-            if (!existsAndString(columnName)) {
-                return (
-                    'Invalid value for the "columnName" argument. ' +
-                    'The argument is required and must contain only string values.'
-                );
-            }
-
-            if (!existsAndString(childTableName)) {
-                return (
-                    'Invalid value for the "childTableName" argument. ' +
-                    'The argument is required and must contain only string values.'
-                );
-            }
-
-            if (!existsAndString(cardinality) || (cardinality !== 'one-to-one' && cardinality !== 'one-to-many')) {
-                return (
-                    'Invalid value for the "cardinality" argument. ' +
-                    'The argument is required and must contain string values ' +
-                    '("one-to-one" or "one-to-many").'
-                );
-            }
         },
 
         /**
@@ -1737,55 +1560,23 @@
             return url;
         },
 
-        findFirst: function() {
-            var argsObj = this._buildArgsObject.apply(this, arguments);
-            argsObj.url = 'first';
-
-            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
-        },
-
-        findLast: function() {
-            var argsObj = this._buildArgsObject.apply(this, arguments);
-            argsObj.url = 'last';
-
-            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
-        },
-
-        /**
-         * Count of object
-         *
-         * @param {DataQueryBuilder} [dataQueryBuilder]
-         * @param {Async} [async]
-         *
-         * @return {*}
-         */
-        getObjectCount: function(queryBuilder, async) {
-            var args = this._parseFindArguments(arguments);
-            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
-            var url       = this.restUrl + '/count';
-            var isAsync   = !!args.async;
-
-            if (dataQuery.condition) {
-                url += '?where=' + encodeURIComponent(dataQuery.condition);
-            }
-
-            return Backendless._ajax({
-                method      : 'GET',
-                url         : url,
-                isAsync     : isAsync,
-                asyncHandler: args.async
-            });
-        },
-
         /**
          * Create of several objects
          *
          * @param {object[]} objectsArray - array of objects
-         * @param {Async} [async]
+         * @returns {Promise}
+         */
+        bulkCreate: promisified('_bulkCreate'),
+
+        /**
+         * Create of several objects (sync)
+         *
+         * @param {object[]} objectsArray - array of objects
          * @returns {*}
          */
+        bulkCreateSync: synchronized('_bulkCreate'),
 
-        bulkCreate: function(objectsArray, async) {
+        _bulkCreate: function(objectsArray, async) {
             this._validateBulkCreateArg(objectsArray);
 
             return Backendless._ajax({
@@ -1802,11 +1593,20 @@
          *
          * @param {object} templateObject
          * @param {string} whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
+         */
+        bulkUpdate: promisified('_bulkUpdate'),
+
+        /**
+         * Update of several objects by template (sync)
+         *
+         * @param {object} templateObject
+         * @param {string} whereClause
          * @returns {*}
          */
+        bulkUpdateSync: synchronized('_bulkUpdate'),
 
-        bulkUpdate: function(templateObject, whereClause, async) {
+        _bulkUpdate: function(templateObject, whereClause, async) {
             this._validateBulkUpdateArgs(templateObject, whereClause);
 
             return Backendless._ajax({
@@ -1822,11 +1622,20 @@
          * Delete of several objects
          *
          * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
-         * @param {Async} [async]
-         * @returns {*}
+         * @returns {Promise}
          */
 
-        bulkDelete: function(objectsArray, async) {
+        bulkDelete: promisified('_bulkDelete'),
+
+        /**
+         * Delete of several objects (sync)
+         *
+         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
+         * @returns {*}
+         */
+        bulkDeleteSync: synchronized('_bulkDelete'),
+
+        _bulkDelete: function(objectsArray, async) {
             this._validateBulkDeleteArg(objectsArray);
 
             var whereClause;
