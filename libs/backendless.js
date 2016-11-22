@@ -952,23 +952,25 @@
             return this._formCircDeps(item);
         },
 
-        _parseFindResponse: function(response) {
-            var i, len, _Model = this.model, item;
+        _parseFindResponse: function(response, model) {
+            var _Model = model === undefined ? this.model : model;
+            var result;
+
+            var sanitizeResponseItem = function(response) {
+                var item = Utils.isFunction(_Model) ? new _Model() : {};
+
+                response  = response.fields || response;
+
+                return Utils.deepExtend(item, response);
+            };
 
             if (Utils.isArray(response)) {
-                for (i = 0, len = response.length; i < len; ++i) {
-                    response[i] = response[i].fields || response[i];
-                    response[i] = Utils.deepExtend(new _Model(), response[i]);
-                }
-
-                return this._formCircDeps(response);
+                result = response.map(sanitizeResponseItem);
             } else {
-                response = response.fields || response;
-                item = Utils.isString(_Model) ? {} : new _Model();
-                Utils.deepExtend(item, response);
-
-                return this._formCircDeps(item);
+                result = sanitizeResponseItem(response);
             }
+
+            return this._formCircDeps(result);
         },
 
         _load: function(url, async) {
@@ -1288,37 +1290,61 @@
             }
         },
 
-        loadRelations: function(obj) {
-            if (!obj) {
-                throw new Error('missing object argument for method loadRelations()');
-            }
 
-            if (!Utils.isObject(obj)) {
-                throw new Error('Invalid value for the "value" argument. The argument must contain only object values');
-            }
+        /**
+         * Get related objects
+         *
+         * @param {string} parentObjectId
+         * @param {LoadRelationsQueryBuilder} queryBuilder
+         * @param {Async} [async]
+         * @returns {*}
+         */
+        loadRelations: function (parentObjectId, queryBuilder, async) {
+            throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
 
-            var argsObj = arguments[0];
-            var url = this.restUrl + '/relations';
+            var dataQuery = queryBuilder.build();
+            var relationModel = dataQuery.relationModel || null;
+            var responder = Utils.extractResponder(arguments);
+            var isAsync = !!responder;
+            var relationName = dataQuery.options.relationName;
+            var query = this._extractQueryOptions(dataQuery.options);
+            var url = this.restUrl + toUri(parentObjectId, relationName);
 
-            if (arguments[1]) {
-                if (Utils.isArray(arguments[1])) {
-                    if (arguments[1][0] == '*') {
-                        url += '?relationsDepth=' + arguments[1].length;
-                    } else {
-                        url += '?loadRelations=' + arguments[1][0] + '&relationsDepth=' + arguments[1].length;
-                    }
-                } else {
-                    throw new Error('Invalid value for the "options" argument. The argument must contain only array values');
-                }
-            }
+            responder = responder && wrapAsync(responder, function(response){
+                return this._parseFindResponse(response, relationModel);
+            }, this);
+
+            url += query ? '?' + query : '';
 
             var result = Backendless._ajax({
-                method: 'PUT',
-                url   : url,
-                data  : JSON.stringify(argsObj)
+                method: 'GET',
+                url: url,
+                isAsync: isAsync,
+                asyncHandler: responder
             });
 
-            Utils.deepExtend(obj, result);
+            return isAsync ? result : this._parseFindResponse(result, relationModel);
+        },
+
+        _validateLoadRelationsArguments: function(parentObjectId, queryBuilder) {
+            if (!parentObjectId || !Utils.isString(parentObjectId)) {
+                return 'The parentObjectId is required argument and must be a nonempty string';
+            }
+
+            if (!queryBuilder || !(queryBuilder instanceof Backendless.LoadRelationsQueryBuilder)) {
+                return (
+                    'Invalid queryBuilder object.' +
+                    'The queryBuilder is required and must be instance of the Backendless.LoadRelationsQueryBuilder'
+                );
+            }
+
+            var dataQuery = queryBuilder.build();
+
+            var relationName = dataQuery.options && dataQuery.options.relationName;
+
+            if (!relationName || !Utils.isString(relationName)) {
+                return 'The options relationName is required and must contain string value';
+            }
         },
 
         findFirst: function() {
@@ -4980,6 +5006,55 @@
         }
     };
 
+    var LoadRelationsQueryBuilder = function(RelationModel) {
+        this._query = new DataQuery();
+        this._query.relationModel = RelationModel;
+        this._paging = new PagingQueryBuilder();
+    };
+
+    LoadRelationsQueryBuilder.create = function() {
+        return  new LoadRelationsQueryBuilder();
+    };
+
+    LoadRelationsQueryBuilder.of = function(RelationModel) {
+        return  new LoadRelationsQueryBuilder(RelationModel);
+    };
+
+    LoadRelationsQueryBuilder.prototype = {
+        setRelationName: function(relationName) {
+            this._query.setOption('relationName', relationName);
+            return this;
+        },
+
+        setPageSize: function(pageSize){
+            this._paging.setPageSize(pageSize);
+            return this;
+        },
+
+        setOffset: function(offset){
+            this._paging.setOffset(offset);
+            return this;
+        },
+
+        prepareNextPage: function(){
+            this._paging.prepareNextPage();
+
+            return this;
+        },
+
+        preparePreviousPage: function(){
+            this._paging.preparePreviousPage();
+
+            return this;
+        },
+
+        build: function(){
+            this._query.setOptions(this._paging.build());
+
+            return this._query.toJSON();
+        }
+    };
+
     var GeoQuery = function() {
         this.searchRectangle = undefined;
         this.categories = [];
@@ -5110,6 +5185,7 @@
     };
 
     Backendless.DataQueryBuilder = DataQueryBuilder;
+    Backendless.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder;
     Backendless.GeoQuery = GeoQuery;
     Backendless.GeoPoint = GeoPoint;
     Backendless.GeoCluster = GeoCluster;
