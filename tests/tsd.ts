@@ -1,6 +1,7 @@
 /// <reference path="../libs/backendless.d.ts" />
 /// <reference path="./es6-promise.d.ts" />
 
+import Counter = __Backendless.Counter;
 function testMain() {
     var VERSION:string = Backendless.VERSION;
     var applicationId:string = Backendless.applicationId;
@@ -677,63 +678,49 @@ function testCounters() {
     resultNum = Backendless.Counters.getAndDecrementSync(counterName);
     Backendless.Counters.getAndDecrement(counterName).then().catch().then().then();
 
-    resultNum = Backendless.Counters.decrementAndGet(counterName);
-    resultXHR = Backendless.Counters.decrementAndGet(counterName, async);
+    resultNum = Backendless.Counters.decrementAndGetSync(counterName);
     Backendless.Counters.decrementAndGet(counterName).then().catch().then().then();
 
-    resultNum = Backendless.Counters.addAndGet(counterName, value);
-    resultXHR = Backendless.Counters.addAndGet(counterName, value, async);
+    resultNum = Backendless.Counters.addAndGetSync(counterName, value);
     Backendless.Counters.addAndGet(counterName, value).then().catch().then().then();
 
-    resultNum = Backendless.Counters.getAndAdd(counterName, value);
-    resultXHR = Backendless.Counters.getAndAdd(counterName, value, async);
+    resultNum = Backendless.Counters.getAndAddSync(counterName, value);
     Backendless.Counters.getAndAdd(counterName, value).then().catch().then().then();
 
-    resultNum = Backendless.Counters.compareAndSet(counterName, expected, updated);
-    resultXHR = Backendless.Counters.compareAndSet(counterName, expected, updated, async);
+    resultNum = Backendless.Counters.compareAndSetSync(counterName, expected, updated);
     Backendless.Counters.compareAndSet(counterName, expected, updated).then().catch().then().then();
 
-    resultNum = Backendless.Counters.reset(counterName);
-    resultXHR = Backendless.Counters.reset(counterName, async);
+    resultNum = Backendless.Counters.resetSync(counterName);
     Backendless.Counters.reset(counterName).then().catch().then().then();
 
-    var atomicInstance:Backendless.AtomicInstance = Backendless.Counters.of(counterName);
+    var counter:Counter = Backendless.Counters.of(counterName);
 
-    resultNum = atomicInstance.get();
-    resultXHR = atomicInstance.get(async);
-    atomicInstance.get().then().catch().then().then();
+    resultNum = counter.getSync();
+    counter.get().then().catch().then().then();
 
-    resultNum = atomicInstance.getAndIncrement();
-    resultXHR = atomicInstance.getAndIncrement(async);
-    atomicInstance.getAndIncrement().then().catch().then().then();
+    resultNum = counter.getAndIncrementSync();
+    counter.getAndIncrement().then().catch().then().then();
 
-    resultNum = atomicInstance.incrementAndGet();
-    resultXHR = atomicInstance.incrementAndGet(async);
-    atomicInstance.incrementAndGet().then().catch().then().then();
+    resultNum = counter.incrementAndGetSync();
+    counter.incrementAndGet().then().catch().then().then();
 
-    resultNum = atomicInstance.getAndDecrement();
-    resultXHR = atomicInstance.getAndDecrement(async);
-    atomicInstance.getAndDecrement().then().catch().then().then();
+    resultNum = counter.getAndDecrementSync();
+    counter.getAndDecrement().then().catch().then().then();
 
-    resultNum = atomicInstance.decrementAndGet();
-    resultXHR = atomicInstance.decrementAndGet(async);
-    atomicInstance.decrementAndGet().then().catch().then().then();
+    resultNum = counter.decrementAndGetSync();
+    counter.decrementAndGet().then().catch().then().then();
 
-    resultNum = atomicInstance.addAndGet(value);
-    resultXHR = atomicInstance.addAndGet(value, async);
-    atomicInstance.addAndGet(value).then().catch().then().then();
+    resultNum = counter.addAndGetSync(value);
+    counter.addAndGet(value).then().catch().then().then();
 
-    resultNum = atomicInstance.getAndAdd(value);
-    resultXHR = atomicInstance.getAndAdd(value, async);
-    atomicInstance.getAndAdd(value).then().catch().then().then();
+    resultNum = counter.getAndAddSync(value);
+    counter.getAndAdd(value).then().catch().then().then();
 
-    resultNum = atomicInstance.compareAndSet(expected, updated);
-    resultXHR = atomicInstance.compareAndSet(expected, updated, async);
-    atomicInstance.compareAndSet(expected, updated).then().catch().then().then();
+    resultNum = counter.compareAndSetSync(expected, updated);
+    counter.compareAndSet(expected, updated).then().catch().then().then();
 
-    resultNum = atomicInstance.reset();
-    resultXHR = atomicInstance.reset(async);
-    atomicInstance.reset().then().catch().then().then();
+    resultNum = counter.resetSync();
+    counter.reset().then().catch().then().then();
 }
 
 function testCustomServices() {
@@ -741,12 +728,8 @@ function testCustomServices() {
     var serviceVersion:string = 'str';
     var method:string = 'str';
     var parameters:Object = {};
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
 
-    });
-
-    var resultObj:Object = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters);
-    var resultXHR:XMLHttpRequest = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters, async);
+    var resultObj:Object = Backendless.CustomServices.invokeSync(serviceName, serviceVersion, method, parameters);
     Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters).then().catch().then().then();
 }
 
