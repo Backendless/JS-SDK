@@ -177,6 +177,35 @@
         }
     };
 
+    Utils.cleanPrivateRelations = function cleanPrivateRelations(data) {
+        function isObject(obj) {
+           return obj !== null && typeof obj === 'object';
+        }
+
+        if (data.hasOwnProperty('_private_relations') && data['_private_relations'].length > 0) {
+            data['_private_relations'].forEach(function(relation) {
+                if (data.hasOwnProperty(relation) && isObject(data[relation])) {
+                    if (Array.isArray(data[relation])) {
+                        data[relation].forEach(function(elem) {
+                            if (isObject(elem)) {
+                                cleanPrivateRelations(elem);
+                            }
+                        });
+                    } else {
+                        cleanPrivateRelations(data[relation]);
+                    }
+                }
+            });
+        }
+
+        if (isObject(data)) {
+            delete data['_private_relations'];
+            delete data['_private_geoRelations'];
+            delete data['_private_dates'];
+            delete data['_private_describeClass'];
+        }
+    };
+
     function initXHR() {
         try {
             if (typeof XMLHttpRequest.prototype.sendAsBinary == 'undefined') {
@@ -1019,6 +1048,8 @@
         },
 
         save: function(obj, async) {
+            Utils.cleanPrivateRelations(obj);
+
             this._replCircDeps(obj);
             var responder = extractResponder(arguments),
                 isAsync   = false,

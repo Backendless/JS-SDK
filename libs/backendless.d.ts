@@ -955,6 +955,8 @@ declare module __Backendless {
 
         removeEvent(eventName:string, domElement:HTMLElement):void;
 
+        cleanPrivateRelations(data:Object):void;
+
         forEach(object:Object, iterator:(value:any, key:any, obj:Object) => any, context:Object):void;
     }
 
