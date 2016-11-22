@@ -124,8 +124,8 @@
                 files = [];
                 $('#list').empty();
             },
-            function () {
-                showInfo(result.message);
+            function (err) {
+                showInfo(err.message);
             }
         ).then(function(){
             $('#upload-btn').text('Upload File');
@@ -155,8 +155,8 @@
             function () {
                 showInfo('Objects successfully removed.');
             },
-            function (e) {
-                showInfo(e.message)
+            function (err) {
+                showInfo(err.message)
             }
         ).then(function() {
             $('#delete-btn').text('Delete Files');
