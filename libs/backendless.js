@@ -1322,7 +1322,7 @@
                 asyncHandler: responder
             });
 
-            return isAsync ? result : this._parseFindResponse(result, relationModel);
+            return !!responder ? result : this._parseFindResponse(result, relationModel);
         },
 
         _validateLoadRelationsArguments: function(parentObjectId, queryBuilder) {
@@ -5167,7 +5167,7 @@
         build: function(){
             this._query.setOptions(this._paging.build());
 
-            return this._query.toJSON();
+            return this._query;
         }
     };
 
