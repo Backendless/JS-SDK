@@ -34,6 +34,10 @@
 
     var previousBackendless = root.Backendless;
 
+    var ajax = function() {
+        return new XMLHttpRequest();
+    };
+
     var Backendless = {},
         emptyFn     = (function() {
         });
@@ -45,6 +49,8 @@
         root.Backendless = previousBackendless;
         return this;
     };
+
+    Backendless.ajax = ajax;
 
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function(searchElement, fromIndex) {
@@ -275,7 +281,7 @@
                 }
             },
             sendRequest       = function(config) {
-                var xhr         = new XMLHttpRequest(),
+                var xhr         = Backendless.ajax(),
                     contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded',
                     response;
 
@@ -452,7 +458,9 @@
         return req.end();
     };
 
-    Backendless._ajax = isBrowser ? Backendless._ajax_for_browser : Backendless._ajax_for_nodejs;
+    Backendless._ajax = function(config){
+        return isBrowser || Backendless.ajax !== ajax ? Backendless._ajax_for_browser(config) : Backendless._ajax_for_nodejs(config);
+    };
 
     var getClassName = function() {
         if (this.prototype && this.prototype.___class) {
@@ -3375,7 +3383,7 @@
         var async       = options.async;
         var encoded     = options.encoded;
         var boundary    = '-backendless-multipart-form-boundary-' + getNow();
-        var xhr         = new XMLHttpRequest();
+        var xhr         = Backendless.ajax();
 
         var badResponse = function (xhr) {
             var result = {};
