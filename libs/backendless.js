@@ -1327,7 +1327,7 @@
                 asyncHandler: responder
             });
 
-            return isAsync ? result : this._parseFindResponse(result, relationModel);
+            return !!responder ? result : this._parseFindResponse(result, relationModel);
         },
 
         _validateLoadRelationsArguments: function(parentObjectId, queryBuilder) {
