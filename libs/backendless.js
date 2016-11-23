@@ -313,7 +313,7 @@
     /**
      *
      * @param obj
-     * @returns {Objetc\Array}
+     * @returns {Object/Array}
      */
 
     Utils.cloneObject = function(obj) {
