@@ -5565,7 +5565,7 @@
         build: function(){
             this._query.setOptions(this._paging.build());
 
-            return this._query.toJSON();
+            return this._query;
         }
     };
 
