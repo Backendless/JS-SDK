@@ -75,6 +75,7 @@
 
         setInitialState: function () {
             this.ui.searchResults.hide();
+            this.refreshSubscriptionsList();
         },
 
         search: function (e) {
@@ -91,7 +92,7 @@
             var app = this;
 
             results = $.map(results, function(item) {
-                item._subscribed = app.subscriptions.indexOf(item.objectId) !== -1
+                item._subscribed = app.subscriptions.indexOf(item.objectId) !== -1;
 
                 return item;
             });

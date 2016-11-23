@@ -15,11 +15,11 @@ jQuery(function($) {
     }
   };
 
-  //Backendless: defaults
-  var Defaults = {
-    APPLICATION_ID: '',
-    SECRET_KEY    : ''
-  };
+    //Backendless: defaults
+    var Defaults = {
+        APPLICATION_ID : '',
+        SECRET_KEY : ''
+    };
 
   var App = {
     init: function() {
@@ -66,30 +66,28 @@ jQuery(function($) {
       footer.on('click', '#clear-completed', this.destroyCompleted);
       footer.on('click', '#complete-all', this.completeAll);
 
-      list.on('change', '.toggle', this.toggle);
-      list.on('dblclick', 'label', this.edit);
-      list.on('keypress', '.edit', this.blurOnEnter);
-      list.on('blur', '.edit', this.update);
-      list.on('click', '.destroy', this.destroy);
+            list.on('change', '.toggle', this.toggle);
+            list.on('dblclick', 'label', this.edit);
+            list.on('keypress', '.edit', this.blurOnEnter);
+            list.on('blur', '.edit', this.update);
+            list.on('click', '.destroy', this.destroy);
+        },
 
-      $('#load-relations').on('click', this.loadRelations);
-    },
+        render: function() {
+            this.$todoList.html(this.todoTemplate({todos: this.todos}));
+            this.$main.toggle(!!this.todos.length);
+            this.$toggleAll.prop('checked', !this.activeTodoCount());
+            this.renderFooter();
+        },
 
-    render: function() {
-      this.$todoList.html(this.todoTemplate({todos: this.todos}));
-      this.$main.toggle(!!this.todos.length);
-      this.$toggleAll.prop('checked', !this.activeTodoCount());
-      this.renderFooter();
-    },
-
-    renderFooter: function() {
-      var todoCount       = this.todos.length,
-          activeTodoCount = this.activeTodoCount(),
-          footer          = {
-            activeTodoCount: activeTodoCount,
-            activeTodoWord : Utils.pluralize(activeTodoCount, 'item'),
-            completedTodos : todoCount - activeTodoCount
-          };
+        renderFooter: function() {
+            var todoCount       = this.todos.length,
+                activeTodoCount = this.activeTodoCount(),
+                footer          = {
+                    activeTodoCount: activeTodoCount,
+                    activeTodoWord : Utils.pluralize(activeTodoCount, 'item'),
+                    completedTodos : todoCount - activeTodoCount
+                };
 
       this.$footer.toggle(!!todoCount);
       this.$footer.html(this.footerTemplate(footer));
@@ -198,31 +196,17 @@ jQuery(function($) {
       });
     },
 
-    destroy: function() {
-      App.getTodo(this, function(i) {
-        deleteItem(this.todos[i]).then(function() {
-          App.todos.splice(i, 1);
-          App.render();
-        }, console.error);
-      });
-    },
+		destroy: function() {
+			App.getTodo( this, function( i ) {
+                //Backendless: delete item
+                deleteItem(this.todos[ i ]);
 
-    loadRelations: function() {
-      function parent() {
-        this.child = null
-      }
+                this.todos.splice( i, 1 );
+				this.render();
+			});
+		}
+	};
 
-      var query = new Backendless.DataQuery();
-
-      query.options = {
-        relationName: 'child',
-        pageSize    : 1
-      };
-
-      Backendless.Persistence.of(parent)
-        .loadRelations('7190EBEB-B064-55DD-FF03-06DA87DC0200', query).then(console.log, console.error);
-    }
-  };
 
   function Task(title) {
     this.id = Utils.uuid();
