@@ -1300,17 +1300,16 @@
          * @returns {*}
          */
         loadRelations: function (parentObjectId, queryBuilder, async) {
-            throwError(this._validateLoadRelationsArguments(parentObjectId, queryBuilder));
+            this._validateLoadRelationsArguments(parentObjectId, queryBuilder);
 
             var dataQuery = queryBuilder.build();
             var relationModel = dataQuery.relationModel || null;
             var responder = Utils.extractResponder(arguments);
-            var isAsync = !!responder;
             var relationName = dataQuery.options.relationName;
             var query = this._extractQueryOptions(dataQuery.options);
-            var url = this.restUrl + toUri(parentObjectId, relationName);
+            var url = this.restUrl + Utils.toUri(parentObjectId, relationName);
 
-            responder = responder && wrapAsync(responder, function(response){
+            responder = responder && Utils.wrapAsync(responder, function(response){
                 return this._parseFindResponse(response, relationModel);
             }, this);
 
@@ -1319,20 +1318,20 @@
             var result = Backendless._ajax({
                 method: 'GET',
                 url: url,
-                isAsync: isAsync,
+                isAsync: !!responder,
                 asyncHandler: responder
             });
 
-            return isAsync ? result : this._parseFindResponse(result, relationModel);
+            return !!responder ? result : this._parseFindResponse(result, relationModel);
         },
 
         _validateLoadRelationsArguments: function(parentObjectId, queryBuilder) {
             if (!parentObjectId || !Utils.isString(parentObjectId)) {
-                return 'The parentObjectId is required argument and must be a nonempty string';
+                throw new Error('The parentObjectId is required argument and must be a nonempty string');
             }
 
             if (!queryBuilder || !(queryBuilder instanceof Backendless.LoadRelationsQueryBuilder)) {
-                return (
+                throw new Error(
                     'Invalid queryBuilder object.' +
                     'The queryBuilder is required and must be instance of the Backendless.LoadRelationsQueryBuilder'
                 );
@@ -1343,8 +1342,122 @@
             var relationName = dataQuery.options && dataQuery.options.relationName;
 
             if (!relationName || !Utils.isString(relationName)) {
-                return 'The options relationName is required and must contain string value';
+                throw new Error('The options relationName is required and must contain string value');
             }
+        },
+
+        /**
+         * Set relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @param {Async} [async]
+         **/
+
+        setRelation: function() {
+            return this._manageRelation('POST', arguments);
+        },
+
+        /**
+         * Add relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @param {Async} [async]
+         **/
+
+        addRelation: function() {
+            return this._manageRelation('PUT', arguments);
+        },
+
+        /**
+         * Delete relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @param {Async} [async]
+         **/
+
+        deleteRelation: function() {
+            return this._manageRelation('DELETE', arguments);
+        },
+
+        _collectRelationObject: function (args) {
+            var relation = {
+                columnName: args[1]
+            };
+
+            var parent = args[0];
+
+            if (Utils.isString(parent)) {
+                relation.parentId = parent
+            } else if (Utils.isObject(parent)) {
+                relation.parentId = parent.objectId
+            }
+
+            var children = args[2];
+
+            if (Utils.isString(children)) {
+                relation.whereClause = children
+            } else if (Utils.isArray(children)) {
+                relation.childrenIds = children.map(function(child) {
+                    return Utils.isObject(child) ? child.objectId : child;
+                });
+            }
+
+            return relation;
+        },
+
+        _validateRelationObject: function(relation) {
+            if (!relation.parentId) {
+                throw new Error(
+                    'Invalid value for the "parent" argument. ' +
+                    'The argument is required and must contain only string or object values.'
+                );
+            }
+
+            if (!relation.columnName) {
+                throw new Error(
+                    'Invalid value for the "columnName" argument. ' +
+                    'The argument is required and must contain only string values.'
+                );
+            }
+
+            if (!relation.whereClause && !relation.childrenIds) {
+                throw new Error(
+                    'Invalid value for the third argument. ' +
+                    'The argument is required and must contain string values if it sets whereClause ' +
+                    'or array if it sets childObjects.'
+                );
+            }
+        },
+
+        _manageRelation: function(method, args) {
+            var relation = this._collectRelationObject(args);
+            var responder = Utils.extractResponder(args);
+
+            this._validateRelationObject(relation);
+
+            return Backendless._ajax({
+                method      : method,
+                url         : this._buildRelationUrl(relation),
+                isAsync     : !!responder,
+                asyncHandler: responder,
+                data        : relation.childrenIds && JSON.stringify(relation.childrenIds)
+            });
+        },
+
+        _buildRelationUrl: function (relation) {
+            var url = this.restUrl + Utils.toUri(relation.parentId, relation.columnName);
+
+            if (relation.whereClause) {
+                url += '?' + Utils.toQueryParams({ where: relation.whereClause });
+            }
+
+            return url;
         },
 
         findFirst: function() {
@@ -4756,7 +4869,10 @@
             [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
             [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
             [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-            [DataStore.prototype, ['save', 'remove', 'find', 'findById', 'loadRelations', 'getObjectCount']],
+            [DataStore.prototype, [
+                'save', 'remove', 'find', 'findById', 'loadRelations', 'setRelation', 'addRelation', 'deleteRelation',
+                'getObjectCount', 'bulkCreate', 'bulkUpdate', 'bulkDelete'
+            ]],
             [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
             [persistence, ['describe', 'getView', 'callStoredProcedure']],
             [FilePermissions.prototype, ['sendRequest']],
@@ -5051,7 +5167,7 @@
         build: function(){
             this._query.setOptions(this._paging.build());
 
-            return this._query.toJSON();
+            return this._query;
         }
     };
 

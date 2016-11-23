@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Relations Management</title>
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <span class="navbar-brand">Relations Management</span>
+        </div>
+        <div class="pull-right">
+            <ul class="nav navbar-nav">
+                <li><a target="_blank" href="https://backendless.com/documentation/data/js/data_overview.htm">Docs</a></li>
+                <li><a target="_blank" href="http://support.backendless.com/">Support</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <form id="search-form" class="form-inline">
+        <div class="form-group">
+            <input type="text" class="form-control" name="search-field" placeholder="Search people..">
+        </div>
+        <button class="btn btn-primary">Search</button>
+    </form>
+
+    <div id="search-results">
+        <h4>Search result</h4>
+        <div class="list-container">
+        </div>
+    </div>
+
+    <script id="search-results-template" type="text/x-handlebars-template">
+        {{#if results.length}}
+        <ul class="list-group">
+            {{#each results}}
+            <li class="list-group-item">
+                <input {{#if _subscribed}}
+                       title="You are already subscribed"
+                       disabled
+                       {{/if}}
+                type="checkbox" id="{{objectId}}"/> {{name}}
+            </li>
+            {{/each}}
+        </ul>
+        <button class="btn btn-primary" id="subscribe-btn">Subscribe</button>
+        {{else}}
+        <i>Nobody was found</i>
+        {{/if}}
+    </script>
+    <hr/>
+    <div id="subscriptions-list">
+        <h4>Subscriptions</h4>
+        <div class="list-container">
+        </div>
+    </div>
+    <script id="subscriptions-template" type="text/x-handlebars-template">
+        {{#if list.length}}
+        <ul class="list-group">
+            {{#each list}}
+            <li class="list-group-item"><input type="checkbox" id="{{objectId}}"/> {{name}}</li>
+            {{/each}}
+        </ul>
+        <button class="btn btn-primary" id="unsubscribe-btn">Unsubscribe selected</button>
+
+        {{else}}
+        <i>You don't follow anyone</i>
+        {{/if}}
+    </script>
+    <script id="progress-template" type="text/x-handlebars-template">
+        <span>Loading...</span>
+    </script>
+
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+<script src="//api.backendless.com/sdk/js/latest/backendless.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

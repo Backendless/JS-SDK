@@ -192,6 +192,24 @@ declare module __Backendless {
 
     /**
      * @public
+     * @class Backendless.LoadRelationsQueryBuilder
+     * @constructor
+     */
+
+    class LoadRelationsQueryBuilder {
+        static create():Backendless.LoadRelationsQueryBuilder;
+        static of(RelationModel:Object):Backendless.LoadRelationsQueryBuilder;
+
+        setRelationName(relationName:string):Backendless.LoadRelationsQueryBuilder;
+        setPageSize(pageSize:number):Backendless.LoadRelationsQueryBuilder;
+        setOffset(offset:number):Backendless.LoadRelationsQueryBuilder;
+        prepareNextPage():Backendless.LoadRelationsQueryBuilder;
+        preparePreviousPage():Backendless.LoadRelationsQueryBuilder;
+        build():Backendless.DataQueryValueI;
+    }
+
+    /**
+     * @public
      * @class Backendless.GeoPoint
      * @constructor
      */
@@ -398,10 +416,6 @@ declare module __Backendless {
         findLast<Promise>():Promise;
         findLast<Promise>(query:DataQueryValueI):Promise;
 
-        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
-        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder, async:Backendless.Async):XMLHttpRequest;
-        loadRelations<Promise>(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
-
         bulkCreate(objectsArray:Array<Object>):void;
         bulkCreate(objectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
         bulkCreate<Promise>(objectsArray:Array<Object>):Promise;
@@ -413,6 +427,44 @@ declare module __Backendless {
         bulkDelete(objectsArray:string|Array<string>|Array<Object>):void;
         bulkDelete(objectsArray:string|Array<string>|Array<Object>, async:Backendless.Async):XMLHttpRequest;
         bulkDelete<Promise>(objectsArray:string|Array<string>|Array<Object>):Promise;
+
+        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):void;
+        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder, async:Backendless.Async):XMLHttpRequest;
+        loadRelations<Promise>(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise;
+
+        declareRelation(columnName:string, childTableName:string, cardinality:string):void;
+        declareRelation(columnName:string, childTableName:string, cardinality:string, async:Backendless.Async):XMLHttpRequest;
+        declareRelation<Promise>(columnName:string, childTableName:string, cardinality:string):Promise;
+
+        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
+        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
+        setRelation(parentObject:Object, columnName:string, whereClause:string):void;
+        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
+        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>, async:Backendless.Async):XMLHttpRequest;
+        setRelation(parentObject:Object, columnName:string, whereClause:string, async:Backendless.Async):XMLHttpRequest;
+        setRelation<Promise>(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
+        setRelation<Promise>(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
+        setRelation<Promise>(parentObject:Object, columnName:string, whereClause:string):Promise;
+
+        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
+        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
+        addRelation(parentObject:Object, columnName:string, whereClause:string):void;
+        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
+        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>, async:Backendless.Async):XMLHttpRequest;
+        addRelation(parentObject:Object, columnName:string, whereClause:string, async:Backendless.Async):XMLHttpRequest;
+        addRelation<Promise>(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
+        addRelation<Promise>(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
+        addRelation<Promise>(parentObject:Object, columnName:string, whereClause:string):Promise;
+
+        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):void;
+        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):void;
+        deleteRelation(parentObject:Object, columnName:string, whereClause:string):void;
+        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>, async:Backendless.Async):XMLHttpRequest;
+        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>, async:Backendless.Async):XMLHttpRequest;
+        deleteRelation(parentObject:Object, columnName:string, whereClause:string, async:Backendless.Async):XMLHttpRequest;
+        deleteRelation<Promise>(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise;
+        deleteRelation<Promise>(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise;
+        deleteRelation<Promise>(parentObject:Object, columnName:string, whereClause:string):Promise;
     }
 
     /**
