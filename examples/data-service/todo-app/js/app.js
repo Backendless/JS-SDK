@@ -13,8 +13,8 @@ jQuery(function( $ ) {
 
     //Backendless: defaults
     var Defaults = {
-        APPLICATION_ID : 'A976213F-6BFF-C715-FF75-A698FDEDEF00',
-        SECRET_KEY : '9E84C74A-0A11-B1BE-FFCA-9FE261BDA200'
+        APPLICATION_ID : '',
+        SECRET_KEY : ''
     };
 
 	var App = {
