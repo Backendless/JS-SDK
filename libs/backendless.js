@@ -34,10 +34,6 @@
 
     var previousBackendless = root.Backendless;
 
-    var XMLHttpRequest = function() {
-        return new XMLHttpRequest();
-    };
-
     var Backendless = {},
         emptyFn     = (function() {
         });
@@ -80,8 +76,6 @@
             return -1;
         };
     }
-
-    initXHR();
 
     var browser = (function() {
         var ua = 'NodeJS';
@@ -183,22 +177,15 @@
         }
     };
 
-    function initXHR() {
-        try {
-            if (typeof XMLHttpRequest.prototype.sendAsBinary == 'undefined') {
-                XMLHttpRequest.prototype.sendAsBinary = function(text) {
-                    var data = new ArrayBuffer(text.length);
-                    var ui8a = new Uint8Array(data, 0);
-                    for (var i = 0; i < text.length; i++) {
-                        ui8a[i] = (text.charCodeAt(i) & 0xff);
-                    }
-                    this.send(ui8a);
-                };
-            }
+    Utils.stringToBiteArray = function(str) {
+        var data = new ArrayBuffer(str.length);
+        var ui8a = new Uint8Array(data, 0);
+        for (var i = 0; i < str.length; i++) {
+            ui8a[i] = (str.charCodeAt(i) & 0xff);
         }
-        catch (e) {
-        }
-    }
+
+        return ui8a;
+    };
 
     function tryParseJSON(s) {
         try {
@@ -281,7 +268,7 @@
                 }
             },
             sendRequest       = function(config) {
-                var xhr         = Backendless.XMLHttpRequest(),
+                var xhr         = new Backendless.XMLHttpRequest(),
                     contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded',
                     response;
 
@@ -459,7 +446,7 @@
     };
 
     Backendless._ajax = function(config){
-        return isBrowser || Backendless.XMLHttpRequest !== XMLHttpRequest ? Backendless._ajax_for_browser(config) : Backendless._ajax_for_nodejs(config);
+        return Backendless.XMLHttpRequest ? Backendless._ajax_for_browser(config) : Backendless._ajax_for_nodejs(config);
     };
 
     var getClassName = function() {
@@ -3383,7 +3370,7 @@
         var async       = options.async;
         var encoded     = options.encoded;
         var boundary    = '-backendless-multipart-form-boundary-' + getNow();
-        var xhr         = Backendless.XMLHttpRequest();
+        var xhr         = new Backendless.XMLHttpRequest();
 
         var badResponse = function (xhr) {
             var result = {};
@@ -3433,11 +3420,7 @@
             };
         }
 
-        if (encoded) {
-            xhr.send(options.data);
-        } else {
-            xhr.sendAsBinary(getBuilder(options.fileName, options.data, boundary));
-        }
+        xhr.send(encoded ? options.data : Utils.stringToBiteArray(getBuilder(options.fileName, options.data, boundary)));
 
         if (async) {
             return xhr;
