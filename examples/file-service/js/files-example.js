@@ -1,4 +1,4 @@
-(function (bless, $) {
+(function (Backendless, $) {
 
     var APPLICATION_ID = '';
     var SECRET_KEY = '';
@@ -12,7 +12,7 @@
 
     function init() {
         $('.carousel').carousel({interval: false});
-        bless.initApp(APPLICATION_ID, SECRET_KEY);
+        Backendless.initApp(APPLICATION_ID, SECRET_KEY);
 
         initHandlers();
     }
@@ -53,11 +53,11 @@
         var record = new FileItem();
         record.url = fileUrl;
 
-        return bless.Persistence.of(FileItem).save(record);
+        return Backendless.Persistence.of(FileItem).save(record);
     }
 
     function deleteItem(id) {
-        return bless.Persistence.of(FileItem).remove(id);
+        return Backendless.Persistence.of(FileItem).remove(id);
     }
 
     function refreshCounter() {
@@ -65,7 +65,7 @@
 
         countContainer.text('loading...');
 
-        bless.Persistence.of(FileItem).getObjectCount().then(
+        Backendless.Persistence.of(FileItem).getObjectCount().then(
             function (count) {
                 countContainer.text(count);
             },
@@ -111,8 +111,8 @@
     }
 
     function getItemsFromPersistance() {
-        var db = bless.Persistence.of(FileItem);
-        var queryBuilder = new bless.DataQueryBuilder.create();
+        var db = Backendless.Persistence.of(FileItem);
+        var queryBuilder = new Backendless.DataQueryBuilder.create();
 
         queryBuilder.setWhereClause('deviceId = \'' + DEVICE_ID + '\'');
 
@@ -124,7 +124,7 @@
 
     function uploadFile() {
         var requests = files.map(function(file) {
-            return bless.Files.upload(file, TEST_FOLDER, true).then(
+            return Backendless.Files.upload(file, TEST_FOLDER, true).then(
                 function (result) {
                     return createNewItem(result.fileURL);
                 }
@@ -153,7 +153,7 @@
         var removeRequests = [];
 
         $selectedElements.each(function (index, element) {
-            removeRequests.push(bless.Files.remove(element.src).then(
+            removeRequests.push(Backendless.Files.remove(element.src).then(
                 function () {
                     return deleteItem(element.id);
                 }

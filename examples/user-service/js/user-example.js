@@ -1,4 +1,4 @@
-(function ($, bless) {
+(function ($, Backendless) {
     var APPLICATION_ID = '';
     var SECRET_KEY = '';
 
@@ -10,7 +10,7 @@
     function init() {
         $('.carousel').carousel({interval: false});
 
-        bless.initApp(APPLICATION_ID, SECRET_KEY);
+        Backendless.initApp(APPLICATION_ID, SECRET_KEY);
 
         initEventHandlers();
     }
@@ -21,7 +21,7 @@
     }
 
     function createUser() {
-        var user = new bless.User();
+        var user = new Backendless.User();
 
         $('.register-field').each(function () {
             var propertyName = $(this)[0].name;
@@ -30,7 +30,7 @@
 
         showInfo('Creating...');
 
-        bless.UserService.register(user).then(
+        Backendless.UserService.register(user).then(
             function () {
                 showInfo("User successfully created");
             },
@@ -48,7 +48,7 @@
 
         showInfo('Entering...');
 
-        bless.UserService.login(login.email, login.password).then(
+        Backendless.UserService.login(login.email, login.password).then(
             function (user) {
                 user ? showInfo("Login successful") : showInfo("Login failed");
             },

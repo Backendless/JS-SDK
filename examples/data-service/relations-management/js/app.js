@@ -1,4 +1,4 @@
-(function ($, H, bless) {
+(function ($, H, Backendless) {
     var APP_ID = '';
     var SECRET_KEY = '';
     var TABLE_NAME = 'Parent';
@@ -37,8 +37,8 @@
         subscriptions: [],
 
         init: function (appId, sekretKey) {
-            bless.enablePromises();
-            bless.initApp(appId, sekretKey);
+            Backendless.enablePromises();
+            Backendless.initApp(appId, sekretKey);
 
             this.bindHandlers();
             this.compileTemplates();
@@ -83,8 +83,8 @@
 
             var searchQuery = this.ui.searchField.val();
 
-            bless.Persistence.of(TABLE_NAME).find(
-                bless.DataQueryBuilder.create().setWhereClause('name like \'%' + searchQuery + '%\'')
+            Backendless.Persistence.of(TABLE_NAME).find(
+                Backendless.DataQueryBuilder.create().setWhereClause('name like \'%' + searchQuery + '%\'')
             ).then(this.renderSearchResults, this.onFail);
         },
 
@@ -109,7 +109,7 @@
             if (list.length) {
                 $('#subscribe-btn').text('Subscribing...');
 
-                bless.Persistence.of(TABLE_NAME).addRelation(
+                Backendless.Persistence.of(TABLE_NAME).addRelation(
                     OBJECT_ID,
                     COLUMN + ':' + TABLE_NAME,
                     list
@@ -136,7 +136,7 @@
             if (list.length) {
                 $('#unsubscribe-btn').text('Unsubscribing...');
 
-                bless.Persistence.of(TABLE_NAME).deleteRelation(
+                Backendless.Persistence.of(TABLE_NAME).deleteRelation(
                     OBJECT_ID,
                     COLUMN,
                     list
@@ -157,9 +157,9 @@
         refreshSubscriptionsList: function () {
             this.ui.subscriptionsListContainer.html(this.templates.progress());
 
-            bless.Persistence.of(TABLE_NAME).loadRelations(
+            Backendless.Persistence.of(TABLE_NAME).loadRelations(
                 OBJECT_ID,
-                bless.LoadRelationsQueryBuilder.create().setRelationName('subscriptions')
+                Backendless.LoadRelationsQueryBuilder.create().setRelationName('subscriptions')
             ).then(
                 this.renderSubscriptions,
                 this.onFail
