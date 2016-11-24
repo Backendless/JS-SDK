@@ -1,63 +1,71 @@
-var APPLICATION_ID = '';
-var SECRET_KEY = '';
+(function ($, Backendless) {
+    var APPLICATION_ID = '';
+    var SECRET_KEY = '';
 
-if (!APPLICATION_ID || !SECRET_KEY)
-    alert("Missing application ID and secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in UserExample.js");
+    if (!APPLICATION_ID || !SECRET_KEY)
+        alert("Missing application ID or secret key arguments. Login to Backendless Console, select your app and get the ID and key from the Manage > App Settings screen. Copy/paste the values into the Backendless.initApp call located in UserExample.js");
 
-init();
-function init() {
-    $('.carousel').carousel({interval: false});
+    init();
 
-    Backendless.initApp(APPLICATION_ID, SECRET_KEY);
-    var userProps = [
-        {name: 'email'},
-        {name: 'name'},
-        {name: 'password'}
-    ];
+    function init() {
+        $('.carousel').carousel({interval: false});
 
-    for (var element in userProps) {
-        makeComponent(userProps[element]);
+        Backendless.initApp(APPLICATION_ID, SECRET_KEY);
+
+        initEventHandlers();
     }
-}
 
-function makeComponent(property) {
-    $("#regFields").append("<div><input type='text' class='input-block-level user-properties' placeholder= '" + property.name + "' name='" + property.name + "'> </input></div>");
-}
+    function initEventHandlers() {
+        $('#register-btn').on('click', createUser);
+        $('#login-btn').on('click', loginUser);
+    }
 
-function createUser(form) {
-    var user = new Backendless.User();
+    function createUser() {
+        var user = new Backendless.User();
 
-    $(".user-properties").each(function () {
-        var propertyName = $(this)[0].name;
-        if (propertyName)
+        $('.register-field').each(function () {
+            var propertyName = $(this)[0].name;
             user[propertyName] = $(this)[0].value;
-    });
+        });
 
-    try {
-        var register = Backendless.UserService.register(user);
-        showInfo(" User successfully created");
+        showInfo('Creating...');
+
+        Backendless.UserService.register(user).then(
+            function () {
+                showInfo("User successfully created");
+            },
+            onError
+        );
     }
-    catch (e) {
+
+    function loginUser() {
+        var login = {};
+
+        $('.login-field').each(function () {
+            var propertyName = $(this)[0].name;
+            login[propertyName] = $(this)[0].value;
+        });
+
+        showInfo('Entering...');
+
+        Backendless.UserService.login(login.email, login.password).then(
+            function (user) {
+                user ? showInfo("Login successful") : showInfo("Login failed");
+            },
+            onError
+        );
+
+    }
+
+    function onError(e) {
         showInfo(e.message);
     }
-}
 
-function loginUser(form)/*function to check userid & password*/ {
-    try {
-        var user = Backendless.UserService.login(form.userid.value, form.pswrd.value);
-        if (user != null)
-            showInfo("Login successful");
-        else
-            showInfo("Login failed");
-    }
-    catch (e) {
-        showInfo("Login failed. " + e.message);
-    }
-}
+    function showInfo(text) {
+        var carousel = $('.carousel');
 
-function showInfo(text) {
-    $('#message').text(text);
-    var carousel = $('.carousel');
-    carousel.carousel(2);
-    carousel.carousel('pause');
-}
+        $('#message').text(text);
+        carousel.carousel(2);
+        carousel.carousel('pause');
+    }
+})(jQuery, Backendless);

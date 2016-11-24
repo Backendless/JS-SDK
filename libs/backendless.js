@@ -77,13 +77,7 @@
         return new Date().getTime();
     };
 
-    var promisesEnabled = false;
-
     Backendless.browser = browser;
-    Backendless.enablePromises = enablePromises;
-    Backendless.promisesEnabled = function() {
-        return promisesEnabled;
-    };
 
     var Utils = {
         isObject  : function(obj) {
@@ -319,7 +313,7 @@
     /**
      *
      * @param obj
-     * @returns {Objetc\Array}
+     * @returns {Object/Array}
      */
 
     Utils.cloneObject = function(obj) {
@@ -570,7 +564,10 @@
         config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
 
         if (!config.isAsync) {
-            throw new Error('Use Async type of request using Backendless with NodeJS. Add Backendless.Async(successCallback, errorCallback) as last argument');
+            throw new Error(
+                'Using the sync methods of the Backendless API in Node.js is disallowed. ' +
+                'Use the async methods instead.'
+            );
         }
 
         if (typeof config.data !== "string") {
@@ -881,8 +878,6 @@
         Backendless.LocalCache.flushExpired();
     }
 
-    Backendless.Async = Async;
-
     function DataStore(model) {
         this.model = Utils.isString(model) ? function() {
         } : model;
@@ -1051,7 +1046,11 @@
             return result;
         },
 
-        save: function(obj, async) {
+        save: promisified('_save'),
+
+        saveSync: synchronized('_save'),
+
+        _save: function(obj, async) {
             this._replCircDeps(obj);
             var responder = Utils.extractResponder(arguments),
                 isAsync   = false,
@@ -1079,7 +1078,11 @@
             return isAsync ? result : objRef;
         },
 
-        remove: function(objId, async) {
+        remove: promisified('_remove'),
+
+        removeSync: synchronized('_remove'),
+
+        _remove: function(objId, async) {
             if (!Utils.isObject(objId) && !Utils.isString(objId)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
@@ -1114,37 +1117,27 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        find: function(queryBuilder) {
+        find: promisified('_find'),
+
+        findSync: synchronized('_find'),
+
+        _find: function(queryBuilder) {
             var args = this._parseFindArguments(arguments);
             var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
 
-            return this._find(dataQuery, args.async);
+            return this._findUtil(dataQuery, args.async);
         },
 
-        _validateFindArguments: function(args) {
+        _validateFindArguments: function (args) {
             if (args.length === 0) {
                 return;
             }
 
-            if (args.length === 1) {
-                if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Backendless.Async)) {
-                    throw new Error(
-                        'Invalid find method argument. ' +
-                        'The argument should be instance of Backendless.DataQueryBuilder or Backendless.Async'
-                    );
-                }
-            } else {
-                if (!(args[0] instanceof Backendless.DataQueryBuilder)) {
-                    throw new Error(
-                        'Invalid data query builder. The argument should be instance of Backendless.DataQueryBuilder'
-                    );
-                }
-
-                if (!(args[1] instanceof Backendless.Async)) {
-                    throw new Error(
-                        'Invalid callback wrapper object. The argument should be instance of Backendless.Async'
-                    );
-                }
+            if (!(args[0] instanceof Backendless.DataQueryBuilder) && !(args[0] instanceof Async)) {
+                throw new Error(
+                    'Invalid find method argument. ' +
+                    'The argument should be instance of Backendless.DataQueryBuilder or Async'
+                );
             }
         },
 
@@ -1153,7 +1146,7 @@
 
             var result = {
                 queryBuilder: args[0] instanceof Backendless.DataQueryBuilder ? args[0] : null,
-                async: args[0] instanceof Backendless.Async ? args[0] : null
+                async: args[0] instanceof Async ? args[0] : null
             };
 
             if (args.length > 1) {
@@ -1163,7 +1156,7 @@
             return result;
         },
 
-        _find: function(dataQuery) {
+        _findUtil: function(dataQuery) {
             dataQuery = dataQuery || {};
 
             var props,
@@ -1242,7 +1235,11 @@
             return args;
         },
 
-        findById: function() {
+        findById: promisified('_findById'),
+
+        findByIdSync: synchronized('_findById'),
+
+        _findById: function() {
             var argsObj;
 
             if (Utils.isString(arguments[0])) {
@@ -1251,7 +1248,7 @@
                     throw new Error('missing argument "object ID" for method findById()');
                 }
 
-                return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+                return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
             } else if (Utils.isObject(arguments[0])) {
                 argsObj = arguments[0];
                 var responder = Utils.extractResponder(arguments),
@@ -1297,9 +1294,20 @@
          * @param {string} parentObjectId
          * @param {LoadRelationsQueryBuilder} queryBuilder
          * @param {Async} [async]
-         * @returns {*}
+         * @returns {Promise}
          */
-        loadRelations: function (parentObjectId, queryBuilder, async) {
+        loadRelations: promisified('_loadRelations'),
+
+        /**
+         * Get related objects (sync)
+         *
+         * @param {string} parentObjectId
+         * @param {LoadRelationsQueryBuilder} queryBuilder
+         * @returns {Object[]}
+         */
+        loadRelationsSync: synchronized('_loadRelations'),
+
+        _loadRelations: function (parentObjectId, queryBuilder, async) {
             this._validateLoadRelationsArguments(parentObjectId, queryBuilder);
 
             var dataQuery = queryBuilder.build();
@@ -1346,16 +1354,87 @@
             }
         },
 
+        findFirst: promisified('_findFirst'),
+
+        findFirstSync: synchronized('_findFirst'),
+
+        _findFirst: function() {
+            var argsObj = this._buildArgsObject.apply(this, arguments);
+            argsObj.url = 'first';
+
+            return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        },
+
+        findLast: promisified('_findLast'),
+
+        findLastSync: synchronized('_findLast'),
+
+        _findLast: function() {
+            var argsObj = this._buildArgsObject.apply(this, arguments);
+            argsObj.url = 'last';
+
+            return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        },
+
+        /**
+         * Count of object
+         *
+         * @param {DataQueryBuilder} [queryBuilder]
+         *
+         * @return {Promise}
+         */
+        getObjectCount: promisified('_getObjectCount'),
+
+        /**
+         * Count of object (sync)
+         *
+         * @param {DataQueryBuilder} [queryBuilder]
+         *
+         * @return {number}
+         */
+        getObjectCountSync: synchronized('_getObjectCount'),
+
+        _getObjectCount: function(queryBuilder, async) {
+            var args = this._parseFindArguments(arguments);
+            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
+            var url       = this.restUrl + '/count';
+            var isAsync   = !!args.async;
+
+            if (dataQuery.condition) {
+                url += '?where=' + encodeURIComponent(dataQuery.condition);
+            }
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : url,
+                isAsync     : isAsync,
+                asyncHandler: args.async
+            });
+        },
+
         /**
          * Set relations
          *
          * @param {object} parentObject,
          * @param {string} columnName
          * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
          **/
 
-        setRelation: function() {
+        setRelation: promisified('_setRelation'),
+
+
+        /**
+         * Set relations (sync)
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @returns {*}
+         **/
+        setRelationSync: synchronized('_setRelation'),
+
+        _setRelation: function() {
             return this._manageRelation('POST', arguments);
         },
 
@@ -1365,10 +1444,22 @@
          * @param {object} parentObject,
          * @param {string} columnName
          * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
          **/
+        addRelation: promisified('_addRelation'),
 
-        addRelation: function() {
+
+        /**
+         * Add relations (sync)
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @returns {*}
+         **/
+        addRelationSync: synchronized('_addRelation'),
+
+        _addRelation: function() {
             return this._manageRelation('PUT', arguments);
         },
 
@@ -1378,10 +1469,22 @@
          * @param {object} parentObject,
          * @param {string} columnName
          * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
          **/
+        deleteRelation: promisified('_deleteRelation'),
 
-        deleteRelation: function() {
+
+        /**
+         * Delete relations
+         *
+         * @param {object} parentObject,
+         * @param {string} columnName
+         * @param {object[]|string[]|string} childObjectsArray|childObjectIdArray|whereClause
+         * @returns {*}
+         **/
+        deleteRelationSync: synchronized('_deleteRelation'),
+
+        _deleteRelation: function() {
             return this._manageRelation('DELETE', arguments);
         },
 
@@ -1460,55 +1563,23 @@
             return url;
         },
 
-        findFirst: function() {
-            var argsObj = this._buildArgsObject.apply(this, arguments);
-            argsObj.url = 'first';
-
-            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
-        },
-
-        findLast: function() {
-            var argsObj = this._buildArgsObject.apply(this, arguments);
-            argsObj.url = 'last';
-
-            return this._find.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
-        },
-
-        /**
-         * Count of object
-         *
-         * @param {DataQueryBuilder} [dataQueryBuilder]
-         * @param {Async} [async]
-         *
-         * @return {*}
-         */
-        getObjectCount: function(queryBuilder, async) {
-            var args = this._parseFindArguments(arguments);
-            var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
-            var url       = this.restUrl + '/count';
-            var isAsync   = !!args.async;
-
-            if (dataQuery.condition) {
-                url += '?where=' + encodeURIComponent(dataQuery.condition);
-            }
-
-            return Backendless._ajax({
-                method      : 'GET',
-                url         : url,
-                isAsync     : isAsync,
-                asyncHandler: args.async
-            });
-        },
-
         /**
          * Create of several objects
          *
          * @param {object[]} objectsArray - array of objects
-         * @param {Async} [async]
+         * @returns {Promise}
+         */
+        bulkCreate: promisified('_bulkCreate'),
+
+        /**
+         * Create of several objects (sync)
+         *
+         * @param {object[]} objectsArray - array of objects
          * @returns {*}
          */
+        bulkCreateSync: synchronized('_bulkCreate'),
 
-        bulkCreate: function(objectsArray, async) {
+        _bulkCreate: function(objectsArray, async) {
             this._validateBulkCreateArg(objectsArray);
 
             return Backendless._ajax({
@@ -1525,11 +1596,20 @@
          *
          * @param {object} templateObject
          * @param {string} whereClause
-         * @param {Async} [async]
+         * @returns {Promise}
+         */
+        bulkUpdate: promisified('_bulkUpdate'),
+
+        /**
+         * Update of several objects by template (sync)
+         *
+         * @param {object} templateObject
+         * @param {string} whereClause
          * @returns {*}
          */
+        bulkUpdateSync: synchronized('_bulkUpdate'),
 
-        bulkUpdate: function(templateObject, whereClause, async) {
+        _bulkUpdate: function(templateObject, whereClause, async) {
             this._validateBulkUpdateArgs(templateObject, whereClause);
 
             return Backendless._ajax({
@@ -1545,11 +1625,20 @@
          * Delete of several objects
          *
          * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
-         * @param {Async} [async]
-         * @returns {*}
+         * @returns {Promise}
          */
 
-        bulkDelete: function(objectsArray, async) {
+        bulkDelete: promisified('_bulkDelete'),
+
+        /**
+         * Delete of several objects (sync)
+         *
+         * @param {(string|string[]|object[])} objectsArray - whereClause string or array of object ids or array of objects
+         * @returns {*}
+         */
+        bulkDeleteSync: synchronized('_bulkDelete'),
+
+        _bulkDelete: function(objectsArray, async) {
             this._validateBulkDeleteArg(objectsArray);
 
             var whereClause;
@@ -1621,8 +1710,14 @@
     var dataStoreCache = {};
 
     var persistence = {
-        save: function(className, obj, async) {
-            var responder = Utils.extractResponder(arguments), isAsync = false;
+
+        save: promisified('_save'),
+
+        saveSync: synchronized('_save'),
+
+        _save: function(className, obj, async) {
+            var responder = Utils.extractResponder(arguments);
+            var isAsync = !!responder;
 
             if (Utils.isString(className)) {
                 var url = Backendless.appPath + '/data/' + className;
@@ -1636,17 +1731,22 @@
             }
 
             if (Utils.isObject(className)) {
-                return new DataStore(className).save(className, obj, async);
+                return new DataStore(className)._save(className, obj, async);
             }
         },
-        getView: function(viewName, whereClause, pageSize, offset, async) {
+
+        getView: promisified('_getView'),
+
+        getViewSync: synchronized('_getView'),
+
+        _getView: function(viewName, whereClause, pageSize, offset, async) {
             var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
             if (Utils.isString(viewName)) {
                 var url = Backendless.appPath + '/data/' + viewName;
 
-                if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
+                if ((arguments.length > 1) && !(arguments[1] instanceof Async)) {
                     url += '?';
                 }
                 if (Utils.isString(whereClause)) {
@@ -1676,7 +1776,12 @@
                 throw new Error('View name is required string parameter');
             }
         },
-        callStoredProcedure: function(spName, argumentValues, async) {
+
+        callStoredProcedure: promisified('_callStoredProcedure'),
+
+        callStoredProcedureSync: synchronized('_callStoredProcedure'),
+
+        _callStoredProcedure: function(spName, argumentValues, async) {
             var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
@@ -1699,6 +1804,7 @@
                 throw new Error('Stored Procedure name is required string parameter');
             }
         },
+
         of: function(model) {
             var tableName;
             if (Utils.isString(model)) {
@@ -1717,8 +1823,13 @@
 
             return store;
         },
-        describe: function(className, async) {
-            className = Utils.isString(className) ? className : Utils.getClassName(className);
+
+        describe: promisified('_describe'),
+
+        describeSync: synchronized('_describe'),
+
+        _describe: function(className, async) {
+            className = Utils.isString(className) ? className : getClassName.call(className);
             var responder = Utils.extractResponder(arguments), isAsync = (responder != null);
 
             return Backendless._ajax({
@@ -1731,99 +1842,133 @@
     };
 
     function DataPermissions() {
+        this.FIND = new DataPermission('FIND');
+        this.REMOVE = new DataPermission('REMOVE');
+        this.UPDATE = new DataPermission('UPDATE')
+    }
+
+    function DataPermission(permission) {
+        this.permission = permission;
         this.restUrl = Backendless.appPath + '/data';
+    }
 
-        this.getRestUrl = function(dataObject, permissionType) {
-            return this.restUrl + '/' + encodeURIComponent(dataObject.___class) + '/permissions/' + encodeURIComponent(permissionType) + '/' + encodeURIComponent(dataObject.objectId);
-        };
+    DataPermission.prototype = {
 
-        this.sendRequest = function(userid, rolename, dataObject, permission, permissionType, async) {
-            var responder = Utils.extractResponder(arguments),
-                isAsync   = responder != null,
-                data      = {
-                    "permission": permission
-                };
+        grantUser: promisified('_grantUser'),
+
+        grantUserSync: synchronized('_grantUser'),
+
+        _grantUser: function (userId, dataObject, async) {
+            return this._sendRequest({
+                userId: userId,
+                dataObject: dataObject,
+                responder: async,
+                permissionType: 'GRANT'
+            });
+        },
+
+        grantRole: promisified('_grantRole'),
+
+        grantRoleSync: synchronized('_grantRole'),
+
+        _grantRole: function (roleName, dataObject, async) {
+            return this._sendRequest({
+                roleName: roleName,
+                dataObject: dataObject,
+                responder: async,
+                permissionType: 'GRANT'
+            });
+        },
+
+        grant: promisified('_grant'),
+
+        grantSync: synchronized('_grant'),
+
+        _grant: function (dataObject, async) {
+            return this._sendRequest({
+                userId: '*',
+                dataObject: dataObject,
+                responder: async,
+                permissionType: 'GRANT'
+            });
+        },
+
+        denyUser: promisified('_denyUser'),
+
+        denyUserSync: synchronized('_denyUser'),
+
+        _denyUser: function (userId, dataObject, async) {
+            return this._sendRequest({
+                userId: userId,
+                dataObject: dataObject,
+                responder: async,
+                permissionType: 'DENY'
+            });
+        },
+
+        denyRole: promisified('_denyRole'),
+
+        denyRoleSync: synchronized('_denyRole'),
+
+        _denyRole: function (roleName, dataObject, async) {
+            return this._sendRequest({
+                roleName: roleName,
+                dataObject: dataObject,
+                responder: async,
+                permissionType: 'DENY'
+            });
+        },
+
+        deny: promisified('_deny'),
+
+        denySync: synchronized('_deny'),
+
+        _deny: function (dataObject, async) {
+            return this._sendRequest({
+                userId: '*',
+                dataObject: dataObject,
+                responder: async,
+                permissionType: 'DENY'
+            });
+        },
+
+        _getRestUrl: function(dataObject, permissionType) {
+            return (
+                this.restUrl + '/' +
+                encodeURIComponent(dataObject.___class) + '/permissions/' +
+                permissionType + '/' +
+                encodeURIComponent(dataObject.objectId)
+            );
+        },
+
+        _sendRequest: function(options) {
+            var dataObject = options.dataObject;
+            var userId = options.userId;
+            var roleName = options.roleName;
+            var responder = options.responder;
+
+            var isAsync = !!responder;
+            var data = {
+                "permission": this.permission
+            };
 
             if (!dataObject.___class || !dataObject.objectId) {
                 throw new Error('"dataObject.___class" and "dataObject.objectId" need to be specified');
             }
 
-            if (userid) {
-                data.user = userid;
-            } else if (rolename) {
-                data.role = rolename;
+            if (userId) {
+                data.user = userId;
+            } else if (roleName) {
+                data.role = roleName;
             }
 
             return Backendless._ajax({
                 method      : 'PUT',
-                url         : this.getRestUrl(dataObject, permissionType),
+                url         : this._getRestUrl(dataObject, options.permissionType),
                 data        : JSON.stringify(data),
                 isAsync     : isAsync,
                 asyncHandler: responder
             });
-        };
-    }
-
-    DataPermissions.prototype = {
-        FIND  : {
-            grantUser: function(userid, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'FIND', 'GRANT', Async);
-            },
-            grantRole: function(rolename, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'FIND', 'GRANT', Async);
-            },
-            grant    : function(dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'FIND', 'GRANT', Async);
-            },
-            denyUser : function(userid, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'FIND', 'DENY', Async);
-            },
-            denyRole : function(rolename, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'FIND', 'DENY', Async);
-            },
-            deny     : function(dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'FIND', 'DENY', Async);
-            }
-        },
-        REMOVE: {
-            grantUser: function(userid, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'REMOVE', 'GRANT', Async);
-            },
-            grantRole: function(rolename, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'REMOVE', 'GRANT', Async);
-            },
-            grant    : function(dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'REMOVE', 'GRANT', Async);
-            },
-            denyUser : function(userid, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'REMOVE', 'DENY', Async);
-            },
-            denyRole : function(rolename, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'REMOVE', 'DENY', Async);
-            },
-            deny     : function(dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'REMOVE', 'DENY', Async);
-            }
-        },
-        UPDATE: {
-            grantUser: function(userid, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'UPDATE', 'GRANT', Async);
-            },
-            grantRole: function(rolename, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'UPDATE', 'GRANT', Async);
-            },
-            grant    : function(dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'UPDATE', 'GRANT', Async);
-            },
-            denyUser : function(userid, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(userid, null, dataObject, 'UPDATE', 'DENY', Async);
-            },
-            denyRole : function(rolename, dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest(null, rolename, dataObject, 'UPDATE', 'DENY', Async);
-            },
-            deny     : function(dataObject, Async) {
-                return Backendless.Data.Permissions.sendRequest('*', null, dataObject, 'UPDATE', 'DENY', Async);
-            }
         }
     };
 
@@ -1863,7 +2008,11 @@
             return user;
         },
 
-        register: function(user, async) {
+        register: promisified('_register'),
+
+        registerSync: synchronized('_register'),
+
+        _register: function(user, async) {
             if (!(user instanceof Backendless.User)) {
                 throw new Error('Only Backendless.User accepted');
             }
@@ -1886,7 +2035,11 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        getUserRoles: function(async) {
+        getUserRoles: promisified('_getUserRoles'),
+
+        getUserRolesSync: synchronized('_getUserRoles'),
+
+        _getUserRoles: function(async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -1904,7 +2057,7 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        roleHelper: function(identity, rolename, async, operation) {
+        _roleHelper: function(identity, rolename, async, operation) {
             if (!identity) {
                 throw new Error('User identity can not be empty');
             }
@@ -1924,15 +2077,27 @@
             });
         },
 
-        assignRole: function(identity, rolename, async) {
-            return this.roleHelper(identity, rolename, async, 'assignRole');
+        assignRole: promisified('_assignRole'),
+
+        assignRoleSync: synchronized('_assignRole'),
+
+        _assignRole: function(identity, rolename, async) {
+            return this._roleHelper(identity, rolename, async, 'assignRole');
         },
 
-        unassignRole: function(identity, rolename, async) {
-            return this.roleHelper(identity, rolename, async, 'unassignRole');
+        unassignRole: promisified('_unassignRole'),
+
+        unassignRoleSync: synchronized('_unassignRole'),
+
+        _unassignRole: function(identity, rolename, async) {
+            return this._roleHelper(identity, rolename, async, 'unassignRole');
         },
 
-        login: function(username, password, stayLoggedIn, async) {
+        login: promisified('_login'),
+
+        loginSync: synchronized('_login'),
+
+        _login: function(username, password, stayLoggedIn, async) {
             if (!username) {
                 throw new Error('Username can not be empty');
             }
@@ -1999,7 +2164,11 @@
             return Backendless.LocalCache.get("current-user-id");
         },
 
-        describeUserClass: function(async) {
+        describeUserClass: promisified('_describeUserClass'),
+
+        describeUserClassSync: synchronized('_describeUserClass'),
+
+        _describeUserClass: function(async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2011,7 +2180,11 @@
             });
         },
 
-        restorePassword: function(emailAddress, async) {
+        restorePassword: promisified('_restorePassword'),
+
+        restorePasswordSync: synchronized('_restorePassword'),
+
+        _restorePassword: function(emailAddress, async) {
             if (!emailAddress) {
                 throw 'Username can not be empty';
             }
@@ -2026,7 +2199,11 @@
             });
         },
 
-        logout: function(async) {
+        logout: promisified('_logout'),
+
+        logoutSync: synchronized('_logout'),
+
+        _logout: function(async) {
             var responder       = Utils.extractResponder(arguments),
                 isAsync         = responder != null,
                 errorCallback   = isAsync ? responder.fault : null,
@@ -2079,7 +2256,11 @@
             }
         },
 
-        getCurrentUser: function(async) {
+        getCurrentUser: promisified('_getCurrentUser'),
+
+        getCurrentUserSync: synchronized('_getCurrentUser'),
+
+        _getCurrentUser: function(async) {
             if (currentUser) {
                 var userFromResponse = this._getUserFromResponse(currentUser);
 
@@ -2096,7 +2277,11 @@
             return async ? async.success(null) : null;
         },
 
-        update: function(user, async) {
+        update: promisified('_update'),
+
+        updateSync: synchronized('_update'),
+
+        _update: function(user, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2115,19 +2300,28 @@
             return isAsync ? result : this._parseResponse(result);
         },
 
-        loginWithFacebook      : function(facebookFieldsMapping, permissions, async, stayLoggedIn) {
-            async = Utils.extractResponder(arguments);
-            this._loginSocial('Facebook', facebookFieldsMapping, permissions, async, null, stayLoggedIn);
+        loginWithFacebook: promisified('_loginWithFacebook'),
+
+        loginWithFacebookSync: synchronized('_loginWithFacebook'),
+
+        _loginWithFacebook      : function(facebookFieldsMapping, permissions, stayLoggedIn, async) {
+            return this._loginSocial('Facebook', facebookFieldsMapping, permissions, null, stayLoggedIn, async);
         },
 
-        loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, async, container, stayLoggedIn) {
-            async = Utils.extractResponder(arguments);
-            this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, async, container, stayLoggedIn);
+        loginWithGooglePlus: promisified('_loginWithGooglePlus'),
+
+        loginWithGooglePlusSync: synchronized('_loginWithGooglePlus'),
+
+        _loginWithGooglePlus    : function(googlePlusFieldsMapping, permissions, container, stayLoggedIn, async) {
+            return this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, container, stayLoggedIn, async);
         },
 
-        loginWithTwitter       : function(twitterFieldsMapping, async, stayLoggedIn) {
-            async = Utils.extractResponder(arguments);
-            this._loginSocial('Twitter', twitterFieldsMapping, null, async, null, stayLoggedIn);
+        loginWithTwitter: promisified('_loginWithTwitter'),
+
+        loginWithTwitterSync: synchronized('_loginWithTwitter'),
+
+        _loginWithTwitter       : function(twitterFieldsMapping, stayLoggedIn, async) {
+            return this._loginSocial('Twitter', twitterFieldsMapping, null, null, stayLoggedIn, async);
         },
 
         _socialContainer       : function(socialType, container) {
@@ -2188,7 +2382,7 @@
             }
         },
 
-        _loginSocial: function(socialType, fieldsMapping, permissions, async, container, stayLoggedIn) {
+        _loginSocial: function(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
             var socialContainer = new this._socialContainer(socialType, container);
             async = async && this._wrapAsync(async);
 
@@ -2209,7 +2403,7 @@
                 }
             });
 
-            var interimCallback = new Backendless.Async(function(r) {
+            var interimCallback = new Async(function(r) {
                 socialContainer.doAuthorizationActivity(r);
             }, function(e) {
                 socialContainer.closeContainer();
@@ -2229,7 +2423,11 @@
             });
         },
 
-        loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options, async) {
+        loginWithFacebookSdk: promisified('_loginWithFacebookSdk'),
+
+        loginWithFacebookSdkSync: synchronized('_loginWithFacebookSdk'),
+
+        _loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options, async) {
             if (!FB) {
                 throw new Error("Facebook SDK not found");
             }
@@ -2254,7 +2452,11 @@
             });
         },
 
-        loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
+        loginWithGooglePlusSdk: promisified('_loginWithGooglePlusSdk'),
+
+        loginWithGooglePlusSdkSync: synchronized('_loginWithGooglePlusSdk'),
+
+        _loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
             if (!gapi) {
                 throw new Error("Google Plus SDK not found");
             }
@@ -2280,7 +2482,7 @@
                 response["fieldsMapping"] = fieldsMapping;
             }
 
-            var interimCallback = new Backendless.Async(function(r) {
+            var interimCallback = new Async(function(r) {
                 currentUser = context._parseResponse(r);
                 Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
                 async.success(context._getUserFromResponse(currentUser));
@@ -2297,13 +2499,17 @@
             });
         },
 
-        isValidLogin: function(async) {
+        isValidLogin: promisified('_isValidLogin'),
+
+        isValidLoginSync: synchronized('_isValidLogin'),
+
+        _isValidLogin: function(async) {
             var userToken = Backendless.LocalCache.get("user-token");
             var responder = Utils.extractResponder(arguments);
-            var isAsync = responder != null;
+            var isAsync = !!responder;
 
             if (userToken) {
-                if (!async) {
+                if (!isAsync) {
                     try {
                         var result = Backendless._ajax({
                             method: 'GET',
@@ -2313,29 +2519,32 @@
                     } catch (e) {
                         return false;
                     }
-                } else {
-                    Backendless._ajax({
-                        method      : 'GET',
-                        url         : this.restUrl + '/isvalidusertoken/' + userToken,
-                        isAsync     : isAsync,
-                        asyncHandler: responder
-                    });
                 }
-            } else {
-                var user = Backendless.UserService.getCurrentUser();
 
-                if (isAsync) {
-                    //if async need to put it to the end of the stack
-                    setTimeout(function() {
-                        responder.success(!!user);
-                    }, 0);
-                } else {
-                    return !!user;
-                }
+                return Backendless._ajax({
+                    method: 'GET',
+                    url: this.restUrl + '/isvalidusertoken/' + userToken,
+                    isAsync: isAsync,
+                    asyncHandler: responder
+                });
             }
+
+            if (!isAsync) {
+                return !!this.getCurrentUserSync();
+            }
+
+            this.getCurrentUser().then(function (user) {
+                responder.success(!!user);
+            }, function () {
+                responder.success(false);
+            });
         },
 
-        resendEmailConfirmation: function(emailAddress, async) {
+        resendEmailConfirmation: promisified('_resendEmailConfirmation'),
+
+        resendEmailConfirmationSync: synchronized('_resendEmailConfirmation'),
+
+        _resendEmailConfirmation: function(emailAddress, async) {
             if(!emailAddress || emailAddress instanceof Async) {
                 throw "Email cannot be empty";
             }
@@ -2482,7 +2691,11 @@
             return params.join('&');
         },
 
-        savePoint        : function(geopoint, async) {
+        savePoint: promisified('_savePoint'),
+
+        savePointSync: synchronized('_savePoint'),
+
+        _savePoint        : function(geopoint, async) {
             if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
                 throw 'Latitude or longitude not a number';
             }
@@ -2532,10 +2745,10 @@
 
         /** @deprecated */
         addPoint: function(geopoint, async) {
-          return this.savePoint.apply(this, arguments);
+            return this.savePoint.apply(this, arguments);
         },
 
-        findUtil        : function(query, async) {
+        _findUtil        : function(query, async) {
             var responder = Utils.extractResponder(arguments),
                 isAsync   = false;
 
@@ -2584,13 +2797,21 @@
             });
         },
 
-        find            : function(query, async) {
+        find: promisified('_find'),
+
+        findSync: synchronized('_find'),
+
+        _find            : function(query, async) {
             query["url"] = this.restUrl;
 
-            return this.findUtil(query, async);
+            return this._findUtil(query, async);
         },
 
-        loadMetadata    : function(geoObject, async) {
+        loadMetadata: promisified('_loadMetadata'),
+
+        loadMetadataSync: synchronized('_loadMetadata'),
+
+        _loadMetadata    : function(geoObject, async) {
             var url       = this.restUrl + '/points/',
                 responder = Utils.extractResponder(arguments),
                 isAsync   = false;
@@ -2628,7 +2849,11 @@
             });
         },
 
-        getClusterPoints: function(geoObject, async) {
+        getClusterPoints: promisified('_getClusterPoints'),
+
+        getClusterPointsSync: synchronized('_getClusterPoints'),
+
+        _getClusterPoints: function(geoObject, async) {
             var url       = this.restUrl + '/clusters/',
                 responder = Utils.extractResponder(arguments),
                 isAsync   = false;
@@ -2682,17 +2907,25 @@
             });
         },
 
-        relativeFind: function(query, async) {
+        relativeFind: promisified('_relativeFind'),
+
+        relativeFindSync: synchronized('_relativeFind'),
+
+        _relativeFind: function(query, async) {
             if (!(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
                 throw new Error("Inconsistent geo query. Query should contain both relativeFindPercentThreshold and relativeFindMetadata");
             } else {
                 query["url"] = this.restUrl + "/relative";
 
-                return this.findUtil(query, async);
+                return this._findUtil(query, async);
             }
         },
 
-        addCategory: function(name, async) {
+        addCategory: promisified('_addCategory'),
+
+        addCategorySync: synchronized('_addCategory'),
+
+        _addCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
@@ -2710,7 +2943,11 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        getCategories: function(async) {
+        getCategories: promisified('_getCategories'),
+
+        getCategoriesSync: synchronized('_getCategories'),
+
+        _getCategories: function(async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -2722,7 +2959,11 @@
             });
         },
 
-        deleteCategory: function(name, async) {
+        deleteCategory: promisified('_deleteCategory'),
+
+        deleteCategorySync: synchronized('_deleteCategory'),
+
+        _deleteCategory: function(name, async) {
             if (!name) {
                 throw new Error('Category name is required.');
             }
@@ -2749,7 +2990,11 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        deletePoint: function(point, async) {
+        deletePoint: promisified('_deletePoint'),
+
+        deletePointSync: synchronized('_deletePoint'),
+
+        _deletePoint: function(point, async) {
             if (!point || Utils.isFunction(point)) {
                 throw new Error('Point argument name is required, must be string (object Id), or point object');
             }
@@ -2777,13 +3022,17 @@
             return (typeof result.result === 'undefined') ? result : result.result;
         },
 
-        getFencePoints: function(geoFenceName, query, async) {
+        getFencePoints: promisified('_getFencePoints'),
+
+        getFencePointsSync: synchronized('_getFencePoints'),
+
+        _getFencePoints: function(geoFenceName, query, async) {
             query = query || new GeoQuery();
 
             query.geoFence = geoFenceName;
             query.url = this.restUrl;
 
-            return this.findUtil(query, async);
+            return this._findUtil(query, async);
         },
 
 
@@ -2792,11 +3041,22 @@
          *
          * @param {(string|GeoQuery)} [fenceName] - fenceName name, or an GeoQuery.
          * @param {GeoQuery} query
-         * @param {Async} [async]
          *
-         * @return {*}
+         * @return {Promise}
          */
-        getGeopointCount: function (fenceName, query, async) {
+        getGeopointCount: promisified('_getGeopointCount'),
+
+        /**
+         * Count of points (sync)
+         *
+         * @param {(string|GeoQuery)} [fenceName] - fenceName name, or an GeoQuery.
+         * @param {GeoQuery} query
+         *
+         * @return {number}
+         */
+        getGeopointCountSync: synchronized('_getGeopointCount'),
+
+        _getGeopointCount: function (fenceName, query, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
             var query = this._buildCountQueryObject(arguments, isAsync);
@@ -2838,7 +3098,7 @@
                 throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String");
             }
 
-            if (geoPoint && !(geoPoint instanceof Backendless.Async) && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
+            if (geoPoint && !(geoPoint instanceof Async) && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
                 throw new Error("Method argument must be a valid instance of GeoPoint persisted on the server");
             }
 
@@ -2858,15 +3118,27 @@
             return Backendless._ajax(data);
         },
 
-        runOnStayAction: function(geoFenceName, geoPoint, async) {
+        runOnStayAction: promisified('_runOnStayAction'),
+
+        runOnStayActionSync: synchronized('_runOnStayAction'),
+
+        _runOnStayAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onstay', geoFenceName, geoPoint, async);
         },
 
-        runOnExitAction: function(geoFenceName, geoPoint, async) {
+        runOnExitAction: promisified('_runOnExitAction'),
+
+        runOnExitActionSync: synchronized('_runOnExitAction'),
+
+        _runOnExitAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onexit', geoFenceName, geoPoint, async);
         },
 
-        runOnEnterAction: function(geoFenceName, geoPoint, async) {
+        runOnEnterAction: promisified('_runOnEnterAction'),
+
+        runOnEnterActionSync: synchronized('_runOnEnterAction'),
+
+        _runOnEnterAction: function(geoFenceName, geoPoint, async) {
             return this._runFenceAction('onenter', geoFenceName, geoPoint, async);
         },
 
@@ -3261,11 +3533,19 @@
             }
         },
 
-        startGeofenceMonitoringWithInAppCallback : function(geofenceName, inAppCallback, async) {
+        startGeofenceMonitoringWithInAppCallback: promisified('_startGeofenceMonitoringWithInAppCallback'),
+
+        startGeofenceMonitoringWithInAppCallbackSync: synchronized('_startGeofenceMonitoringWithInAppCallback'),
+
+        _startGeofenceMonitoringWithInAppCallback : function(geofenceName, inAppCallback, async) {
             this._startMonitoring(geofenceName, inAppCallback, async);
         },
 
-        startGeofenceMonitoringWithRemoteCallback: function(geofenceName, geoPoint, async) {
+        startGeofenceMonitoringWithRemoteCallback: promisified('_startGeofenceMonitoringWithRemoteCallback'),
+
+        startGeofenceMonitoringWithRemoteCallbackSync: synchronized('_startGeofenceMonitoringWithRemoteCallback'),
+
+        _startGeofenceMonitoringWithRemoteCallback: function(geofenceName, geoPoint, async) {
             this._startMonitoring(geofenceName, geoPoint, async);
         },
 
@@ -3538,7 +3818,12 @@
 
             return result;
         },
-        subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
+
+        subscribe: promisified('_subscribe'),
+
+        subscribeSync: synchronized('_subscribe'),
+
+        _subscribe       : function(channelName, subscriptionCallback, subscriptionOptions, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -3571,7 +3856,12 @@
                 });
             }
         },
-        publish         : function(channelName, message, publishOptions, deliveryTarget, async) {
+
+        publish: promisified('_publish'),
+
+        publishSync: synchronized('_publish'),
+
+        _publish         : function(channelName, message, publishOptions, deliveryTarget, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -3603,7 +3893,12 @@
                 data        : JSON.stringify(data)
             });
         },
-        sendEmail       : function(subject, bodyParts, recipients, attachments, async) {
+
+        sendEmail: promisified('_sendEmail'),
+
+        sendEmailSync: synchronized('_sendEmail'),
+
+        _sendEmail       : function(subject, bodyParts, recipients, attachments, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var data = {};
@@ -3645,7 +3940,11 @@
             });
         },
 
-        cancel          : function(messageId, async) {
+        cancel: promisified('_cancel'),
+
+        cancelSync: synchronized('_cancel'),
+
+        _cancel          : function(messageId, async) {
             var isAsync = async != null;
 
             return Backendless._ajax({
@@ -3656,7 +3955,11 @@
             });
         },
 
-        registerDevice  : function(channels, expiration, async) {
+        registerDevice: promisified('_registerDevice'),
+
+        registerDeviceSync: synchronized('_registerDevice'),
+
+        _registerDevice  : function(channels, expiration, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var device = isBrowser ? window.device : NodeDevice;
@@ -3705,7 +4008,11 @@
             cordova.exec(success, fail, "PushNotification", "registerDevice", [config]);
         },
 
-        getRegistrations: function(async) {
+        getRegistrations: promisified('_getRegistrations'),
+
+        getRegistrationsSync: synchronized('_getRegistrations'),
+
+        _getRegistrations: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
@@ -3718,7 +4025,11 @@
             });
         },
 
-        unregisterDevice: function(async) {
+        unregisterDevice: promisified('_unregisterDevice'),
+
+        unregisterDeviceSync: synchronized('_unregisterDevice'),
+
+        _unregisterDevice: function(async) {
             var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
@@ -3739,6 +4050,7 @@
             return result;
         }
     };
+
     function getBuilder(filename, filedata, boundary) {
         var dashdash = '--',
             crlf     = '\r\n',
@@ -3874,50 +4186,106 @@
     }
 
     FilePermissions.prototype = {
-        grantUser  : function(userid, url, permissionType, async) {
-            this.varType = 'user';
-            this.id = userid;
+        grantUser: promisified('_grantUser'),
 
-            return this.grant(url, permissionType, async);
+        grantUserSync: synchronized('_grantUser'),
+
+        _grantUser  : function(userId, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'user',
+                id: userId,
+                url: url,
+                permissionType: permissionType,
+                state: 'GRANT',
+                responder: async
+            });
         },
 
-        grantRole  : function(rolename, url, permissionType, async) {
-            this.varType = 'role';
-            this.id = rolename;
+        grantRole: promisified('_grantRole'),
 
-            return this.grant(url, permissionType, async);
+        grantRoleSync: synchronized('_grantRole'),
+
+        _grantRole  : function(roleName, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'role',
+                id: roleName,
+                url: url,
+                permissionType: permissionType,
+                state: 'GRANT',
+                responder: async
+            });
         },
 
-        grant      : function(url, permissionType, async) {
-            return this.sendRequest('GRANT', url, permissionType, async);
+        grant: promisified('_grant'),
+
+        grantSync: synchronized('_grant'),
+
+        _grant      : function(url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'user',
+                url: url,
+                permissionType: permissionType,
+                state: 'GRANT',
+                responder: async
+            });
         },
 
-        denyUser   : function(rolename, url, permissionType, async) {
-            this.varType = 'role';
-            this.id = rolename;
+        denyUser: promisified('_denyUser'),
 
-            return this.deny(url, permissionType, async);
+        denyUserSync: synchronized('_denyUser'),
+
+        _denyUser   : function(userId, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'user',
+                id: userId,
+                url: url,
+                permissionType: permissionType,
+                state: 'DENY',
+                responder: async
+            });
         },
 
-        denyRole   : function(rolename, url, permissionType, async) {
-            this.varType = 'role';
-            this.id = rolename;
+        denyRole: promisified('_denyRole'),
 
-            return this.deny(url, permissionType, async);
+        denyRoleSync: synchronized('_denyRole'),
+
+        _denyRole   : function(roleName, url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'role',
+                id: roleName,
+                url: url,
+                permissionType: permissionType,
+                state: 'DENY',
+                responder: async
+            });
         },
 
-        deny       : function(url, permissionType, async) {
-            return this.sendRequest('DENY', url, permissionType, async);
+        deny: promisified('_deny'),
+
+        denySync: synchronized('_deny'),
+
+        _deny       : function(url, permissionType, async) {
+            return this._sendRequest({
+                varType: 'user',
+                url: url,
+                permissionType: permissionType,
+                state: 'DENY',
+                responder: async
+            });
         },
 
-        sendRequest: function(type, url, permissionType, async) {
-            var responder = Utils.extractResponder(arguments),
-                isAsync   = responder != null,
-                data      = {
-                    "permission": permissionType
-                };
+        _sendRequest: function (options) {
+            var type = options.state;
+            var url = options.url;
+            var responder = options.responder;
+            var isAsync = responder != null;
+            var data = {
+                "permission": options.permissionType
+            };
 
-            data[this.varType] = this.id || "*";
+            if (options.varType) {
+                data[options.varType] = options.id || "*";
+            }
 
             return Backendless._ajax({
                 method      : 'PUT',
@@ -3934,7 +4302,12 @@
     }
 
     Files.prototype = {
-        saveFile  : function(path, fileName, fileContent, overwrite, async) {
+
+        saveFile: promisified('_saveFile'),
+
+        saveFileSync: synchronized('_saveFile'),
+
+        _saveFile  : function(path, fileName, fileContent, overwrite, async) {
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
@@ -3943,7 +4316,7 @@
                 throw new Error('Missing value for the "fileName" argument. The argument must contain a string value');
             }
 
-            if (overwrite instanceof Backendless.Async) {
+            if (overwrite instanceof Async) {
                 async = overwrite;
                 overwrite = null;
             }
@@ -3982,7 +4355,11 @@
             }
         },
 
-        upload    : function(files, path, overwrite, async) {
+        upload: promisified('_upload'),
+
+        uploadSync: synchronized('_upload'),
+
+        _upload    : function(files, path, overwrite, async) {
             files = files.files || files;
             var baseUrl = this.restUrl + '/' + path + '/';
             var overwriting = '';
@@ -4043,12 +4420,16 @@
             }
         },
 
-        listing   : function(path, pattern, recursively, pagesize, offset, async) {
+        listing: promisified('_listing'),
+
+        listingSync: synchronized('_listing'),
+
+        _listing   : function(path, pattern, recursively, pagesize, offset, async) {
             var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null,
                 url       = this.restUrl + '/' + path;
 
-            if ((arguments.length > 1) && !(arguments[1] instanceof Backendless.Async)) {
+            if ((arguments.length > 1) && !(arguments[1] instanceof Async)) {
                 url += "?";
             }
 
@@ -4076,7 +4457,11 @@
             });
         },
 
-        renameFile: function(oldPathName, newName, async) {
+        renameFile: promisified('_renameFile'),
+
+        renameFileSync: synchronized('_renameFile'),
+
+        _renameFile: function(oldPathName, newName, async) {
             this._checkPath(oldPathName);
 
             var parameters = {
@@ -4087,7 +4472,11 @@
             return this._doAction("rename", parameters, async);
         },
 
-        moveFile  : function(sourcePath, targetPath, async) {
+        moveFile: promisified('_moveFile'),
+
+        moveFileSync: synchronized('_moveFile'),
+
+        _moveFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
 
@@ -4099,7 +4488,11 @@
             return this._doAction("move", parameters, async);
         },
 
-        copyFile  : function(sourcePath, targetPath, async) {
+        copyFile: promisified('_copyFile'),
+
+        copyFileSync: synchronized('_copyFile'),
+
+        _copyFile  : function(sourcePath, targetPath, async) {
             this._checkPath(sourcePath);
             this._checkPath(targetPath);
 
@@ -4121,7 +4514,7 @@
 
         _doAction : function(actionType, parameters, async) {
             var responder = Utils.extractResponder(arguments);
-            var isAsync = responder != null;
+            var isAsync = !!responder;
 
             return Backendless._ajax({
                 method      : 'PUT',
@@ -4132,7 +4525,11 @@
             });
         },
 
-        remove    : function(fileURL, async) {
+        remove: promisified('_remove'),
+
+        removeSync: synchronized('_remove'),
+
+        _remove    : function(fileURL, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
             var url = fileURL.indexOf("http://") === 0 || fileURL.indexOf("https://") === 0 ? fileURL : this.restUrl + '/' + fileURL;
@@ -4145,7 +4542,11 @@
             });
         },
 
-        exists    : function(path, async) {
+        exists: promisified('_exists'),
+
+        existsSync: synchronized('_exists'),
+
+        _exists    : function(path, async) {
             if (!path || !Utils.isString(path)) {
                 throw new Error('Missing value for the "path" argument. The argument must contain a string value');
             }
@@ -4162,7 +4563,11 @@
             });
         },
 
-        removeDirectory: function(path, async) {
+        removeDirectory: promisified('_removeDirectory'),
+
+        removeDirectorySync: synchronized('_removeDirectory'),
+
+        _removeDirectory: function(path, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
@@ -4181,11 +4586,24 @@
          * @param {string} [pattern]
          * @param {boolean} [recursive]
          * @param {boolean} [countDirectories]
-         * @param {Async} [async]
          *
-         * @return {*}
+         * @return {Promise}
          */
-        getFileCount: function (path, pattern, recursive, countDirectories, async) {
+        getFileCount: promisified('_getFileCount'),
+
+        /**
+         * Count of files (sync)
+         *
+         * @param {string} path
+         * @param {string} [pattern]
+         * @param {boolean} [recursive]
+         * @param {boolean} [countDirectories]
+         *
+         * @return {number}
+         */
+        getFileCountSync: synchronized('_getFileCount'),
+
+        _getFileCount: function (path, pattern, recursive, countDirectories, async) {
             var responder = Utils.extractResponder(arguments);
             var isAsync = !!responder;
             var query = this._buildCountQueryObject(arguments, isAsync);
@@ -4239,16 +4657,22 @@
         this.restUrl = Backendless.appPath + '/commerce/googleplay';
     }
 
-    Commerce.prototype.validatePlayPurchase = function(packageName, productId, token, async) {
-        if (arguments.length < 3) {
-            throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
-        }
+    Commerce.prototype = {
 
-        for (var i = arguments.length - 2; i >= 0; i--) {
-            if (!arguments[i] || !Utils.isString(arguments[i])) {
+        validatePlayPurchase: promisified('_validatePlayPurchase'),
+
+        validatePlayPurchaseSync: synchronized('_validatePlayPurchase'),
+
+        _validatePlayPurchase: function (packageName, productId, token, async) {
+            if (arguments.length < 3) {
                 throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
             }
-        }
+
+            for (var i = arguments.length - 2; i >= 0; i--) {
+                if (!arguments[i] || !Utils.isString(arguments[i])) {
+                    throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!');
+                }
+            }
 
         var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
@@ -4257,24 +4681,28 @@
             responder = Utils.wrapAsync(responder);
         }
 
-        return Backendless._ajax({
-            method      : 'GET',
-            url         : this.restUrl + '/validate/' + packageName + '/inapp/' + productId + '/purchases/' + token,
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
-    };
+            return Backendless._ajax({
+                method: 'GET',
+                url: this.restUrl + '/validate/' + packageName + '/inapp/' + productId + '/purchases/' + token,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
 
-    Commerce.prototype.cancelPlaySubscription = function(packageName, subscriptionId, token, Async) {
-        if (arguments.length < 3) {
-            throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
-        }
+        cancelPlaySubscription: promisified('_cancelPlaySubscription'),
 
-        for (var i = arguments.length - 2; i >= 0; i--) {
-            if (!arguments[i] || !Utils.isString(arguments[i])) {
+        cancelPlaySubscriptionSync: synchronized('_cancelPlaySubscription'),
+
+        _cancelPlaySubscription: function (packageName, subscriptionId, token, Async) {
+            if (arguments.length < 3) {
                 throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
             }
-        }
+
+            for (var i = arguments.length - 2; i >= 0; i--) {
+                if (!arguments[i] || !Utils.isString(arguments[i])) {
+                    throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
+                }
+            }
 
         var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
@@ -4283,24 +4711,28 @@
             responder = Utils.wrapAsync(responder);
         }
 
-        return Backendless._ajax({
-            method      : 'POST',
-            url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token + '/cancel',
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
-    };
+            return Backendless._ajax({
+                method: 'POST',
+                url: this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token + '/cancel',
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
 
-    Commerce.prototype.getPlaySubscriptionStatus = function(packageName, subscriptionId, token, Async) {
-        if (arguments.length < 3) {
-            throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
-        }
+        getPlaySubscriptionStatus: promisified('_getPlaySubscriptionStatus'),
 
-        for (var i = arguments.length - 2; i >= 0; i--) {
-            if (!arguments[i] || !Utils.isString(arguments[i])) {
+        getPlaySubscriptionStatusSync: synchronized('_getPlaySubscriptionStatus'),
+
+        _getPlaySubscriptionStatus: function (packageName, subscriptionId, token, Async) {
+            if (arguments.length < 3) {
                 throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
             }
-        }
+
+            for (var i = arguments.length - 2; i >= 0; i--) {
+                if (!arguments[i] || !Utils.isString(arguments[i])) {
+                    throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!');
+                }
+            }
 
         var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
@@ -4309,24 +4741,30 @@
             responder = Utils.wrapAsync(responder);
         }
 
-        return Backendless._ajax({
-            method      : 'GET',
-            url         : this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token,
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
+            return Backendless._ajax({
+                method: 'GET',
+                url: this.restUrl + '/' + packageName + '/subscription/' + subscriptionId + '/purchases/' + token,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        }
     };
 
     function Events() {
         this.restUrl = Backendless.appPath + '/servercode/events';
     }
 
-    Events.prototype.dispatch = function(eventname, eventArgs, Async) {
-        if (!eventname || !Utils.isString(eventname)) {
-            throw new Error('Event Name must be provided and must be not an empty STRING!');
-        }
+    Events.prototype = {
+        dispatch: promisified('_dispatch'),
 
-        eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
+        dispatchSync: synchronized('_dispatch'),
+
+        _dispatch: function (eventname, eventArgs, Async) {
+            if (!eventname || !Utils.isString(eventname)) {
+                throw new Error('Event Name must be provided and must be not an empty STRING!');
+            }
+
+            eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
 
         var responder = Utils.extractResponder(arguments),
             isAsync   = responder != null;
@@ -4335,30 +4773,35 @@
             responder = Utils.wrapAsync(responder);
         }
 
-        eventArgs = eventArgs instanceof Backendless.Async ? {} : eventArgs;
+            eventArgs = eventArgs instanceof Async ? {} : eventArgs;
 
-        return Backendless._ajax({
-            method      : 'POST',
-            url         : this.restUrl + '/' + eventname,
-            data        : JSON.stringify(eventArgs),
-            isAsync     : isAsync,
-            asyncHandler: responder
-        });
+            return Backendless._ajax({
+                method: 'POST',
+                url: this.restUrl + '/' + eventname,
+                data: JSON.stringify(eventArgs),
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        }
     };
 
-    var Cache = function() {
+    var Cache = function () {
         this.restUrl = Backendless.appPath + '/cache/';
     };
 
     var FactoryMethods = {};
 
     Cache.prototype = {
-        put             : function(key, value, timeToLive, async) {
+        put: promisified('_put'),
+
+        putSync: synchronized('_put'),
+
+        _put: function (key, value, timeToLive, async) {
             if (!Utils.isString(key)) {
                 throw new Error('You can use only String as key to put into Cache');
             }
 
-            if (!(timeToLive instanceof Backendless.Async)) {
+            if (!(timeToLive instanceof Async)) {
                 if (typeof timeToLive == 'object' && !arguments[3]) {
                     async = timeToLive;
                     timeToLive = null;
@@ -4382,15 +4825,19 @@
             }
 
             return Backendless._ajax({
-                method      : 'PUT',
-                url         : this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
-                data        : JSON.stringify(value),
-                isAsync     : isAsync,
+                method: 'PUT',
+                url: this.restUrl + key + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+                data: JSON.stringify(value),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        expireIn        : function(key, seconds, async) {
+        expireIn: promisified('_expireIn'),
+
+        expireInSync: synchronized('_expireIn'),
+
+        _expireIn: function (key, seconds, async) {
             if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
                 seconds = (Utils.isDate(seconds)) ? seconds.getTime() : seconds;
                 var responder = Utils.extractResponder(arguments), isAsync = false;
@@ -4400,10 +4847,10 @@
                 }
 
                 return Backendless._ajax({
-                    method      : 'PUT',
-                    url         : this.restUrl + key + '/expireIn?timeout=' + seconds,
-                    data        : JSON.stringify({}),
-                    isAsync     : isAsync,
+                    method: 'PUT',
+                    url: this.restUrl + key + '/expireIn?timeout=' + seconds,
+                    data: JSON.stringify({}),
+                    isAsync: isAsync,
                     asyncHandler: responder
                 });
             } else {
@@ -4411,7 +4858,11 @@
             }
         },
 
-        expireAt        : function(key, timestamp, async) {
+        expireAt: promisified('_expireAt'),
+
+        expireAtSync: synchronized('_expireAt'),
+
+        _expireAt: function (key, timestamp, async) {
             if (Utils.isString(key) && (Utils.isNumber(timestamp) || Utils.isDate(timestamp)) && timestamp) {
                 timestamp = (Utils.isDate(timestamp)) ? timestamp.getTime() : timestamp;
                 var responder = Utils.extractResponder(arguments), isAsync = false;
@@ -4421,10 +4872,10 @@
                 }
 
                 return Backendless._ajax({
-                    method      : 'PUT',
-                    url         : this.restUrl + key + '/expireAt?timestamp=' + timestamp,
-                    data        : JSON.stringify({}),
-                    isAsync     : isAsync,
+                    method: 'PUT',
+                    url: this.restUrl + key + '/expireAt?timestamp=' + timestamp,
+                    data: JSON.stringify({}),
+                    isAsync: isAsync,
                     asyncHandler: responder
                 });
             } else {
@@ -4432,7 +4883,7 @@
             }
         },
 
-        cacheMethod     : function(method, key, contain, async) {
+        _cacheMethod: function (method, key, contain, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
@@ -4445,18 +4896,26 @@
             }
 
             return Backendless._ajax({
-                method      : method,
-                url         : this.restUrl + key + (contain ? '/check' : ''),
-                isAsync     : isAsync,
+                method: method,
+                url: this.restUrl + key + (contain ? '/check' : ''),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        contains        : function(key, async) {
-            return this.cacheMethod('GET', key, true, async);
+        contains: promisified('_contains'),
+
+        containsSync: synchronized('_contains'),
+
+        _contains: function (key, async) {
+            return this._cacheMethod('GET', key, true, async);
         },
 
-        get             : function(key, async) {
+        get: promisified('_get'),
+
+        getSync: synchronized('_get'),
+
+        _get: function (key, async) {
             if (!Utils.isString(key)) {
                 throw new Error('The "key" argument must be String');
             }
@@ -4483,54 +4942,47 @@
             }
 
             var result = Backendless._ajax({
-                method      : 'GET',
-                url         : this.restUrl + key,
-                isAsync     : isAsync,
+                method: 'GET',
+                url: this.restUrl + key,
+                isAsync: isAsync,
                 asyncHandler: responder
             });
 
             return isAsync ? result : parseResult(result);
         },
 
-        remove          : function(key, async) {
-            return this.cacheMethod('DELETE', key, false, async);
+        remove: promisified('_remove'),
+
+        removeSync: synchronized('_remove'),
+
+        _remove: function (key, async) {
+            return this._cacheMethod('DELETE', key, false, async);
         },
 
-        setObjectFactory: function(objectName, factoryMethod) {
+        setObjectFactory: function (objectName, factoryMethod) {
             FactoryMethods[objectName] = factoryMethod;
         }
     };
 
-    var Counters = function() {
-        this.restUrl = Backendless.appPath + '/counters/';
+    var Counter = function (name, restUrl) {
+        this._nameValidation(name);
+
+        this.restUrl = restUrl;
+        this.name = name;
     };
 
-    var AtomicInstance = function(counterName) {
-        this.name = counterName;
-    };
-
-    Counters.prototype = {
-        of                      : function(counterName) {
-            return new AtomicInstance(counterName);
-        },
-
-        getConstructor          : function() {
-            return this;
-        },
-
-        counterNameValidation   : function(counterName) {
-            if (!counterName) {
+    Counter.prototype = {
+        _nameValidation: function (name) {
+            if (!name) {
                 throw new Error('Missing value for the "counterName" argument. The argument must contain a string value.');
             }
 
-            if (!Utils.isString(counterName)) {
+            if (!Utils.isString(name)) {
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string values');
             }
-
-            this.name = counterName;
         },
 
-        implementMethod         : function(method, urlPart, async) {
+        _implementMethod: function (method, urlPart, async) {
             var responder = Utils.extractResponder(arguments), isAsync = false;
 
             if (responder != null) {
@@ -4539,62 +4991,14 @@
             }
 
             return Backendless._ajax({
-                method      : method,
-                url         : this.restUrl + this.name + urlPart,
-                isAsync     : isAsync,
+                method: method,
+                url: this.restUrl + this.name + urlPart,
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        incrementAndGet         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/increment/get', async);
-        },
-
-        getAndIncrement         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/get/increment', async);
-        },
-
-        decrementAndGet         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/decrement/get', async);
-        },
-
-        getAndDecrement         : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/get/decrement', async);
-        },
-
-        reset                   : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            return this.implementMethod('PUT', '/reset', async);
-        },
-
-        get                     : function(counterName, async) {
-            this.counterNameValidation(counterName, async);
-
-            var responder = Utils.extractResponder(arguments), isAsync = false;
-
-            if (responder != null) {
-                isAsync = true;
-                responder = Utils.wrapAsync(responder);
-            }
-
-            return Backendless._ajax({
-                method      : 'GET',
-                url         : this.restUrl + this.name,
-                isAsync     : isAsync,
-                asyncHandler: responder
-            });
-        },
-
-        implementMethodWithValue: function(urlPart, value, async) {
+        _implementMethodWithValue: function (urlPart, value, async) {
             if (!value) {
                 throw new Error('Missing value for the "value" argument. The argument must contain a numeric value.');
             }
@@ -4611,28 +5015,94 @@
             }
 
             return Backendless._ajax({
-                method      : 'PUT',
-                url         : this.restUrl + this.name + urlPart + ((value) ? value : ''),
-                isAsync     : isAsync,
+                method: 'PUT',
+                url: this.restUrl + this.name + urlPart + ((value) ? value : ''),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         },
 
-        addAndGet               : function(counterName, value, async) {
-            this.counterNameValidation(counterName, async);
+        incrementAndGet: promisified('_incrementAndGet'),
 
-            return this.implementMethodWithValue('/get/incrementby?value=', value, async);
+        incrementAndGetSync: synchronized('_incrementAndGet'),
+
+        _incrementAndGet: function (async) {
+            return this._implementMethod('PUT', '/increment/get', async);
         },
 
-        getAndAdd               : function(counterName, value, async) {
-            this.counterNameValidation(counterName, async);
+        getAndIncrement: promisified('_getAndIncrement'),
 
-            return this.implementMethodWithValue('/incrementby/get?value=', value, async);
+        getAndIncrementSync: synchronized('_getAndIncrement'),
+
+        _getAndIncrement: function (async) {
+            return this._implementMethod('PUT', '/get/increment', async);
         },
 
-        compareAndSet           : function(counterName, expected, updated, async) {
-            this.counterNameValidation(counterName, async);
+        decrementAndGet: promisified('_decrementAndGet'),
 
+        decrementAndGetSync: synchronized('_decrementAndGet'),
+
+        _decrementAndGet: function (async) {
+            return this._implementMethod('PUT', '/decrement/get', async);
+        },
+
+        getAndDecrement: promisified('_getAndDecrement'),
+
+        getAndDecrementSync: synchronized('_getAndDecrement'),
+
+        _getAndDecrement: function (async) {
+            return this._implementMethod('PUT', '/get/decrement', async);
+        },
+
+        reset: promisified('_reset'),
+
+        resetSync: synchronized('_reset'),
+
+        _reset: function (async) {
+            return this._implementMethod('PUT', '/reset', async);
+        },
+
+        get: promisified('_get'),
+
+        getSync: synchronized('_get'),
+
+        _get: function (async) {
+            var responder = Utils.extractResponder(arguments), isAsync = false;
+
+            if (responder != null) {
+                isAsync = true;
+                responder = Utils.wrapAsync(responder);
+            }
+
+            return Backendless._ajax({
+                method: 'GET',
+                url: this.restUrl + this.name,
+                isAsync: isAsync,
+                asyncHandler: responder
+            });
+        },
+
+        addAndGet: promisified('_addAndGet'),
+
+        addAndGetSync: synchronized('_addAndGet'),
+
+        _addAndGet: function (value, async) {
+            return this._implementMethodWithValue('/get/incrementby?value=', value, async);
+        },
+
+        getAndAdd: promisified('_getAndAdd'),
+
+        getAndAddSync: synchronized('_getAndAdd'),
+
+        _getAndAdd: function (value, async) {
+            return this._implementMethodWithValue('/incrementby/get?value=', value, async);
+        },
+
+        compareAndSet: promisified('_compareAndSet'),
+
+        compareAndSetSync: synchronized('_compareAndSet'),
+
+        _compareAndSet: function (expected, updated, async) {
             if (!expected || !updated) {
                 throw new Error('Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values');
             }
@@ -4649,43 +5119,38 @@
             }
 
             return Backendless._ajax({
-                method      : 'PUT',
-                url         : this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
-                isAsync     : isAsync,
+                method: 'PUT',
+                url: this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
+                isAsync: isAsync,
                 asyncHandler: responder
             });
         }
     };
 
-    AtomicInstance.prototype = {
-        incrementAndGet: function(async) {
-            return Counters.prototype.getConstructor().incrementAndGet(this.name, async);
-        },
-        getAndIncrement: function(async) {
-            return Counters.prototype.getConstructor().getAndIncrement(this.name, async);
-        },
-        decrementAndGet: function(async) {
-            return Counters.prototype.getConstructor().decrementAndGet(this.name, async);
-        },
-        getAndDecrement: function(async) {
-            return Counters.prototype.getConstructor().getAndDecrement(this.name, async);
-        },
-        reset          : function(async) {
-            return Counters.prototype.getConstructor().reset(this.name, async);
-        },
-        get            : function(async) {
-            return Counters.prototype.getConstructor().get(this.name, async);
-        },
-        addAndGet      : function(value, async) {
-            return Counters.prototype.getConstructor().addAndGet(this.name, value, async);
-        },
-        getAndAdd      : function(value, async) {
-            return Counters.prototype.getConstructor().getAndAdd(this.name, value, async);
-        },
-        compareAndSet  : function(expected, updated, async) {
-            return Counters.prototype.getConstructor().getAndAdd(this.name, expected, updated, async);
+    var Counters = function () {
+        this.restUrl = Backendless.appPath + '/counters/';
+    };
+
+    Counters.prototype = {
+        of: function (name) {
+            return new Counter(name, this.restUrl);
         }
     };
+
+    for (var methodName in Counter.prototype) {
+        if (Counter.prototype.hasOwnProperty(methodName) && methodName[0] !== '_') {
+            Counters.prototype[methodName] = createCounterMethodInvoker(methodName);
+        }
+    }
+
+    function createCounterMethodInvoker(methodName) {
+        return function(name) {
+            var counter = this.of(name);
+            var args = Array.prototype.slice.call(arguments, 1);
+
+            return counter[methodName].apply(counter, args);
+        }
+    }
 
     var lastFlushListeners;
 
@@ -4708,7 +5173,11 @@
             return this.loggers[loggerName];
         },
 
-        flush: function() {
+        flush: promisified('_flush'),
+
+        flushSync: synchronized('_flush'),
+
+        _flush: function() {
             var async = Utils.extractResponder(arguments);
 
             if (this.logInfo.length) {
@@ -4755,7 +5224,7 @@
             var logging = this;
 
             this.flushInterval = setTimeout(function() {
-                logging.flush(new Backendless.Async());
+                logging.flush();
             }, this.timeFrequency * 1000);
         },
 
@@ -4814,7 +5283,11 @@
     }
 
     CustomServices.prototype = {
-        invoke: function(serviceName, serviceVersion, method, parameters, async) {
+        invoke: promisified('_invoke'),
+
+        invokeSync: synchronized('_invoke'),
+
+        _invoke: function(serviceName, serviceVersion, method, parameters, async) {
             var responder = Utils.extractResponder(arguments),
                 isAsync   = responder != null;
 
@@ -4828,99 +5301,27 @@
         }
     };
 
-    function promisify(fn) {
+    function promisified(methodName) {
         return function() {
-            var context = this;
             var args = [].slice.call(arguments);
+            var context = this;
+            var fn = context[methodName];
 
             return new Promise(function(resolve, reject)  {
                 args.push(new Async(resolve, reject, context));
                 fn.apply(context, args);
             });
-        }
-    }
-
-    function promisifyPack(data) {
-        var obj = data[0];
-        var methods = data[1];
-
-        methods.forEach(function(name) {
-            obj[name] = promisify(obj[name]);
-        });
-    }
-
-    function enablePromises() {
-        if (promisesEnabled) {
-            return;
-        }
-
-        if (typeof Promise === 'undefined') {
-            throw new Error('Promises are not supported by your browser. ' +
-                'Please use "Backendless.Async" to make async requests, ' +
-                'or upgrade to a modern browser.\nSee ' + 'http://caniuse.com/#feat=promises');
-        }
-
-        promisesEnabled = true;
-
-        [
-            [DataPermissions.prototype.FIND, Object.keys(DataPermissions.prototype.FIND)],
-            [DataPermissions.prototype.REMOVE, Object.keys(DataPermissions.prototype.REMOVE)],
-            [DataPermissions.prototype.UPDATE, Object.keys(DataPermissions.prototype.UPDATE)],
-            [Files.prototype, ['saveFile', 'upload', 'listing', '_doAction', 'remove', 'exists', 'removeDirectory', 'getFileCount']],
-            [Commerce.prototype, ['validatePlayPurchase', 'cancelPlaySubscription', 'getPlaySubscriptionStatus']],
-            [Counters.prototype, ['implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet']],
-            [DataStore.prototype, [
-                'save', 'remove', 'find', 'findById', 'loadRelations', 'setRelation', 'addRelation', 'deleteRelation',
-                'getObjectCount', 'bulkCreate', 'bulkUpdate', 'bulkDelete'
-            ]],
-            [Cache.prototype, ['put', 'expireIn', 'expireAt', 'cacheMethod', 'get']],
-            [persistence, ['describe', 'getView', 'callStoredProcedure']],
-            [FilePermissions.prototype, ['sendRequest']],
-            [CustomServices.prototype, ['invoke']],
-            [Events.prototype, ['dispatch']],
-            [PollingProxy.prototype, ['poll']],
-            [Backendless.Logging, ['flush']],
-            [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                                   'getRegistrations', 'unregisterDevice']],
-            [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
-                             'getCategories', 'deleteCategory', 'deletePoint', 'getGeopointCount']],
-            [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
-                                     'restorePassword', 'logout', 'update', 'isValidLogin', 'loginWithFacebookSdk',
-                                     'loginWithGooglePlusSdk', 'loginWithGooglePlus', 'loginWithTwitter', 'loginWithFacebook',
-                                     'resendEmailConfirmation']]
-        ].forEach(promisifyPack);
-
-        UserService.prototype.getCurrentUser = function() {
-            if (currentUser) {
-                return Promise.resolve(this._getUserFromResponse(currentUser));
-            }
-
-            var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
-            var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
-
-            return currentUserId && persistence.of(User).findById(currentUserId) || Promise.resolve(null);
         };
+    }
 
-        UserService.prototype.isValidLogin = function() {
-            var userToken = Backendless.LocalCache.get("user-token");
+    function synchronized(methodName) {
+        return function() {
+            console.warn('Using of sync methods is an outdated approach. Please, use async methods.');
 
-            if (userToken) {
-                return new Promise(function(resolve, reject) {
-                    return Backendless._ajax({
-                        method: 'GET',
-                        url: this.restUrl + '/isvalidusertoken/' + userToken,
-                        isAsync: true,
-                        asyncHandler: new Async(resolve, reject)
-                    });
-                });
-            }
+            var context = this;
+            var fn = context[methodName];
 
-            return Backendless.UserService.getCurrentUser()
-                .then(function(user) {
-                    return Promise.resolve(!!user);
-                }, function() {
-                    return Promise.resolve(false);
-                });
+            return fn.apply(context, arguments);
         };
     }
 

@@ -1,43 +1,22 @@
 /// <reference path="../libs/backendless.d.ts" />
 /// <reference path="./es6-promise.d.ts" />
 
+import Counter = __Backendless.Counter;
 function testMain() {
     var VERSION:string = Backendless.VERSION;
     var applicationId:string = Backendless.applicationId;
     var secretKey:string = Backendless.secretKey;
-    var appVersion:string = Backendless.appVersion;
     var serverURL:string = Backendless.serverURL;
     var appPath:string = Backendless.appPath;
     var APPLICATION_ID:string = 'my-application-id';
     var JS_SECRET_KEY:string = 'my-js-secret-key';
-    var APPLICATION_VERSION:string = 'my-app-version';
 
     Backendless.browser = {browser: 'string', version: 'string'};
 
-    Backendless.initApp(APPLICATION_ID, JS_SECRET_KEY, APPLICATION_VERSION);
+    Backendless.initApp(APPLICATION_ID, JS_SECRET_KEY);
 
     Backendless.setUIState('state');
     Backendless.setUIState(null);
-    Backendless.enablePromises();
-}
-
-function testUtils() {
-    var isObjectResult:boolean = Backendless.Utils.isObject(null);
-    var isStringResult:boolean = Backendless.Utils.isString(null);
-    var isNumberResult:boolean = Backendless.Utils.isNumber(null);
-    var isFunctionResult:boolean = Backendless.Utils.isFunction(null);
-    var isBooleanResult:boolean = Backendless.Utils.isBoolean(null);
-    var isDateResult:boolean = Backendless.Utils.isDate(null);
-    var isArrayResult:boolean = Backendless.Utils.isArray(null);
-    var isEmptyResult:boolean = Backendless.Utils.isEmpty(null);
-
-    Backendless.Utils.addEvent('my-event', document.createElement('DIV'), function (event:Event) {
-    });
-
-    Backendless.Utils.removeEvent('my-event', document.createElement('DIV'));
-
-    Backendless.Utils.forEach({a: 1, b: true, c: null, d: 'string'}, function (value:any, key:string, obj:Object) {
-    }, this);
 }
 
 function testLocalCache() {
@@ -73,25 +52,6 @@ function testLocalCache() {
     Backendless.LocalCache.flushExpired();
 }
 
-function testAsyncClass() {
-    var onSuccess = function (data:Object) {
-    };
-
-    var onError = function (data:Object) {
-    };
-
-    var context:Object = this;
-    var data:Object = {};
-
-    var async1:Backendless.Async = new Backendless.Async(onSuccess);
-    var async2:Backendless.Async = new Backendless.Async(onSuccess, onError);
-    var async3:Backendless.Async = new Backendless.Async(onSuccess, onError, context);
-    var async4:Backendless.Async = new Backendless.Async(onSuccess, context);
-
-    async1.success(data);
-    async1.fault(data);
-}
-
 function testDataQueryClass() {
     var dataQuery:Backendless.DataQuery = new Backendless.DataQuery();
     var properties:string[] = dataQuery.properties;
@@ -105,177 +65,120 @@ function testDataQueryClass() {
 
 function testDataStoreClass() {
     var item:Object = {};
-    var dataStore1:Backendless.DataStore = Backendless.Persistence.of('str');
+    var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
     var dataStore2:Backendless.DataStore = Backendless.Persistence.of({});
     var dataStore3:Backendless.DataStore = Backendless.Persistence.of(function () {
     });
 
-    var model:Function|Object = dataStore1.model;
-    var className:string = dataStore1.className;
-    var restUrl:string = dataStore1.restUrl;
+    var model:Function|Object = dataStore.model;
+    var className:string = dataStore.className;
+    var restUrl:string = dataStore.restUrl;
 
-    var dataQuery1:Backendless.DataQuery = new Backendless.DataQuery();
-    var dataQuery2:Object = {url: 'my/url'};
+    var dataQueryBuilder:Backendless.DataQueryBuilder = new Backendless.DataQueryBuilder.create();
 
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
+    dataQueryBuilder.setWhereClause("objectId like '%00%'");
+
+    var loadRelationsQueryBuilder:Backendless.LoadRelationsQueryBuilder = new Backendless.LoadRelationsQueryBuilder.create();
+    var parentTableName:string = 'Test';
 
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
 
-    resultObj = dataStore1.save(item);
-    resultXHR = dataStore1.save(item, async);
-    dataStore1.save<Promise<Object>>(item).then().catch().then().then();
+    resultObj = dataStore.saveSync(item);
+    dataStore.save(item).then().catch().then().then();
 
-    resultObj = dataStore1.remove('str');
-    resultObj = dataStore1.remove(item);
-    resultXHR = dataStore1.remove('str', async);
-    resultXHR = dataStore1.remove(item, async);
-    dataStore1.remove<Promise<Object>>('str').then().catch().then().then();
-    dataStore1.remove<Promise<Object>>(item).then().catch().then().then();
+    resultObj = dataStore.removeSync('str');
+    resultObj = dataStore.removeSync(item);
+    dataStore.remove('str').then().catch().then().then();
+    dataStore.remove(item).then().catch().then().then();
 
-    resultObj = dataStore1.find(dataQuery1);
-    resultObj = dataStore1.find(dataQuery2);
-    resultObj = dataStore1.find('id');
-    resultObj = dataStore1.find();
-    resultXHR = dataStore1.find(dataQuery1, async);
-    resultXHR = dataStore1.find(dataQuery2, async);
-    resultXHR = dataStore1.find('id', async);
-    resultXHR = dataStore1.find(async);
-    dataStore1.find<Promise<Object>>(dataQuery1).then().catch().then().then();
-    dataStore1.find<Promise<Object>>(dataQuery2).then().catch().then().then();
-    dataStore1.find<Promise<Object>>('id').then().catch().then().then();
-    dataStore1.find<Promise<Object>>().then().catch().then().then();
+    resultObj = dataStore.findSync(dataQueryBuilder);
+    resultObj = dataStore.findSync();
+    dataStore.find(dataQueryBuilder).then().catch().then().then();
+    dataStore.find().then().catch().then().then();
 
-    resultObj = dataStore1.findById(dataQuery1);
-    resultObj = dataStore1.findById(dataQuery2);
-    resultObj = dataStore1.findById('myId');
-    resultXHR = dataStore1.findById(dataQuery1, async);
-    resultXHR = dataStore1.findById(dataQuery2, async);
-    resultXHR = dataStore1.findById('myId', async);
-    dataStore1.findById<Promise<Object>>(dataQuery1).then().catch().then().then();
-    dataStore1.findById<Promise<Object>>(dataQuery2).then().catch().then().then();
-    dataStore1.findById<Promise<Object>>('myId').then().catch().then().then();
+    resultObj = dataStore.findByIdSync('myId');
+    dataStore.findById('myId').then().catch().then().then();
 
-    resultObj = dataStore1.findFirst();
-    resultObj = dataStore1.findFirst(dataQuery1);
-    resultObj = dataStore1.findFirst(dataQuery2);
-    resultXHR = dataStore1.findFirst(async);
-    resultXHR = dataStore1.findFirst(dataQuery1, async);
-    resultXHR = dataStore1.findFirst(dataQuery2, async);
-    dataStore1.findFirst<Promise<Object>>().then().catch().then().then();
-    dataStore1.findFirst<Promise<Object>>(dataQuery1).then().catch().then().then();
-    dataStore1.findFirst<Promise<Object>>(dataQuery2).then().catch().then().then();
+    resultObj = dataStore.findFirstSync();
+    dataStore.findFirst().then().catch().then().then();
 
-    resultObj = dataStore1.findLast();
-    resultObj = dataStore1.findLast(dataQuery1);
-    resultObj = dataStore1.findLast(dataQuery2);
-    resultXHR = dataStore1.findLast(async);
-    resultXHR = dataStore1.findLast(dataQuery1, async);
-    resultXHR = dataStore1.findLast(dataQuery2, async);
-    dataStore1.findLast<Promise<Object>>().then().catch().then().then();
-    dataStore1.findLast<Promise<Object>>(dataQuery1).then().catch().then().then();
-    dataStore1.findLast<Promise<Object>>(dataQuery2).then().catch().then().then();
+    resultObj = dataStore.findLastSync();
+    dataStore.findLast().then().catch().then().then();
 
-    dataStore1.loadRelations(dataQuery1);
-    dataStore1.loadRelations(dataQuery2);
-    dataStore1.loadRelations(dataQuery1, ['item1', 'item2']);
-    dataStore1.loadRelations(dataQuery2, ['item1', 'item2']);
-    dataStore1.loadRelations<Promise<Object>>(dataQuery1).then().catch().then().then();
-    dataStore1.loadRelations<Promise<Object>>(dataQuery2).then().catch().then().then();
-    dataStore1.loadRelations<Promise<Object>>(dataQuery1, ['item1', 'item2']).then().catch().then().then();
-    dataStore1.loadRelations<Promise<Object>>(dataQuery2, ['item1', 'item2']).then().catch().then().then();
+    dataStore.loadRelationsSync(parentTableName, loadRelationsQueryBuilder);
+    dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder).then().catch().then().then();
 }
 
 function testPersistence() {
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
     var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
     var Model:Function;
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
 
-    resultObj = Backendless.Persistence.save('model', {});
-    resultObj = Backendless.Persistence.save(dataStore, {});
-    resultXHR = Backendless.Persistence.save('model', {}, async);
-    resultXHR = Backendless.Persistence.save(dataStore, {}, async);
-    Backendless.Persistence.save<Promise<Object>>('model', {}).then().catch().then().then();
-    Backendless.Persistence.save<Promise<Object>>(dataStore, {}).then().catch().then().then();
+    resultObj = Backendless.Persistence.saveSync('model', {});
+    resultObj = Backendless.Persistence.saveSync(dataStore, {});
+    Backendless.Persistence.save('model', {}).then().catch().then().then();
+    Backendless.Persistence.save(dataStore, {}).then().catch().then().then();
 
-    resultXHR = Backendless.Persistence.getView('viewName', 'whereClause', 123, 123, async);
-    resultXHR = Backendless.Persistence.getView('viewName', 'whereClause', 123, async);
-    resultXHR = Backendless.Persistence.getView('viewName', 'whereClause', async);
-    resultXHR = Backendless.Persistence.getView('viewName', async);
-    resultObj = Backendless.Persistence.getView('viewName', 'whereClause', 123, 123);
-    resultObj = Backendless.Persistence.getView('viewName', 'whereClause', 123);
-    resultObj = Backendless.Persistence.getView('viewName', 'whereClause');
-    resultObj = Backendless.Persistence.getView('viewName');
-    Backendless.Persistence.getView<Promise<Object>>('viewName', 'whereClause', 123, 123).then().catch().then().then();
-    Backendless.Persistence.getView<Promise<Object>>('viewName', 'whereClause', 123).then().catch().then().then();
-    Backendless.Persistence.getView<Promise<Object>>('viewName', 'whereClause').then().catch().then().then();
-    Backendless.Persistence.getView<Promise<Object>>('viewName').then().catch().then().then();
+    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123, 123);
+    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123);
+    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause');
+    resultObj = Backendless.Persistence.getViewSync('viewName');
+    Backendless.Persistence.getView('viewName', 'whereClause', 123, 123).then().catch().then().then();
+    Backendless.Persistence.getView('viewName', 'whereClause', 123).then().catch().then().then();
+    Backendless.Persistence.getView('viewName', 'whereClause').then().catch().then().then();
+    Backendless.Persistence.getView('viewName').then().catch().then().then();
 
-    resultXHR = Backendless.Persistence.callStoredProcedure('spName', 'argumentValues', async);
-    resultXHR = Backendless.Persistence.callStoredProcedure('spName', {}, async);
-    resultObj = Backendless.Persistence.callStoredProcedure('spName', 'argumentValues');
-    resultObj = Backendless.Persistence.callStoredProcedure('spName', {});
-    Backendless.Persistence.callStoredProcedure<Promise<Object>>('spName', 'argumentValues').then().catch().then().then();
-    Backendless.Persistence.callStoredProcedure<Promise<Object>>('spName', {}).then().catch().then().then();
+    resultObj = Backendless.Persistence.callStoredProcedureSync('spName', 'argumentValues');
+    resultObj = Backendless.Persistence.callStoredProcedureSync('spName', {});
+    Backendless.Persistence.callStoredProcedure('spName', 'argumentValues').then().catch().then().then();
+    Backendless.Persistence.callStoredProcedure('spName', {}).then().catch().then().then();
 
     dataStore = Backendless.Persistence.of(Model);
     dataStore = Backendless.Persistence.of('str');
     dataStore = Backendless.Persistence.of({});
 
-    resultObj = Backendless.Persistence.describe(Model);
-    resultObj = Backendless.Persistence.describe('str');
-    resultObj = Backendless.Persistence.describe({});
-    resultXHR = Backendless.Persistence.describe(Model, async);
-    resultXHR = Backendless.Persistence.describe('str', async);
-    resultXHR = Backendless.Persistence.describe({}, async);
-    Backendless.Persistence.describe<Promise<Object>>(Model).then().catch().then().then();
-    Backendless.Persistence.describe<Promise<Object>>('str').then().catch().then().then();
-    Backendless.Persistence.describe<Promise<Object>>({}).then().catch().then().then();
+    resultObj = Backendless.Persistence.describeSync(Model);
+    resultObj = Backendless.Persistence.describeSync('str');
+    resultObj = Backendless.Persistence.describeSync({});
+    Backendless.Persistence.describe(Model).then().catch().then().then();
+    Backendless.Persistence.describe('str').then().catch().then().then();
+    Backendless.Persistence.describe({}).then().catch().then().then();
 }
 
 function testData() {
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
     var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
+    var Model:Function;
 
-    resultObj = Backendless.Data.save('model', {});
-    resultObj = Backendless.Data.save(dataStore, {});
-    resultXHR = Backendless.Data.save('model', {}, async);
-    resultXHR = Backendless.Data.save(dataStore, {}, async);
+    resultObj = Backendless.Data.saveSync('model', {});
+    resultObj = Backendless.Data.saveSync(dataStore, {});
+    Backendless.Data.save('model', {}).then().catch().then().then();
+    Backendless.Data.save(dataStore, {}).then().catch().then().then();
 
-    resultXHR = Backendless.Data.getView('viewName', 'whereClause', 123, 123, async);
-    resultXHR = Backendless.Data.getView('viewName', 'whereClause', 123, async);
-    resultXHR = Backendless.Data.getView('viewName', 'whereClause', async);
-    resultXHR = Backendless.Data.getView('viewName', async);
-    resultObj = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
-    resultObj = Backendless.Data.getView('viewName', 'whereClause', 123);
-    resultObj = Backendless.Data.getView('viewName', 'whereClause');
-    resultObj = Backendless.Data.getView('viewName');
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123, 123);
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123);
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause');
+    resultObj = Backendless.Data.getViewSync('viewName');
+    Backendless.Data.getView('viewName', 'whereClause', 123, 123).then().catch().then().then();
+    Backendless.Data.getView('viewName', 'whereClause', 123).then().catch().then().then();
+    Backendless.Data.getView('viewName', 'whereClause').then().catch().then().then();
+    Backendless.Data.getView('viewName').then().catch().then().then();
 
-    resultXHR = Backendless.Data.callStoredProcedure('spName', 'argumentValues', async);
-    resultXHR = Backendless.Data.callStoredProcedure('spName', {}, async);
-    resultObj = Backendless.Data.callStoredProcedure('spName', 'argumentValues');
-    resultObj = Backendless.Data.callStoredProcedure('spName', {});
+    resultObj = Backendless.Data.callStoredProcedureSync('spName', 'argumentValues');
+    resultObj = Backendless.Data.callStoredProcedureSync('spName', {});
+    Backendless.Data.callStoredProcedure('spName', 'argumentValues').then().catch().then().then();
+    Backendless.Data.callStoredProcedure('spName', {}).then().catch().then().then();
 
-    dataStore = Backendless.Data.of(function () {
-    });
+    dataStore = Backendless.Data.of(Model);
     dataStore = Backendless.Data.of('str');
     dataStore = Backendless.Data.of({});
 
-    resultObj = Backendless.Data.describe(function () {
-    });
-    resultObj = Backendless.Data.describe('str');
-    resultObj = Backendless.Data.describe({});
-    resultXHR = Backendless.Data.describe(function () {
-    }, async);
-    resultXHR = Backendless.Data.describe('str', async);
-    resultXHR = Backendless.Data.describe({}, async);
+    resultObj = Backendless.Data.describeSync(Model);
+    resultObj = Backendless.Data.describeSync('str');
+    resultObj = Backendless.Data.describeSync({});
+    Backendless.Data.describe(Model).then().catch().then().then();
+    Backendless.Data.describe('str').then().catch().then().then();
+    Backendless.Data.describe({}).then().catch().then().then();
 }
 
 function testDataPermissions() {
@@ -283,70 +186,48 @@ function testDataPermissions() {
     var roleName:string = 'myRole';
     var dataObj:Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
     var resultObj:Backendless.ExistDataItemI;
-    var resultXHR:XMLHttpRequest;
 
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
+    resultObj = Backendless.Data.Permissions.FIND.grantUserSync(userId, dataObj);
+    resultObj = Backendless.Data.Permissions.FIND.grantRoleSync(roleName, dataObj);
+    resultObj = Backendless.Data.Permissions.FIND.grantSync(dataObj);
+    resultObj = Backendless.Data.Permissions.FIND.denyUserSync(userId, dataObj);
+    resultObj = Backendless.Data.Permissions.FIND.denyRoleSync(roleName, dataObj);
+    resultObj = Backendless.Data.Permissions.FIND.denySync(dataObj);
 
-    resultObj = Backendless.Data.Permissions.FIND.grantUser(userId, dataObj);
-    resultXHR = Backendless.Data.Permissions.FIND.grantUser(userId, dataObj, async);
-    resultObj = Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj);
-    resultXHR = Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj, async);
-    resultObj = Backendless.Data.Permissions.FIND.grant(dataObj);
-    resultXHR = Backendless.Data.Permissions.FIND.grant(dataObj, async);
-    resultObj = Backendless.Data.Permissions.FIND.denyUser(userId, dataObj);
-    resultXHR = Backendless.Data.Permissions.FIND.denyUser(userId, dataObj, async);
-    resultObj = Backendless.Data.Permissions.FIND.denyRole(roleName, dataObj);
-    resultXHR = Backendless.Data.Permissions.FIND.denyRole(roleName, dataObj, async);
-    resultObj = Backendless.Data.Permissions.FIND.deny(dataObj);
-    resultXHR = Backendless.Data.Permissions.FIND.deny(dataObj, async);
+    resultObj = Backendless.Data.Permissions.REMOVE.grantUserSync(userId, dataObj);
+    resultObj = Backendless.Data.Permissions.REMOVE.grantRoleSync(roleName, dataObj);
+    resultObj = Backendless.Data.Permissions.REMOVE.grantSync(dataObj);
+    resultObj = Backendless.Data.Permissions.REMOVE.denyUserSync(userId, dataObj);
+    resultObj = Backendless.Data.Permissions.REMOVE.denyRoleSync(roleName, dataObj);
+    resultObj = Backendless.Data.Permissions.REMOVE.denySync(dataObj);
 
-    resultObj = Backendless.Data.Permissions.REMOVE.grantUser(userId, dataObj);
-    resultXHR = Backendless.Data.Permissions.REMOVE.grantUser(userId, dataObj, async);
-    resultObj = Backendless.Data.Permissions.REMOVE.grantRole(roleName, dataObj);
-    resultXHR = Backendless.Data.Permissions.REMOVE.grantRole(roleName, dataObj, async);
-    resultObj = Backendless.Data.Permissions.REMOVE.grant(dataObj);
-    resultXHR = Backendless.Data.Permissions.REMOVE.grant(dataObj, async);
-    resultObj = Backendless.Data.Permissions.REMOVE.denyUser(userId, dataObj);
-    resultXHR = Backendless.Data.Permissions.REMOVE.denyUser(userId, dataObj, async);
-    resultObj = Backendless.Data.Permissions.REMOVE.denyRole(roleName, dataObj);
-    resultXHR = Backendless.Data.Permissions.REMOVE.denyRole(roleName, dataObj, async);
-    resultObj = Backendless.Data.Permissions.REMOVE.deny(dataObj);
-    resultXHR = Backendless.Data.Permissions.REMOVE.deny(dataObj, async);
+    resultObj = Backendless.Data.Permissions.UPDATE.grantUserSync(userId, dataObj);
+    resultObj = Backendless.Data.Permissions.UPDATE.grantRoleSync(roleName, dataObj);
+    resultObj = Backendless.Data.Permissions.UPDATE.grantSync(dataObj);
+    resultObj = Backendless.Data.Permissions.UPDATE.denyUserSync(userId, dataObj);
+    resultObj = Backendless.Data.Permissions.UPDATE.denyRoleSync(roleName, dataObj);
+    resultObj = Backendless.Data.Permissions.UPDATE.denySync(dataObj);
 
-    resultObj = Backendless.Data.Permissions.UPDATE.grantUser(userId, dataObj);
-    resultXHR = Backendless.Data.Permissions.UPDATE.grantUser(userId, dataObj, async);
-    resultObj = Backendless.Data.Permissions.UPDATE.grantRole(roleName, dataObj);
-    resultXHR = Backendless.Data.Permissions.UPDATE.grantRole(roleName, dataObj, async);
-    resultObj = Backendless.Data.Permissions.UPDATE.grant(dataObj);
-    resultXHR = Backendless.Data.Permissions.UPDATE.grant(dataObj, async);
-    resultObj = Backendless.Data.Permissions.UPDATE.denyUser(userId, dataObj);
-    resultXHR = Backendless.Data.Permissions.UPDATE.denyUser(userId, dataObj, async);
-    resultObj = Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj);
-    resultXHR = Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj, async);
-    resultObj = Backendless.Data.Permissions.UPDATE.deny(dataObj);
-    resultXHR = Backendless.Data.Permissions.UPDATE.deny(dataObj, async);
+    Backendless.Data.Permissions.FIND.grantUser(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.grant(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.denyUser(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.denyRole(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.FIND.deny(dataObj).then().catch().then().then();
 
-    Backendless.Data.Permissions.FIND.grantUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.grantRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.grant<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.denyUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.denyRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.deny<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.grantUser(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.grantRole(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.grant(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.denyUser(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.denyRole(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.REMOVE.deny(dataObj).then().catch().then().then();
 
-    Backendless.Data.Permissions.REMOVE.grantUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.grantRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.grant<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.denyUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.denyRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.deny<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
-
-    Backendless.Data.Permissions.UPDATE.grantUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.grantRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.grant<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.denyUser<Promise<Backendless.ExistDataItemI>>(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.denyRole<Promise<Backendless.ExistDataItemI>>(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.deny<Promise<Backendless.ExistDataItemI>>(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.grantUser(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.grantRole(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.grant(dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.denyUser(userId, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj).then().catch().then().then();
+    Backendless.Data.Permissions.UPDATE.deny(dataObj).then().catch().then().then();
 
 }
 
@@ -365,125 +246,100 @@ function testUserService() {
     var bol:boolean = true;
     var newUser:Backendless.User = new Backendless.User();
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
-
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
 
     var restUrl:string = Backendless.UserService.restUrl;
     var loggedInUser:boolean = Backendless.UserService.loggedInUser();
 
-    resultObj = Backendless.UserService.restorePassword('email');
-    resultXHR = Backendless.UserService.restorePassword('email', async);
-    Backendless.UserService.restorePassword<Promise<Object>>('email').then().catch().then().then();
+    resultObj = Backendless.UserService.restorePasswordSync('email');
+    Backendless.UserService.restorePassword('email').then().catch().then().then();
 
-    newUser = Backendless.UserService.register(newUser);
-    resultXHR = Backendless.UserService.register(newUser, async);
-    Backendless.UserService.register<Promise<Backendless.User>>(newUser).then().catch().then().then();
+    newUser = Backendless.UserService.registerSync(newUser);
+    Backendless.UserService.register(newUser).then().catch().then().then();
 
-    newUser = Backendless.UserService.getUserRoles();
-    resultXHR = Backendless.UserService.getUserRoles(async);
-    Backendless.UserService.getUserRoles<Promise<Backendless.User>>().then().catch().then().then();
+    newUser = Backendless.UserService.getUserRolesSync();
+    Backendless.UserService.getUserRoles().then().catch().then().then();
 
-    newUser = Backendless.UserService.assignRole(identity, roleName);
-    resultXHR = Backendless.UserService.assignRole(identity, roleName, async);
-    Backendless.UserService.assignRole<Promise<Backendless.User>>(identity, roleName).then().catch().then().then();
+    newUser = Backendless.UserService.assignRoleSync(identity, roleName);
+    Backendless.UserService.assignRole(identity, roleName).then().catch().then().then();
 
-    newUser = Backendless.UserService.unassignRole(identity, roleName);
-    resultXHR = Backendless.UserService.unassignRole(identity, roleName, async);
-    Backendless.UserService.unassignRole<Promise<Backendless.User>>(identity, roleName).then().catch().then().then();
+    newUser = Backendless.UserService.unassignRoleSync(identity, roleName);
+    Backendless.UserService.unassignRole(identity, roleName).then().catch().then().then();
 
-    newUser = Backendless.UserService.login(userName, password);
-    newUser = Backendless.UserService.login(userName, password, bol);
-    resultXHR = Backendless.UserService.login(userName, password, bol, async);
-    resultXHR = Backendless.UserService.login(userName, password, null, async);
-    Backendless.UserService.login<Promise<Backendless.User>>(userName, password).then().catch().then().then();
-    Backendless.UserService.login<Promise<Backendless.User>>(userName, password, bol).then().catch().then().then();
+    newUser = Backendless.UserService.loginSync(userName, password);
+    newUser = Backendless.UserService.loginSync(userName, password, bol);
+    Backendless.UserService.login(userName, password).then().catch().then().then();
+    Backendless.UserService.login(userName, password, bol).then().catch().then().then();
 
-    newUser = Backendless.UserService.describeUserClass();
-    resultXHR = Backendless.UserService.describeUserClass(async);
-    Backendless.UserService.describeUserClass<Promise<Backendless.User>>().then().catch().then().then();
+    newUser = Backendless.UserService.describeUserClassSync();
+    Backendless.UserService.describeUserClass().then().catch().then().then();
 
-    Backendless.UserService.logout();
-    resultXHR = Backendless.UserService.logout(async);
-    Backendless.UserService.logout<Promise<void>>().then().catch().then().then();
+    Backendless.UserService.logoutSync();
+    Backendless.UserService.logout().then().catch().then().then();
 
-    newUser = Backendless.UserService.getCurrentUser();
-    Backendless.UserService.getCurrentUser<Promise<Backendless.User>>().then().catch().then().then();
+    newUser = Backendless.UserService.getCurrentUserSync();
+    Backendless.UserService.getCurrentUser().then().catch().then().then();
 
-    newUser = Backendless.UserService.update(newUser);
-    resultXHR = Backendless.UserService.update(newUser, async);
-    Backendless.UserService.update<Promise<Backendless.User>>(newUser).then().catch().then().then();
+    newUser = Backendless.UserService.updateSync(newUser);
+    Backendless.UserService.update(newUser).then().catch().then().then();
 
-    Backendless.UserService.loginWithFacebook();
-    Backendless.UserService.loginWithFacebook({});
-    Backendless.UserService.loginWithFacebook({}, {});
-    Backendless.UserService.loginWithFacebook({}, {}, async);
-    Backendless.UserService.loginWithFacebook({}, {}, async, true);
-    Backendless.UserService.loginWithFacebook({}, {}, null, true);
-    Backendless.UserService.loginWithFacebook({}, null, null, true);
-    Backendless.UserService.loginWithFacebook(null, null, null, true);
-    Backendless.UserService.loginWithFacebook<Promise<void>>().then().catch().then().then();
-    Backendless.UserService.loginWithFacebook<Promise<void>>({}).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook<Promise<void>>({}, {}).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook<Promise<void>>({}, {}, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook<Promise<void>>({}, null, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook<Promise<void>>(null, null, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithFacebookSync();
+    Backendless.UserService.loginWithFacebookSync({});
+    Backendless.UserService.loginWithFacebookSync({}, {});
+    Backendless.UserService.loginWithFacebookSync({}, {}, true);
+    Backendless.UserService.loginWithFacebookSync({}, null, true);
+    Backendless.UserService.loginWithFacebookSync(null, null, true);
+    Backendless.UserService.loginWithFacebook().then().catch().then().then();
+    Backendless.UserService.loginWithFacebook({}).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook({}, {}).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook({}, {}, true).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook({}, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithFacebook(null, null, true).then().catch().then().then();
 
-    Backendless.UserService.loginWithGooglePlus();
-    Backendless.UserService.loginWithGooglePlus({});
-    Backendless.UserService.loginWithGooglePlus({}, {});
-    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'));
-    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), async);
-    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), async, true);
-    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), null, true);
-    Backendless.UserService.loginWithGooglePlus({}, {}, null, null, true);
-    Backendless.UserService.loginWithGooglePlus({}, null, null, null, true);
-    Backendless.UserService.loginWithGooglePlus(null, null, null, null, true);
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>().then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}, document.createElement('div')).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}, document.createElement('div'), null, true).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, {}, null, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>({}, null, null, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus<Promise<void>>(null, null, null, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlusSync();
+    Backendless.UserService.loginWithGooglePlusSync({});
+    Backendless.UserService.loginWithGooglePlusSync({}, {});
+    Backendless.UserService.loginWithGooglePlusSync({}, {}, document.createElement('div'));
+    Backendless.UserService.loginWithGooglePlusSync({}, {}, document.createElement('div'), true);
+    Backendless.UserService.loginWithGooglePlusSync({}, {}, null, true);
+    Backendless.UserService.loginWithGooglePlusSync({}, null, null, true);
+    Backendless.UserService.loginWithGooglePlusSync(null, null, null, true);
+    Backendless.UserService.loginWithGooglePlus().then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus({}).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus({}, {}).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div')).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus({}, {}, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus({}, null, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlus(null, null, null, true).then().catch().then().then();
 
-    Backendless.UserService.loginWithTwitter();
-    Backendless.UserService.loginWithTwitter({}, async);
-    Backendless.UserService.loginWithTwitter({}, async, true);
-    Backendless.UserService.loginWithTwitter({}, null, true);
-    Backendless.UserService.loginWithTwitter(null, null, true);
-    Backendless.UserService.loginWithTwitter<Promise<void>>().then().catch().then().then();
-    Backendless.UserService.loginWithTwitter<Promise<void>>({}).then().catch().then().then();
-    Backendless.UserService.loginWithTwitter<Promise<void>>({}, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithTwitter<Promise<void>>(null, null, true).then().catch().then().then();
+    Backendless.UserService.loginWithTwitterSync();
+    Backendless.UserService.loginWithTwitterSync({});
+    Backendless.UserService.loginWithTwitterSync({}, true);
+    Backendless.UserService.loginWithTwitterSync(null, true);
+    Backendless.UserService.loginWithTwitter().then().catch().then().then();
+    Backendless.UserService.loginWithTwitter({}).then().catch().then().then();
+    Backendless.UserService.loginWithTwitter({}, true).then().catch().then().then();
+    Backendless.UserService.loginWithTwitter(null, true).then().catch().then().then();
 
-    Backendless.UserService.loginWithFacebookSdk();
-    Backendless.UserService.loginWithFacebookSdk({}, true);
-    Backendless.UserService.loginWithFacebookSdk({}, true, async);
-    Backendless.UserService.loginWithFacebookSdk({}, null, async);
-    Backendless.UserService.loginWithFacebookSdk(null, null, async);
-    Backendless.UserService.loginWithFacebookSdk<Promise<void>>().then().catch().then().then();
-    Backendless.UserService.loginWithFacebookSdk<Promise<void>>({}).then().catch().then().then();
-    Backendless.UserService.loginWithFacebookSdk<Promise<void>>({}, true).then().catch().then().then();
+    Backendless.UserService.loginWithFacebookSdkSync();
+    Backendless.UserService.loginWithFacebookSdkSync({});
+    Backendless.UserService.loginWithFacebookSdkSync({}, true);
+    Backendless.UserService.loginWithFacebookSdk().then().catch().then().then();
+    Backendless.UserService.loginWithFacebookSdk({}).then().catch().then().then();
+    Backendless.UserService.loginWithFacebookSdk({}, true).then().catch().then().then();
 
-    Backendless.UserService.loginWithGooglePlusSdk();
-    Backendless.UserService.loginWithGooglePlusSdk({}, true);
-    Backendless.UserService.loginWithGooglePlusSdk({}, true, async);
-    Backendless.UserService.loginWithGooglePlusSdk({}, null, async);
-    Backendless.UserService.loginWithGooglePlusSdk(null, null, async);
-    Backendless.UserService.loginWithGooglePlusSdk<Promise<void>>().then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlusSdk<Promise<void>>({}).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlusSdk<Promise<void>>({}, true).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlusSdkSync();
+    Backendless.UserService.loginWithGooglePlusSdkSync({});
+    Backendless.UserService.loginWithGooglePlusSdkSync({}, true);
+    Backendless.UserService.loginWithGooglePlusSdk().then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlusSdk({}).then().catch().then().then();
+    Backendless.UserService.loginWithGooglePlusSdk({}, true).then().catch().then().then();
 
-    bol = Backendless.UserService.isValidLogin();
-    resultXHR = Backendless.UserService.isValidLogin(async);
-    Backendless.UserService.isValidLogin<Promise<boolean>>().then().catch().then().then();
+    bol = Backendless.UserService.isValidLoginSync();
+    Backendless.UserService.isValidLogin().then().catch().then().then();
 
-    Backendless.UserService.resendEmailConfirmation('email');
-    Backendless.UserService.resendEmailConfirmation('email', async);
-    Backendless.UserService.resendEmailConfirmation<Promise<void>>('email').then().catch().then().then();
+    Backendless.UserService.resendEmailConfirmationSync('email');
+    Backendless.UserService.resendEmailConfirmation('email').then().catch().then().then();
 
 }
 
@@ -515,14 +371,10 @@ function testGoeService() {
     var categoryName:string = 'str';
     var restUrl:string = Backendless.Geo.restUrl;
     var EARTH_RADIUS:number = Backendless.Geo.EARTH_RADIUS;
-    var geoCollectionResult:Backendless.GeoCollectionResultI;
+    var geoCollectionResult:Array<Object>;
     var geoCategory:Backendless.GeoCategoryI;
     var geoCategories:Backendless.GeoCategoryI[];
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
-
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
 
     var baseGeoQuery:Backendless.GeoQueryI = new Backendless.GeoQuery();
     var rectangleGeoQuery:Backendless.RectangleGeoQueryI = {searchRectangle: [1, 2, 3, 4]};
@@ -547,79 +399,60 @@ function testGoeService() {
         }
     };
 
-    existPoint = Backendless.Geo.addPoint(newGeoPoint);
-    resultXHR = Backendless.Geo.addPoint(newGeoPoint, async);
-    Backendless.Geo.addPoint<Promise<Backendless.GeoPoint>>(newGeoPoint).then().catch().then().then();
+    existPoint = Backendless.Geo.savePointSync(newGeoPoint);
+    Backendless.Geo.savePoint(newGeoPoint).then().catch().then().then();
 
-    geoCollectionResult = Backendless.Geo.find(baseGeoQuery);
-    resultXHR = Backendless.Geo.find(baseGeoQuery, async);
-    Backendless.Geo.find<Promise<Backendless.GeoCollectionResultI>>(baseGeoQuery).then().catch().then().then();
+    geoCollectionResult = Backendless.Geo.findSync(baseGeoQuery);
+    Backendless.Geo.find(baseGeoQuery).then().catch().then().then();
 
-    geoCollectionResult = Backendless.Geo.find(rectangleGeoQuery);
-    resultXHR = Backendless.Geo.find(rectangleGeoQuery, async);
-    Backendless.Geo.find<Promise<Backendless.GeoCollectionResultI>>(rectangleGeoQuery).then().catch().then().then();
+    geoCollectionResult = Backendless.Geo.findSync(rectangleGeoQuery);
+    Backendless.Geo.find(rectangleGeoQuery).then().catch().then().then();
 
-    geoCollectionResult = Backendless.Geo.find(circleGeoQuery);
-    resultXHR = Backendless.Geo.find(circleGeoQuery, async);
-    Backendless.Geo.find<Promise<Backendless.GeoCollectionResultI>>(circleGeoQuery).then().catch().then().then();
+    geoCollectionResult = Backendless.Geo.findSync(circleGeoQuery);
+    Backendless.Geo.find(circleGeoQuery).then().catch().then().then();
 
-    errorStr = Backendless.Geo.deletePoint(categoryName);
-    resultXHR = Backendless.Geo.deletePoint(categoryName, async);
-    errorStr = Backendless.Geo.deletePoint(existPoint);
-    resultXHR = Backendless.Geo.deletePoint(existPoint, async);
-    Backendless.Geo.deletePoint<Promise<string>>(categoryName).then().catch().then().then();
-    Backendless.Geo.deletePoint<Promise<string>>(existPoint).then().catch().then().then();
+    errorStr = Backendless.Geo.deletePointSync(categoryName);
+    errorStr = Backendless.Geo.deletePointSync(existPoint);
+    Backendless.Geo.deletePoint(categoryName).then().catch().then().then();
+    Backendless.Geo.deletePoint(existPoint).then().catch().then().then();
 
-    resultObj = Backendless.Geo.loadMetadata(existPoint);
-    resultXHR = Backendless.Geo.loadMetadata(existPoint, async);
-    resultObj = Backendless.Geo.loadMetadata(geoClaster);
-    resultXHR = Backendless.Geo.loadMetadata(geoClaster, async);
-    Backendless.Geo.loadMetadata<Promise<Object>>(existPoint).then().catch().then().then();
-    Backendless.Geo.loadMetadata<Promise<Object>>(geoClaster).then().catch().then().then();
+    resultObj = Backendless.Geo.loadMetadataSync(existPoint);
+    resultObj = Backendless.Geo.loadMetadataSync(geoClaster);
+    Backendless.Geo.loadMetadata(existPoint).then().catch().then().then();
+    Backendless.Geo.loadMetadata(geoClaster).then().catch().then().then();
 
-    geoCollectionResult = Backendless.Geo.getClusterPoints(geoClaster);
-    resultXHR = Backendless.Geo.getClusterPoints(geoClaster, async);
-    Backendless.Geo.getClusterPoints<Promise<Backendless.GeoCollectionResultI>>(geoClaster).then().catch().then().then();
+    geoCollectionResult = Backendless.Geo.getClusterPointsSync(geoClaster);
+    Backendless.Geo.getClusterPoints(geoClaster).then().catch().then().then();
 
-    geoCollectionResult = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery);
-    resultXHR = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery, async);
-    Backendless.Geo.getFencePoints<Promise<Backendless.GeoCollectionResultI>>(fenceName, baseGeoQuery).then().catch().then().then();
+    geoCollectionResult = Backendless.Geo.getFencePointsSync(fenceName, baseGeoQuery);
+    Backendless.Geo.getFencePoints(fenceName, baseGeoQuery).then().catch().then().then();
 
-    geoCollectionResult = Backendless.Geo.relativeFind(baseGeoQuery);
-    resultXHR = Backendless.Geo.relativeFind(baseGeoQuery, async);
-    Backendless.Geo.relativeFind<Promise<Backendless.GeoCollectionResultI>>(baseGeoQuery).then().catch().then().then();
+    geoCollectionResult = Backendless.Geo.relativeFindSync(baseGeoQuery);
+    Backendless.Geo.relativeFind(baseGeoQuery).then().catch().then().then();
 
-    geoCategory = Backendless.Geo.addCategory(categoryName);
-    resultXHR = Backendless.Geo.addCategory(categoryName, async);
-    Backendless.Geo.addCategory<Promise<Backendless.GeoCategoryI>>(categoryName).then().catch().then().then();
+    geoCategory = Backendless.Geo.addCategorySync(categoryName);
+    Backendless.Geo.addCategory(categoryName).then().catch().then().then();
 
-    bool = Backendless.Geo.deleteCategory(categoryName);
-    resultXHR = Backendless.Geo.deleteCategory(categoryName, async);
-    Backendless.Geo.deleteCategory<Promise<boolean>>(categoryName).then().catch().then().then();
+    bool = Backendless.Geo.deleteCategorySync(categoryName);
+    Backendless.Geo.deleteCategory(categoryName).then().catch().then().then();
 
-    geoCategories = Backendless.Geo.getCategories();
-    resultXHR = Backendless.Geo.getCategories(async);
-    Backendless.Geo.getCategories<Promise<Backendless.GeoCategoryI[]>>().then().catch().then().then();
+    geoCategories = Backendless.Geo.getCategoriesSync();
+    Backendless.Geo.getCategories().then().catch().then().then();
 
-    resultObj = Backendless.Geo.runOnStayAction(fenceName, existPoint);
-    resultXHR = Backendless.Geo.runOnStayAction(fenceName, existPoint, async);
-    Backendless.Geo.runOnStayAction<Promise<Object>>(fenceName, existPoint).then().catch().then().then();
+    resultObj = Backendless.Geo.runOnStayActionSync(fenceName, existPoint);
+    Backendless.Geo.runOnStayAction(fenceName, existPoint).then().catch().then().then();
 
-    resultObj = Backendless.Geo.runOnExitAction(fenceName, existPoint);
-    resultXHR = Backendless.Geo.runOnExitAction(fenceName, existPoint, async);
-    Backendless.Geo.runOnExitAction<Promise<Object>>(fenceName, existPoint).then().catch().then().then();
+    resultObj = Backendless.Geo.runOnExitActionSync(fenceName, existPoint);
+    Backendless.Geo.runOnExitAction(fenceName, existPoint).then().catch().then().then();
 
-    resultObj = Backendless.Geo.runOnEnterAction(fenceName, existPoint);
-    resultXHR = Backendless.Geo.runOnEnterAction(fenceName, existPoint, async);
-    Backendless.Geo.runOnEnterAction<Promise<Object>>(fenceName, existPoint).then().catch().then().then();
+    resultObj = Backendless.Geo.runOnEnterActionSync(fenceName, existPoint);
+    Backendless.Geo.runOnEnterAction(fenceName, existPoint).then().catch().then().then();
 
-    Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback);
-    Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback, async);
-    Backendless.Geo.startGeofenceMonitoringWithInAppCallback<Promise<void>>(fenceName, inAppCallback).then().catch().then().then();
+    Backendless.Geo.startGeofenceMonitoringWithInAppCallbackSync(fenceName, inAppCallback);
+    Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback).then().catch().then().then();
 
-    Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint);
-    Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint, async);
-    //Backendless.Geo.startGeofenceMonitoringWithRemoteCallback<Promise<void>>(fenceName, existPoint).then().catch().then().then();
+    Backendless.Geo.startGeofenceMonitoringWithRemoteCallbackSync(fenceName, existPoint);
+    Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint).then().catch().then().then();
 
     Backendless.Geo.stopGeofenceMonitoring(fenceName);
 
@@ -634,7 +467,6 @@ function testMessaging() {
     var message:string|Object = 'str';
     var resultObj:Object;
     var resultBool:boolean = true;
-    var resultXHR:XMLHttpRequest;
     var bodyParts:Backendless.Bodyparts = new Backendless.Bodyparts();
     var recipients:string[] = ['str'];
     var attachments:string[] = ['str'];
@@ -646,36 +478,27 @@ function testMessaging() {
     var subscriptionOptions:Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
     var subscriptionCallback = function ():void {
     };
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
 
-    subscription = Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions);
-    resultXHR = Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions, async);
-    Backendless.Messaging.subscribe<Promise<Backendless.SubscriptionI>>(channelName, subscriptionCallback, subscriptionOptions).then().catch().then().then();
+    subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
+    Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions).then().catch().then().then();
 
-    resultObj = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
-    resultXHR = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions, async);
-    Backendless.Messaging.publish<Promise<Object>>(channelName, message, publishOptions, deliveryOptions).then().catch().then().then();
+    resultObj = Backendless.Messaging.publishSync(channelName, message, publishOptions, deliveryOptions);
+    Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions).then().catch().then().then();
 
-    resultObj = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
-    resultXHR = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments, async);
-    Backendless.Messaging.sendEmail<Promise<Object>>(subject, bodyParts, recipients, attachments).then().catch().then().then();
+    resultObj = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
+    Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments).then().catch().then().then();
 
-    resultBool = Backendless.Messaging.cancel(messageId);
-    resultXHR = Backendless.Messaging.cancel(messageId, async);
-    Backendless.Messaging.cancel<Promise<boolean>>(messageId).then().catch().then().then();
+    resultBool = Backendless.Messaging.cancelSync(messageId);
+    Backendless.Messaging.cancel(messageId).then().catch().then().then();
 
-    resultObj = Backendless.Messaging.registerDevice(channels, expiration);
-    resultXHR = Backendless.Messaging.registerDevice(channels, expiration, async);
-    Backendless.Messaging.registerDevice<Promise<Object>>(channels, expiration).then().catch().then().then();
+    resultObj = Backendless.Messaging.registerDeviceSync(channels, expiration);
+    Backendless.Messaging.registerDevice(channels, expiration).then().catch().then().then();
 
-    resultObj = Backendless.Messaging.getRegistrations();
-    resultXHR = Backendless.Messaging.getRegistrations(async);
-    Backendless.Messaging.getRegistrations<Promise<Object>>().then().catch().then().then();
+    resultObj = Backendless.Messaging.getRegistrationsSync();
+    Backendless.Messaging.getRegistrations().then().catch().then().then();
 
-    resultObj = Backendless.Messaging.unregisterDevice();
-    resultXHR = Backendless.Messaging.unregisterDevice(async);
-    Backendless.Messaging.unregisterDevice<Promise<Object>>().then().catch().then().then();
+    resultObj = Backendless.Messaging.unregisterDeviceSync();
+    Backendless.Messaging.unregisterDevice().then().catch().then().then();
 
 }
 
@@ -703,88 +526,67 @@ function testFilesService() {
     var resultStr:string;
     var resultBool:boolean;
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-    });
 
     resultStr = Backendless.Files.restUrl;
     resultStr = Backendless.Files.Permissions.restUrl;
 
-    resultBool = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
-    resultBool = Backendless.Files.saveFile(path, fileName, fileContent);
+    resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent, overwrite);
+    resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent);
 
-    Backendless.Files.saveFile<Promise<boolean>>(path, fileName, fileContent, overwrite).then().catch().then().then();
-    Backendless.Files.saveFile<Promise<boolean>>(path, fileName, fileContent).then().catch().then().then();
+    Backendless.Files.saveFile(path, fileName, fileContent, overwrite).then().catch().then().then();
+    Backendless.Files.saveFile(path, fileName, fileContent).then().catch().then().then();
 
-    Backendless.Files.saveFile(path, fileName, fileContent, overwrite, async);
-    Backendless.Files.saveFile(path, fileName, fileContent, async);
+    Backendless.Files.uploadSync(file, path, overwrite);
+    Backendless.Files.uploadSync(files, path, overwrite);
+    Backendless.Files.uploadSync(file, path, null);
+    Backendless.Files.uploadSync(files, path, null);
 
-    Backendless.Files.upload(file, path, overwrite, async);
-    Backendless.Files.upload(files, path, overwrite, async);
-    Backendless.Files.upload(file, path, null, async);
-    Backendless.Files.upload(files, path, null, async);
+    Backendless.Files.upload(file, path, overwrite).then().catch().then().then();
+    Backendless.Files.upload(files, path, overwrite).then().catch().then().then();
+    Backendless.Files.upload(file, path, null).then().catch().then().then();
+    Backendless.Files.upload(files, path, null).then().catch().then().then();
 
-    Backendless.Files.upload<Promise<Object>>(file, path, overwrite).then().catch().then().then();
-    Backendless.Files.upload<Promise<Object>>(files, path, overwrite).then().catch().then().then();
-    Backendless.Files.upload<Promise<Object>>(file, path, null).then().catch().then().then();
-    Backendless.Files.upload<Promise<Object>>(files, path, null).then().catch().then().then();
+    resultObj = Backendless.Files.listingSync(path);
+    resultObj = Backendless.Files.listingSync(path, pattern);
+    resultObj = Backendless.Files.listingSync(path, pattern, recursively);
+    resultObj = Backendless.Files.listingSync(path, pattern, recursively, pageSize);
+    resultObj = Backendless.Files.listingSync(path, pattern, recursively, pageSize, offset);
 
-    resultObj = Backendless.Files.listing(path);
-    resultXHR = Backendless.Files.listing(path, async);
-    resultObj = Backendless.Files.listing(path, pattern);
-    resultXHR = Backendless.Files.listing(path, pattern, async);
-    resultObj = Backendless.Files.listing(path, pattern, recursively);
-    resultXHR = Backendless.Files.listing(path, pattern, recursively, async);
-    resultObj = Backendless.Files.listing(path, pattern, recursively, pageSize);
-    resultXHR = Backendless.Files.listing(path, pattern, recursively, pageSize, async);
-    resultObj = Backendless.Files.listing(path, pattern, recursively, pageSize, offset);
-    resultXHR = Backendless.Files.listing(path, pattern, recursively, pageSize, offset, async);
+    Backendless.Files.listing(path).then().catch().then().then();
+    Backendless.Files.listing(path, pattern).then().catch().then().then();
+    Backendless.Files.listing(path, pattern, recursively).then().catch().then().then();
+    Backendless.Files.listing(path, pattern, recursively, pageSize).then().catch().then().then();
+    Backendless.Files.listing(path, pattern, recursively, pageSize, offset).then().catch().then().then();
 
-    Backendless.Files.listing<Promise<Object>>(path).then().catch().then().then();
-    Backendless.Files.listing<Promise<Object>>(path, pattern).then().catch().then().then();
-    Backendless.Files.listing<Promise<Object>>(path, pattern, recursively).then().catch().then().then();
-    Backendless.Files.listing<Promise<Object>>(path, pattern, recursively, pageSize).then().catch().then().then();
-    Backendless.Files.listing<Promise<Object>>(path, pattern, recursively, pageSize, offset).then().catch().then().then();
+    resultObj = Backendless.Files.renameFileSync(oldPathName, newName);
+    Backendless.Files.renameFile(oldPathName, newName).then().catch().then().then();
 
-    resultObj = Backendless.Files.renameFile(oldPathName, newName);
-    Backendless.Files.renameFile(oldPathName, newName, async);
-    Backendless.Files.renameFile<Promise<Object>>(oldPathName, newName).then().catch().then().then();
+    resultObj = Backendless.Files.moveFileSync(sourcePath, targetPath);
+    Backendless.Files.moveFile(sourcePath, targetPath).then().catch().then().then();
 
-    resultObj = Backendless.Files.moveFile(sourcePath, targetPath);
-    Backendless.Files.moveFile(sourcePath, targetPath, async);
-    Backendless.Files.moveFile<Promise<Object>>(sourcePath, targetPath).then().catch().then().then();
+    resultObj = Backendless.Files.copyFileSync(sourcePath, targetPath);
+    Backendless.Files.copyFile(sourcePath, targetPath).then().catch().then().then();
 
-    resultObj = Backendless.Files.copyFile(sourcePath, targetPath);
-    Backendless.Files.copyFile(sourcePath, targetPath, async);
-    Backendless.Files.copyFile<Promise<Object>>(sourcePath, targetPath).then().catch().then().then();
+    Backendless.Files.removeSync(fileURL);
+    Backendless.Files.remove(fileURL).then().catch().then().then();
 
-    Backendless.Files.remove(fileURL);
-    Backendless.Files.remove(fileURL, async);
-    Backendless.Files.remove<Promise<void>>(fileURL).then().catch().then().then();
+    resultObj = Backendless.Files.existsSync(path);
+    Backendless.Files.exists(path).then().catch().then().then();
 
-    resultObj = Backendless.Files.exists(path);
-    resultXHR = Backendless.Files.exists(path, async);
-    Backendless.Files.exists<Promise<Object>>(path).then().catch().then().then();
+    Backendless.Files.removeDirectorySync(path);
+    Backendless.Files.removeDirectory(path).then().catch().then().then();
 
-    Backendless.Files.removeDirectory(path);
-    Backendless.Files.removeDirectory(path, async);
-    Backendless.Files.removeDirectory<Promise<void>>(path).then().catch().then().then();
+    resultObj = Backendless.Files.Permissions.grantUserSync(userid, url, permissionType);
+    Backendless.Files.Permissions.grantUser(userid, url, permissionType).then().catch().then().then();
 
-    resultObj = Backendless.Files.Permissions.grantUser(userid, url, permissionType);
-    resultXHR = Backendless.Files.Permissions.grantUser(userid, url, permissionType, async);
-    Backendless.Files.Permissions.grantUser<Promise<Object>>(userid, url, permissionType).then().catch().then().then();
+    resultObj = Backendless.Files.Permissions.grantRoleSync(roleName, url, permissionType);
+    Backendless.Files.Permissions.grantRole(roleName, url, permissionType).then().catch().then().then();
 
-    resultObj = Backendless.Files.Permissions.grantRole(roleName, url, permissionType);
-    resultXHR = Backendless.Files.Permissions.grantRole(roleName, url, permissionType, async);
-    Backendless.Files.Permissions.grantRole<Promise<Object>>(roleName, url, permissionType).then().catch().then().then();
+    resultObj = Backendless.Files.Permissions.denyUserSync(userid, url, permissionType);
+    Backendless.Files.Permissions.denyUser(userid, url, permissionType).then().catch().then().then();
 
-    resultObj = Backendless.Files.Permissions.denyUser(userid, url, permissionType);
-    resultXHR = Backendless.Files.Permissions.denyUser(userid, url, permissionType, async);
-    Backendless.Files.Permissions.denyUser<Promise<Object>>(userid, url, permissionType).then().catch().then().then();
-
-    resultObj = Backendless.Files.Permissions.denyRole(roleName, url, permissionType);
-    resultXHR = Backendless.Files.Permissions.denyRole(roleName, url, permissionType, async);
-    Backendless.Files.Permissions.denyRole<Promise<Object>>(roleName, url, permissionType).then().catch().then().then();
+    resultObj = Backendless.Files.Permissions.denyRoleSync(roleName, url, permissionType);
+    Backendless.Files.Permissions.denyRole(roleName, url, permissionType).then().catch().then().then();
 }
 
 function testCommerce() {
@@ -792,45 +594,33 @@ function testCommerce() {
     var productId:string = 'str';
     var token:string = 'str';
     var subscriptionId:string = 'str';
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-
-    });
 
     var resultStr:string;
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
 
     resultStr = Backendless.Commerce.restUrl;
 
-    resultObj = Backendless.Commerce.validatePlayPurchase(packageName, productId, token);
-    resultXHR = Backendless.Commerce.validatePlayPurchase(packageName, productId, token, async);
-    Backendless.Commerce.validatePlayPurchase<Promise<Object>>(packageName, productId, token).then().catch().then().then();
+    resultObj = Backendless.Commerce.validatePlayPurchaseSync(packageName, productId, token);
+    Backendless.Commerce.validatePlayPurchase(packageName, productId, token).then().catch().then().then();
 
-    resultObj = Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token);
-    resultXHR = Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token, async);
-    Backendless.Commerce.cancelPlaySubscription<Promise<Object>>(packageName, subscriptionId, token).then().catch().then().then();
+    resultObj = Backendless.Commerce.cancelPlaySubscriptionSync(packageName, subscriptionId, token);
+    Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token).then().catch().then().then();
 
-    resultObj = Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token);
-    resultXHR = Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token, async);
-    Backendless.Commerce.getPlaySubscriptionStatus<Promise<Object>>(packageName, subscriptionId, token).then().catch().then().then();
+    resultObj = Backendless.Commerce.getPlaySubscriptionStatusSync(packageName, subscriptionId, token);
+    Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token).then().catch().then().then();
 }
 
 function testEvents() {
     var eventName:string = 'str';
     var eventArgs:Object = {};
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-
-    });
 
     var resultStr:string;
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
 
     resultStr = Backendless.Events.restUrl;
 
-    resultObj = Backendless.Events.dispatch(eventName, eventArgs);
-    resultXHR = Backendless.Events.dispatch(eventName, eventArgs, async);
-    Backendless.Events.dispatch<Promise<Object>>(eventName, eventArgs).then().catch().then().then();
+    resultObj = Backendless.Events.dispatchSync(eventName, eventArgs);
+    Backendless.Events.dispatch(eventName, eventArgs).then().catch().then().then();
 }
 
 function testCache() {
@@ -839,45 +629,32 @@ function testCache() {
     var timeToLive:number = 123;
     var seconds:number = 123;
     var date:Date = new Date();
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-
-    });
 
     var resultObj:Object;
-    var resultXHR:XMLHttpRequest;
 
-    resultObj = Backendless.Cache.put(key, value);
-    resultObj = Backendless.Cache.put(key, value, timeToLive);
-    resultXHR = Backendless.Cache.put(key, value, async);
-    resultXHR = Backendless.Cache.put(key, value, timeToLive, async);
-    Backendless.Cache.put<Promise<Object>>(key, value).then().catch().then().then();
-    Backendless.Cache.put<Promise<Object>>(key, value, timeToLive).then().catch().then().then();
+    resultObj = Backendless.Cache.putSync(key, value);
+    resultObj = Backendless.Cache.putSync(key, value, timeToLive);
+    Backendless.Cache.put(key, value).then().catch().then().then();
+    Backendless.Cache.put(key, value, timeToLive).then().catch().then().then();
 
-    resultObj = Backendless.Cache.expireIn(key, seconds);
-    resultXHR = Backendless.Cache.expireIn(key, seconds, async);
-    resultObj = Backendless.Cache.expireIn(key, date);
-    resultXHR = Backendless.Cache.expireIn(key, date, async);
-    Backendless.Cache.expireIn<Promise<Object>>(key, seconds).then().catch().then().then();
-    Backendless.Cache.expireIn<Promise<Object>>(key, date).then().catch().then().then();
+    resultObj = Backendless.Cache.expireInSync(key, seconds);
+    resultObj = Backendless.Cache.expireInSync(key, date);
+    Backendless.Cache.expireIn(key, seconds).then().catch().then().then();
+    Backendless.Cache.expireIn(key, date).then().catch().then().then();
 
-    resultObj = Backendless.Cache.expireAt(key, seconds);
-    resultXHR = Backendless.Cache.expireAt(key, seconds, async);
-    resultObj = Backendless.Cache.expireAt(key, date);
-    resultXHR = Backendless.Cache.expireAt(key, date, async);
-    Backendless.Cache.expireAt<Promise<Object>>(key, seconds).then().catch().then().then();
-    Backendless.Cache.expireAt<Promise<Object>>(key, date).then().catch().then().then();
+    resultObj = Backendless.Cache.expireAtSync(key, seconds);
+    resultObj = Backendless.Cache.expireAtSync(key, date);
+    Backendless.Cache.expireAt(key, seconds).then().catch().then().then();
+    Backendless.Cache.expireAt(key, date).then().catch().then().then();
 
-    resultObj = Backendless.Cache.contains(key);
-    resultXHR = Backendless.Cache.contains(key, async);
-    Backendless.Cache.contains<Promise<Object>>(key).then().catch().then().then();
+    resultObj = Backendless.Cache.containsSync(key);
+    Backendless.Cache.contains(key).then().catch().then().then();
 
-    resultObj = Backendless.Cache.get(key);
-    resultXHR = Backendless.Cache.get(key, async);
-    Backendless.Cache.get<Promise<Object>>(key).then().catch().then().then();
+    resultObj = Backendless.Cache.getSync(key);
+    Backendless.Cache.get(key).then().catch().then().then();
 
-    resultObj = Backendless.Cache.remove(key);
-    resultXHR = Backendless.Cache.remove(key, async);
-    Backendless.Cache.remove<Promise<Object>>(key).then().catch().then().then();
+    resultObj = Backendless.Cache.removeSync(key);
+    Backendless.Cache.remove(key).then().catch().then().then();
 }
 
 function testCounters() {
@@ -885,86 +662,65 @@ function testCounters() {
     var counterName:string = 'str';
     var expected:number = 123;
     var updated:number = 123;
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
-
-    });
+ 
     //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
     var resultNum:number = 123;
-    var resultXHR:XMLHttpRequest;
 
-    resultNum = Backendless.Counters.get(counterName);
-    resultXHR = Backendless.Counters.get(counterName, async);
-    Backendless.Counters.get<Promise<number>>(counterName).then().catch().then().then();
+    resultNum = Backendless.Counters.getSync(counterName);
+    Backendless.Counters.get(counterName).then().catch().then().then();
 
-    resultNum = Backendless.Counters.getAndIncrement(counterName);
-    resultXHR = Backendless.Counters.getAndIncrement(counterName, async);
-    Backendless.Counters.getAndIncrement<Promise<number>>(counterName).then().catch().then().then();
+    resultNum = Backendless.Counters.getAndIncrementSync(counterName);
+    Backendless.Counters.getAndIncrement(counterName).then().catch().then().then();
 
-    resultNum = Backendless.Counters.incrementAndGet(counterName);
-    resultXHR = Backendless.Counters.incrementAndGet(counterName, async);
-    Backendless.Counters.incrementAndGet<Promise<number>>(counterName).then().catch().then().then();
+    resultNum = Backendless.Counters.incrementAndGetSync(counterName);
+    Backendless.Counters.incrementAndGet(counterName).then().catch().then().then();
 
-    resultNum = Backendless.Counters.getAndDecrement(counterName);
-    resultXHR = Backendless.Counters.getAndDecrement(counterName, async);
-    Backendless.Counters.getAndDecrement<Promise<number>>(counterName).then().catch().then().then();
+    resultNum = Backendless.Counters.getAndDecrementSync(counterName);
+    Backendless.Counters.getAndDecrement(counterName).then().catch().then().then();
 
-    resultNum = Backendless.Counters.decrementAndGet(counterName);
-    resultXHR = Backendless.Counters.decrementAndGet(counterName, async);
-    Backendless.Counters.decrementAndGet<Promise<number>>(counterName).then().catch().then().then();
+    resultNum = Backendless.Counters.decrementAndGetSync(counterName);
+    Backendless.Counters.decrementAndGet(counterName).then().catch().then().then();
 
-    resultNum = Backendless.Counters.addAndGet(counterName, value);
-    resultXHR = Backendless.Counters.addAndGet(counterName, value, async);
-    Backendless.Counters.addAndGet<Promise<number>>(counterName, value).then().catch().then().then();
+    resultNum = Backendless.Counters.addAndGetSync(counterName, value);
+    Backendless.Counters.addAndGet(counterName, value).then().catch().then().then();
 
-    resultNum = Backendless.Counters.getAndAdd(counterName, value);
-    resultXHR = Backendless.Counters.getAndAdd(counterName, value, async);
-    Backendless.Counters.getAndAdd<Promise<number>>(counterName, value).then().catch().then().then();
+    resultNum = Backendless.Counters.getAndAddSync(counterName, value);
+    Backendless.Counters.getAndAdd(counterName, value).then().catch().then().then();
 
-    resultNum = Backendless.Counters.compareAndSet(counterName, expected, updated);
-    resultXHR = Backendless.Counters.compareAndSet(counterName, expected, updated, async);
-    Backendless.Counters.compareAndSet<Promise<number>>(counterName, expected, updated).then().catch().then().then();
+    resultNum = Backendless.Counters.compareAndSetSync(counterName, expected, updated);
+    Backendless.Counters.compareAndSet(counterName, expected, updated).then().catch().then().then();
 
-    resultNum = Backendless.Counters.reset(counterName);
-    resultXHR = Backendless.Counters.reset(counterName, async);
-    Backendless.Counters.reset<Promise<number>>(counterName).then().catch().then().then();
+    resultNum = Backendless.Counters.resetSync(counterName);
+    Backendless.Counters.reset(counterName).then().catch().then().then();
 
-    var atomicInstance:Backendless.AtomicInstance = Backendless.Counters.of(counterName);
+    var counter:Counter = Backendless.Counters.of(counterName);
 
-    resultNum = atomicInstance.get();
-    resultXHR = atomicInstance.get(async);
-    atomicInstance.get<Promise<number>>().then().catch().then().then();
+    resultNum = counter.getSync();
+    counter.get().then().catch().then().then();
 
-    resultNum = atomicInstance.getAndIncrement();
-    resultXHR = atomicInstance.getAndIncrement(async);
-    atomicInstance.getAndIncrement<Promise<number>>().then().catch().then().then();
+    resultNum = counter.getAndIncrementSync();
+    counter.getAndIncrement().then().catch().then().then();
 
-    resultNum = atomicInstance.incrementAndGet();
-    resultXHR = atomicInstance.incrementAndGet(async);
-    atomicInstance.incrementAndGet<Promise<number>>().then().catch().then().then();
+    resultNum = counter.incrementAndGetSync();
+    counter.incrementAndGet().then().catch().then().then();
 
-    resultNum = atomicInstance.getAndDecrement();
-    resultXHR = atomicInstance.getAndDecrement(async);
-    atomicInstance.getAndDecrement<Promise<number>>().then().catch().then().then();
+    resultNum = counter.getAndDecrementSync();
+    counter.getAndDecrement().then().catch().then().then();
 
-    resultNum = atomicInstance.decrementAndGet();
-    resultXHR = atomicInstance.decrementAndGet(async);
-    atomicInstance.decrementAndGet<Promise<number>>().then().catch().then().then();
+    resultNum = counter.decrementAndGetSync();
+    counter.decrementAndGet().then().catch().then().then();
 
-    resultNum = atomicInstance.addAndGet(value);
-    resultXHR = atomicInstance.addAndGet(value, async);
-    atomicInstance.addAndGet<Promise<number>>(value).then().catch().then().then();
+    resultNum = counter.addAndGetSync(value);
+    counter.addAndGet(value).then().catch().then().then();
 
-    resultNum = atomicInstance.getAndAdd(value);
-    resultXHR = atomicInstance.getAndAdd(value, async);
-    atomicInstance.getAndAdd<Promise<number>>(value).then().catch().then().then();
+    resultNum = counter.getAndAddSync(value);
+    counter.getAndAdd(value).then().catch().then().then();
 
-    resultNum = atomicInstance.compareAndSet(expected, updated);
-    resultXHR = atomicInstance.compareAndSet(expected, updated, async);
-    atomicInstance.compareAndSet<Promise<number>>(expected, updated).then().catch().then().then();
+    resultNum = counter.compareAndSetSync(expected, updated);
+    counter.compareAndSet(expected, updated).then().catch().then().then();
 
-    resultNum = atomicInstance.reset();
-    resultXHR = atomicInstance.reset(async);
-    atomicInstance.reset<Promise<number>>().then().catch().then().then();
+    resultNum = counter.resetSync();
+    counter.reset().then().catch().then().then();
 }
 
 function testCustomServices() {
@@ -972,13 +728,9 @@ function testCustomServices() {
     var serviceVersion:string = 'str';
     var method:string = 'str';
     var parameters:Object = {};
-    var async:Backendless.Async = new Backendless.Async(function (data:Object) {
 
-    });
-
-    var resultObj:Object = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters);
-    var resultXHR:XMLHttpRequest = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters, async);
-    Backendless.CustomServices.invoke<Promise<Object>>(serviceName, serviceVersion, method, parameters).then().catch().then().then();
+    var resultObj:Object = Backendless.CustomServices.invokeSync(serviceName, serviceVersion, method, parameters);
+    Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters).then().catch().then().then();
 }
 
 function testLogging() {

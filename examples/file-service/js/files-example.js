@@ -53,11 +53,11 @@
         var record = new FileItem();
         record.url = fileUrl;
 
-        Backendless.Persistence.of(FileItem).save(record);
+        return Backendless.Persistence.of(FileItem).save(record);
     }
 
     function deleteItem(id) {
-        Backendless.Persistence.of(FileItem).remove(id);
+        return Backendless.Persistence.of(FileItem).remove(id);
     }
 
     function refreshCounter() {
@@ -65,14 +65,14 @@
 
         countContainer.text('loading...');
 
-        Backendless.Persistence.of(FileItem).getObjectCount(new Backendless.Async(
-            function(count){
+        Backendless.Persistence.of(FileItem).getObjectCount().then(
+            function (count) {
                 countContainer.text(count);
             },
             function(error) {
                 countContainer.text('-');
                 console.error(error);
-            })
+            }
         );
     }
 
@@ -81,7 +81,8 @@
     }
 
     function refreshItemsList() {
-        var items = getItemsFromPersistance();
+        getItemsFromPersistance().then(renderItems);
+    }
 
         refreshCounter();
 
@@ -111,56 +112,62 @@
 
     function getItemsFromPersistance() {
         var db = Backendless.Persistence.of(FileItem);
-        try {
-            return db.find();
-        }
-        catch (e) {
-            if (e.code == 1009)
-                alert('Please upload a file first');
-            else
-                alert(e.message);
-        }
+        var queryBuilder = new Backendless.DataQueryBuilder.create();
 
-        return [];
+        queryBuilder.setWhereClause('deviceId = \'' + DEVICE_ID + '\'');
+
+        return db.find(queryBuilder).catch(function (e) {
+            alert(e.code == 1009 ? 'Please upload a file first' : e.message);
+            return [];
+        });
     }
 
     function uploadFile() {
-        var callback = {};
+        var requests = files.map(function(file) {
+            return Backendless.Files.upload(file, TEST_FOLDER, true).then(
+                function (result) {
+                    return createNewItem(result.fileURL);
+                }
+            );
+        });
 
-        callback.success = function (result) {
-            createNewItem(result.fileURL);
-            showInfo('File successfully uploaded. Path to download: ' + result.fileURL);
-            files = [];
-            $('#list').empty();
-        };
-        callback.fault = function (result) {
-            showInfo(result.message);
-        };
-
-        try {
-            Backendless.Files.upload(files, TEST_FOLDER, true, callback);
-        } catch (e) {
-            alert('Add some files to upload');
-        }
+        Promise.all(requests).then(
+            function(){
+                showInfo('Files successfully uploaded.');
+                files = [];
+                $('#list').empty();
+            },
+            function(){
+                showInfo(result.message);
+            }
+        );
     }
 
     function deleteSelectedFiles() {
-        try {
-            var num = 0;
-            $('.selectedThumbnail img').each(function (index, value) {
-                Backendless.Files.remove(value.src);
-                deleteItem(value.id);
+        var $selectedElements = $('.selectedThumbnail img');
 
-                num++;
-            });
-            if (num == 0)
-                alert('Select files to delete');
-            else
-                showInfo('Objects successfully removed. Objects affected: ' + num);
+        if ($selectedElements.length === 0) {
+            return;
         }
-        catch (e) {
-            showInfo(e.message);
-        }
+
+        var removeRequests = [];
+
+        $selectedElements.each(function (index, element) {
+            removeRequests.push(Backendless.Files.remove(element.src).then(
+                function () {
+                    return deleteItem(element.id);
+                }
+            ));
+        });
+
+        Promise.all(removeRequests).then(
+            function () {
+                showInfo('Objects successfully removed.');
+            },
+            function (e) {
+                showInfo(e.message)
+            }
+        );
     }
 
     function showInfo(text) {
