@@ -985,9 +985,14 @@
         },
 
         _formCircDeps: function(obj) {
-            var circDepsIDs         = {},
-                result              = new obj.constructor(),
-                _formCircDepsHelper = function(obj, result) {
+            var result = new obj.constructor();
+            var circDepsIDs = {};
+            var iteratedObjects = []
+
+            var _formCircDepsHelper = function(obj, result) {
+                if (iteratedObjects.indexOf(obj) === -1) {
+                    iteratedObjects.push(obj)
+
                     if (obj.hasOwnProperty("__subID")) {
                         circDepsIDs[obj["__subID"]] = result;
                         delete obj["__subID"];
@@ -1007,9 +1012,11 @@
                             }
                         }
                     }
-                };
+                }
+            };
 
             _formCircDepsHelper(obj, result);
+
             return result;
         },
 
