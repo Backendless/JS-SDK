@@ -564,7 +564,10 @@
         config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
 
         if (!config.isAsync) {
-            throw new Error('Use Async type of request using Backendless with NodeJS. Add Async(successCallback, errorCallback) as last argument');
+            throw new Error(
+                'Using the sync methods of the Backendless API in Node.js is disallowed. ' +
+                'Use the async methods instead.'
+            );
         }
 
         if (typeof config.data !== "string") {
