@@ -46,7 +46,7 @@
         return this;
     };
 
-    Backendless.XMLHttpRequest = XMLHttpRequest;
+    Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' && XMLHttpRequest;
 
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function(searchElement, fromIndex) {
