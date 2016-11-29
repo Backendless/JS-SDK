@@ -84,6 +84,7 @@
         getItemsFromPersistance().then(renderItems);
     }
 
+    function renderItems(items) {
         refreshCounter();
 
         $('.thumbnails').empty();

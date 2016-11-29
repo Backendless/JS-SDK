@@ -4100,10 +4100,6 @@
 
         xhr.open(options.method, options.url, !!async);
 
-        xhr.setRequestHeader('application-id', Backendless.applicationId);
-        xhr.setRequestHeader("secret-key", Backendless.secretKey);
-        xhr.setRequestHeader("application-type", "JS");
-
         if (encoded) {
             xhr.setRequestHeader('Content-Type', 'text/plain');
         } else {
