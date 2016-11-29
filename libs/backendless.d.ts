@@ -10,6 +10,7 @@ declare module __Backendless {
     var applicationId:string;
     var secretKey:string;
     var appPath:string;
+    var XMLHttpRequest:any;
 
     var browser:{
         browser:string;

@@ -46,7 +46,7 @@
         return this;
     };
 
-    initXHR();
+    Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' && XMLHttpRequest;
 
     var browser = (function() {
         var ua = 'NodeJS';
@@ -153,6 +153,16 @@
         } else {
             elem[evnt] = null;
         }
+    };
+
+    Utils.stringToBiteArray = function(str) {
+        var data = new ArrayBuffer(str.length);
+        var ui8a = new Uint8Array(data, 0);
+        for (var i = 0; i < str.length; i++) {
+            ui8a[i] = (str.charCodeAt(i) & 0xff);
+        }
+
+        return ui8a;
     };
 
     /**
@@ -361,23 +371,6 @@
         return new Async(success, error);
     };
 
-    function initXHR() {
-        try {
-            if (typeof XMLHttpRequest.prototype.sendAsBinary == 'undefined') {
-                XMLHttpRequest.prototype.sendAsBinary = function(text) {
-                    var data = new ArrayBuffer(text.length);
-                    var ui8a = new Uint8Array(data, 0);
-                    for (var i = 0; i < text.length; i++) {
-                        ui8a[i] = (text.charCodeAt(i) & 0xff);
-                    }
-                    this.send(ui8a);
-                };
-            }
-        }
-        catch (e) {
-        }
-    }
-
     Backendless.setUIState = function(stateName) {
         if (stateName === undefined) {
             throw new Error('UI state name must be defined or explicitly set to null');
@@ -451,7 +444,7 @@
                 }
             },
             sendRequest       = function(config) {
-                var xhr         = new XMLHttpRequest(),
+                var xhr         = new Backendless.XMLHttpRequest(),
                     contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded',
                     response;
 
@@ -625,7 +618,9 @@
         return req.end();
     };
 
-    Backendless._ajax = isBrowser ? Backendless._ajax_for_browser : Backendless._ajax_for_nodejs;
+    Backendless._ajax = function(config){
+        return Backendless.XMLHttpRequest ? Backendless._ajax_for_browser(config) : Backendless._ajax_for_nodejs(config);
+    };
 
     function Async(successCallback, faultCallback, context) {
         if (!(faultCallback instanceof Function)) {
@@ -1018,9 +1013,14 @@
         },
 
         _formCircDeps: function(obj) {
-            var circDepsIDs         = {},
-                result              = new obj.constructor(),
-                _formCircDepsHelper = function(obj, result) {
+            var result = new obj.constructor();
+            var circDepsIDs = {};
+            var iteratedObjects = []
+
+            var _formCircDepsHelper = function(obj, result) {
+                if (iteratedObjects.indexOf(obj) === -1) {
+                    iteratedObjects.push(obj)
+
                     if (obj.hasOwnProperty("__subID")) {
                         circDepsIDs[obj["__subID"]] = result;
                         delete obj["__subID"];
@@ -1040,9 +1040,11 @@
                             }
                         }
                     }
-                };
+                }
+            };
 
             _formCircDepsHelper(obj, result);
+
             return result;
         },
 
@@ -2384,7 +2386,7 @@
 
         _loginSocial: function(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
             var socialContainer = new this._socialContainer(socialType, container);
-            async = async && this._wrapAsync(async);
+            async = this._wrapAsync(async, stayLoggedIn);
 
             Utils.addEvent('message', window, function(e) {
                 if (e.origin == Backendless.serverURL) {
@@ -2393,9 +2395,7 @@
                     if (result.fault) {
                         async.fault(result.fault);
                     } else {
-                        Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
-                        currentUser = this.Backendless.UserService._parseResponse(result);
-                        async.success(this.Backendless.UserService._getUserFromResponse(currentUser));
+                        async.success(result);
                     }
 
                     Utils.removeEvent('message', window);
@@ -4078,99 +4078,63 @@
         return builder;
     }
 
-    function send(e) {
-        var xhr         = new XMLHttpRequest(),
-            boundary    = '-backendless-multipart-form-boundary-' + getNow(),
-            builder     = getBuilder(this.fileName, e.target.result, boundary),
-            badResponse = function(xhr) {
-                var result = {};
-                try {
-                    result = JSON.parse(xhr.responseText);
-                } catch (e) {
-                    result.message = xhr.responseText;
-                }
-                result.statusCode = xhr.status;
-                return result;
-            };
+    function sendData(options) {
+        var async       = options.async;
+        var encoded     = options.encoded;
+        var boundary    = '-backendless-multipart-form-boundary-' + getNow();
+        var xhr         = new Backendless.XMLHttpRequest();
 
-        xhr.open("POST", this.uploadPath, true);
-        xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
+        var badResponse = function (xhr) {
+            var result = {};
 
-        if ((currentUser != null && currentUser["user-token"])) {
-            xhr.setRequestHeader("user-token", currentUser["user-token"]);
-        } else if (Backendless.LocalCache.exists("user-token")) {
-            xhr.setRequestHeader("user-token", Backendless.LocalCache.get("user-token"));
-        }
+            try {
+                result = JSON.parse(xhr.responseText);
+            } catch (e) {
+                result.message = xhr.responseText;
+            }
 
-        if (UIState !== null) {
-            xhr.setRequestHeader("uiState", UIState);
-        }
+            result.statusCode = xhr.status;
 
-        var asyncHandler = this.asyncHandler;
+            return result;
+        };
 
-        if (asyncHandler) {
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        asyncHandler.success(JSON.parse(xhr.responseText));
-                    } else {
-                        asyncHandler.fault(JSON.parse(xhr.responseText));
-                    }
-                }
-            };
-        }
+        xhr.open(options.method, options.url, !!async);
 
-        xhr.sendAsBinary(builder);
+        xhr.setRequestHeader('application-id', Backendless.applicationId);
+        xhr.setRequestHeader("secret-key", Backendless.secretKey);
+        xhr.setRequestHeader("application-type", "JS");
 
-        if (asyncHandler) {
-            return xhr;
-        }
-
-        if (xhr.status >= 200 && xhr.status < 300) {
-            return xhr.responseText ? JSON.parse(xhr.responseText) : true;
+        if (encoded) {
+            xhr.setRequestHeader('Content-Type', 'text/plain');
         } else {
-            throw badResponse(xhr);
+            xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
         }
-    }
-
-    function sendEncoded(e) {
-        var xhr         = new XMLHttpRequest(),
-            boundary    = '-backendless-multipart-form-boundary-' + getNow(),
-            badResponse = function(xhr) {
-                var result = {};
-                try {
-                    result = JSON.parse(xhr.responseText);
-                } catch (e) {
-                    result.message = xhr.responseText;
-                }
-                result.statusCode = xhr.status;
-                return result;
-            };
-
-        xhr.open("PUT", this.uploadPath, true);
-        xhr.setRequestHeader('Content-Type', 'text/plain');
 
         if (UIState !== null) {
             xhr.setRequestHeader("uiState", UIState);
         }
 
-        var asyncHandler = this.asyncHandler;
+        var userToken = currentUser && currentUser["user-token"] || Backendless.LocalCache.get("user-token");
 
-        if (asyncHandler) {
+        if (userToken) {
+            xhr.setRequestHeader("user-token", userToken);
+        }
+
+        if (async) {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     if (xhr.status >= 200 && xhr.status < 300) {
-                        asyncHandler.success(JSON.parse(xhr.responseText));
+                        async.success(JSON.parse(xhr.responseText));
                     } else {
-                        asyncHandler.fault(JSON.parse(xhr.responseText));
+                        async.fault(JSON.parse(xhr.responseText));
                     }
                 }
             };
         }
 
-        xhr.send(e.target.result.split(',')[1]);
+        xhr.send(encoded ? options.data : Utils.stringToBiteArray(getBuilder(options.fileName, options.data, boundary)));
 
-        if (asyncHandler) {
+        if (async) {
             return xhr;
         }
 
@@ -4333,13 +4297,18 @@
 
             try {
                 var reader = new FileReader();
-                reader.fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
-                reader.uploadPath = baseUrl;
-                reader.onloadend = sendEncoded;
-
-                if (async) {
-                    reader.asyncHandler = async;
-                }
+                var fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
+                reader.fileName = fileName;
+                reader.onloadend = function (e) {
+                    sendData({
+                        url: baseUrl,
+                        data: e.target.result.split(',')[1],
+                        fileName: fileName,
+                        encoded: true,
+                        async: async,
+                        method: 'PUT'
+                    });
+                };
 
                 reader.onerror = function(evn) {
                     async.fault(evn);
@@ -4379,10 +4348,20 @@
                     for (var i = 0, len = files.length; i < len; i++) {
                         try {
                             var reader = new FileReader();
-                            reader.fileName = encodeURIComponent(files[i].name).replace(/'/g, "%27").replace(/"/g, "%22");
-                            reader.uploadPath = baseUrl + reader.fileName + overwriting;
-                            reader.onloadend = send;
-                            reader.asyncHandler = async;
+                            var fileName = encodeURIComponent(files[i].name).replace(/'/g, "%27").replace(/"/g, "%22");
+                            var url = baseUrl + fileName + overwriting;
+
+                            reader.fileName = fileName;
+                            reader.onloadend = function (e) {
+                                sendData({
+                                    url: url,
+                                    data: e.target.result,
+                                    fileName: fileName,
+                                    async: async,
+                                    method: 'POST'
+                                });
+                            };
+
                             reader.onerror = function(evn) {
                                 async.fault(evn);
                             };
