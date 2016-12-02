@@ -2386,6 +2386,7 @@
 
         _loginSocial: function(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
             var socialContainer = new this._socialContainer(socialType, container);
+            async = Utils.extractResponder(arguments);
             async = this._wrapAsync(async, stayLoggedIn);
 
             Utils.addEvent('message', window, function(e) {
