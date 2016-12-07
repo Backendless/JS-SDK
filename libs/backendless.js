@@ -350,14 +350,14 @@
 
                 if (config.isAsync) {
                     xhr.onreadystatechange = function() {
-                        if (xhr.readyState == 4) {
+                        if (xhr.readyState == 4 && xhr.status) {
                             if (xhr.status >= 200 && xhr.status < 300) {
                                 response = parseResponse(xhr);
                                 cacheHandler(response);
                                 config.asyncHandler.success && config.asyncHandler.success(response);
                             } else if (checkInCache()) {
                                 config.asyncHandler.success && config.asyncHandler.success(Backendless.LocalCache.get(config.urlBlueprint));
-                            } else if (xhr.status >= 300) {
+                            } else {
                                 config.asyncHandler.fault && config.asyncHandler.fault(badResponse(xhr));
                             }
                         }
@@ -3435,10 +3435,10 @@
 
         if (async) {
             xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
+                if (xhr.readyState == 4 && xhr.status) {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         async.success(JSON.parse(xhr.responseText));
-                    } else if ( xhr.status >= 300 ) {
+                    } else {
                         async.fault(JSON.parse(xhr.responseText));
                     }
                 }
