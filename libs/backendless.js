@@ -187,6 +187,20 @@
         return ui8a;
     };
 
+    Utils.onHttpRequestErrorHandler = function (xhr, errorHandler, responseParser) {
+        return function() {
+            var errorMessage = 'Unable to connect to the network';
+
+            //this part is needed for those implementations of XMLHttpRequest
+            //which call the onerror handler on an any bad request
+            if (xhr.status >= 400) {
+                errorMessage = responseParser(xhr);
+            }
+
+            errorHandler(errorMessage);
+        };
+    };
+
     function tryParseJSON(s) {
         try {
             return typeof s === 'string' ? JSON.parse(s) : s;
@@ -336,7 +350,7 @@
 
                 if (config.isAsync) {
                     xhr.onreadystatechange = function() {
-                        if (xhr.readyState == 4) {
+                        if (xhr.readyState == 4 && xhr.status) {
                             if (xhr.status >= 200 && xhr.status < 300) {
                                 response = parseResponse(xhr);
                                 cacheHandler(response);
@@ -348,6 +362,10 @@
                             }
                         }
                     };
+
+                    if (config.asyncHandler.fault) {
+                        xhr.onerror = Utils.onHttpRequestErrorHandler(xhr, config.asyncHandler.fault, badResponse);
+                    }
                 }
 
                 xhr.send(config.data);
@@ -2141,7 +2159,7 @@
                 asyncHandler: responder
             });
         },
-      
+
         /** @deprecated */
         addPoint: function(geopoint, async) {
           return this.savePoint.apply(this, arguments);
@@ -3417,7 +3435,7 @@
 
         if (async) {
             xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
+                if (xhr.readyState == 4 && xhr.status) {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         async.success(JSON.parse(xhr.responseText));
                     } else {
@@ -3425,6 +3443,8 @@
                     }
                 }
             };
+
+            xhr.onerror = Utils.onHttpRequestErrorHandler(xhr, async.fault, badResponse);
         }
 
         xhr.send(encoded ? options.data : Utils.stringToBiteArray(getBuilder(options.fileName, options.data, boundary)));

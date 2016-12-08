@@ -98,8 +98,8 @@
 
     function getItemsFromPersistance() {
         return Backendless.Persistence.of(FileItem).find().catch(function (e) {
-            alert(e.code == 1009 ? 'Please upload a file first' : e.message);
-            return [];
+            alert(e.code == 1009 ? 'Please upload a file first' : e.message || e);
+            return { data: [] };
         });
     }
 
