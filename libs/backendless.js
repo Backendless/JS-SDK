@@ -2063,10 +2063,6 @@
             var responder = Utils.extractResponder(arguments);
             var isAsync = responder != null;
 
-            if (responder) {
-                responder = this._wrapAsync(responder);
-            }
-
             var result = Backendless._ajax({
                 method      : 'GET',
                 url         : this.restUrl + '/userroles',
