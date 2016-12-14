@@ -2442,61 +2442,49 @@
             });
         },
 
-        loginWithFacebookSdk: promisified('_loginWithFacebookSdk'),
+        loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options) {
+            var users = this;
 
-        loginWithFacebookSdkSync: synchronized('_loginWithFacebookSdk'),
-
-        _loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options, async) {
-            if (!FB) {
-                throw new Error("Facebook SDK not found");
-            }
-
-            if (stayLoggedIn instanceof Async) {
-                async = stayLoggedIn;
-                stayLoggedIn = false;
-            } else if (options instanceof Async) {
-                async = options;
-                options = undefined;
-            }
-
-            var me = this;
-            FB.getLoginStatus(function(response) {
-                if (response.status === 'connected') {
-                    me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, stayLoggedIn, async);
-                } else {
-                    FB.login(function(response) {
-                        me._sendSocialLoginRequest(me, response, "facebook", fieldsMapping, stayLoggedIn, async);
-                    }, options);
+            return new Promise(function(resolve, reject)  {
+                if (!FB) {
+                    return reject(new Error("Facebook SDK not found"));
                 }
+
+                var async = new Async(resolve, reject, users);
+
+                FB.getLoginStatus(function(response) {
+                    if (response.status === 'connected') {
+                        users._sendSocialLoginRequest(response, "facebook", fieldsMapping, stayLoggedIn, async);
+                    } else {
+                        FB.login(function(response) {
+                            users._sendSocialLoginRequest(response, "facebook", fieldsMapping, stayLoggedIn, async);
+                        }, options);
+                    }
+                });
             });
         },
 
-        loginWithGooglePlusSdk: promisified('_loginWithGooglePlusSdk'),
+        loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
+            var users = this;
 
-        loginWithGooglePlusSdkSync: synchronized('_loginWithGooglePlusSdk'),
+            return new Promise(function(resolve, reject)  {
+                if (!gapi) {
+                    return reject(new Error("Google Plus SDK not found"));
+                }
 
-        _loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
-            if (!gapi) {
-                throw new Error("Google Plus SDK not found");
-            }
+                var async = new Async(resolve, reject, users);
 
-            if (stayLoggedIn instanceof Async) {
-                async = stayLoggedIn;
-                stayLoggedIn = false;
-            }
-
-            var me = this;
-
-            gapi.auth.authorize({
-                client_id: fieldsMapping.client_id,
-                scope    : "https://www.googleapis.com/auth/plus.login"
-            }, function(response) {
-                delete response['g-oauth-window'];
-                me._sendSocialLoginRequest(me, response, "googleplus", fieldsMapping, stayLoggedIn, async);
+                gapi.auth.authorize({
+                    client_id: fieldsMapping.client_id,
+                    scope    : "https://www.googleapis.com/auth/plus.login"
+                }, function(response) {
+                    delete response['g-oauth-window'];
+                    users._sendSocialLoginRequest(response, "googleplus", fieldsMapping, stayLoggedIn, async);
+                });
             });
         },
 
-        _sendSocialLoginRequest: function(context, response, socialType, fieldsMapping, stayLoggedIn, async) {
+        _sendSocialLoginRequest: function(response, socialType, fieldsMapping, stayLoggedIn, async) {
             if (fieldsMapping) {
                 response["fieldsMapping"] = fieldsMapping;
             }
@@ -2511,7 +2499,7 @@
 
             Backendless._ajax({
                 method      : 'POST',
-                url         : context.restUrl + "/social/" + socialType + "/login/" + Backendless.applicationId,
+                url         : this.restUrl + "/social/" + socialType + "/login/" + Backendless.applicationId,
                 isAsync     : true,
                 asyncHandler: interimCallback,
                 data        : JSON.stringify(response)
