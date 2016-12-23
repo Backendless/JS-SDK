@@ -1,6 +1,6 @@
 branches:
   only:
-  - 4.0
+  - 4.0/tests
 language: node_js
 node_js:
   - "6"
