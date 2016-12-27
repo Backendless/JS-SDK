@@ -5059,7 +5059,7 @@
     addAndGetSync: synchronized('_addAndGet'),
 
     _addAndGet: function(value, async) {
-      return this._implementMethodWithValue('/get/incrementby?value=', value, async);
+      return this._implementMethodWithValue('/incrementby/get?value=', value, async);
     },
 
     getAndAdd: promisified('_getAndAdd'),
@@ -5067,7 +5067,7 @@
     getAndAddSync: synchronized('_getAndAdd'),
 
     _getAndAdd: function(value, async) {
-      return this._implementMethodWithValue('/incrementby/get?value=', value, async);
+      return this._implementMethodWithValue('/get/incrementby?value=', value, async);
     },
 
     compareAndSet: promisified('_compareAndSet'),
@@ -5075,7 +5075,7 @@
     compareAndSetSync: synchronized('_compareAndSet'),
 
     _compareAndSet: function(expected, updated, async) {
-      if (!expected || !updated) {
+      if (null == expected || null == updated) {
         throw new Error('Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values');
       }
 
@@ -5092,7 +5092,7 @@
 
       return Backendless._ajax({
         method      : 'PUT',
-        url         : this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
+        url         : this.restUrl + this.name + '/get/compareandset?expected=' + expected + '&updatedvalue=' + updated,
         isAsync     : isAsync,
         asyncHandler: responder
       });

@@ -63,10 +63,10 @@ describe('Backendless.Counters', function() {
     const counter = Backendless.Counters.of('getAndAdd')
 
     return Promise.resolve()
-      .then(() => expect(counter.getAndAdd(10)).to.eventually.be.equal(0), 'initial value should be 0')
-      .then(() => expect(counter.get()).to.eventually.be.equal(10))
-      .then(() => expect(counter.getAndAdd(20)).to.eventually.be.equal(10))
-      .then(() => expect(counter.get()).to.eventually.be.equal(30))
+      .then(() => expect(counter.getAndAdd(1)).to.eventually.be.equal(0), 'initial value should be 0')
+      .then(() => expect(counter.get()).to.eventually.be.equal(1))
+      .then(() => expect(counter.getAndAdd(2)).to.eventually.be.equal(1))
+      .then(() => expect(counter.get()).to.eventually.be.equal(3))
   })
 
   it('compareAndSet', function() {
