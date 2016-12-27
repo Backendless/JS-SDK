@@ -4955,17 +4955,16 @@
     },
 
     _implementMethod: function(method, urlPart, async) {
-      var responder = Utils.extractResponder(arguments), isAsync = false;
+      var responder = Utils.extractResponder(arguments);
 
       if (responder != null) {
-        isAsync = true;
         responder = Utils.wrapAsync(responder);
       }
 
       return Backendless._ajax({
         method      : method,
         url         : this.restUrl + this.name + urlPart,
-        isAsync     : isAsync,
+        isAsync     : !!responder,
         asyncHandler: responder
       });
     },

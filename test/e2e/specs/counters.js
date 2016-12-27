@@ -81,4 +81,12 @@ describe('Backendless.Counters', function() {
       .then(() => expect(counter.get()).to.eventually.be.equal(20))
   })
 
+  it('reset', function() {
+    const counter = Backendless.Counters.of('toBeReset')
+
+    return counter.incrementAndGet()
+      .then(() => expect(counter.get()).to.eventually.be.equal(1))
+      .then(() => counter.reset())
+      .then(() => expect(counter.get()).to.eventually.be.equal(0))
+  })
 })
