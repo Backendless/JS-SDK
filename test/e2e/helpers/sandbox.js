@@ -46,7 +46,7 @@ const createSandboxForSuite = options => {
     this.timeout(5000)
 
     if (this.sandbox) {
-      this.sandbox.destroy()
+      return this.sandbox.destroy()
     }
   })
 }
