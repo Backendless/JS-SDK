@@ -1843,7 +1843,7 @@
     describeSync: synchronized('_describe'),
 
     _describe: function(className, async) {
-      className = Utils.isString(className) ? className : getClassName.call(className);
+      className = Utils.isString(className) ? className : Utils.getClassName(className);
       var responder = Utils.extractResponder(arguments), isAsync = (responder != null);
 
       return Backendless._ajax({
