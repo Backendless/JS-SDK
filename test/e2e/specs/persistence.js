@@ -5,37 +5,47 @@ import Backendless from '../../../libs/backendless'
 function Foo() {
 }
 
+const generateDataTable = (name, recordsCount) => {
+  const records = []
+
+  for (; recordsCount > 0; recordsCount--) {
+    records.push({
+      ___class: name,
+      counter : recordsCount,
+      name    : 'John ' + recordsCount
+    })
+  }
+
+  return records
+}
+
 describe('Backendless.Persistence', function() {
 
   sandbox.forSuite({
     app: {
       data: {
-        Users    : [
-          {
-            email   : 'john@lennon.co',
-            name    : 'John Lennon',
-            password: 'beatlesforever'
-          }, {
-            email   : 'paul@mccartney.co',
-            name    : 'Paul Mccartney',
-            password: 'beatlesforever'
-          }, {
-            email   : 'george@harrison.co',
-            name    : 'George Harrison',
-            password: 'beatlesforever'
-          }
-        ],
-        Blackstar: [
-          {
-            integerCol: 1,
-            boolCol   : false
-          }
-        ],
-        TableToTestDeletion: [
-          {
-            group: 'Pink Floyd'
-          }
-        ]
+        Users              : [{
+          email   : 'john@lennon.co',
+          name    : 'John Lennon',
+          password: 'beatlesforever'
+        }, {
+          email   : 'paul@mccartney.co',
+          name    : 'Paul Mccartney',
+          password: 'beatlesforever'
+        }, {
+          email   : 'george@harrison.co',
+          name    : 'George Harrison',
+          password: 'beatlesforever'
+        }],
+        Blackstar          : [{
+          integerCol: 1,
+          boolCol   : false
+        }],
+        TableToTestDeletion: [{
+          group: 'Pink Floyd'
+        }],
+        TableWithPagination: generateDataTable('TableWithPagination', 100),
+        EmptyTable         : []
       }
     }
   })
@@ -266,4 +276,139 @@ describe('Backendless.Persistence', function() {
         expect(result[0].name).to.match(/Lennon/)
       })
   })
+
+  it('Find with properties', function() {
+    const db = Backendless.Persistence.of('TableWithPagination')
+    const query = Backendless.DataQueryBuilder.create().setProperties(['name'])
+
+    return Promise.resolve()
+      .then(() => db.find(query))
+      .then(result => {
+        expect(result[0]).to.not.have.property('counter')
+        expect(result[0]).to.have.property('name')
+      })
+  })
+
+  it('Find with non existing properties', function() {
+    const db = Backendless.Persistence.of('TableWithPagination')
+    const query = Backendless.DataQueryBuilder.create().setProperties(['nonExistingProp']) //.setSortBy('counter').setPageSize(50)
+
+    return Promise.resolve()
+      .then(() => db.find(query))
+      .catch(error => {
+        expect(error.message).to.be.equal('Unable to retrieve data. Query contains invalid object properties.')
+      })
+  })
+
+  it('Find first/last on empty table', function() {
+    const db = Backendless.Persistence.of('EmptyTable')
+
+    return Promise.resolve()
+      .then(() => db.findFirst())
+      .catch(error => {
+        expect(error.message).to.be.equal('Unable to retrieve data - object store is empty')
+      })
+      .then(() => db.findLast())
+      .catch(error => {
+        expect(error.message).to.be.equal('Unable to retrieve data - object store is empty')
+      })
+  })
+
+  it('Find with offset greater than the max number of records', function() {
+    const db = Backendless.Persistence.of('TableWithPagination')
+    const query = Backendless.DataQueryBuilder.create().setOffset(500)
+
+    return Promise.resolve()
+      .then(() => db.find(query))
+      .then(result => {
+        expect(result).to.be.an('Array')
+        expect(result.length).to.be.equal(0)
+      })
+  })
+
+  it('Retrieves Properties of table', function() {
+    return expect(Backendless.Persistence.describe('Blackstar'))
+      .to.eventually.include.deep.members([{
+        name        : 'created',
+        required    : false,
+        type        : 'DATETIME',
+        defaultValue: null,
+        relatedTable: null,
+        customRegex : null,
+        autoLoad    : false,
+        isPrimaryKey: false
+      }, {
+        name        : 'ownerId',
+        required    : false,
+        type        : 'STRING',
+        defaultValue: null,
+        relatedTable: null,
+        customRegex : null,
+        autoLoad    : false,
+        isPrimaryKey: false
+      }, {
+        name        : 'boolCol',
+        required    : false,
+        type        : 'BOOLEAN',
+        defaultValue: null,
+        relatedTable: null,
+        customRegex : null,
+        autoLoad    : false,
+        isPrimaryKey: false
+      }, {
+        name        : 'updated',
+        required    : false,
+        type        : 'DATETIME',
+        defaultValue: null,
+        relatedTable: null,
+        customRegex : null,
+        autoLoad    : false,
+        isPrimaryKey: false
+      }, {
+        name        : 'integerCol',
+        required    : false,
+        type        : 'DOUBLE',
+        defaultValue: null,
+        relatedTable: null,
+        customRegex : null,
+        autoLoad    : false,
+        isPrimaryKey: false
+      }, {
+        name        : 'objectId',
+        required    : false,
+        type        : 'STRING_ID',
+        defaultValue: null,
+        relatedTable: null,
+        customRegex : null,
+        autoLoad    : false,
+        isPrimaryKey: true
+      }])
+  })
+
+  it('Retrieves Properties of non existing table', function() {
+    return expect(Backendless.Persistence.describe('NonExistingTable'))
+      .to.eventually.be.rejected
+      .and.eventually.to.have.property('code').that.equal(1009)
+      .and.eventually.to.have.property('message').that.equal('Table with the name NonExistingTable does not exist. ' +
+        'Make sure the client class referenced in the API call has the same literal name as the table in Backendless console"}')
+  })
+
+  it('Retrieving nextPage', function() {
+    const db = Backendless.Persistence.of('TableWithPagination')
+    const query = Backendless.DataQueryBuilder.create().setSortBy('counter')
+
+    return Promise.resolve()
+      .then(() => db.find(query))
+      .then(result => {
+        expect(result.length).to.be.equal(10)
+        expect(result[9]).to.have.property('counter').that.equal(10)
+      })
+      .then(() => query.prepareNextPage())
+      .then(() => db.find(query))
+      .then(result => {
+        expect(result.length).to.be.equal(10)
+        expect(result[9]).to.have.property('counter').that.equal(20)
+      })
+  })
 })
+
