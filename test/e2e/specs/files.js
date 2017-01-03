@@ -2,43 +2,54 @@ import '../helpers/global'
 import sandbox from '../helpers/sandbox'
 import Backendless from '../../../libs/backendless'
 
-describe('Backendless.Files', function() {
-  const sortedNames = files => files && files.map(file => file.name).sort() || []
+const sortedNames = files => files && files.map(file => file.name).sort() || []
 
-  sandbox.forSuite({
-    app: {
-      files: {
-        webtest: {
-          'index.html': '<html>index.html</html>',
-          'users.html': '<html>users.html</html>',
-          'logo.png'  : 'logo',
-          subdir      : {
-            'one-more.html': '<html>subir/one-more.html</html>'
-          }
-        }
-      }
-    }
+describe('Backendless.Files', function() {
+
+  sandbox.forSuite()
+
+  let Files
+  let createDir
+  let createFile
+  let readFile
+
+  before(function() {
+    Files = Backendless.Files
+
+    createFile = (path, content = '') => this.consoleApi.files.createFile(this.app.id, path, content)
+    createDir = (path, name) => this.consoleApi.files.createDir(this.app.id, path, name)
+    readFile = path => this.consoleApi.files.getFileContent(this.app.id, path)
   })
 
   describe('Directory Listing', function() {
+    before(function() {
+        return Promise.all([
+          createFile('/listing-test/index.html'),
+          createFile('/listing-test/users.html'),
+          createFile('/listing-test/logo.png'),
+          createFile('/listing-test/subdir/one-more.html')
+        ])
+      }
+    )
+
     it('basic', function() {
-      return Backendless.Files.listing('webtest/').then(result => {
+      return Files.listing('listing-test').then(result => {
         return expect(sortedNames(result)).to.be.eql(['index.html', 'logo.png', 'subdir', 'users.html'])
       })
     })
 
     it('pattern based', function() {
-      return Backendless.Files.listing('/webtest', '*.html')
+      return Files.listing('listing-test', '*.html')
         .then(result => expect(sortedNames(result)).to.be.eql(['index.html', 'users.html']))
     })
 
     it('pattern based recursive', function() {
-      Backendless.Files.listing('/webtest', '*.html', true)
+      return Files.listing('listing-test', '*.html', true)
         .then(result => expect(sortedNames(result)).to.be.eql(['index.html', 'one-more.html', 'users.html']))
     })
 
     it('paged', function() {
-      return Backendless.Files.listing('/webtest', null, true, 3, 1)
+      return Files.listing('listing-test', null, true, 3, 1)
         .then(result => expect(sortedNames(result)).to.be.eql(['index.html', 'logo.png', 'one-more.html']))
     })
   })
@@ -47,38 +58,24 @@ describe('Backendless.Files', function() {
     it('File', function() {
       const path = 'exists/file'
 
-      return Promise.resolve()
-        .then(() => this.consoleApi.files.createFile(this.app.id, path, ''))
-        .then(() => expect(Backendless.Files.exists(path)).to.eventually.be.true)
+      return createFile(path)
+        .then(() => expect(Files.exists(path)).to.eventually.be.true)
     });
 
     it('Empty Dir', function() {
-      const path = 'exists/empty/dir'
-
-      return Promise.resolve()
-        .then(() => this.consoleApi.files.createDir(this.app.id, path))
-        .then(() => expect(Backendless.Files.exists(path)).to.eventually.be.true)
+      return createDir('exists/empty', 'dir')
+        .then(() => expect(Files.exists('exists/empty/dir')).to.eventually.be.true)
     });
 
     it('Non empty Dir', function() {
-      const path = 'exists/non/empty/dir'
+      const path = 'exists/non-empty/dir'
 
-      return Promise.resolve()
-        .then(() => this.consoleApi.files.createFile(this.app.id, path + '/file',''))
-        .then(() => expect(Backendless.Files.exists(path)).to.eventually.be.true)
+      return createFile(path + '/file')
+        .then(() => expect(Files.exists(path)).to.eventually.be.true)
     });
 
     it('non existing', function() {
-      var dirPath = '/test-dir-non-exists-async/',
-          success = function(response) {
-            equal(response, false, 'We expect response false');
-            start();
-          },
-          fail    = function() {
-            ok(false, 'We expect no errors');
-            start();
-          };
-      Backendless.Files.exists(dirPath).then(success).catch(fail);
+      return expect(Files.exists('something/unexisting')).to.eventually.be.false
     });
   })
 
@@ -86,30 +83,30 @@ describe('Backendless.Files', function() {
     it('existing file', function() {
       const path = '/file/to/delete'
 
-      return this.consoleApi.files.createFile(this.app.id, path, 'delete me')
-        .then(() => expect(Backendless.Files.exists(path)).to.eventually.be.true)
-        .then(() => Backendless.Files.remove(path))
-        .then(() => expect(Backendless.Files.exists(path)).to.eventually.be.false)
+      return createFile(path)
+        .then(() => expect(Files.exists(path)).to.eventually.be.true)
+        .then(() => Files.remove(path))
+        .then(() => expect(Files.exists(path)).to.eventually.be.false)
     });
 
     it('existing empty directory', function() {
       const path = '/emptyDir'
 
-      return this.consoleApi.files.createDir(this.app.id, path)
-        .then(() => expect(Backendless.Files.exists(path)).to.eventually.be.true)
-        .then(() => Backendless.Files.remove(path))
-        .then(() => expect(Backendless.Files.exists(path)).to.eventually.be.false)
+      return createDir('/', 'emptyDir')
+        .then(() => expect(Files.exists(path)).to.eventually.be.true)
+        .then(() => Files.remove(path))
+        .then(() => expect(Files.exists(path)).to.eventually.be.false)
     });
 
     it('existing non-empty directory', function() {
       return this.consoleApi.files.createFile(this.app.id, 'dir/file', '')
-        .then(() => expect(Backendless.Files.exists('dir')).to.eventually.be.true)
-        .then(() => Backendless.Files.remove('dir'))
-        .then(() => expect(Backendless.Files.exists('dir')).to.eventually.be.false)
+        .then(() => expect(Files.exists('dir')).to.eventually.be.true)
+        .then(() => Files.remove('dir'))
+        .then(() => expect(Files.exists('dir')).to.eventually.be.false)
     });
 
     it('non-existing path', function() {
-      return expect(Backendless.Files.remove('/non/existing/file')).to.eventually
+      return expect(Files.remove('/non/existing/file')).to.eventually
         .be.rejected
         .and.eventually.have.property("code", 6000)
     });
@@ -117,122 +114,155 @@ describe('Backendless.Files', function() {
 
   describe('Renaming', function() {
     it('file', function() {
-      const beforeRename = '/rename/before'
-      const afterRename = '/rename/after'
+      const beforeRename = '/rename/file-before'
+      const afterRename = '/rename/file-after'
 
-      return Promise.resolve()
-        .then(() => this.consoleApi.files.createFile(this.app.id, beforeRename, ''))
-        .then(() => expect(Backendless.Files.renameFile(beforeRename, afterRename)).to.eventually.be.eql(afterRename))
-        .then(() => expect(Backendless.Files.exists(beforeRename)).to.eventually.be.false)
-        .then(() => expect(Backendless.Files.exists(afterRename)).to.eventually.be.true)
+      return createFile(beforeRename)
+        .then(() => expect(Files.renameFile(beforeRename, 'file-after')).to.eventually.have.string(afterRename))
+        .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
+        .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
     });
 
-    it('Folder', function() {
+    it('empty folder', function() {
+      const beforeRename = '/rename/empty/dir-before'
+      const afterRename = '/rename/empty/dir-after'
 
+      return createDir('', beforeRename)
+        .then(() => expect(Files.renameFile(beforeRename, 'dir-after')).to.eventually.have.string(afterRename))
+        .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
+        .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
+    });
+
+    it('non empty folder', function() {
+      const beforeRename = '/rename/non-empty/dir-before'
+      const afterRename = '/rename/non-empty/dir-after'
+
+      return createFile(beforeRename + '/file')
+        .then(() => expect(Files.renameFile(beforeRename, 'dir-after')).to.eventually.have.string(afterRename))
+        .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
+        .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
     });
 
     it('non-existing path', function() {
-      var time = getTime();
-      var success = function() {
-        ok(false, 'We expect statusCode 404.');
-        start();
-      };
-      var fail = function(e) {
-        equal(e.statusCode, 400, 'We expect statusCode 404.');
-        start();
-      };
-      Backendless.Files.renameFile(time + '/test-404.txt', 'test2-404.txt').then(success).catch(fail);
+      const path = '/rename/non-existing'
+
+      return expect(Files.renameFile(path, 'whatever')).to
+        .eventually.be.rejected
+        .and.eventually.have.property('code', 6007)
+        .and.eventually.have.property('message', 'The specified resource was not found')
     });
   })
 
+  describe('Move', function() {
+    it('file', function() {
+      const beforeMove = '/move/file-before'
+      const afterMove = '/move/file-after'
 
-  it.skip('Async Move file', function() {
-    uploadTestFile(START_TIME + '/async-test.txt', 'async-test.txt');
-    var time = getTime();
-    uploadTestFile(time + '/async-test-dir/test2.txt', 'test2.txt');
+      return createFile(beforeMove)
+        .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
+        .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
+        .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
+    });
 
-    var callback = function(e) {
-      var status = !(e && e.statusCode);
-      ok(status, 'We expect no errors');
-      ok(typeof e === 'string', 'Response is string');
-      start();
-    };
+    it('empty folder', function() {
+      const beforeMove = '/move/empty/dir-before'
+      const afterMove = '/move/empty/dir-after'
 
-    Backendless.Files.moveFile(START_TIME + '/async-test.txt', time + '/async-test-dir').then(callback).catch(callback);
-  });
+      return createDir('', beforeMove)
+        .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
+        .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
+        .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
+    });
 
-  it.skip('Async Move non-existing file', function() {
-    var time = getTime();
-    uploadTestFile(time + '/async-test-dir/test.txt', 'test.txt');
-    var success = function() {
-      ok(false, 'We expect statusCode 404.');
-      start();
-    };
-    var fail = function(e) {
-      equal(e.statusCode, 400, 'We expect statusCode 404.');
-      start();
-    };
-    Backendless.Files.moveFile(time + '/random-file', time + '/async-test-dir').then(success).catch(fail);
-  });
+    it('non empty folder', function() {
+      const beforeMove = '/move/non-empty/dir-before'
+      const afterMove = '/move/non-empty/dir-after'
 
-  it.skip('Async Copy file', function() {
-    uploadTestFile(START_TIME + '/async-test.txt', 'async-test.txt');
-    var time = getTime();
-    uploadTestFile(time + '/async-test-dir/test2.txt', 'test2.txt');
+      return createFile(beforeMove + '/file')
+        .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
+        .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
+        .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
+    });
 
-    var callback = function(e) {
-      var status = !(e && e.statusCode);
-      ok(status, 'We expect no errors');
-      ok(typeof e === 'string', 'Response is string');
-      start();
-    };
+    it('non-existing path', function() {
+      const path = '/move/non-existing'
 
-    Backendless.Files.copyFile(START_TIME + '/async-test.txt', time + '/async-test-dir').then(callback).catch(callback);
-  });
+      return expect(Files.moveFile(path, 'whatever'))
+        .to.eventually.be.rejected
+        .and.eventually.have.property('code', 6007)
+        .and.eventually.have.property('message', 'The specified resource was not found')
+    });
+  })
 
-  it.skip('Async Copy non-existing file', function() {
-    var time = getTime();
-    uploadTestFile(time + '/async-test-dir/test.txt', 'test.txt');
-    var success = function() {
-      ok(false, 'We expect statusCode 404.');
-      start();
-    };
-    var fail = function(e) {
-      equal(e.statusCode, 400, 'We expect statusCode 404.');
-      start();
-    };
-    Backendless.Files.copyFile(time + '/random-file', time + '/async-test-dir').then(success).catch(fail);
-  });
+  describe('Copy', function() {
+    it('file', function() {
+      const beforeCopy = '/copy/file-before'
+      const afterCopy = '/copy/file-after'
 
-  it.skip('Save file', function() {
-    var dirPath = '/async-test-dir/',
-        success = function(response) {
-          ok(response, 'We expect path in response');
-          start();
-        },
-        fail    = function() {
-          fail(false, 'We expect path in response');
-          start();
-        };
+      return createFile(beforeCopy)
+        .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
+        .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
+        .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
+    });
 
-    Backendless.Files.saveFile(dirPath, 'testFile', 'testContent', true).then(success).catch(fail);
-  });
+    it('empty folder', function() {
+      const beforeCopy = '/copy/empty/dir-before'
+      const afterCopy = '/copy/empty/dir-after'
 
-  it.skip('Upload file', function() {
-    var dirPath = '/async-test-dir/',
-        success = function(response) {
-          ok(response, 'We expect path in response');
-          start();
-        },
-        fail    = function() {
-          fail(false, 'We expect path in response');
-          start();
-        };
+      return createDir('', beforeCopy)
+        .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
+        .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
+        .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
+    });
 
-    var file = new File([""], "filename");
+    it('non empty folder', function() {
+      const beforeCopy = '/rename/non-empty/dir-before'
+      const afterCopy = '/rename/non-empty/dir-after'
 
-    Backendless.Files.upload(file, dirPath, true).then(success).catch(fail);
-  });
+      return createFile(beforeCopy + '/file')
+        .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
+        .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
+        .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
+    });
+
+    it('non-existing path', function() {
+      const path = '/copy/non-existing'
+
+      return expect(Files.copyFile(path, 'whatever')).to
+        .eventually.be.rejected
+        .and.eventually.have.property('code', 6007)
+        .and.eventually.have.property('message', 'The specified resource was not found')
+    });
+  })
+
+  describe('Save', function() {
+    it('Save file', function() {
+      return Promise.resolve()
+        .then(() => expect(Files.saveFile('save', 'testFile', 'testContent')).to.eventually.have.string('/save/testFile'))
+        .then(() => expect(readFile('save/testFile')).to.eventually.eql('testContent'))
+        .then(() => expect(Files.saveFile('save', 'testFile', 'testContent 2')).to.eventually.have.string('/save/testFile'))
+        .then(() => expect(readFile('save/testFile')).to.eventually.eql('testContent 2'))
+    });
+  })
+
+  describe('Upload', function() {
+    it.skip('Upload file', function() {
+      var dirPath = '/async-test-dir/',
+          success = function(response) {
+            ok(response, 'We expect path in response');
+            start();
+          },
+          fail    = function() {
+            fail(false, 'We expect path in response');
+            start();
+          };
+
+      var file = new File([""], "filename");
+
+      Backendless.Files.upload(file, dirPath, true).then(success).catch(fail);
+    });
+  })
+
   describe('Permissions', function() {
     it.skip('grant read async', function() {
       var success = function() {
