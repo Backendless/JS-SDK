@@ -235,111 +235,68 @@ describe('Backendless.Files', function() {
     });
   })
 
-  describe('Save', function() {
-    it('Save file', function() {
-      return Promise.resolve()
-        .then(() => expect(Files.saveFile('save', 'testFile', 'testContent')).to.eventually.have.string('/save/testFile'))
-        .then(() => expect(readFile('save/testFile')).to.eventually.eql('testContent'))
-        .then(() => expect(Files.saveFile('save', 'testFile', 'testContent 2')).to.eventually.have.string('/save/testFile'))
-        .then(() => expect(readFile('save/testFile')).to.eventually.eql('testContent 2'))
-    });
-  })
+  if (process.env.TEST_ENV !== 'node') {
+    describe('Save', function() {
+      it('Save file', function() {
+        if (process.env.TEST_ENV !== 'node') {
+          const fileName = 'testFile'
+          const fileDir = 'save-test'
+          const filePath = fileDir + '/' + fileName
+
+          return Promise.resolve()
+            .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent')).to.eventually.have.string(filePath))
+            .then(() => expect(readFile(filePath)).to.eventually.eql('testContent'))
+            .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent 2')).to.eventually.have.string(filePath))
+            .then(() => expect(readFile(filePath)).to.eventually.eql('testContent 2'))
+        }
+      });
+    })
+  }
 
   describe('Upload', function() {
-    it.skip('Upload file', function() {
-      var dirPath = '/async-test-dir/',
-          success = function(response) {
-            ok(response, 'We expect path in response');
-            start();
-          },
-          fail    = function() {
-            fail(false, 'We expect path in response');
-            start();
-          };
+    it('Upload file', function() {
+      if (process.env.TEST_ENV !== 'node') {
+        const fileName = 'testFile'
+        const fileDir = 'upload-test'
+        const filePath = fileDir + '/' + fileName
 
-      var file = new File([""], "filename");
-
-      Backendless.Files.upload(file, dirPath, true).then(success).catch(fail);
+        return expect(Files.upload(new File([""], fileName), fileDir, true)).to.eventually.have.string(filePath)
+        //TODO: check file existance, try to re-upload
+      }
     });
   })
 
   describe('Permissions', function() {
-    it.skip('grant read async', function() {
-      var success = function() {
-        ok(true, 'We expect no errors');
-        start();
-      };
-      var fail = function() {
-        ok(false, 'We expect no errors');
-        start();
-      };
+    const testFile = '/permissions-test/file'
 
-      Backendless.Files.Permissions.grant(START_TIME, 'READ').then(success).catch(fail);
+    before(function() {
+      return createFile(testFile)
+    })
+
+    it('grant read', function() {
+      return Files.Permissions.grant(testFile, 'READ')
     });
 
-    it.skip('grant write async', function() {
-      var success = function() {
-        ok(true, 'We expect no errors');
-        start();
-      };
-      var fail = function() {
-        ok(false, 'We expect no errors');
-        start();
-      };
-
-      Backendless.Files.Permissions.grant(START_TIME, 'WRITE').then(success).catch(fail);
+    it('grant write', function() {
+      return Files.Permissions.grant(testFile, 'WRITE')
     });
 
-    it.skip('grant delete async', function() {
-      var success = function() {
-        ok(true, 'We expect no errors');
-        start();
-      };
-      var fail = function() {
-        ok(false, 'We expect no errors');
-        start();
-      };
-
-      Backendless.Files.Permissions.grant(START_TIME, 'DELETE').then(success).catch(fail);
+    it('grant delete', function() {
+      return Files.Permissions.grant(testFile, 'DELETE')
     });
 
-    it.skip('deny read async', function() {
-      var success = function() {
-        ok(true, 'We expect no errors');
-        start();
-      };
-      var fail = function() {
-        ok(false, 'We expect no errors');
-        start();
-      };
-
-      Backendless.Files.Permissions.deny(START_TIME, 'READ').then(success).catch(fail);
+    it('deny read', function() {
+      return Files.Permissions.deny(testFile, 'READ')
     });
 
-    it.skip('deny write async', function() {
-      var success = function() {
-        ok(true, 'We expect no errors');
-        start();
-      };
-      var fail = function() {
-        ok(false, 'We expect no errors');
-        start();
-      };
-
-      Backendless.Files.Permissions.deny(START_TIME, 'WRITE').then(success).catch(fail);
+    it('deny write', function() {
+      return Files.Permissions.deny(testFile, 'WRITE')
     });
 
-    it.skip('deny delete async', function() {
-      var success = function() {
-        ok(true, 'We expect no errors');
-        start();
-      };
-      var fail = function() {
-        ok(false, 'We expect no errors');
-        start();
-      };
-
-      Backendless.Files.Permissions.deny(START_TIME, 'DELETE').then(success).catch(fail);
+    it('deny delete', function() {
+      return Promise.resolve()
+        .then(() => Files.Permissions.deny(testFile, 'DELETE'))
+        .then(() => expect(Files.remove(testFile)).to.eventually.be.rejected)
     });
   })
 
