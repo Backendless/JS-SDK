@@ -4043,6 +4043,25 @@
       }
 
       return result;
+    },
+
+    getMessageStatus: promisified('_getMessageStatus'),
+
+    getMessageStatusSync: promisified('_getMessageStatus'),
+
+    _getMessageStatus: function(messageId, async) {
+      if (!messageId) {
+        throw Error('Message ID is required.')
+      }
+
+      var responder = Utils.extractResponder(arguments);
+
+      return Backendless._ajax({
+        method      : 'GET',
+        url         : this.restUrl + '/' + messageId,
+        isAsync     : !!responder,
+        asyncHandler: responder
+      });
     }
   };
 
