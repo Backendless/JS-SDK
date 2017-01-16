@@ -36,9 +36,8 @@
 
         subscriptions: [],
 
-        init: function (appId, sekretKey) {
-            Backendless.enablePromises();
-            Backendless.initApp(appId, sekretKey);
+        init: function (appId, secretKey) {
+            Backendless.initApp(appId, secretKey);
 
             this.bindHandlers();
             this.compileTemplates();
