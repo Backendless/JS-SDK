@@ -561,6 +561,9 @@ declare module __Backendless {
 
         unregisterDeviceSync():Object;
         unregisterDevice():Promise<Object>;
+
+        getMessageStatusSync(messageId:string):boolean;
+        getMessageStatus(messageId:string):Promise<boolean>;
     }
 
     /**
