@@ -39,7 +39,7 @@
       });
 
   Backendless.VERSION = '4.0.0';
-  ackendless.serverURL = 'https://api.backendless.com';
+  Backendless.serverURL = 'https://api.backendless.com';
 
   Backendless.noConflict = function() {
     root.Backendless = previousBackendless;
