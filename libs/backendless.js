@@ -2700,7 +2700,7 @@
       geopoint.categories = Utils.isArray(geopoint.categories) ? geopoint.categories : [geopoint.categories];
 
       var objectId = geopoint.objectId;
-      var method = objectId ? 'PATCH' : 'PUT',
+      var method = objectId ? 'PATCH' : 'POST',
           url    = this.restUrl + '/points';
 
       if (objectId) {
