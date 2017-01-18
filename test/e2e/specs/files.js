@@ -228,8 +228,8 @@ describe('Backendless.Files', function() {
     it('non-existing path', function() {
       const path = '/copy/non-existing'
 
-      return expect(Files.copyFile(path, 'whatever')).to
-        .eventually.be.rejected
+      return expect(Files.copyFile(path, 'whatever'))
+        .to.eventually.be.rejected
         .and.eventually.have.property('code', 6007)
         .and.eventually.have.property('message', 'The specified resource was not found')
     });
@@ -267,7 +267,7 @@ describe('Backendless.Files', function() {
   })
 
   describe('Permissions', function() {
-    const testFile = '/permissions-test/file'
+    const testFile = 'permissions-test'
 
     before(function() {
       return createFile(testFile)

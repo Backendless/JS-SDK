@@ -23,7 +23,7 @@ const createSandbox = (consoleApi, options = {}) => {
     .then(() => sandbox)
 }
 
-const serverUrl = process.env.API_SERVER
+const serverUrl = process.env.API_SERVER || 'http://localhost:9000'
 
 const createSandboxForSuite = options => {
 
