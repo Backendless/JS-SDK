@@ -247,7 +247,7 @@ describe('Backendless.Users', function() {
         .then(() => expect(login(user.email, 'invalid')).to.eventually.be.rejected)
         .then(() => expect(login(user.email, 'invalid')).to.eventually.be.rejected)
         .then(() => expect(login(user.email, 'invalid')).to.eventually.be.rejected)
-        .then(() => expect(login(user.email, user.password)).to.eventually.be.fullfiled)
+        .then(() => expect(login(user.email, user.password)).to.eventually.be.fulfilled)
     })
 
     it('limited unsuccessful logins', function() {
@@ -256,7 +256,7 @@ describe('Backendless.Users', function() {
 
       return this.consoleApi.users.updateUsersLogin(this.app.id, { ...loginSettings, failedLoginsLock: 2 })
         .then(() => expect(invalidLogin()).to.eventually.be.rejected)
-        .then(() => expect(validLogin()).to.eventually.be.fullfiled)
+        .then(() => expect(validLogin()).to.eventually.be.fulfilled)
         .then(() => expect(invalidLogin()).to.eventually.be.rejected)
         .then(() => expect(invalidLogin()).to.eventually.be.rejected)
         .then(() => expect(validLogin())
@@ -314,7 +314,7 @@ describe('Backendless.Users', function() {
   it('restore password', function() {
     return Backendless.UserService.register(randUser()).then(user =>
       expect(Backendless.UserService.restorePassword(user.email))
-        .to.eventually.be.fullfiled
+        .to.eventually.be.fulfilled
     )
   })
 
@@ -349,8 +349,8 @@ describe('Backendless.Users', function() {
         .then(() => this.consoleApi.security.createRole(this.app.id, 'CustomRole'))
         .then(() => loginRandomUser())
         .then(randomUser => user = randomUser)
-        .then(() => expect(Backendless.UserService.assignRole(user.email, 'CustomRole')).to.eventually.be.fullfiled)
-        .then(() => expect(Backendless.UserService.unassignRole(user.email, 'CustomRole')).to.eventually.be.fullfiled)
+        .then(() => expect(Backendless.UserService.assignRole(user.email, 'CustomRole')).to.eventually.be.fulfilled)
+        .then(() => expect(Backendless.UserService.unassignRole(user.email, 'CustomRole')).to.eventually.be.fulfilled)
     })
 
     it('assign/unassign system role to a user', function() {

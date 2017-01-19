@@ -14,9 +14,9 @@ describe('Backendless.Counters', function() {
     const counter = Backendless.Counters.of('incrementAndGet')
 
     return Promise.resolve()
-      .then(() => expect(counter.incrementAndGet()).to.be.eventually.equal(1))
-      .then(() => expect(counter.incrementAndGet()).to.be.eventually.equal(2))
-      .then(() => expect(counter.incrementAndGet()).to.be.eventually.equal(3))
+      .then(() => expect(counter.incrementAndGet()).to.eventually.be.equal(1))
+      .then(() => expect(counter.incrementAndGet()).to.eventually.be.equal(2))
+      .then(() => expect(counter.incrementAndGet()).to.eventually.be.equal(3))
   })
 
   it('getAndIncrement', function() {
