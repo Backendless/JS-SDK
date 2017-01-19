@@ -2,6 +2,11 @@ import '../helpers/global'
 import sandbox from '../helpers/sandbox'
 import Backendless from '../../../libs/backendless'
 
+const randomPoint = () => ({
+  latitude : Math.random() * 80,
+  longitude: Math.random() * 170
+})
+
 describe('Backendless.Geo', function() {
 
   describe('categories', function() {
@@ -50,13 +55,10 @@ describe('Backendless.Geo', function() {
 
     it('retrieving a list of categories', function() {
       const addCategory = name => this.consoleApi.geo.addCategory(this.app.id, name)
-      const deleteCategory = category => this.consoleApi.geo.deleteCategory(this.app.id, category.name)
-      const deleteAllCategories = () => this.consoleApi.geo.getCategories(this.app.id)
-        .then(categories => Promise.all(categories.map(deleteCategory)))
 
       const testCategories = ['One', 'Two', 'Three'].sort()
 
-      return deleteAllCategories()
+      return this.console.geo.reset()
         .then(() => Promise.all(testCategories.map(addCategory)))
         .then(() => Backendless.Geo.getCategories())
         .then(categories => expect(categories.map(category => category.name)).to.eql(testCategories))
@@ -67,19 +69,120 @@ describe('Backendless.Geo', function() {
     sandbox.forSuite({})
 
     describe('add', function() {
-      it('simple valid')
-      it('with collection')
-      it('with invalid coordinates')
-      it('with empty/null category')
-      it('to multiple categories')
-      it('with invalid metadata')
-      it('add points with null key in meta')
-      it('add points with cyclic related point')
-      it('add points with cyclic related object')
+      it('valid', function() {
+        const point = randomPoint()
+
+        return Backendless.Geo.addPoint(point).then(serverPoint => {
+          expect(serverPoint).to.be.instanceof(Backendless.GeoPoint)
+          expect(serverPoint).to.have.property('objectId')
+          expect(serverPoint).to.have.property('latitude', point.latitude)
+          expect(serverPoint).to.have.property('longitude', point.longitude)
+          expect(serverPoint).to.have.property('categories')
+            .and.eql(['Default'])
+
+          return expect(this.consoleApi.geo.getPoints(this.app.id))
+            .to.eventually.have.length(1)
+        })
+      })
+
+      it('without coordinates', function() {
+        return expect(Backendless.Geo.addPoint({}))
+          .to.be.eventually.rejected
+      })
+
+      it('with invalid coordinates', function() {
+        return expect(Backendless.Geo.addPoint({ latitude: 100, longitude: 100 }))
+          .to.be.eventually.rejected
+      })
+
+      it('with category', function() {
+        const point = { ...randomPoint(), categories: ['Custom'] }
+
+        return Backendless.Geo.addPoint(point).then(serverPoint => {
+          expect(serverPoint).to.have.property('categories')
+            .and.eql(['Custom'])
+        })
+      })
+
+      it('with multiple categories', function() {
+        const point = { ...randomPoint(), categories: ['Foo', 'Bar'] }
+
+        return Backendless.Geo.addPoint(point).then(serverPoint => {
+          expect(serverPoint).to.have.property('categories')
+            .and.eql(['Bar', 'Foo'])
+        })
+      })
+
+      it('with metadata', function() {
+        const point = {
+          ...randomPoint(),
+          metadata: {
+            name   : 'Starbucks',
+            city   : 'Honolulu',
+            parking: 'true',
+            updated: `${new Date().getTime()}`
+          }
+        }
+
+        return Backendless.Geo.addPoint(point).then(serverPoint => {
+          expect(serverPoint).to.have.property('metadata')
+            .and.deep.include(point.metadata)
+        })
+      })
+
+      it('with related object', function() {
+        function Customer(name) {
+          this.___class = 'Customer'
+          this.name = name
+        }
+
+        const testCustomer = new Customer('test')
+
+        const point = {
+          ...randomPoint(),
+          metadata: {
+            relation: testCustomer
+          }
+        }
+
+        return Backendless.Geo.addPoint(point).then(serverPoint => {
+          expect(serverPoint.metadata).to.have.property('relation')
+            .and.deep.include(testCustomer)
+        })
+      })
+
+      it('with related collection', function() {
+        function Customer(name) {
+          this.___class = 'Customer'
+          this.name = name
+        }
+
+        const customerOne = new Customer('one')
+        const customerTwo = new Customer('two')
+
+        const point = {
+          ...randomPoint(),
+          metadata: {
+            customers: [customerOne, customerTwo]
+          }
+        }
+
+        return Backendless.Geo.addPoint(point).then(serverPoint => {
+          expect(serverPoint.metadata).to.have.property('customers')
+          expect(serverPoint.metadata.customers[0]).to.deep.include(customerOne)
+          expect(serverPoint.metadata.customers[1]).to.deep.include(customerTwo)
+        })
+      })
     })
 
-    describe('remove', function() {
+    it('remove', function() {
+      const p = randomPoint()
 
+      return this.consoleApi.geo.reset(this.app.id)
+        .then(() => this.consoleApi.geo.addPoint(this.app.id, p.latitude, p.longitude))
+        .then(point => Backendless.Geo.deletePoint(point))
+        .then(() => expect(this.consoleApi.geo.getPoints(this.app.id))
+          .to.eventually.have.lengthOf(1))
     })
 
     describe('find', function() {

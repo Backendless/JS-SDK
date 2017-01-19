@@ -2695,14 +2695,14 @@
     savePointSync: synchronized('_savePoint'),
 
     _savePoint: function(geopoint, async) {
-      if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
+      if (!geopoint.latitude || !geopoint.longitude) {
         throw new Error('Latitude or longitude not a number');
       }
       geopoint.categories = geopoint.categories || ['Default'];
       geopoint.categories = Utils.isArray(geopoint.categories) ? geopoint.categories : [geopoint.categories];
 
       var objectId = geopoint.objectId;
-      var method = objectId ? 'PATCH' : 'PUT',
+      var method = objectId ? 'PATCH' : 'POST',
           url    = this.restUrl + '/points';
 
       if (objectId) {
@@ -2713,16 +2713,14 @@
       var isAsync = responder != null;
       var responderOverride = function(async) {
         var success = function(data) {
-          var geoObject = data.geopoint;
           var geoPoint = new GeoPoint();
-          geoPoint.categories = geoObject.categories;
-          geoPoint.latitude = geoObject.latitude;
-          geoPoint.longitude = geoObject.longitude;
-          geoPoint.metadata = geoObject.metadata;
-          geoPoint.objectId = geoObject.objectId;
-          data.geopoint = geoPoint;
+          geoPoint.categories = data.geopoint.categories;
+          geoPoint.latitude = data.geopoint.latitude;
+          geoPoint.longitude = data.geopoint.longitude;
+          geoPoint.metadata = data.geopoint.metadata;
+          geoPoint.objectId = data.geopoint.objectId;
 
-          async.success(data);
+          async.success(geoPoint);
         };
         var error = function(data) {
           async.fault(data);
