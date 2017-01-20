@@ -2653,10 +2653,6 @@
     },
 
     _validateQueryObject: function(query) {
-      if (!(query instanceof GeoQuery)) {
-        throw new Error('Invalid Geo Query. Query should be instance of Backendless.GeoQuery');
-      }
-
       if (query.geoFence !== undefined && !Utils.isString(query.geoFence)) {
         throw new Error('Invalid value for argument "geoFenceName". Geo Fence Name must be a String');
       }
@@ -2695,7 +2691,7 @@
     savePointSync: synchronized('_savePoint'),
 
     _savePoint: function(geopoint, async) {
-      if (!geopoint.latitude || !geopoint.longitude) {
+      if (null == geopoint.latitude || null == geopoint.longitude) {
         throw new Error('Latitude or longitude not a number');
       }
       geopoint.categories = geopoint.categories || ['Default'];
