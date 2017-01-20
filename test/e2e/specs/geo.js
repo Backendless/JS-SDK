@@ -181,8 +181,8 @@ describe('Backendless.Geo', function() {
       return this.consoleApi.geo.reset(this.app.id)
         .then(() => this.consoleApi.geo.addPoint(this.app.id, p.latitude, p.longitude))
         .then(point => Backendless.Geo.deletePoint(point))
-        .then(() => expect(this.consoleApi.geo.getPoints(this.app.id))
-          .to.eventually.have.lengthOf(1))
+        .then(() => this.consoleApi.geo.getPoints(this.app.id))
+        .then(points => expect(points.data).to.be.empty)
     })
 
     describe('find', function() {
