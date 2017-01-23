@@ -201,6 +201,7 @@ describe('Backendless.Geo', function() {
           .then(() => Backendless.Geo.addPoint(createPoint(null, null, 1, 0)))
           .then(() => Backendless.Geo.addPoint(createPoint(null, null, 2, 0)))
           .then(() => Backendless.Geo.addPoint(createPoint(null, null, 3, 0)))
+
           .then(() => expect(findByRadius(degreesToMeters(1), 'METERS', 0, 0)).to.eventually.have.length(2))
           .then(() => expect(findByRadius(degreesToMeters(3), 'METERS', 0, 0)).to.eventually.have.length(4))
           .then(() => expect(findByRadius(degreesToMeters(2), 'METERS', 2, 0)).to.eventually.have.length(4))
@@ -215,6 +216,7 @@ describe('Backendless.Geo', function() {
           .then(() => Backendless.Geo.addPoint(createPoint(null, null, 1, 1)))
           .then(() => Backendless.Geo.addPoint(createPoint(null, null, 2, 2)))
           .then(() => Backendless.Geo.addPoint(createPoint(null, null, 3, 3)))
+
           .then(() => expect(findByRectangle([1, 0, 0, 1])).to.eventually.have.length(2))
           .then(() => expect(findByRectangle([2, 0, 0, 2])).to.eventually.have.length(3))
           .then(() => expect(findByRectangle([3, 1, 0, 2])).to.eventually.have.length(2))
@@ -226,6 +228,7 @@ describe('Backendless.Geo', function() {
           .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Dallas' })))
           .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Dallas' })))
           .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Bongo' })))
+
           .then(() => expect(Backendless.Geo.find({ metadata: { city: 'Dallas' } }))
             .to.eventually.have.lengthOf(2))
           .then(() => expect(Backendless.Geo.find({ metadata: { city: 'Bongo' } }))
@@ -239,6 +242,7 @@ describe('Backendless.Geo', function() {
           .then(() => Backendless.Geo.addPoint(createPoint(null, ['C', 'C', 'C'])))
           .then(() => Backendless.Geo.addPoint(createPoint(null, ['A', 'B'])))
           .then(() => Backendless.Geo.addPoint(createPoint(null, ['C', 'B'])))
+
           .then(() => expect(Backendless.Geo.find({ categories: ['A'] }))
             .to.eventually.have.lengthOf(2))
           .then(() => expect(Backendless.Geo.find({ categories: ['B'] }))
@@ -273,25 +277,177 @@ describe('Backendless.Geo', function() {
           })
       })
 
-      it('by non existing related object property')
-
       describe('clusters', function() {
-        it('simple')
-        it('by radius')
-        it('by rectangle')
-        it('by metadata')
-        it('by category')
-        it('with metadata included')
-        it('with metadata excluded')
-        it('by non existing related object property')
+        it('simple', function() {
+          return Promise.resolve()
+            .then(() => Backendless.Geo.addPoint(createPoint(null, null, 30, 10)))
+            .then(() => Backendless.Geo.addPoint(createPoint(null, null, 30, 50)))
+            .then(() => Backendless.Geo.addPoint(createPoint(null, null, 30, 55)))
+
+            .then(() => Backendless.Geo.find({ degreePerPixel: 1, clusterGridSize: 20 }))
+            .then(result => {
+              expect(result).to.have.lengthOf(2)
+              expect(result[0]).to.be.instanceOf(Backendless.GeoPoint)
+              expect(result[0].longitude).to.equal(10)
+              expect(result[1]).to.be.instanceOf(Backendless.GeoCluster)
+              expect(result[1].totalPoints).to.equal(2)
+              expect(result[1].longitude).to.equal(52.5)
+            })
+
+            .then(() => Backendless.Geo.find({ degreePerPixel: 1, clusterGridSize: 1 }))
+            .then(result => {
+              expect(result).to.have.lengthOf(3)
+              expect(result[0]).to.be.instanceOf(Backendless.GeoPoint)
+              expect(result[1]).to.be.instanceOf(Backendless.GeoPoint)
+              expect(result[2]).to.be.instanceOf(Backendless.GeoPoint)
+            })
+        })
+
+        it('by category', function() {
+          const lat = 30, lon = 10
+          let createPoints = Promise.resolve()
+
+          const points = [...Array(10).keys()].map(i => {
+            const category = i % 2 ? 'even' : 'odd'
+            const point = createPoint(null, [category], lat, lon + i)
+
+            createPoints = createPoints.then(() =>
+              Backendless.Geo.addPoint(point).then(console.log))
+          })
+
+          const geoQuery = (categories, mapWidth, clusterGridSize) => {
+            const query = new Backendless.GeoQuery()
+            query.categories = categories
+            query.setClusteringParams(lon, lon + points.length, mapWidth, clusterGridSize)
+
+            return query
+          }
+
+          return createPoints
+            .then(() => Backendless.Geo.find(geoQuery(['even'], 1000, 500)))
+            .then(result => {
+              expect(result).to.have.deep.property('[0].latitude', 30)
+              expect(result).to.have.deep.property('[0].longitude', 12)
+              expect(result).to.have.deep.property('[0].totalPoints', 2)
+              expect(result).to.have.deep.property('[0].categories.length', 1)
+              expect(result).to.have.deep.property('[0].categories[0]', 'even')
+              expect(result).to.have.deep.property('[1].latitude', 30)
+              expect(result).to.have.deep.property('[1].longitude', 17)
+              expect(result).to.have.deep.property('[1].totalPoints', 3)
+              expect(result).to.have.deep.property('[1].categories.length', 1)
+              expect(result).to.have.deep.property('[1].categories[0]', 'even')
+            })
+            .then(() => Backendless.Geo.find(geoQuery(['even', 'odd'], 100, 100)))
+            .then(result => {
+              expect(result).to.have.deep.property('[0].latitude', 30)
+              expect(result).to.have.deep.property('[0].longitude', 14.5)
+              expect(result).to.have.deep.property('[0].totalPoints', 10)
+              expect(result).to.have.deep.property('[0].categories.length', 2)
+              expect(result).to.have.deep.property('[0].categories[0]', 'even')
+              expect(result).to.have.deep.property('[0].categories[1]', 'odd')
+            })
+        })
+
+        it('with metadata included', function() {
+          const query = {
+            degreePerPixel : 1,
+            clusterGridSize: 180,
+            includeMetadata: true
+          }
+
+          return Promise.resolve()
+            .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Dallas' })))
+            .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Dallas' })))
+            .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Bongo', country: 'Dongo' })))
+
+            .then(() => Backendless.Geo.find(query))
+            .then(result => {
+              console.log(JSON.stringify(result))
+              expect(result).to.have.lengthOf(1)
+              expect(result[0].totalPoints).to.equal(3)
+              expect(result[0].metadata.country).to.equal('Dongo')
+              expect(result[0].metadata.city).to.have.members(['Dallas', 'Bongo'])
+            })
+        })
+
+        it('with metadata excluded', function() {
+          const query = {
+            degreePerPixel : 1,
+            clusterGridSize: 180,
+            includeMetadata: false
+          }
+
+          return Promise.resolve()
+            .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Dallas' })))
+            .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Dallas' })))
+            .then(() => Backendless.Geo.addPoint(createPoint({ city: 'Bongo', country: 'Dongo' })))
+
+            .then(() => Backendless.Geo.find(query))
+            .then(result => {
+              console.log(JSON.stringify(result))
+              expect(result).to.have.lengthOf(1)
+              expect(result[0].totalPoints).to.equal(3)
+              expect(result[0].metadata).to.be.empty
+            })
+        })
       })
     })
   })
 
   describe('fences', function() {
+    let fence
 
-    it('find fence points')
-    it('run actions')
+    beforeEach(function() {
+      fence = {
+        name        : 'colorado',
+        qualCriteria: '',
+        type        : 'RECT',
+        nodes       : [
+          { latitude: 40.979898069620134, longitude: -109.072265625 },
+          { latitude: 37.02009820136811, longitude: -101.953125 }
+        ]
+      }
+
+      const fenceAction = {
+        type     : "EVENT",
+        eventname: "colorado"
+      }
+
+      return Promise.resolve()
+        .then(() => this.consoleApi.geo.saveFence(this.app.id, fence).then(f => fence = f))
+        .then(() => this.consoleApi.geo.saveFenceAction(this.app.id, fence.objectId, 'onenter', fenceAction))
+        .then(() => this.consoleApi.geo.activateFence(this.app.id, fence.objectId))
+        .then(() => this.consoleApi.geo.addPoint(this.app.id, 39, -108)) //in fence
+        .then(() => this.consoleApi.geo.addPoint(this.app.id, 38, -105)) //in fence
+        .then(() => this.consoleApi.geo.addPoint(this.app.id, 20, 20))  //out of fence
+    })
+
+    afterEach(function() {
+      return this.consoleApi.geo.deleteFence(this.app.id, fence.objectId)
+    })
+
+    it('find fence points', function() {
+      return Backendless.Geo.getFencePoints(fence.name, {}).then(result => {
+        expect(result).to.have.lengthOf(2)
+      })
+    })
+
+    it('run actions', function() {
+      const point = new Backendless.GeoPoint({ latitude: 39, longitude: -105 })
+
+      return Promise.resolve()
+        .then(() => expect(Backendless.Geo.runOnEnterAction('colorado', point))
+          .to.eventually.be.fullfiled)
+        .then(() => expect(Backendless.Geo.runOnStayAction('colorado', point))
+          .to.eventually.be.rejected
+          .and.eventually.have.property('code', 4063))
+        .then(() => expect(Backendless.Geo.runOnExitAction('colorado', point))
+          .to.eventually.be.rejected
+          .and.eventually.have.property('code', 4063))
+        .then(() => expect(Backendless.Geo.runOnExitAction('colorado2', point))
+          .to.eventually.be.rejected
+          .and.eventually.have.property('code', 4061))
+    })
   })
 
 })
