@@ -5,7 +5,7 @@ import Backendless from '../../../libs/backendless'
 function randUser() {
   const ts = new Date().getTime()
   var user = new Backendless.User()
-  user.email = `${ts}@test.com`
+  user.email = `test_${ts}@gmail.com`
   user.password = 'qwerty'
   return user
 }
@@ -308,16 +308,18 @@ describe('Backendless.Users', function() {
   })
 
   it('restore password', function() {
-    return Backendless.UserService.register(randUser()).then(user =>
-      expect(Backendless.UserService.restorePassword(user.email))
-        .to.eventually.be.fulfilled
-    )
+    this.timeout(15000)
+
+    return Backendless.UserService.register(randUser())
+      .then(user => Backendless.UserService.restorePassword(user.email))
+      .catch(err => expect(err.code).to.equal(5050))
   })
 
   it('restore password for a wrong login', function() {
-    return expect(Backendless.UserService.restorePassword(randUser().email))
-      .to.eventually.be.rejected
-      .and.eventually.have.property('code', 3020)
+    this.timeout(15000)
+
+    return Backendless.UserService.restorePassword(randUser().email)
+      .catch(err => expect(err.code).to.be.oneOf([5050, 3020]))
   })
 
   it('describe user', function() {
