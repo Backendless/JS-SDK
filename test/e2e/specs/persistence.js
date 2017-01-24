@@ -5,49 +5,45 @@ import Backendless from '../../../libs/backendless'
 function Foo() {
 }
 
-const generateDataTable = (name, recordsCount) => {
-  const records = []
-
-  for (; recordsCount > 0; recordsCount--) {
-    records.push({
-      ___class: name,
-      counter : recordsCount,
-      name    : 'John ' + recordsCount
-    })
+const users = {
+  john  : {
+    email   : 'john@lennon.co',
+    name    : 'John Lennon',
+    password: 'beatlesforever'
+  },
+  paul  : {
+    email   : 'paul@mccartney.co',
+    name    : 'Paul Mccartney',
+    password: 'beatlesforever'
+  },
+  george: {
+    email   : 'george@harrison.co',
+    name    : 'George Harrison',
+    password: 'beatlesforever'
   }
-
-  return records
 }
 
 describe('Backendless.Persistence', function() {
 
-  sandbox.forSuite({
-    app: {
-      data: {
-        Users              : [{
-          email   : 'john@lennon.co',
-          name    : 'John Lennon',
-          password: 'beatlesforever'
-        }, {
-          email   : 'paul@mccartney.co',
-          name    : 'Paul Mccartney',
-          password: 'beatlesforever'
-        }, {
-          email   : 'george@harrison.co',
-          name    : 'George Harrison',
-          password: 'beatlesforever'
-        }],
-        Blackstar          : [{
-          integerCol: 1,
-          boolCol   : false
-        }],
-        TableToTestDeletion: [{
-          group: 'Pink Floyd'
-        }],
-        TableWithPagination: generateDataTable('TableWithPagination', 100),
-        EmptyTable         : []
-      }
-    }
+  sandbox.forSuite()
+
+  before(function() {
+    const api = this.consoleApi
+    const appId = this.app.id
+
+    const paginationTestData = [...Array(100).keys()].map(counter => ({ counter, name: 'John ' + counter }))
+
+    const insertRecord = (tableName, record) =>
+      api.tables.createRecord(appId, { name: tableName }, record)
+
+    return Promise.resolve()
+      .then(() => insertRecord('Users', users.john))
+      .then(() => insertRecord('Users', users.paul))
+      .then(() => insertRecord('Users', users.george))
+      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
+      .then(() => insertRecord('TableToTestDeletion', { group: 'Pink Floyd' }))
+      .then(() => insertRecord('TableWithPagination', { counter: 0, name: 'Initial' }))
+      .then(() => Promise.all(paginationTestData.map(record => insertRecord('TableWithPagination', record))))
   })
 
   it('Create new table', function() {
@@ -301,17 +297,9 @@ describe('Backendless.Persistence', function() {
   })
 
   it('Find first/last on empty table', function() {
-    const db = Backendless.Persistence.of('EmptyTable')
-
-    return Promise.resolve()
-      .then(() => db.findFirst())
-      .catch(error => {
-        expect(error.message).to.be.equal('Unable to retrieve data - object store is empty')
-      })
-      .then(() => db.findLast())
-      .catch(error => {
-        expect(error.message).to.be.equal('Unable to retrieve data - object store is empty')
-      })
+    return expect(Backendless.Persistence.of('EmptyTable').findFirst()
+      .to.eventually.be.rejected
+      .and.eventually.have.property('message', 'Unable to retrieve data - object store is empty'))
   })
 
   it('Find with offset greater than the max number of records', function() {
@@ -388,9 +376,7 @@ describe('Backendless.Persistence', function() {
   it('Retrieves Properties of non existing table', function() {
     return expect(Backendless.Persistence.describe('NonExistingTable'))
       .to.eventually.be.rejected
-      .and.eventually.to.have.property('code').that.equal(1009)
-      .and.eventually.to.have.property('message').that.equal('Table with the name NonExistingTable does not exist. ' +
-        'Make sure the client class referenced in the API call has the same literal name as the table in Backendless console"}')
+      .and.eventually.to.have.property('code', 1009)
   })
 
   it('Retrieving nextPage', function() {
@@ -400,13 +386,13 @@ describe('Backendless.Persistence', function() {
     return Promise.resolve()
       .then(() => db.find(query))
       .then(result => {
-        expect(result.length).to.be.equal(10)
+        expect(result).to.have.lengthOf(10)
         expect(result[9]).to.have.property('counter').that.equal(10)
       })
       .then(() => query.prepareNextPage())
       .then(() => db.find(query))
       .then(result => {
-        expect(result.length).to.be.equal(10)
+        expect(result).to.have.lengthOf(10)
         expect(result[9]).to.have.property('counter').that.equal(20)
       })
   })

@@ -1,25 +1,46 @@
-const { generateDev, generateApp } = require('backendless-app-generator')
 import { createClient } from 'backendless-console-sdk'
 import Backendless from '../../../libs/backendless'
 
-const destroySandbox = (consoleApi, sandbox) => () => {
+const chr4 = () => Math.random().toString(16).slice(-4)
+const chr8 = () => `${chr4()}${chr4()}`
+const uid = () => `${chr8()}${chr8()}${chr8()}${chr8()}`
+
+const generateDev = () => ({
+  firstName: 'Test',
+  lastName : 'Test',
+  email    : `${uid()}@test`,
+  pwd      : uid()
+})
+
+const generateApp = () => ({
+  name: `test_${uid()}`
+})
+
+const createDestroyer = sandbox => () =>
+  Promise.resolve()
+    .then(() => sandbox.api.apps.deleteApp(sandbox.app.id))
+    .then(() => sandbox.api.user.suicide())
+
+const createSandbox = (api, options = {}) => {
+  const app = generateApp()
+  const dev = generateDev()
+
+  const sandbox = { app, app, api }
+  sandbox.destroy = createDestroyer(sandbox)
+
   return Promise.resolve()
-    .then(() => consoleApi.apps.deleteApp(sandbox.app.id))
-    .then(() => consoleApi.user.suicide())
-}
+    .then(() => api.user.register(dev))
+    .then(result => dev.id = result.id)
 
-const createSandbox = (consoleApi, options = {}) => {
-  const sandbox = {}
+    .then(() => api.user.login(dev.email, dev.pwd))
+    .then(({ authKey }) => dev.authKey = authKey)
 
-  sandbox.destroy = destroySandbox(consoleApi, sandbox)
+    .then(() => api.apps.createApp(app.name))
+    .then(result => Object.assign(app, result))
 
-  return Promise.resolve()
-    .then(() => generateDev(consoleApi, { autoLogin: true, ...(options.dev || {}) }))
-    .then(dev => sandbox.dev = dev)
-    .then(() => generateApp(consoleApi, options.app || {}))
-    .then(app => sandbox.app = app)
-    .then(() => consoleApi.settings.getAppSettings(sandbox.app.id))
-    .then(settings => sandbox.app = ({ ...settings, ...sandbox.app }))
+    .then(() => api.settings.getAppSettings(app.id))
+    .then(appSettings => Object.assign(app, appSettings))
+
     .then(() => sandbox)
 }
 

@@ -312,7 +312,7 @@ describe('Backendless.Geo', function() {
             const point = createPoint(null, [category], lat, lon + i)
 
             createPoints = createPoints.then(() =>
-              Backendless.Geo.addPoint(point).then(console.log))
+              Backendless.Geo.addPoint(point))
           })
 
           const geoQuery = (categories, mapWidth, clusterGridSize) => {
@@ -362,7 +362,6 @@ describe('Backendless.Geo', function() {
 
             .then(() => Backendless.Geo.find(query))
             .then(result => {
-              console.log(JSON.stringify(result))
               expect(result).to.have.lengthOf(1)
               expect(result[0].totalPoints).to.equal(3)
               expect(result[0].metadata.country).to.equal('Dongo')
@@ -384,7 +383,6 @@ describe('Backendless.Geo', function() {
 
             .then(() => Backendless.Geo.find(query))
             .then(result => {
-              console.log(JSON.stringify(result))
               expect(result).to.have.lengthOf(1)
               expect(result[0].totalPoints).to.equal(3)
               expect(result[0].metadata).to.be.empty
