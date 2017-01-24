@@ -31,7 +31,7 @@ describe('Backendless.Persistence', function() {
     const api = this.consoleApi
     const appId = this.app.id
 
-    const paginationTestData = [...Array(100).keys()].map(counter => ({ counter, name: 'John ' + counter }))
+    const paginationTestData = [...Array(100).keys()].map(i => ({ counter: i + 1, name: 'John ' + i }))
 
     const insertRecord = (tableName, record) =>
       api.tables.createRecord(appId, { name: tableName }, record)

@@ -5,7 +5,7 @@ import Backendless from '../../../libs/backendless'
 function randUser() {
   const ts = new Date().getTime()
   var user = new Backendless.User()
-  user.email = `test${ts}@example.com`
+  user.email = `${ts}@test.com`
   user.password = 'qwerty'
   return user
 }
@@ -50,11 +50,11 @@ describe('Backendless.Users', function() {
     it('basic', function() {
       var user = randUser()
 
-      return Backendless.UserService.register(user).then(result =>
+      return Backendless.UserService.register(user).then(result => {
         expect(result).to.have.property('objectId')
-          .and.to.have.property('email', user.email)
-          .and.to.not.have.property('password')
-      )
+        expect(result).to.have.property('email', user.email)
+        expect(result).to.not.have.property('password')
+      })
     })
 
     it('non User typed object', function() {
@@ -106,12 +106,11 @@ describe('Backendless.Users', function() {
       it('possible by default', function() {
         const user = Object.assign(randUser(), { foo: 'fooValue', bar: 'barValue' })
 
-        return Backendless.UserService.register(user).then(result =>
-          expect(result)
-            .to.have.property('objectId')
-            .and.have.property('foo', user.foo)
-            .and.have.property('bar', user.bar)
-        )
+        return Backendless.UserService.register(user).then(result => {
+          expect(result).to.have.property('objectId')
+          expect(result).to.have.property('foo', user.foo)
+          expect(result).to.have.property('bar', user.bar)
+        })
       })
 
       it('impossible when disabled', function() {
@@ -147,17 +146,14 @@ describe('Backendless.Users', function() {
 
     it('basic', function() {
       return Backendless.UserService.login(user.email, user.password).then(loggedInUser => {
-        expect(loggedInUser)
-          .to.have.property('objectId', user.objectId)
-          .and.have.property('email', user.email)
-          .and.not.have.property('password')
+        expect(loggedInUser).to.include({ objectId: user.objectId, email: user.email })
+        expect(loggedInUser).to.not.have.property('password')
 
-        return Backendless.UserService.getCurrentUser().then(currentUser =>
-          expect(currentUser)
-            .to.not.equal(loggedInUser)
-            .and.have.property('objectId', user.objectId)
-            .and.have.property('email', user.email)
-        )
+        return Backendless.UserService.getCurrentUser().then(currentUser => {
+          expect(currentUser).to.not.equal(loggedInUser)
+          expect(currentUser).to.have.property('objectId', user.objectId)
+          expect(currentUser).to.have.property('email', user.email)
+        })
       })
     })
 
