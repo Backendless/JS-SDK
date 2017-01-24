@@ -31,7 +31,7 @@ describe('Backendless.Persistence', function() {
     const api = this.consoleApi
     const appId = this.app.id
 
-    const paginationTestData = [...Array(100).keys()].map(i => ({ counter: i + 1, name: 'John ' + i }))
+    const paginationTestData = [...Array(100).keys()].map(i => ({ counter: i + 1, name: 'John ' + i + 1 }))
 
     const insertRecord = (tableName, record) =>
       api.tables.createRecord(appId, { name: tableName }, record)
@@ -297,9 +297,13 @@ describe('Backendless.Persistence', function() {
   })
 
   it('Find first/last on empty table', function() {
-    return expect(Backendless.Persistence.of('EmptyTable').findFirst()
-      .to.eventually.be.rejected
-      .and.eventually.have.property('message', 'Unable to retrieve data - object store is empty'))
+    const db = Backendless.Persistence.of('EmptyTable')
+
+    return Promise.resolve()
+      .then(() => db.findFirst())
+      .catch(error => {
+        expect(error.code).to.be.equal(1009)
+      })
   })
 
   it('Find with offset greater than the max number of records', function() {
@@ -379,6 +383,20 @@ describe('Backendless.Persistence', function() {
       .and.eventually.to.have.property('code', 1009)
   })
 
+  it('Sort by', function() {
+    const db = Backendless.Persistence.of('TableWithPagination')
+    const query = Backendless.DataQueryBuilder.create().setSortBy('counter').setPageSize(100)
+
+    return Promise.resolve()
+      .then(() => db.find(query))
+      .then(result => {
+        expect(result).to.have.lengthOf(100)
+        result.forEach((record, idx) => {
+          expect(result[idx]).to.have.property('counter').that.equal(idx)
+        })
+      })
+  })
+
   it('Retrieving nextPage', function() {
     const db = Backendless.Persistence.of('TableWithPagination')
     const query = Backendless.DataQueryBuilder.create().setSortBy('counter')
@@ -387,13 +405,13 @@ describe('Backendless.Persistence', function() {
       .then(() => db.find(query))
       .then(result => {
         expect(result).to.have.lengthOf(10)
-        expect(result[9]).to.have.property('counter').that.equal(10)
+        expect(result[9]).to.have.property('counter').that.equal(9)
       })
       .then(() => query.prepareNextPage())
       .then(() => db.find(query))
       .then(result => {
         expect(result).to.have.lengthOf(10)
-        expect(result[9]).to.have.property('counter').that.equal(20)
+        expect(result[9]).to.have.property('counter').that.equal(19)
       })
   })
 })
