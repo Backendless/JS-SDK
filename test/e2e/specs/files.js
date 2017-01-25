@@ -270,31 +270,16 @@ describe('Backendless.Files', function() {
       return createFile(testFile)
     })
 
-    it('grant read', function() {
-      return Files.Permissions.grant(testFile, 'READ')
-    });
+    const operations = ['grant', 'deny']
+    const permissions = ['READ', 'WRITE', 'DELETE']
 
-    it('grant write', function() {
-      return Files.Permissions.grant(testFile, 'WRITE')
-    });
-
-    it('grant delete', function() {
-      return Files.Permissions.grant(testFile, 'DELETE')
-    });
-
-    it('deny read', function() {
-      return Files.Permissions.deny(testFile, 'READ')
-    });
-
-    it('deny write', function() {
-      return Files.Permissions.deny(testFile, 'WRITE')
-    });
-
-    it('deny delete', function() {
-      return Promise.resolve()
-        .then(() => Files.Permissions.deny(testFile, 'DELETE'))
-        .then(() => expect(Files.remove(testFile)).to.eventually.be.rejected)
-    });
+    operations.forEach(operation =>
+      permissions.forEach(permission =>
+        it(`${operation} ${permission}`, function() {
+          return Files.Permissions[operation](testFile, permission)
+        })
+      )
+    )
   })
 
 })
