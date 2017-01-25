@@ -46,7 +46,7 @@ const createSandbox = api => {
 
 const serverUrl = process.env.API_SERVER || 'http://localhost:9000'
 
-const createSandboxFor = each => {
+const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
   const afterHook = each ? afterEach : after
 
