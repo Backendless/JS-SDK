@@ -412,12 +412,12 @@ describe('Backendless.Geo', function() {
       }
 
       return Promise.resolve()
+        .then(() => this.consoleApi.geo.addPoint(this.app.id, 20, 20))  //out of fence
+        .then(() => this.consoleApi.geo.addPoint(this.app.id, 39, -108)) //in fence
+        .then(() => this.consoleApi.geo.addPoint(this.app.id, 38, -105)) //in fence
         .then(() => this.consoleApi.geo.saveFence(this.app.id, fence).then(f => fence = f))
         .then(() => this.consoleApi.geo.saveFenceAction(this.app.id, fence.objectId, 'onenter', fenceAction))
         .then(() => this.consoleApi.geo.activateFence(this.app.id, fence.objectId))
-        .then(() => this.consoleApi.geo.addPoint(this.app.id, 39, -108)) //in fence
-        .then(() => this.consoleApi.geo.addPoint(this.app.id, 38, -105)) //in fence
-        .then(() => this.consoleApi.geo.addPoint(this.app.id, 20, 20))  //out of fence
     })
 
     afterEach(function() {

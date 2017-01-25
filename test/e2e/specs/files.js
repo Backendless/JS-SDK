@@ -149,7 +149,6 @@ describe('Backendless.Files', function() {
       return expect(Files.renameFile(path, 'whatever')).to
         .eventually.be.rejected
         .and.eventually.have.property('code', 6007)
-        .and.eventually.have.property('message', 'The specified resource was not found')
     });
   })
 
@@ -190,7 +189,6 @@ describe('Backendless.Files', function() {
       return expect(Files.moveFile(path, 'whatever'))
         .to.eventually.be.rejected
         .and.eventually.have.property('code', 6007)
-        .and.eventually.have.property('message', 'The specified resource was not found')
     });
   })
 
@@ -231,7 +229,6 @@ describe('Backendless.Files', function() {
       return expect(Files.copyFile(path, 'whatever'))
         .to.eventually.be.rejected
         .and.eventually.have.property('code', 6007)
-        .and.eventually.have.property('message', 'The specified resource was not found')
     });
   })
 

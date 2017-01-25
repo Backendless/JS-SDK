@@ -49,7 +49,7 @@ const serverUrl = process.env.API_SERVER || 'http://localhost:9000'
 const createSandboxForSuite = options => {
 
   before(function() {
-    this.timeout(15000)
+    this.timeout(20000)
     this.consoleApi = createClient(serverUrl)
 
     return createSandbox(this.consoleApi, options).then(sandbox => {
@@ -63,8 +63,6 @@ const createSandboxForSuite = options => {
   })
 
   after(function() {
-    this.timeout(5000)
-
     if (this.sandbox) {
       return this.sandbox.destroy()
     }

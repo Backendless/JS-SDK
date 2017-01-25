@@ -62,7 +62,7 @@ describe('Backendless.Cache', function() {
     const a = 'a'
     const b = 'b'
 
-    this.timeout(5000)
+    this.timeout(10000)
 
     return Promise.resolve()
       .then(() => Backendless.Cache.put('a', a))

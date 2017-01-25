@@ -292,9 +292,9 @@ describe('Backendless.Users', function() {
 
     it('dynamic prop when feature is disabled', function() {
       return setDynamicSchema(false).then(() =>
-        expect(Backendless.UserService.update({ objectId: user.objectId, data: 'custom data' })
+        expect(Backendless.UserService.update({ objectId: user.objectId, data: 'custom data' }))
           .to.eventually.be.rejected
-          .and.eventually.have.property('code', 3000))
+          .and.eventually.have.property('code', 3000)
       )
     })
 
@@ -346,9 +346,11 @@ describe('Backendless.Users', function() {
       return Promise.resolve()
         .then(() => this.consoleApi.security.createRole(this.app.id, 'CustomRole'))
         .then(() => loginRandomUser())
-        .then(randomUser => user = randomUser)
-        .then(() => expect(Backendless.UserService.assignRole(user.email, 'CustomRole')).to.eventually.be.fulfilled)
-        .then(() => expect(Backendless.UserService.unassignRole(user.email, 'CustomRole')).to.eventually.be.fulfilled)
+        .then(result => user = result)
+        .then(() => expect(Backendless.UserService.assignRole(user.email, 'CustomRole'))
+          .to.eventually.be.fulfilled)
+        .then(() => expect(Backendless.UserService.unassignRole(user.email, 'CustomRole'))
+          .to.eventually.be.fulfilled)
     })
 
     it('assign/unassign system role to a user', function() {
