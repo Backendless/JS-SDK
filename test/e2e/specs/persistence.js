@@ -414,5 +414,185 @@ describe('Backendless.Persistence', function() {
         expect(result[9]).to.have.property('counter').that.equal(19)
       })
   })
+
+  describe('Permissions', function() {
+
+    describe('FIND', function() {
+
+      describe('GRANT', function() {
+
+        it('user', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.FIND.grantUser(user.objectId, user))
+        })
+
+        it('role', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+          const roleName = 'AuthenticatedUser'
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.FIND.grantRole(roleName, user))
+        })
+
+        it('all users', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.FIND.grant(user))
+        })
+      })
+
+      describe('DENY', function() {
+
+        it('user', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.FIND.denyUser(user.objectId, user))
+        })
+
+        it('role', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+          const roleName = 'AuthenticatedUser'
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.FIND.denyRole(roleName, user))
+        })
+
+        it('all users', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.FIND.deny(user))
+        })
+      })
+    })
+
+    describe('REMOVE', function() {
+
+      describe('GRANT', function() {
+
+        it('user', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.REMOVE.grantUser(user.objectId, user))
+        })
+
+        it('role', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+          const roleName = 'AuthenticatedUser'
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.REMOVE.grantRole(roleName, user))
+        })
+
+        it('all users', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.REMOVE.grant(user))
+        })
+      })
+
+      describe('DENY', function() {
+
+        it('user', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.REMOVE.denyUser(user.objectId, user))
+        })
+
+        it('role', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+          const roleName = 'AuthenticatedUser'
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.REMOVE.denyRole(roleName, user))
+        })
+
+        it('all users', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.REMOVE.deny(user))
+        })
+      })
+    })
+
+    describe('UPDATE', function() {
+
+      describe('GRANT', function() {
+
+        it('user', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.UPDATE.grantUser(user.objectId, user))
+        })
+
+        it('role', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+          const roleName = 'AuthenticatedUser'
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.UPDATE.grantRole(roleName, user))
+        })
+
+        it('all users', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.UPDATE.grant(user))
+        })
+      })
+
+      describe('DENY', function() {
+
+        it('user', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.UPDATE.denyUser(user.objectId, user))
+        })
+
+        it('role', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+          const roleName = 'AuthenticatedUser'
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.UPDATE.denyRole(roleName, user))
+        })
+
+        it('all users', function() {
+          const db = Backendless.Persistence.of(Backendless.User)
+
+          return Promise.resolve()
+            .then(() => db.findFirst())
+            .then(user => Backendless.Data.Permissions.UPDATE.deny(user))
+        })
+      })
+    })
+  })
 })
 
