@@ -4,7 +4,7 @@ import Backendless from '../../../libs/backendless'
 
 describe('Backendless.Counters', function() {
 
-  sandbox.forSuite({})
+  sandbox.forSuite()
 
   it('feature accessible', function() {
     expect(Backendless.Counters).to.exist

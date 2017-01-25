@@ -12,7 +12,7 @@ function randUser() {
 
 describe('Backendless.Users', function() {
 
-  sandbox.forSuite({})
+  sandbox.forSuite()
 
   let BackendlessCopy
   let loginRandomUser

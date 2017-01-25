@@ -20,7 +20,7 @@ const cacheKeys = Object.keys(cacheValues)
 
 describe('Backendless.Cache', function() {
 
-  sandbox.forSuite({})
+  sandbox.forSuite()
 
   it('put and get', function() {
     return Promise.resolve()

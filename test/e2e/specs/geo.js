@@ -11,7 +11,7 @@ const createPoint = (metadata, categories = [], lat, lon) => ({
 
 describe('Backendless.Geo', function() {
 
-  sandbox.forSuite({})
+  sandbox.forSuite()
 
   beforeEach(function() {
     return this.consoleApi.geo.reset(this.app.id)

@@ -21,7 +21,7 @@ const createDestroyer = sandbox => () =>
     .then(() => sandbox.api.apps.deleteApp(sandbox.app.id))
     .then(() => sandbox.api.user.suicide())
 
-const createSandbox = (api, options = {}) => {
+const createSandbox = api => {
   const app = generateApp()
   const dev = generateDev()
 
@@ -46,13 +46,15 @@ const createSandbox = (api, options = {}) => {
 
 const serverUrl = process.env.API_SERVER || 'http://localhost:9000'
 
-const createSandboxForSuite = options => {
+const createSandboxFor = each => {
+  const beforeHook = each ? beforeEach : before
+  const afterHook = each ? afterEach : after
 
-  before(function() {
+  beforeHook(function() {
     this.timeout(20000)
     this.consoleApi = createClient(serverUrl)
 
-    return createSandbox(this.consoleApi, options).then(sandbox => {
+    return createSandbox(this.consoleApi).then(sandbox => {
       this.sandbox = sandbox
       this.dev = sandbox.dev
       this.app = sandbox.app
@@ -62,7 +64,7 @@ const createSandboxForSuite = options => {
     })
   })
 
-  after(function() {
+  afterHook(function() {
     if (this.sandbox) {
       return this.sandbox.destroy()
     }
@@ -70,6 +72,6 @@ const createSandboxForSuite = options => {
 }
 
 export default {
-  create  : createSandbox,
-  forSuite: createSandboxForSuite
+  forTest : createSandboxFor(true),
+  forSuite: createSandboxFor(false)
 }
