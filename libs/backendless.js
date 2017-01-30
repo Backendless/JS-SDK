@@ -617,7 +617,7 @@
         if (Utils.isFunction(callback)) {
           var contentType = res.headers['content-type'];
 
-          if (buffer !== undefined && contentType && contentType.indexOf('application/json') !== -1) {
+          if (buffer !== undefined && contentType /*&& contentType.indexOf('application/json') !== -1*/) {
             buffer = Utils.tryParseJSON(buffer);
           }
 
@@ -901,7 +901,7 @@
     }
 
     if (!this.className) {
-      throw 'Class name should be specified';
+      throw new Error('Class name should be specified');
     }
 
     this.restUrl = Backendless.appPath + '/data/' + this.className;
@@ -1843,7 +1843,7 @@
     describeSync: synchronized('_describe'),
 
     _describe: function(className, async) {
-      className = Utils.isString(className) ? className : getClassName.call(className);
+      className = Utils.isString(className) ? className : Utils.getClassName(className);
       var responder = Utils.extractResponder(arguments), isAsync = (responder != null);
 
       return Backendless._ajax({
@@ -2196,8 +2196,9 @@
 
     _restorePassword: function(emailAddress, async) {
       if (!emailAddress) {
-        throw 'Username can not be empty';
+        throw new Error('emailAddress can not be empty');
       }
+
       var responder = Utils.extractResponder(arguments);
       var isAsync = responder != null;
 
@@ -2543,8 +2544,9 @@
 
     _resendEmailConfirmation: function(emailAddress, async) {
       if (!emailAddress || emailAddress instanceof Async) {
-        throw "Email cannot be empty";
+        throw new Error('Email cannot be empty');
       }
+
       var responder = Utils.extractResponder(arguments);
       var isAsync = !!responder;
 
@@ -2651,10 +2653,6 @@
     },
 
     _validateQueryObject: function(query) {
-      if (!(query instanceof GeoQuery)) {
-        throw new Error('Invalid Geo Query. Query should be instance of Backendless.GeoQuery');
-      }
-
       if (query.geoFence !== undefined && !Utils.isString(query.geoFence)) {
         throw new Error('Invalid value for argument "geoFenceName". Geo Fence Name must be a String');
       }
@@ -2693,8 +2691,8 @@
     savePointSync: synchronized('_savePoint'),
 
     _savePoint: function(geopoint, async) {
-      if (geopoint.latitude === undefined || geopoint.longitude === undefined) {
-        throw 'Latitude or longitude not a number';
+      if (null == geopoint.latitude || null == geopoint.longitude) {
+        throw new Error('Latitude or longitude not a number');
       }
       geopoint.categories = geopoint.categories || ['Default'];
       geopoint.categories = Utils.isArray(geopoint.categories) ? geopoint.categories : [geopoint.categories];
@@ -2711,16 +2709,14 @@
       var isAsync = responder != null;
       var responderOverride = function(async) {
         var success = function(data) {
-          var geoObject = data.geopoint;
           var geoPoint = new GeoPoint();
-          geoPoint.categories = geoObject.categories;
-          geoPoint.latitude = geoObject.latitude;
-          geoPoint.longitude = geoObject.longitude;
-          geoPoint.metadata = geoObject.metadata;
-          geoPoint.objectId = geoObject.objectId;
-          data.geopoint = geoPoint;
+          geoPoint.categories = data.geopoint.categories;
+          geoPoint.latitude = data.geopoint.latitude;
+          geoPoint.longitude = data.geopoint.longitude;
+          geoPoint.metadata = data.geopoint.metadata;
+          geoPoint.objectId = data.geopoint.objectId;
 
-          async.success(data);
+          async.success(geoPoint);
         };
         var error = function(data) {
           async.fault(data);
@@ -3866,7 +3862,7 @@
 
       if (publishOptions) {
         if (!(publishOptions instanceof PublishOptions)) {
-          throw "Use PublishOption as publishOptions argument";
+          throw new Error('Use PublishOption as publishOptions argument');
         }
 
         Utils.deepExtend(data, publishOptions);
@@ -3874,7 +3870,7 @@
 
       if (deliveryTarget) {
         if (!(deliveryTarget instanceof DeliveryOptions)) {
-          throw "Use DeliveryOptions as deliveryTarget argument";
+          throw new Error('Use DeliveryOptions as deliveryTarget argument');
         }
 
         Utils.deepExtend(data, deliveryTarget);
@@ -3901,19 +3897,19 @@
       if (subject && !Utils.isEmpty(subject) && Utils.isString(subject)) {
         data.subject = subject;
       } else {
-        throw "Subject is required parameter and must be a nonempty string";
+        throw new Error('Subject is required parameter and must be a nonempty string');
       }
 
       if ((bodyParts instanceof Bodyparts) && !Utils.isEmpty(bodyParts)) {
         data.bodyparts = bodyParts;
       } else {
-        throw "Use Bodyparts as bodyParts argument, must contain at least one property";
+        throw new Error('Use Bodyparts as bodyParts argument, must contain at least one property');
       }
 
       if (recipients && Utils.isArray(recipients) && !Utils.isEmpty(recipients)) {
         data.to = recipients;
       } else {
-        throw "Recipients is required parameter, must be a nonempty array";
+        throw new Error('Recipients is required parameter, must be a nonempty array');
       }
 
       if (attachments) {
@@ -3922,7 +3918,7 @@
             data.attachment = attachments;
           }
         } else {
-          throw "Attachments must be an array of file IDs from File Service";
+          throw new Error('Attachments must be an array of file IDs from File Service');
         }
       }
 
@@ -4298,7 +4294,7 @@
         overwrite = null;
       }
 
-      if (!(fileContent instanceof File)) {
+      if (typeof File !== 'undefined' && !(fileContent instanceof File)) {
         fileContent = new Blob([fileContent]);
       }
 
@@ -4306,21 +4302,30 @@
         throw new Error('File Content size must be less than 2,800,000 bytes');
       }
 
-      var baseUrl = this.restUrl + '/binary/' + path + ((Utils.isString(fileName)) ? '/' + fileName : '') + ((overwrite) ? '?overwrite=true' : '');
+      var baseUrl = this.restUrl + '/binary/' + path + ((Utils.isString(fileName)) ? '/' + fileName : '')
 
-      try {
+      if (overwrite) {
+        baseUrl += '?overwrite=true';
+      }
+
+      var fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
+
+      function send(content) {
+        sendData({
+          url     : baseUrl,
+          data    : content,
+          fileName: fileName,
+          encoded : true,
+          async   : async,
+          method  : 'PUT'
+        });
+      }
+
+      if (typeof Blob !== 'undefined' && fileContent instanceof Blob) {
         var reader = new FileReader();
-        var fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
         reader.fileName = fileName;
         reader.onloadend = function(e) {
-          sendData({
-            url     : baseUrl,
-            data    : e.target.result.split(',')[1],
-            fileName: fileName,
-            encoded : true,
-            async   : async,
-            method  : 'PUT'
-          });
+          send(e.target.result.split(',')[1])
         };
 
         reader.onerror = function(evn) {
@@ -4328,12 +4333,12 @@
         };
 
         reader.readAsDataURL(fileContent);
+      } else {
+        send(fileContent)
+      }
 
-        if (!async) {
-          return true;
-        }
-      } catch (err) {
-        console.log(err);
+      if (!async) {
+        return true;
       }
     },
 
@@ -4408,7 +4413,7 @@
           form.submit();
         }
       } else {
-        throw "Upload File not supported with NodeJS";
+        throw new Error('Upload File not supported with NodeJS');
       }
     },
 
@@ -4975,17 +4980,16 @@
     },
 
     _implementMethod: function(method, urlPart, async) {
-      var responder = Utils.extractResponder(arguments), isAsync = false;
+      var responder = Utils.extractResponder(arguments);
 
       if (responder != null) {
-        isAsync = true;
         responder = Utils.wrapAsync(responder);
       }
 
       return Backendless._ajax({
         method      : method,
         url         : this.restUrl + this.name + urlPart,
-        isAsync     : isAsync,
+        isAsync     : !!responder,
         asyncHandler: responder
       });
     },
@@ -5079,7 +5083,7 @@
     addAndGetSync: synchronized('_addAndGet'),
 
     _addAndGet: function(value, async) {
-      return this._implementMethodWithValue('/get/incrementby?value=', value, async);
+      return this._implementMethodWithValue('/incrementby/get?value=', value, async);
     },
 
     getAndAdd: promisified('_getAndAdd'),
@@ -5087,7 +5091,7 @@
     getAndAddSync: synchronized('_getAndAdd'),
 
     _getAndAdd: function(value, async) {
-      return this._implementMethodWithValue('/incrementby/get?value=', value, async);
+      return this._implementMethodWithValue('/get/incrementby?value=', value, async);
     },
 
     compareAndSet: promisified('_compareAndSet'),
@@ -5095,7 +5099,7 @@
     compareAndSetSync: synchronized('_compareAndSet'),
 
     _compareAndSet: function(expected, updated, async) {
-      if (!expected || !updated) {
+      if (null == expected || null == updated) {
         throw new Error('Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values');
       }
 
@@ -5112,7 +5116,7 @@
 
       return Backendless._ajax({
         method      : 'PUT',
-        url         : this.restUrl + this.name + '/get/compareandset?expected=' + ((expected && updated) ? expected + '&updatedvalue=' + updated : ''),
+        url         : this.restUrl + this.name + '/get/compareandset?expected=' + expected + '&updatedvalue=' + updated,
         isAsync     : isAsync,
         asyncHandler: responder
       });
