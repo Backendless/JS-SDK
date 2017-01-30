@@ -39,7 +39,7 @@ describe('Backendless.Persistence', function() {
         .then(() => insertRecord('Users', users.george))
 
     const createBigTable = () => {
-      const paginationTestData = [...Array(100).keys()].map(i => ({ counter: i + 1, name: 'John ' + i + 1 }))
+      const paginationTestData = [...Array(100).keys()].map(i => ({ counter: i + 1, name: 'John ' + (i + 1) }))
 
       return Promise.resolve()
         .then(() => insertRecord('TableWithPagination', { counter: 0, name: 'Initial' }))
@@ -316,6 +316,25 @@ describe('Backendless.Persistence', function() {
         })
     })
 
+    it('Find First', function() {
+      const db = Persistence.of('TableWithPagination')
+
+      return Promise.resolve()
+        .then(createBigTable)
+        .then(() => db.findFirst())
+        .then(result => expect(result.name).to.be.equal('Initial'))
+    })
+
+    it('Find Last', function() {
+      const db = Persistence.of('TableWithPagination')
+      const query = Backendless.DataQueryBuilder.create().setSortBy('counter')
+
+      return Promise.resolve()
+        .then(createBigTable)
+        .then(() => db.findLast(query))
+        .then(result => expect(result.counter).to.be.equal(100))
+    })
+
     it('Find first/last on empty table', function() {
       const db = Persistence.of('EmptyTable')
 
@@ -425,8 +444,9 @@ describe('Backendless.Persistence', function() {
         contactStore.save(joeThePlumber),
         addressStore.save(address)
       ])
-        .then(([savedContact, savedAddress]) =>
-          contactStore.setRelation(savedContact, 'address', [savedAddress]))
+        .then(([savedContact, savedAddress]) => {
+          return contactStore.setRelation(savedContact, 'address:Address', [savedAddress])
+        })
         .then(result => {
           console.log(result)
         })
