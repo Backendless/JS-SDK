@@ -342,63 +342,11 @@ describe('Backendless.Persistence', function() {
     it('Retrieves Properties of table', function() {
       return Promise.resolve()
         .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-        .then(() => {
-          expect(Persistence.describe('Blackstar'))
-            .to.eventually.include.deep.members([{
-            name        : 'created',
-            required    : false,
-            type        : 'DATETIME',
-            defaultValue: null,
-            relatedTable: null,
-            customRegex : null,
-            autoLoad    : false,
-            isPrimaryKey: false
-          }, {
-            name        : 'ownerId',
-            required    : false,
-            type        : 'STRING',
-            defaultValue: null,
-            relatedTable: null,
-            customRegex : null,
-            autoLoad    : false,
-            isPrimaryKey: false
-          }, {
-            name        : 'boolCol',
-            required    : false,
-            type        : 'BOOLEAN',
-            defaultValue: null,
-            relatedTable: null,
-            customRegex : null,
-            autoLoad    : false,
-            isPrimaryKey: false
-          }, {
-            name        : 'updated',
-            required    : false,
-            type        : 'DATETIME',
-            defaultValue: null,
-            relatedTable: null,
-            customRegex : null,
-            autoLoad    : false,
-            isPrimaryKey: false
-          }, {
-            name        : 'integerCol',
-            required    : false,
-            type        : 'DOUBLE',
-            defaultValue: null,
-            relatedTable: null,
-            customRegex : null,
-            autoLoad    : false,
-            isPrimaryKey: false
-          }, {
-            name        : 'objectId',
-            required    : false,
-            type        : 'STRING_ID',
-            defaultValue: null,
-            relatedTable: null,
-            customRegex : null,
-            autoLoad    : false,
-            isPrimaryKey: true
-          }])
+        .then(() => Persistence.describe('Blackstar'))
+        .then(schema => {
+          schema.forEach(schemaObject => expect(schemaObject).to.have.all.keys([
+            'name', 'required', 'type', 'defaultValue', 'relatedTable', 'customRegex', 'autoLoad', 'isPrimaryKey'
+          ]))
         })
     })
 
@@ -421,6 +369,18 @@ describe('Backendless.Persistence', function() {
             expect(result[idx]).to.have.property('counter').that.equal(idx)
           })
         })
+    })
+
+    it('Retrieve object count', function() {
+      const db = Persistence.of('TableWithPagination')
+      const whereClause = Backendless.DataQueryBuilder.create().setWhereClause('counter < 50')
+
+      return Promise.resolve()
+        .then(createBigTable)
+        .then(() => db.getObjectCount())
+        .then(count => expect(count).to.be.equal(101))
+        .then(() => db.getObjectCount(whereClause))
+        .then(count => expect(count).to.be.equal(50))
     })
 
     it('Retrieving nextPage', function() {
