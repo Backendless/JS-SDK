@@ -1858,7 +1858,7 @@
   function DataPermissions() {
     this.FIND = new DataPermission('FIND');
     this.REMOVE = new DataPermission('REMOVE');
-    this.UPDATE = new DataPermission('UPDATE')
+    this.UPDATE = new DataPermission('UPDATE');
   }
 
   function DataPermission(permission) {
@@ -4039,6 +4039,25 @@
       }
 
       return result;
+    },
+
+    getMessageStatus: promisified('_getMessageStatus'),
+
+    getMessageStatusSync: promisified('_getMessageStatus'),
+
+    _getMessageStatus: function(messageId, async) {
+      if (!messageId) {
+        throw Error('Message ID is required.')
+      }
+
+      var responder = Utils.extractResponder(arguments);
+
+      return Backendless._ajax({
+        method      : 'GET',
+        url         : this.restUrl + '/' + messageId,
+        isAsync     : !!responder,
+        asyncHandler: responder
+      });
     }
   };
 
@@ -4135,20 +4154,26 @@
   }
 
   function FilePermissions() {
+    this.READ = new FilePermission('READ');
+    this.DELETE = new FilePermission('DELETE');
+    this.WRITE = new FilePermission('WRITE');
+  }
+
+  function FilePermission(permission) {
+    this.permission = permission;
     this.restUrl = Backendless.appPath + '/files/permissions';
   }
 
-  FilePermissions.prototype = {
+  FilePermission.prototype = {
     grantUser: promisified('_grantUser'),
 
     grantUserSync: synchronized('_grantUser'),
 
-    _grantUser: function(userId, url, permissionType, async) {
+    _grantUser: function(userId, url, async) {
       return this._sendRequest({
         varType       : 'user',
         id            : userId,
         url           : url,
-        permissionType: permissionType,
         state         : 'GRANT',
         responder     : async
       });
@@ -4158,12 +4183,11 @@
 
     grantRoleSync: synchronized('_grantRole'),
 
-    _grantRole: function(roleName, url, permissionType, async) {
+    _grantRole: function(roleName, url, async) {
       return this._sendRequest({
         varType       : 'role',
         id            : roleName,
         url           : url,
-        permissionType: permissionType,
         state         : 'GRANT',
         responder     : async
       });
@@ -4173,11 +4197,10 @@
 
     grantSync: synchronized('_grant'),
 
-    _grant: function(url, permissionType, async) {
+    _grant: function(url, async) {
       return this._sendRequest({
         varType       : 'user',
         url           : url,
-        permissionType: permissionType,
         state         : 'GRANT',
         responder     : async
       });
@@ -4187,12 +4210,11 @@
 
     denyUserSync: synchronized('_denyUser'),
 
-    _denyUser: function(userId, url, permissionType, async) {
+    _denyUser: function(userId, url, async) {
       return this._sendRequest({
         varType       : 'user',
         id            : userId,
         url           : url,
-        permissionType: permissionType,
         state         : 'DENY',
         responder     : async
       });
@@ -4202,12 +4224,11 @@
 
     denyRoleSync: synchronized('_denyRole'),
 
-    _denyRole: function(roleName, url, permissionType, async) {
+    _denyRole: function(roleName, url, async) {
       return this._sendRequest({
         varType       : 'role',
         id            : roleName,
         url           : url,
-        permissionType: permissionType,
         state         : 'DENY',
         responder     : async
       });
@@ -4217,11 +4238,10 @@
 
     denySync: synchronized('_deny'),
 
-    _deny: function(url, permissionType, async) {
+    _deny: function(url, async) {
       return this._sendRequest({
         varType       : 'user',
         url           : url,
-        permissionType: permissionType,
         state         : 'DENY',
         responder     : async
       });
@@ -4233,7 +4253,7 @@
       var responder = options.responder;
       var isAsync = responder != null;
       var data = {
-        "permission": options.permissionType
+        "permission": this.permission
       };
 
       if (options.varType) {

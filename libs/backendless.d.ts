@@ -464,10 +464,6 @@ declare module __Backendless {
      * @refers {@link Backendless.Persistence.Permissions}
      */
     class PersistencePermissionsClass {
-        restUrl:string;
-
-        getRestUrl(obj:DataItemI, type:string):string;
-
         FIND:PersistencePermissionI;
         REMOVE:PersistencePermissionI;
         UPDATE:PersistencePermissionI;
@@ -561,6 +557,9 @@ declare module __Backendless {
 
         unregisterDeviceSync():Object;
         unregisterDevice():Promise<Object>;
+
+        getMessageStatusSync(messageId:string):boolean;
+        getMessageStatus(messageId:string):Promise<boolean>;
     }
 
     /**
@@ -572,7 +571,7 @@ declare module __Backendless {
         /**
          * @namespace Backendless.Files.Permissions
          **/
-        Permissions:FilesPermissions;
+        Permissions:FilePermissions;
 
         restUrl:string;
 
@@ -606,23 +605,13 @@ declare module __Backendless {
 
     /**
      * @private
-     * @class FilesPermissions
+     * @class FilePermissions
      * @refers {@link Backendless.Files.Permissions}
      */
-    class FilesPermissions {
-        restUrl:string;
-
-        grantUserSync(userId:string, url:string, permissionType:string):Object;
-        grantUser(userId:string, url:string, permissionType:string):Promise<Object>;
-
-        grantRoleSync(roleName:string, url:string, permissionType:string):Object;
-        grantRole(roleName:string, url:string, permissionType:string):Promise<Object>;
-
-        denyUserSync(userId:string, url:string, permissionType:string):Object;
-        denyUser(userId:string, url:string, permissionType:string):Promise<Object>;
-
-        denyRoleSync(roleName:string, url:string, permissionType:string):Object;
-        denyRole(roleName:string, url:string, permissionType:string):Promise<Object>;
+    class FilePermissions {
+        READ:FilePermissionI;
+        DELETE:FilePermissionI;
+        WRITE:FilePermissionI;
     }
 
     /**
@@ -854,6 +843,20 @@ declare module __Backendless {
 
         denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
         deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+    }
+
+    interface FilePermissionI {
+        grantUserSync(userId:string, url:string):boolean;
+        grantUser(userId:string, url:string):Promise<boolean>;
+
+        grantRoleSync(roleName:string, url:string):boolean;
+        grantRole(roleName:string, url:string):Promise<boolean>;
+
+        denyUserSync(userId:string, url:string):boolean;
+        denyUser(userId:string, url:string):Promise<boolean>;
+
+        denyRoleSync(roleName:string, url:string):boolean;
+        denyRole(roleName:string, url:string):Promise<boolean>;
     }
 
     interface DataQueryValueI {

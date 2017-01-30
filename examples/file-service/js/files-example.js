@@ -138,8 +138,8 @@
                 files = [];
                 $('#list').empty();
             },
-            function(){
-                showInfo(result.message);
+            function(e){
+                showInfo(e.message);
             }
         );
     }
