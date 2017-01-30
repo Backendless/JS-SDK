@@ -60,23 +60,23 @@ describe('Backendless.Files', function() {
 
       return createFile(path)
         .then(() => expect(Files.exists(path)).to.eventually.be.true)
-    });
+    })
 
     it('Empty Dir', function() {
       return createDir('exists/empty', 'dir')
         .then(() => expect(Files.exists('exists/empty/dir')).to.eventually.be.true)
-    });
+    })
 
     it('Non empty Dir', function() {
       const path = 'exists/non-empty/dir'
 
       return createFile(path + '/file')
         .then(() => expect(Files.exists(path)).to.eventually.be.true)
-    });
+    })
 
     it('non existing', function() {
       return expect(Files.exists('something/unexisting')).to.eventually.be.false
-    });
+    })
   })
 
   describe('Deletion', function() {
@@ -87,7 +87,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.exists(path)).to.eventually.be.true)
         .then(() => Files.remove(path))
         .then(() => expect(Files.exists(path)).to.eventually.be.false)
-    });
+    })
 
     it('existing empty directory', function() {
       const path = '/emptyDir'
@@ -96,20 +96,20 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.exists(path)).to.eventually.be.true)
         .then(() => Files.remove(path))
         .then(() => expect(Files.exists(path)).to.eventually.be.false)
-    });
+    })
 
     it('existing non-empty directory', function() {
       return this.consoleApi.files.createFile(this.app.id, 'dir/file', '')
         .then(() => expect(Files.exists('dir')).to.eventually.be.true)
         .then(() => Files.remove('dir'))
         .then(() => expect(Files.exists('dir')).to.eventually.be.false)
-    });
+    })
 
     it('non-existing path', function() {
       return expect(Files.remove('/non/existing/file')).to.eventually
         .be.rejected
         .and.eventually.have.property("code", 6000)
-    });
+    })
   })
 
   describe('Renaming', function() {
@@ -121,7 +121,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.renameFile(beforeRename, 'file-after')).to.eventually.have.string(afterRename))
         .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
-    });
+    })
 
     it('empty folder', function() {
       const beforeRename = '/rename/empty/dir-before'
@@ -131,7 +131,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.renameFile(beforeRename, 'dir-after')).to.eventually.have.string(afterRename))
         .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
-    });
+    })
 
     it('non empty folder', function() {
       const beforeRename = '/rename/non-empty/dir-before'
@@ -141,7 +141,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.renameFile(beforeRename, 'dir-after')).to.eventually.have.string(afterRename))
         .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
-    });
+    })
 
     it('non-existing path', function() {
       const path = '/rename/non-existing'
@@ -149,7 +149,7 @@ describe('Backendless.Files', function() {
       return expect(Files.renameFile(path, 'whatever')).to
         .eventually.be.rejected
         .and.eventually.have.property('code', 6007)
-    });
+    })
   })
 
   describe('Move', function() {
@@ -161,7 +161,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
         .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
-    });
+    })
 
     it('empty folder', function() {
       const beforeMove = '/move/empty/dir-before'
@@ -171,7 +171,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
         .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
-    });
+    })
 
     it('non empty folder', function() {
       const beforeMove = '/move/non-empty/dir-before'
@@ -181,7 +181,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
         .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
-    });
+    })
 
     it('non-existing path', function() {
       const path = '/move/non-existing'
@@ -189,7 +189,7 @@ describe('Backendless.Files', function() {
       return expect(Files.moveFile(path, 'whatever'))
         .to.eventually.be.rejected
         .and.eventually.have.property('code', 6007)
-    });
+    })
   })
 
   describe('Copy', function() {
@@ -201,7 +201,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
-    });
+    })
 
     it('empty folder', function() {
       const beforeCopy = '/copy/empty/dir-before'
@@ -211,7 +211,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
-    });
+    })
 
     it('non empty folder', function() {
       const beforeCopy = '/rename/non-empty/dir-before'
@@ -221,7 +221,7 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
-    });
+    })
 
     it('non-existing path', function() {
       const path = '/copy/non-existing'
@@ -229,26 +229,24 @@ describe('Backendless.Files', function() {
       return expect(Files.copyFile(path, 'whatever'))
         .to.eventually.be.rejected
         .and.eventually.have.property('code', 6007)
-    });
+    })
   })
 
-  if (process.env.TEST_ENV !== 'node') {
-    describe('Save', function() {
-      it('Save file', function() {
-        if (process.env.TEST_ENV !== 'node') {
-          const fileName = 'testFile'
-          const fileDir = 'save-test'
-          const filePath = fileDir + '/' + fileName
+  describe('Save', function() {
+    it('Save file', function() {
+      if (process.env.TEST_ENV !== 'node') {
+        const fileName = 'testFile'
+        const fileDir = 'save-test'
+        const filePath = fileDir + '/' + fileName
 
-          return Promise.resolve()
-            .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent')).to.eventually.have.string(filePath))
-            .then(() => expect(readFile(filePath)).to.eventually.eql('testContent'))
-            .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent 2')).to.eventually.have.string(filePath))
-            .then(() => expect(readFile(filePath)).to.eventually.eql('testContent 2'))
-        }
-      });
+        return Promise.resolve()
+          .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent')).to.eventually.have.string(filePath))
+          .then(() => expect(readFile(filePath)).to.eventually.eql('testContent'))
+          .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent 2')).to.eventually.have.string(filePath))
+          .then(() => expect(readFile(filePath)).to.eventually.eql('testContent 2'))
+      }
     })
-  }
+  })
 
   describe('Upload', function() {
     it('Upload file', function() {
@@ -258,9 +256,9 @@ describe('Backendless.Files', function() {
         const filePath = fileDir + '/' + fileName
 
         return expect(Files.upload(new File([""], fileName), fileDir, true)).to.eventually.have.string(filePath)
-        //TODO: check file existance, try to re-upload
+        //TODO: check file existence, try to re-upload
       }
-    });
+    })
   })
 
   describe('Permissions', function() {

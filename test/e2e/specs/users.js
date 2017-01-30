@@ -4,7 +4,7 @@ import Backendless from '../../../src/backendless'
 
 function randUser() {
   const ts = new Date().getTime()
-  var user = new Backendless.User()
+  const user = new Backendless.User()
   user.email = `test_${ts}@gmail.com`
   user.password = 'qwerty'
   return user
@@ -32,9 +32,9 @@ describe('Backendless.Users', function() {
     }
 
     BackendlessCopy = () => {
-      delete require.cache[require.resolve('../../../libs/backendless')]
+      delete require.cache[require.resolve('../../../src/backendless')]
 
-      const result = require('../.././backendless').noConflict()
+      const result = require('../../../src/backendless').noConflict()
       result.serverURL = Backendless.serverURL
       result.initApp(Backendless.applicationId, Backendless.secretKey)
 
@@ -48,7 +48,7 @@ describe('Backendless.Users', function() {
 
   describe('registration', function() {
     it('basic', function() {
-      var user = randUser()
+      const user = randUser()
 
       return Backendless.UserService.register(user).then(result => {
         expect(result).to.have.property('objectId')
@@ -69,7 +69,7 @@ describe('Backendless.Users', function() {
     })
 
     it('of identicaly user is forbidden', function() {
-      var user = randUser()
+      const user = randUser()
 
       return Backendless.UserService.register(user).then(() =>
         expect(Backendless.UserService.register(user))
@@ -323,7 +323,7 @@ describe('Backendless.Users', function() {
   })
 
   it('describe user', function() {
-    var user = randUser()
+    const user = randUser()
     user.location = 'New York'
 
     return Promise.resolve()
