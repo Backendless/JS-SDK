@@ -1417,6 +1417,7 @@
       var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
       var url = this.restUrl + '/count';
       var isAsync = !!args.async;
+      var asyncHandler = Utils.wrapAsync(args.async, Number, this);
 
       if (dataQuery.condition) {
         url += '?where=' + encodeURIComponent(dataQuery.condition);
@@ -1426,7 +1427,7 @@
         method      : 'GET',
         url         : url,
         isAsync     : isAsync,
-        asyncHandler: args.async
+        asyncHandler: asyncHandler
       });
     },
 

@@ -429,6 +429,9 @@ declare module __Backendless {
         bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise<string>;
         bulkDeleteSync(objectsArray:string|Array<string>|Array<Object>):string;
 
+        getObjectCount(whereClause?:string):Promise<number>;
+        getObjectCountSync(whereClause?:string):number;
+
     }
 
     /**
