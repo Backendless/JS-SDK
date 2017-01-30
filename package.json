@@ -9,9 +9,16 @@
     "test:e2e": "npm run test:e2e:node",
     "test:e2e:node": "TEST_ENV=node mocha --compilers js:babel-core/register test/e2e/specs",
     "test:e2e:browser": "karma start test/e2e/karma.conf.js",
-    "build": "uglifyjs libs/backendless.js --mangle --source-map libs/backendless.min.map -o libs/backendless.min.js",
-    "update-libs": "git push origin `git subtree split --prefix libs master`:gh-pages --force"
+    "clean": "rimraf dist",
+    "copy": "copyup src/* dist",
+    "minimize": "uglifyjs dist/backendless.js --mangle --source-map dist/backendless.min.map -o dist/backendless.min.js",
+    "build": "npm run clean && npm run copy && npm run minimize",
+    "prepublish": "npm run build"
   },
+  "files": [
+    "dist",
+    "examples"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Backendless/JS-SDK"
@@ -40,6 +47,7 @@
     "browserify": "^13.1.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "copyfiles": "^1.1.0",
     "eslint": "^3.12.2",
     "karma": "^1.3.0",
     "karma-babel-preprocessor": "^6.0.1",
@@ -47,6 +55,7 @@
     "karma-mocha": "^1.3.0",
     "karma-phantomjs-launcher": "^1.0.2",
     "mocha": "^3.2.0",
+    "rimraf": "^2.5.4",
     "typescript": "^2.0.3",
     "uglifyjs": "^2.4.10",
     "watchify": "^3.8.0"

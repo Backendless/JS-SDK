@@ -1,4 +1,4 @@
-/// <reference path="../libs/backendless.d.ts" />
+/// <reference path="../src/backendless.d.ts" />
 /// <reference path="./es6-promise.d.ts" />
 
 import Counter = __Backendless.Counter;

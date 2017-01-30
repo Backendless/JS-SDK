@@ -1,6 +1,6 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../libs/backendless'
+import Backendless from '../../../src/backendless'
 import { wait } from '../helpers/promise'
 
 function Foo(opts) {

@@ -1,6 +1,6 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../libs/backendless'
+import Backendless from '../../../src/backendless'
 
 function randUser() {
   const ts = new Date().getTime()
@@ -34,7 +34,7 @@ describe('Backendless.Users', function() {
     BackendlessCopy = () => {
       delete require.cache[require.resolve('../../../libs/backendless')]
 
-      const result = require('../../../libs/backendless').noConflict()
+      const result = require('../.././backendless').noConflict()
       result.serverURL = Backendless.serverURL
       result.initApp(Backendless.applicationId, Backendless.secretKey)
 
