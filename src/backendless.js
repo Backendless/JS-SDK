@@ -4308,7 +4308,7 @@
         baseUrl += '?overwrite=true';
       }
 
-      var fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
+      fileName = encodeURIComponent(fileName).replace(/'/g, "%27").replace(/"/g, "%22");
 
       function send(content) {
         sendData({
@@ -4347,6 +4347,7 @@
     uploadSync: synchronized('_upload'),
 
     _upload: function(files, path, overwrite, async) {
+      async = Utils.extractResponder(arguments);
       files = files.files || files;
       var baseUrl = this.restUrl + '/' + path + '/';
       var overwriting = '';

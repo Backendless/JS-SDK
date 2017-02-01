@@ -578,8 +578,8 @@ declare module __Backendless {
         saveFileSync(path:string, fileName:string, fileContent:Blob, overwrite?:boolean):boolean;
         saveFile(path:string, fileName:string, fileContent:Blob, overwrite?:boolean):Promise<boolean>;
 
-        uploadSync(files:File|File[], path:string, overwrite:boolean):void;
-        upload(files:File|File[], path:string, overwrite:boolean):Promise<void>;
+        uploadSync(files:File|File[], path:string, overwrite?:boolean):void;
+        upload(files:File|File[], path:string, overwrite?:boolean):Promise<void>;
 
         listingSync(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Object;
         listing(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Promise<Object>;
