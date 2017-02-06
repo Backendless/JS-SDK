@@ -484,7 +484,7 @@ declare module __Backendless {
         savePoint(point:Backendless.GeoPoint):Promise<Backendless.GeoPoint>;
 
         findSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        find(query:Backendless.GeoQueryI):Promise;
+        find(query:Backendless.GeoQueryI):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
 
         deletePointSync(point:string|Backendless.GeoPoint):string;
         deletePoint(point:string|Backendless.GeoPoint):Promise<string>;
