@@ -18,12 +18,7 @@
 })(function(root) {
   'use strict';
 
-  var NodeDevice = {
-    name    : 'NODEJS',
-    platform: 'NODEJS',
-    uuid    : 'someId',
-    version : '1'
-  };
+  var DEVICE = null;
 
   var isBrowser = (new Function("try {return this===window;}catch(e){ return false;}"))();
 
@@ -3950,16 +3945,17 @@
 
     registerDeviceSync: synchronized('_registerDevice'),
 
-    _registerDevice: function(channels, expiration, async) {
+    _registerDevice: function(deviceToken, channels, expiration, async) {
+      assertDeviceDefined();
+
       var responder = Utils.extractResponder(arguments);
       var isAsync = responder != null;
-      var device = isBrowser ? window.device : NodeDevice;
 
       var data = {
-        deviceToken: null, //This value will set in callback
-        deviceId   : device.uuid,
-        os         : device.platform,
-        osVersion  : device.version
+        deviceToken: deviceToken,
+        deviceId   : DEVICE.uuid,
+        os         : DEVICE.platform,
+        osVersion  : DEVICE.version
       };
 
       if (Utils.isArray(channels)) {
@@ -3973,30 +3969,13 @@
         }
       }
 
-      var url = this.restUrl + '/registrations';
-
-      var success = function(deviceToken) {
-        data.deviceToken = deviceToken;
-
-        Backendless._ajax({
-          method      : 'POST',
-          url         : url,
-          data        : JSON.stringify(data),
-          isAsync     : isAsync,
-          asyncHandler: responder
-        });
-      };
-
-      var fail = function(status) {
-        console.warn(JSON.stringify(['failed to register ', status]));
-      };
-
-      var config = {
-        projectid: "http://backendless.com",
-        appid    : Backendless.applicationId
-      };
-
-      cordova.exec(success, fail, "PushNotification", "registerDevice", [config]);
+      Backendless._ajax({
+        method      : 'POST',
+        url         : this.restUrl + '/registrations',
+        data        : JSON.stringify(data),
+        isAsync     : isAsync,
+        asyncHandler: responder
+      });
     },
 
     getRegistrations: promisified('_getRegistrations'),
@@ -4004,13 +3983,14 @@
     getRegistrationsSync: synchronized('_getRegistrations'),
 
     _getRegistrations: function(async) {
-      var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
+      assertDeviceDefined();
+
       var responder = Utils.extractResponder(arguments);
       var isAsync = responder != null;
 
       return Backendless._ajax({
         method      : 'GET',
-        url         : this.restUrl + '/registrations/' + deviceId,
+        url         : this.restUrl + '/registrations/' + DEVICE.uuid,
         isAsync     : isAsync,
         asyncHandler: responder
       });
@@ -4021,24 +4001,17 @@
     unregisterDeviceSync: synchronized('_unregisterDevice'),
 
     _unregisterDevice: function(async) {
-      var deviceId = isBrowser ? window.device.uuid : NodeDevice.uuid;
+      assertDeviceDefined();
+
       var responder = Utils.extractResponder(arguments);
       var isAsync = responder != null;
 
-      var result = Backendless._ajax({
+      Backendless._ajax({
         method      : 'DELETE',
-        url         : this.restUrl + '/registrations/' + deviceId,
+        url         : this.restUrl + '/registrations/' + DEVICE.uuid,
         isAsync     : isAsync,
         asyncHandler: responder
       });
-
-      try {
-        cordova.exec(emptyFn, emptyFn, "PushNotification", "unregisterDevice", []);
-      } catch (e) {
-        console.log(e.message);
-      }
-
-      return result;
     },
 
     getMessageStatus: promisified('_getMessageStatus'),
@@ -4171,11 +4144,11 @@
 
     _grantUser: function(userId, url, async) {
       return this._sendRequest({
-        varType       : 'user',
-        id            : userId,
-        url           : url,
-        state         : 'GRANT',
-        responder     : async
+        varType  : 'user',
+        id       : userId,
+        url      : url,
+        state    : 'GRANT',
+        responder: async
       });
     },
 
@@ -4185,11 +4158,11 @@
 
     _grantRole: function(roleName, url, async) {
       return this._sendRequest({
-        varType       : 'role',
-        id            : roleName,
-        url           : url,
-        state         : 'GRANT',
-        responder     : async
+        varType  : 'role',
+        id       : roleName,
+        url      : url,
+        state    : 'GRANT',
+        responder: async
       });
     },
 
@@ -4199,10 +4172,10 @@
 
     _grant: function(url, async) {
       return this._sendRequest({
-        varType       : 'user',
-        url           : url,
-        state         : 'GRANT',
-        responder     : async
+        varType  : 'user',
+        url      : url,
+        state    : 'GRANT',
+        responder: async
       });
     },
 
@@ -4212,11 +4185,11 @@
 
     _denyUser: function(userId, url, async) {
       return this._sendRequest({
-        varType       : 'user',
-        id            : userId,
-        url           : url,
-        state         : 'DENY',
-        responder     : async
+        varType  : 'user',
+        id       : userId,
+        url      : url,
+        state    : 'DENY',
+        responder: async
       });
     },
 
@@ -4226,11 +4199,11 @@
 
     _denyRole: function(roleName, url, async) {
       return this._sendRequest({
-        varType       : 'role',
-        id            : roleName,
-        url           : url,
-        state         : 'DENY',
-        responder     : async
+        varType  : 'role',
+        id       : roleName,
+        url      : url,
+        state    : 'DENY',
+        responder: async
       });
     },
 
@@ -4240,10 +4213,10 @@
 
     _deny: function(url, async) {
       return this._sendRequest({
-        varType       : 'user',
-        url           : url,
-        state         : 'DENY',
-        responder     : async
+        varType  : 'user',
+        url      : url,
+        state    : 'DENY',
+        responder: async
       });
     },
 
@@ -5322,6 +5295,12 @@
     };
   }
 
+  function assertDeviceDefined() {
+    if (!DEVICE) {
+      throw new Error('Device is not defined. Please, run the Backendless.setupDevice');
+    }
+  }
+
   Backendless.initApp = function(appId, secretKey) {
     Backendless.applicationId = appId;
     Backendless.secretKey = secretKey;
@@ -5342,6 +5321,18 @@
     Backendless.CustomServices = new CustomServices();
     dataStoreCache = {};
     currentUser = null;
+  };
+
+  Backendless.setupDevice = function(deviceProps) {
+    if (!deviceProps || !deviceProps.uuid || !deviceProps.platform || !deviceProps.version) {
+      throw new Error('Device properties object must consist of fields "uuid", "platform" and "version".');
+    }
+
+    DEVICE = {
+      uuid    : deviceProps.uuid,
+      platform: deviceProps.platform,
+      version : deviceProps.version
+    };
   };
 
   var DataQuery = function() {
