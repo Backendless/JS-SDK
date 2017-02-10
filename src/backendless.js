@@ -5330,7 +5330,7 @@
 
     DEVICE = {
       uuid    : deviceProps.uuid,
-      platform: deviceProps.platform,
+      platform: deviceProps.platform.toUpperCase(),
       version : deviceProps.version
     };
   };
