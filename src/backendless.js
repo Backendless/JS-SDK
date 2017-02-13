@@ -1232,7 +1232,7 @@
       var responder = Utils.extractResponder(arguments);
 
       if (Utils.isString(arguments[0])) {
-        argsObj = arguments[1] || {};
+        argsObj = !(arguments[1] instanceof Async) ? (arguments[1] || {}) : {};
         argsObj.url = arguments[0];
 
         if (!argsObj.url) {
@@ -1348,7 +1348,7 @@
     findFirstSync: synchronized('_findFirst'),
 
     _findFirst: function() {
-      var argsObj = arguments[0] || {};
+      var argsObj = !(arguments[0] instanceof Async) ? (arguments[0] || {}) : {};
       argsObj.url = 'first';
 
       return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
@@ -1359,7 +1359,7 @@
     findLastSync: synchronized('_findLast'),
 
     _findLast: function() {
-      var argsObj = arguments[0] || {};
+      var argsObj = !(arguments[0] instanceof Async) ? (arguments[0] || {}) : {};
       argsObj.url = 'last';
 
       return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
