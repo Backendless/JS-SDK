@@ -46,6 +46,24 @@ describe('Backendless.Persistence', function() {
         .then(() => Promise.all(paginationTestData.map(record => insertRecord('TableWithPagination', record))))
     }
 
+    const createTableWithRelations = () => {
+      let childObjectId
+
+      return Persistence.of('Parent').save({}) // create first level table
+        .then(({ objectId }) =>
+          Persistence.of('Child').save({}) // create second level table
+            .then(childObject => {
+              childObjectId = childObject.objectId
+
+              return Persistence.of('Parent').addRelation(objectId, 'child:Child:1', [childObject])
+            })
+            .then(() =>
+              Persistence.of('GrandChild').save({}) // create third level table
+                .then(grandChildObject =>
+                  Persistence.of('Child').addRelation(childObjectId, 'grandChild:GrandChild:1', [grandChildObject])))
+        ).catch(console.error)
+    }
+
     sandbox.forTest()
 
     beforeEach(function() {
@@ -339,6 +357,44 @@ describe('Backendless.Persistence', function() {
         .then(result => {
           expect(result.counter).to.be.equal(1)
           expect(result.name).to.be.equal('Last')
+        })
+    })
+
+    it('Find with relations depth 0', function() {
+      const db = Persistence.of('Parent')
+      const query = Backendless.DataQueryBuilder.create().setRelationsDepth(0).build()
+
+      return createTableWithRelations()
+        .then(() => db.findFirst())
+        .then(({ objectId }) => db.findById(objectId, query))
+        .then(result => {
+          expect(result).to.have.property('child').that.have.to.be.null
+        })
+    })
+
+    it('Find with relations depth 1', function() {
+      const db = Persistence.of('Parent')
+      const query = Backendless.DataQueryBuilder.create().setRelationsDepth(1).build()
+
+      return createTableWithRelations()
+        .then(() => db.findFirst())
+        .then(({ objectId }) => db.findById(objectId, query))
+        .then(result => {
+          expect(result).to.have.property('child').that.have.to.be.not.null
+          expect(result.child).to.have.property('grandChild').that.have.to.be.null
+        })
+    })
+
+    it('Find with relations depth 2', function() {
+      const db = Persistence.of('Parent')
+      const query = Backendless.DataQueryBuilder.create().setRelationsDepth(2).build()
+
+      return createTableWithRelations()
+        .then(() => db.findFirst())
+        .then(({ objectId }) => db.findById(objectId, query))
+        .then(result => {
+          expect(result).to.have.property('child').that.have.to.be.not.null
+          expect(result.child).to.have.property('grandChild').that.have.to.be.not.null
         })
     })
 

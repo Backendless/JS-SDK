@@ -1229,20 +1229,20 @@
 
     _findById: function() {
       var argsObj;
+      var responder = Utils.extractResponder(arguments);
 
       if (Utils.isString(arguments[0])) {
-        argsObj = arguments[1] || {}
-        argsObj.url = arguments[0]
+        argsObj = arguments[1] || {};
+        argsObj.url = arguments[0];
 
         if (!argsObj.url) {
           throw new Error('missing argument "object ID" for method findById()');
         }
 
-        return this._findUtil(argsObj);
+        return this._findUtil(argsObj, responder);
       } else if (Utils.isObject(arguments[0])) {
         argsObj = arguments[0];
-        var responder = Utils.extractResponder(arguments),
-            url       = this.restUrl,
+        var url       = this.restUrl,
             isAsync   = responder != null,
             send      = "/pk?";
 
