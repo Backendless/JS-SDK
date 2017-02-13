@@ -1,0 +1,28 @@
+{
+  "name": "ReactNativePushBase",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "backendless": "^4.0.0",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "react": "15.4.2",
+    "react-native": "0.41.2",
+    "react-native-device-info": "^0.9.9",
+    "react-native-push-notification": "^2.2.1",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "babel-jest": "18.0.0",
+    "babel-preset-react-native": "1.9.1",
+    "jest": "18.1.0",
+    "react-test-renderer": "15.4.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
