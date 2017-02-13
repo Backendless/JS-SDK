@@ -1223,37 +1223,6 @@
       return isAsync ? result : this._parseFindResponse(result);
     },
 
-    _buildArgsObject: function() {
-      var args = {},
-          i    = arguments.length,
-          type = "";
-      for (; i--;) {
-        type = Object.prototype.toString.call(arguments[i]).toLowerCase().match(/[a-z]+/g)[1];
-        switch (type) {
-          case "number":
-            args.options = args.options || {};
-            args.options.relationsDepth = arguments[i];
-            break;
-          case "string":
-            args.url = arguments[i];
-            break;
-          case "array":
-            args.options = args.options || {};
-            args.options.relations = arguments[i];
-            break;
-          case "object":
-            if (arguments[i].hasOwnProperty('cachePolicy')) {
-              args.cachePolicy = arguments[i]['cachePolicy'];
-            }
-            break;
-          default:
-            break;
-        }
-      }
-
-      return args;
-    },
-
     findById: promisified('_findById'),
 
     findByIdSync: synchronized('_findById'),
@@ -1262,12 +1231,14 @@
       var argsObj;
 
       if (Utils.isString(arguments[0])) {
-        argsObj = this._buildArgsObject.apply(this, arguments);
-        if (!(argsObj.url)) {
+        argsObj = arguments[1] || {}
+        argsObj.url = arguments[0]
+
+        if (!argsObj.url) {
           throw new Error('missing argument "object ID" for method findById()');
         }
 
-        return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
+        return this._findUtil(argsObj);
       } else if (Utils.isObject(arguments[0])) {
         argsObj = arguments[0];
         var responder = Utils.extractResponder(arguments),
@@ -1377,7 +1348,7 @@
     findFirstSync: synchronized('_findFirst'),
 
     _findFirst: function() {
-      var argsObj = this._buildArgsObject.apply(this, arguments);
+      var argsObj = arguments[0] || {};
       argsObj.url = 'first';
 
       return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
@@ -1388,7 +1359,7 @@
     findLastSync: synchronized('_findLast'),
 
     _findLast: function() {
-      var argsObj = this._buildArgsObject.apply(this, arguments);
+      var argsObj = arguments[0] || {};
       argsObj.url = 'last';
 
       return this._findUtil.apply(this, [argsObj].concat(Array.prototype.slice.call(arguments)));
