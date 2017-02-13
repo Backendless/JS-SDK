@@ -33,6 +33,12 @@ declare module __Backendless {
      * @public
      * @type: Function
      **/
+    function setupDevice(deviceProps:Object):void;
+
+    /**
+     * @public
+     * @type: Function
+     **/
     function setUIState(state:string):void;
 
     /**
@@ -549,8 +555,8 @@ declare module __Backendless {
         cancelSync(messageId:string):boolean;
         cancel(messageId:string):Promise<boolean>;
 
-        registerDeviceSync(channels:string[], expiration:number|Date):Object;
-        registerDevice(channels:string[], expiration:number|Date):Promise<Object>;
+        registerDeviceSync(deviceToken:string, channels:string[], expiration:number|Date):Object;
+        registerDevice(deviceToken:string, channels:string[], expiration:number|Date):Promise<Object>;
 
         getRegistrationsSync():Object;
         getRegistrations():Promise<Object>;
