@@ -524,13 +524,13 @@ describe('Persistence', function() {
    ****************/
 
   describe('Permissions', function() {
-    sandbox.forTest()
+    sandbox.forSuite()
 
     const roleName = 'AuthenticatedUser'
     let Permissions
     let user
 
-    beforeEach(function() {
+    before(function() {
       Permissions = Backendless.Data.Permissions
 
       const db = Backendless.Persistence.of(Backendless.User)
