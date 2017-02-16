@@ -67,8 +67,8 @@ describe('Backendless.Cache', function() {
     return Promise.resolve()
       .then(() => Backendless.Cache.put('a', a))
       .then(() => Backendless.Cache.put('b', b))
-      .then(() => Backendless.Cache.expireIn('a', 2)) //two seconds to live
-      .then(() => Backendless.Cache.expireAt('b', new Date().getTime() + 4000)) //three seconds to live
+      .then(() => Backendless.Cache.expireIn('a', 2)) //2 seconds to live
+      .then(() => Backendless.Cache.expireAt('b', new Date().getTime() + 5000)) //5 seconds to live
 
       //check keys are still alive
       .then(() => expect(Backendless.Cache.get('a')).to.eventually.equal(a))
@@ -76,11 +76,11 @@ describe('Backendless.Cache', function() {
 
       .then(() => wait(2000))
 
-      //a should gone, b should stil live for one more second
+      //a should gone, b should stil be alive
       .then(() => expect(Backendless.Cache.get('a')).to.eventually.be.null)
       .then(() => expect(Backendless.Cache.get('b')).to.eventually.equal(b))
 
-      .then(() => wait(2000))
+      .then(() => wait(3000))
       .then(() => expect(Backendless.Cache.get('b')).to.eventually.be.null)
   })
 })

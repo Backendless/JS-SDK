@@ -274,7 +274,7 @@ describe('Backendless.Files', function() {
     operations.forEach(operation =>
       permissions.forEach(permission =>
         it(`${operation} ${permission}`, function() {
-          return Files.Permissions[operation](testFile, permission)
+          return Files.Permissions[permission][operation](testFile)
         })
       )
     )
