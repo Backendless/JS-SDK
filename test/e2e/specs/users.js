@@ -292,9 +292,9 @@ describe('Backendless.Users', function() {
 
     it('dynamic prop when feature is disabled', function() {
       return setDynamicSchema(false).then(() =>
-        expect(Backendless.UserService.update({ objectId: user.objectId, data: 'custom data' }))
+        expect(Backendless.UserService.update({ objectId: user.objectId, data2: 'custom data' }))
           .to.eventually.be.rejected
-          .and.eventually.have.property('code', 3000)
+          .and.eventually.have.property('code', 1169)
       )
     })
 
@@ -302,7 +302,7 @@ describe('Backendless.Users', function() {
       return Backendless.UserService.register(randUser()).then(neighbor =>
         expect(Backendless.UserService.update(neighbor))
           .to.eventually.be.rejected
-          .and.eventually.have.property('code', 3000)
+          .and.eventually.have.property('code', 3029)
       )
     })
   })
@@ -329,58 +329,80 @@ describe('Backendless.Users', function() {
     return Promise.resolve()
       .then(() => Backendless.UserService.register(user))
       .then(() => Backendless.UserService.login(user.email, user.password))
-      .then(() => expect(Backendless.UserService.describeUserClass())
-        .to.eventually.deep.include.members([
-          { name: 'location' },
-          { name: 'email' },
-          { name: 'created' },
-          { name: 'updated' },
-          { name: 'objectId' },
-        ]))
+      .then(() => Backendless.UserService.describeUserClass())
+      .then(columns => expect(columns.map(column => column.name))
+        .to.include.members(['location', 'email', 'created', 'updated', 'objectId']))
   })
 
   describe('roles', function() {
-    it('assign/unassign custom role to a user', function() {
-      let user
+    let user
 
-      return Promise.resolve()
-        .then(() => this.consoleApi.security.createRole(this.app.id, 'CustomRole'))
-        .then(() => loginRandomUser())
-        .then(result => user = result)
-        .then(() => expect(Backendless.UserService.assignRole(user.email, 'CustomRole'))
-          .to.eventually.be.fulfilled)
-        .then(() => expect(Backendless.UserService.unassignRole(user.email, 'CustomRole'))
-          .to.eventually.be.fulfilled)
+    before(function() {
+      return loginRandomUser().then(result => user = result)
     })
 
-    it('assign/unassign system role to a user', function() {
-      let user
+    describe('using js sdk api key', function() {
+      it('assign/unassign custom role', function() {
 
-      return loginRandomUser()
-        .then(u => user = u)
-        .then(() => expect(Backendless.UserService.assignRole(user.email, 'AuthenticatedUser'))
-          .to.eventually.be.rejected
-          .and.eventually.have.property('code', 2007)
-        )
-        .then(() => expect(Backendless.UserService.unassignRole(user.email, 'AuthenticatedUser'))
-          .to.eventually.be.rejected
-          .and.eventually.have.property('code', 2008)
-        )
+        return this.consoleApi.security.createRole(this.app.id, 'CustomRole')
+          .then(() => expect(Backendless.UserService.assignRole(user.email, 'CustomRole'))
+            .to.eventually.be.rejected
+            .and.eventually.have.property('code', 2011)
+          )
+          .then(() => expect(Backendless.UserService.unassignRole(user.email, 'CustomRole'))
+            .to.eventually.be.rejected
+            .and.eventually.have.property('code', 2011)
+          )
+      })
     })
 
-    it('assign/unassign nonexistent role to a user', function() {
-      let user
+    describe('using servercode api key', function() {
+      before(function() {
+        Backendless.initApp(this.app.id, this.app.devices.BL)
+      })
 
-      return loginRandomUser()
-        .then(u => user = u)
-        .then(() => expect(Backendless.UserService.assignRole(user.email, 'NonexistentRole'))
-          .to.eventually.be.rejected
-          .and.eventually.have.property('code', 2005)
-        )
-        .then(() => expect(Backendless.UserService.unassignRole(user.email, 'NonexistentRole'))
-          .to.eventually.be.rejected
-          .and.eventually.have.property('code', 2005)
-        )
+      it('assign/unassign custom role to a user', function() {
+        let user
+
+        return Promise.resolve()
+          .then(() => this.consoleApi.security.createRole(this.app.id, 'CustomRole2'))
+          .then(() => loginRandomUser())
+          .then(result => user = result)
+          .then(() => expect(Backendless.UserService.assignRole(user.email, 'CustomRole2').catch(e => console.log(e.code, e.message)))
+            .to.eventually.be.fulfilled)
+          .then(() => expect(Backendless.UserService.unassignRole(user.email, 'CustomRole2').catch(e => console.log(e.code, e.message)))
+            .to.eventually.be.fulfilled)
+      })
+
+      it('assign/unassign system role to a user', function() {
+        let user
+
+        return loginRandomUser()
+          .then(u => user = u)
+          .then(() => expect(Backendless.UserService.assignRole(user.email, 'AuthenticatedUser'))
+            .to.eventually.be.rejected
+            .and.eventually.have.property('code', 2007)
+          )
+          .then(() => expect(Backendless.UserService.unassignRole(user.email, 'AuthenticatedUser'))
+            .to.eventually.be.rejected
+            .and.eventually.have.property('code', 2008)
+          )
+      })
+
+      it('assign/unassign nonexistent role to a user', function() {
+        let user
+
+        return loginRandomUser()
+          .then(u => user = u)
+          .then(() => expect(Backendless.UserService.assignRole(user.email, 'NonexistentRole'))
+            .to.eventually.be.rejected
+            .and.eventually.have.property('code', 2005)
+          )
+          .then(() => expect(Backendless.UserService.unassignRole(user.email, 'NonexistentRole'))
+            .to.eventually.be.rejected
+            .and.eventually.have.property('code', 2005)
+          )
+      })
     })
   })
 })
