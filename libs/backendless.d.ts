@@ -647,6 +647,10 @@ declare module __Backendless {
         unregisterDevice():Object;
         unregisterDevice(async:Backendless.Async):XMLHttpRequest;
         unregisterDevice<Promise>():Promise;
+
+        getMessageStatus(messageId:string):Object;
+        getMessageStatus(messageId:string, async:Backendless.Async):XMLHttpRequest;
+        getMessageStatus<Promise>(messageId:string):Promise;
     }
 
     /**
