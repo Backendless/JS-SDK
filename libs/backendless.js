@@ -3358,6 +3358,21 @@
             }
 
             return result;
+        },
+
+        getMessageStatus: function(messageId, async) {
+            if (!messageId) {
+                throw Error('Message ID is required.')
+            }
+
+            var responder = extractResponder(arguments);
+
+            return Backendless._ajax({
+                method      : 'GET',
+                url         : this.restUrl + '/' + messageId,
+                isAsync     : !!responder,
+                asyncHandler: responder
+            });
         }
     };
     function getBuilder(filename, filedata, boundary) {
