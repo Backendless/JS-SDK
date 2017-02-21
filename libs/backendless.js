@@ -4432,7 +4432,7 @@
             [PollingProxy.prototype, ['poll']],
             [Backendless.Logging, ['flush']],
             [Messaging.prototype, ['publish', 'sendEmail', 'cancel', 'subscribe', 'registerDevice',
-                                   'getRegistrations', 'unregisterDevice']],
+                                   'getRegistrations', 'unregisterDevice', 'getMessageStatus']],
             [Geo.prototype, ['addPoint', 'savePoint', 'findUtil', 'loadMetadata', 'getClusterPoints', 'addCategory',
                              'getCategories', 'deleteCategory', 'deletePoint']],
             [UserService.prototype, ['register', 'getUserRoles', 'roleHelper', 'login', 'describeUserClass',
