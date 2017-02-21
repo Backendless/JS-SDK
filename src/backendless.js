@@ -1,5 +1,3 @@
-// Backendless.js 4.0.0
-
 (function(factory) {
   var root = (typeof self == 'object' && self.self === self && self) ||
     (typeof global == 'object' && global.global === global && global);
@@ -33,7 +31,6 @@
       emptyFn     = (function() {
       });
 
-  Backendless.VERSION = '4.0.0';
   Backendless.serverURL = 'https://api.backendless.com';
 
   Backendless.noConflict = function() {

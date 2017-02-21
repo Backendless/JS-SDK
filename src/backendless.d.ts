@@ -5,7 +5,6 @@
 declare module __Backendless {
     import Backendless = __Backendless;
 
-    var VERSION:string;
     var serverURL:string;
     var applicationId:string;
     var secretKey:string;
