@@ -3987,7 +3987,7 @@
 
     getMessageStatus: promisified('_getMessageStatus'),
 
-    getMessageStatusSync: promisified('_getMessageStatus'),
+    getMessageStatusSync: synchronized('_getMessageStatus'),
 
     _getMessageStatus: function(messageId, async) {
       if (!messageId) {
