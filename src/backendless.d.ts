@@ -554,7 +554,11 @@ declare module __Backendless {
         cancelSync(messageId:string):boolean;
         cancel(messageId:string):Promise<boolean>;
 
+        registerDeviceSync(deviceToken:string):Object;
+        registerDeviceSync(deviceToken:string, channels:string[]):Object;
         registerDeviceSync(deviceToken:string, channels:string[], expiration:number|Date):Object;
+        registerDevice(deviceToken:string):Promise<Object>;
+        registerDevice(deviceToken:string, channels:string[]):Promise<Object>;
         registerDevice(deviceToken:string, channels:string[], expiration:number|Date):Promise<Object>;
 
         getRegistrationsSync():Object;

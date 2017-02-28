@@ -27,7 +27,7 @@ PushNotification.configure({
       version : DeviceInfo.getSystemVersion()
     });
 
-    Backendless.registerDevice(device.token).then(
+    Backendless.Messaging.registerDevice(device.token).then(
       function() {
         alert("Registration done");
       },

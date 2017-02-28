@@ -57,7 +57,7 @@ export class MyApp {
     });
 
     push.on('registration', (data) => {
-      Backendless.registerDevice(data.registrationId).then(
+      Backendless.Messaging.registerDevice(data.registrationId).then(
         function () {
           alert("Registration done");
         },
