@@ -3,7 +3,6 @@
 
 import Counter = __Backendless.Counter;
 function testMain() {
-    var VERSION:string = Backendless.VERSION;
     var applicationId:string = Backendless.applicationId;
     var secretKey:string = Backendless.secretKey;
     var serverURL:string = Backendless.serverURL;
@@ -74,11 +73,11 @@ function testDataStoreClass() {
     var className:string = dataStore.className;
     var restUrl:string = dataStore.restUrl;
 
-    var dataQueryBuilder:Backendless.DataQueryBuilder = new Backendless.DataQueryBuilder.create();
+    var dataQueryBuilder:Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
 
     dataQueryBuilder.setWhereClause("objectId like '%00%'");
 
-    var loadRelationsQueryBuilder:Backendless.LoadRelationsQueryBuilder = new Backendless.LoadRelationsQueryBuilder.create();
+    var loadRelationsQueryBuilder:Backendless.LoadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder.create();
     var parentTableName:string = 'Test';
 
     var resultObj:Object;
@@ -321,16 +320,10 @@ function testUserService() {
     Backendless.UserService.loginWithTwitter({}, true).then().catch().then().then();
     Backendless.UserService.loginWithTwitter(null, true).then().catch().then().then();
 
-    Backendless.UserService.loginWithFacebookSdkSync();
-    Backendless.UserService.loginWithFacebookSdkSync({});
-    Backendless.UserService.loginWithFacebookSdkSync({}, true);
     Backendless.UserService.loginWithFacebookSdk().then().catch().then().then();
     Backendless.UserService.loginWithFacebookSdk({}).then().catch().then().then();
     Backendless.UserService.loginWithFacebookSdk({}, true).then().catch().then().then();
 
-    Backendless.UserService.loginWithGooglePlusSdkSync();
-    Backendless.UserService.loginWithGooglePlusSdkSync({});
-    Backendless.UserService.loginWithGooglePlusSdkSync({}, true);
     Backendless.UserService.loginWithGooglePlusSdk().then().catch().then().then();
     Backendless.UserService.loginWithGooglePlusSdk({}).then().catch().then().then();
     Backendless.UserService.loginWithGooglePlusSdk({}, true).then().catch().then().then();
@@ -462,6 +455,7 @@ function testMessaging() {
     var restUrl:string = Backendless.Messaging.restUrl;
     var channelProperties:Object = Backendless.Messaging.channelProperties;
     var channelName:string = 'str';
+    var deviceToken:string = 'str';
     var subject:string = 'str';
     var messageId:string = 'str';
     var message:string|Object = 'str';
@@ -476,7 +470,8 @@ function testMessaging() {
     var deliveryOptions:Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
     var subscription:Backendless.SubscriptionI;
     var subscriptionOptions:Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
-    var subscriptionCallback = function ():void {
+    var subscriptionCallback = function (data:Object):void {
+        var messagesArray:Array<String> = data["messages"];
     };
 
     subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
@@ -491,8 +486,8 @@ function testMessaging() {
     resultBool = Backendless.Messaging.cancelSync(messageId);
     Backendless.Messaging.cancel(messageId).then().catch().then().then();
 
-    resultObj = Backendless.Messaging.registerDeviceSync(channels, expiration);
-    Backendless.Messaging.registerDevice(channels, expiration).then().catch().then().then();
+    resultObj = Backendless.Messaging.registerDeviceSync(deviceToken, channels, expiration);
+    Backendless.Messaging.registerDevice(deviceToken, channels, expiration).then().catch().then().then();
 
     resultObj = Backendless.Messaging.getRegistrationsSync();
     Backendless.Messaging.getRegistrations().then().catch().then().then();
@@ -528,7 +523,6 @@ function testFilesService() {
     var resultObj:Object;
 
     resultStr = Backendless.Files.restUrl;
-    resultStr = Backendless.Files.Permissions.restUrl;
 
     resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent, overwrite);
     resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent);
@@ -576,17 +570,35 @@ function testFilesService() {
     Backendless.Files.removeDirectorySync(path);
     Backendless.Files.removeDirectory(path).then().catch().then().then();
 
-    resultObj = Backendless.Files.Permissions.grantUserSync(userid, url, permissionType);
-    Backendless.Files.Permissions.grantUser(userid, url, permissionType).then().catch().then().then();
+    resultObj = Backendless.Files.Permissions.READ.grantUserSync(userid, url);
+    resultObj = Backendless.Files.Permissions.READ.grantRoleSync(roleName, url);
+    resultObj = Backendless.Files.Permissions.READ.denyUserSync(userid, url);
+    resultObj = Backendless.Files.Permissions.READ.denyRoleSync(roleName, url);
 
-    resultObj = Backendless.Files.Permissions.grantRoleSync(roleName, url, permissionType);
-    Backendless.Files.Permissions.grantRole(roleName, url, permissionType).then().catch().then().then();
+    resultObj = Backendless.Files.Permissions.DELETE.grantUserSync(userid, url);
+    resultObj = Backendless.Files.Permissions.DELETE.grantRoleSync(roleName, url);
+    resultObj = Backendless.Files.Permissions.DELETE.denyUserSync(userid, url);
+    resultObj = Backendless.Files.Permissions.DELETE.denyRoleSync(roleName, url);
 
-    resultObj = Backendless.Files.Permissions.denyUserSync(userid, url, permissionType);
-    Backendless.Files.Permissions.denyUser(userid, url, permissionType).then().catch().then().then();
+    resultObj = Backendless.Files.Permissions.WRITE.grantUserSync(userid, url);
+    resultObj = Backendless.Files.Permissions.WRITE.grantRoleSync(roleName, url);
+    resultObj = Backendless.Files.Permissions.WRITE.denyUserSync(userid, url);
+    resultObj = Backendless.Files.Permissions.WRITE.denyRoleSync(roleName, url);
 
-    resultObj = Backendless.Files.Permissions.denyRoleSync(roleName, url, permissionType);
-    Backendless.Files.Permissions.denyRole(roleName, url, permissionType).then().catch().then().then();
+    Backendless.Files.Permissions.READ.grantUser(userid, url).then().catch().then().then();
+    Backendless.Files.Permissions.READ.grantRole(roleName, url).then().catch().then().then();
+    Backendless.Files.Permissions.READ.denyUser(userid, url).then().catch().then().then();
+    Backendless.Files.Permissions.READ.denyRole(roleName, url).then().catch().then().then();
+
+    Backendless.Files.Permissions.DELETE.grantUser(userid, url).then().catch().then().then();
+    Backendless.Files.Permissions.DELETE.grantRole(roleName, url).then().catch().then().then();
+    Backendless.Files.Permissions.DELETE.denyUser(userid, url).then().catch().then().then();
+    Backendless.Files.Permissions.DELETE.denyRole(roleName, url).then().catch().then().then();
+
+    Backendless.Files.Permissions.WRITE.grantUser(userid, url).then().catch().then().then();
+    Backendless.Files.Permissions.WRITE.grantRole(roleName, url).then().catch().then().then();
+    Backendless.Files.Permissions.WRITE.denyUser(userid, url).then().catch().then().then();
+    Backendless.Files.Permissions.WRITE.denyRole(roleName, url).then().catch().then().then();
 }
 
 function testCommerce() {
