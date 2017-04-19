@@ -644,7 +644,8 @@ function testMessaging() {
     var deliveryOptions:Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
     var subscription:Backendless.SubscriptionI;
     var subscriptionOptions:Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
-    var subscriptionCallback = function ():void {
+    var subscriptionCallback = function (data:Object) {
+        var messagesArray:Array<String> = data["messages"];
     };
     var async:Backendless.Async = new Backendless.Async(function (data:Object) {
     });

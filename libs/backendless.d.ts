@@ -620,9 +620,9 @@ declare module __Backendless {
         restUrl:string;
         channelProperties:Object;
 
-        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
-        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
-        subscribe<Promise>(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise;
+        subscribe(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
+        subscribe(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions, async:Backendless.Async):XMLHttpRequest;
+        subscribe<Promise>(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise;
 
         publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
         publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions, async:Backendless.Async):XMLHttpRequest;
