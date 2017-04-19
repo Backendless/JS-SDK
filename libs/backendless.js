@@ -1,4 +1,4 @@
-// Backendless.js 3.1.24
+// Backendless.js 3.1.25
 
 (function(factory) {
     var root = (typeof self == 'object' && self.self === self && self) ||
@@ -38,7 +38,7 @@
         emptyFn     = (function() {
         });
 
-    Backendless.VERSION = '3.1.24';
+    Backendless.VERSION = '3.1.25';
     Backendless.serverURL = 'https://api.backendless.com';
 
     Backendless.noConflict = function() {
