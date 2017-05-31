@@ -3785,7 +3785,7 @@
         var that = this;
 
         var callback = new Async(function(props) {
-          async.success(new Subscription({
+          responder.success(new Subscription({
             channelName      : channelName,
             options          : subscriptionOptions,
             channelProperties: props,
@@ -3823,7 +3823,7 @@
         message: message
       };
 
-      if (publishOptions) {
+      if (publishOptions && publishOptions !== responder) {
         if (!(publishOptions instanceof PublishOptions)) {
           throw new Error('Use PublishOption as publishOptions argument');
         }
@@ -3831,7 +3831,7 @@
         Utils.deepExtend(data, publishOptions);
       }
 
-      if (deliveryTarget) {
+      if (deliveryTarget && deliveryTarget !== responder) {
         if (!(deliveryTarget instanceof DeliveryOptions)) {
           throw new Error('Use DeliveryOptions as deliveryTarget argument');
         }

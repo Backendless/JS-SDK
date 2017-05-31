@@ -545,8 +545,8 @@ declare module __Backendless {
         subscribeSync(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
         subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise<Backendless.SubscriptionI>;
 
-        publishSync(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Object;
-        publish(channelName:string, message:string|Object, publishOptions:Backendless.PublishOptions, deliveryOptions:Backendless.DeliveryOptions):Promise<Object>;
+        publishSync(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Object;
+        publish(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Promise<Object>;
 
         sendEmailSync(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Object;
         sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Promise<Object>;
