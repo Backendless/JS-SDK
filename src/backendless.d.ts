@@ -404,6 +404,9 @@ declare module __Backendless {
         loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise<Array<Object>>;
         loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Array<Object>;
 
+        getObjectCount(query?:Backendless.DataQueryBuilder):Promise<number>
+        getObjectCountSync(query?:Backendless.DataQueryBuilder):number
+
         setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
         setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
         setRelation(parentObject:Object, columnName:string, whereClause:string):Promise<string>;
@@ -491,6 +494,11 @@ declare module __Backendless {
         findSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
         find(query:Backendless.GeoQueryI):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
 
+        getGeopointCount(fenceName:string, query:Backendless.GeoQueryI):Promise<number>
+        getGeopointCount(query:Backendless.GeoQueryI):Promise<number>
+        getGeopointCountSync(fenceName:string, query:Backendless.GeoQueryI):number
+        getGeopointCountSync(query:Backendless.GeoQueryI):number
+
         deletePointSync(point:string|Backendless.GeoPoint):string;
         deletePoint(point:string|Backendless.GeoPoint):Promise<string>;
 
@@ -542,8 +550,8 @@ declare module __Backendless {
         restUrl:string;
         channelProperties:Object;
 
-        subscribeSync(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
-        subscribe(channelName:string, subscriptionCallback:() => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise<Backendless.SubscriptionI>;
+        subscribeSync(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
+        subscribe(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise<Backendless.SubscriptionI>;
 
         publishSync(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Object;
         publish(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Promise<Object>;
