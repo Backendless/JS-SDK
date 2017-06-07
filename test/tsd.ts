@@ -72,6 +72,7 @@ function testDataStoreClass() {
     var model:Function|Object = dataStore.model;
     var className:string = dataStore.className;
     var restUrl:string = dataStore.restUrl;
+    var promiseObject:Promise<Object>;
 
     var dataQueryBuilder:Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
 
@@ -83,54 +84,55 @@ function testDataStoreClass() {
     var resultObj:Object;
 
     resultObj = dataStore.saveSync(item);
-    dataStore.save(item).then().catch().then().then();
+    promiseObject = dataStore.save(item);
 
     resultObj = dataStore.removeSync('str');
     resultObj = dataStore.removeSync(item);
-    dataStore.remove('str').then().catch().then().then();
-    dataStore.remove(item).then().catch().then().then();
+    promiseObject = dataStore.remove('str');
+    promiseObject = dataStore.remove(item);
 
     resultObj = dataStore.findSync(dataQueryBuilder);
     resultObj = dataStore.findSync();
-    dataStore.find(dataQueryBuilder).then().catch().then().then();
-    dataStore.find().then().catch().then().then();
+    promiseObject = dataStore.find(dataQueryBuilder);
+    promiseObject = dataStore.find();
 
     resultObj = dataStore.findByIdSync('myId');
-    dataStore.findById('myId').then().catch().then().then();
+    promiseObject = dataStore.findById('myId');
 
     resultObj = dataStore.findFirstSync();
-    dataStore.findFirst().then().catch().then().then();
+    promiseObject = dataStore.findFirst();
 
     resultObj = dataStore.findLastSync();
-    dataStore.findLast().then().catch().then().then();
+    promiseObject = dataStore.findLast();
 
     dataStore.loadRelationsSync(parentTableName, loadRelationsQueryBuilder);
-    dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder).then().catch().then().then();
+    promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
 }
 
 function testPersistence() {
     var resultObj:Object;
     var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
     var Model:Function;
+    var promiseObject:Promise<Object>;
 
     resultObj = Backendless.Persistence.saveSync('model', {});
     resultObj = Backendless.Persistence.saveSync(dataStore, {});
-    Backendless.Persistence.save('model', {}).then().catch().then().then();
-    Backendless.Persistence.save(dataStore, {}).then().catch().then().then();
+    promiseObject = Backendless.Persistence.save('model', {});
+    promiseObject = Backendless.Persistence.save(dataStore, {});
 
     resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123, 123);
     resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123);
     resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause');
     resultObj = Backendless.Persistence.getViewSync('viewName');
-    Backendless.Persistence.getView('viewName', 'whereClause', 123, 123).then().catch().then().then();
-    Backendless.Persistence.getView('viewName', 'whereClause', 123).then().catch().then().then();
-    Backendless.Persistence.getView('viewName', 'whereClause').then().catch().then().then();
-    Backendless.Persistence.getView('viewName').then().catch().then().then();
+    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause', 123, 123);
+    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause', 123);
+    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause');
+    promiseObject = Backendless.Persistence.getView('viewName');
 
     resultObj = Backendless.Persistence.callStoredProcedureSync('spName', 'argumentValues');
     resultObj = Backendless.Persistence.callStoredProcedureSync('spName', {});
-    Backendless.Persistence.callStoredProcedure('spName', 'argumentValues').then().catch().then().then();
-    Backendless.Persistence.callStoredProcedure('spName', {}).then().catch().then().then();
+    promiseObject = Backendless.Persistence.callStoredProcedure('spName', 'argumentValues');
+    promiseObject = Backendless.Persistence.callStoredProcedure('spName', {});
 
     dataStore = Backendless.Persistence.of(Model);
     dataStore = Backendless.Persistence.of('str');
@@ -139,34 +141,35 @@ function testPersistence() {
     resultObj = Backendless.Persistence.describeSync(Model);
     resultObj = Backendless.Persistence.describeSync('str');
     resultObj = Backendless.Persistence.describeSync({});
-    Backendless.Persistence.describe(Model).then().catch().then().then();
-    Backendless.Persistence.describe('str').then().catch().then().then();
-    Backendless.Persistence.describe({}).then().catch().then().then();
+    promiseObject = Backendless.Persistence.describe(Model);
+    promiseObject = Backendless.Persistence.describe('str');
+    promiseObject = Backendless.Persistence.describe({});
 }
 
 function testData() {
     var resultObj:Object;
     var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
     var Model:Function;
+    var promiseObject:Promise<Object>;
 
     resultObj = Backendless.Data.saveSync('model', {});
     resultObj = Backendless.Data.saveSync(dataStore, {});
-    Backendless.Data.save('model', {}).then().catch().then().then();
-    Backendless.Data.save(dataStore, {}).then().catch().then().then();
+    promiseObject = Backendless.Data.save('model', {});
+    promiseObject = Backendless.Data.save(dataStore, {});
 
     resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123, 123);
     resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123);
     resultObj = Backendless.Data.getViewSync('viewName', 'whereClause');
     resultObj = Backendless.Data.getViewSync('viewName');
-    Backendless.Data.getView('viewName', 'whereClause', 123, 123).then().catch().then().then();
-    Backendless.Data.getView('viewName', 'whereClause', 123).then().catch().then().then();
-    Backendless.Data.getView('viewName', 'whereClause').then().catch().then().then();
-    Backendless.Data.getView('viewName').then().catch().then().then();
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause');
+    promiseObject = Backendless.Data.getView('viewName');
 
     resultObj = Backendless.Data.callStoredProcedureSync('spName', 'argumentValues');
     resultObj = Backendless.Data.callStoredProcedureSync('spName', {});
-    Backendless.Data.callStoredProcedure('spName', 'argumentValues').then().catch().then().then();
-    Backendless.Data.callStoredProcedure('spName', {}).then().catch().then().then();
+    promiseObject = Backendless.Data.callStoredProcedure('spName', 'argumentValues');
+    promiseObject = Backendless.Data.callStoredProcedure('spName', {});
 
     dataStore = Backendless.Data.of(Model);
     dataStore = Backendless.Data.of('str');
@@ -175,9 +178,9 @@ function testData() {
     resultObj = Backendless.Data.describeSync(Model);
     resultObj = Backendless.Data.describeSync('str');
     resultObj = Backendless.Data.describeSync({});
-    Backendless.Data.describe(Model).then().catch().then().then();
-    Backendless.Data.describe('str').then().catch().then().then();
-    Backendless.Data.describe({}).then().catch().then().then();
+    promiseObject = Backendless.Data.describe(Model);
+    promiseObject = Backendless.Data.describe('str');
+    promiseObject = Backendless.Data.describe({});
 }
 
 function testDataPermissions() {
@@ -185,6 +188,7 @@ function testDataPermissions() {
     var roleName:string = 'myRole';
     var dataObj:Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
     var resultObj:Backendless.ExistDataItemI;
+    var promiseObject:Promise<Object>;
 
     resultObj = Backendless.Data.Permissions.FIND.grantUserSync(userId, dataObj);
     resultObj = Backendless.Data.Permissions.FIND.grantRoleSync(roleName, dataObj);
@@ -207,26 +211,26 @@ function testDataPermissions() {
     resultObj = Backendless.Data.Permissions.UPDATE.denyRoleSync(roleName, dataObj);
     resultObj = Backendless.Data.Permissions.UPDATE.denySync(dataObj);
 
-    Backendless.Data.Permissions.FIND.grantUser(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.grant(dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.denyUser(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.denyRole(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.FIND.deny(dataObj).then().catch().then().then();
+    promiseObject = Backendless.Data.Permissions.FIND.grantUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grant(dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.deny(dataObj);
 
-    Backendless.Data.Permissions.REMOVE.grantUser(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.grantRole(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.grant(dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.denyUser(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.denyRole(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.REMOVE.deny(dataObj).then().catch().then().then();
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grant(dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.deny(dataObj);
 
-    Backendless.Data.Permissions.UPDATE.grantUser(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.grantRole(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.grant(dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.denyUser(userId, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj).then().catch().then().then();
-    Backendless.Data.Permissions.UPDATE.deny(dataObj).then().catch().then().then();
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grant(dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.deny(dataObj);
 
 }
 
@@ -245,41 +249,43 @@ function testUserService() {
     var bol:boolean = true;
     var newUser:Backendless.User = new Backendless.User();
     var resultObj:Object;
+    var promiseObject:Promise<Object>;
+    var promiseVoid:Promise<void>;
 
     var restUrl:string = Backendless.UserService.restUrl;
     var loggedInUser:boolean = Backendless.UserService.loggedInUser();
 
     resultObj = Backendless.UserService.restorePasswordSync('email');
-    Backendless.UserService.restorePassword('email').then().catch().then().then();
+    promiseObject = Backendless.UserService.restorePassword('email');
 
     newUser = Backendless.UserService.registerSync(newUser);
-    Backendless.UserService.register(newUser).then().catch().then().then();
+    promiseObject = Backendless.UserService.register(newUser);
 
     newUser = Backendless.UserService.getUserRolesSync();
-    Backendless.UserService.getUserRoles().then().catch().then().then();
+    promiseObject = Backendless.UserService.getUserRoles();
 
     newUser = Backendless.UserService.assignRoleSync(identity, roleName);
-    Backendless.UserService.assignRole(identity, roleName).then().catch().then().then();
+    promiseObject = Backendless.UserService.assignRole(identity, roleName);
 
     newUser = Backendless.UserService.unassignRoleSync(identity, roleName);
-    Backendless.UserService.unassignRole(identity, roleName).then().catch().then().then();
+    promiseObject = Backendless.UserService.unassignRole(identity, roleName);
 
     newUser = Backendless.UserService.loginSync(userName, password);
     newUser = Backendless.UserService.loginSync(userName, password, bol);
-    Backendless.UserService.login(userName, password).then().catch().then().then();
-    Backendless.UserService.login(userName, password, bol).then().catch().then().then();
+    promiseObject = Backendless.UserService.login(userName, password);
+    promiseObject = Backendless.UserService.login(userName, password, bol);
 
     newUser = Backendless.UserService.describeUserClassSync();
-    Backendless.UserService.describeUserClass().then().catch().then().then();
+    promiseObject = Backendless.UserService.describeUserClass();
 
     Backendless.UserService.logoutSync();
-    Backendless.UserService.logout().then().catch().then().then();
+    promiseVoid = Backendless.UserService.logout();
 
     newUser = Backendless.UserService.getCurrentUserSync();
-    Backendless.UserService.getCurrentUser().then().catch().then().then();
+    promiseObject = Backendless.UserService.getCurrentUser();
 
     newUser = Backendless.UserService.updateSync(newUser);
-    Backendless.UserService.update(newUser).then().catch().then().then();
+    promiseObject = Backendless.UserService.update(newUser);
 
     Backendless.UserService.loginWithFacebookSync();
     Backendless.UserService.loginWithFacebookSync({});
@@ -287,12 +293,12 @@ function testUserService() {
     Backendless.UserService.loginWithFacebookSync({}, {}, true);
     Backendless.UserService.loginWithFacebookSync({}, null, true);
     Backendless.UserService.loginWithFacebookSync(null, null, true);
-    Backendless.UserService.loginWithFacebook().then().catch().then().then();
-    Backendless.UserService.loginWithFacebook({}).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook({}, {}).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook({}, {}, true).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook({}, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithFacebook(null, null, true).then().catch().then().then();
+    promiseVoid = Backendless.UserService.loginWithFacebook();
+    promiseVoid = Backendless.UserService.loginWithFacebook({});
+    promiseVoid = Backendless.UserService.loginWithFacebook({}, {});
+    promiseVoid = Backendless.UserService.loginWithFacebook({}, {}, true);
+    promiseVoid = Backendless.UserService.loginWithFacebook({}, null, true);
+    promiseVoid = Backendless.UserService.loginWithFacebook(null, null, true);
 
     Backendless.UserService.loginWithGooglePlusSync();
     Backendless.UserService.loginWithGooglePlusSync({});
@@ -302,37 +308,37 @@ function testUserService() {
     Backendless.UserService.loginWithGooglePlusSync({}, {}, null, true);
     Backendless.UserService.loginWithGooglePlusSync({}, null, null, true);
     Backendless.UserService.loginWithGooglePlusSync(null, null, null, true);
-    Backendless.UserService.loginWithGooglePlus().then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus({}).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus({}, {}).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div')).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), true).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus({}, {}, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus({}, null, null, true).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlus(null, null, null, true).then().catch().then().then();
+    promiseVoid = Backendless.UserService.loginWithGooglePlus();
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({});
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {});
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'));
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), true);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, null, true);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, null, null, true);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus(null, null, null, true);
 
     Backendless.UserService.loginWithTwitterSync();
     Backendless.UserService.loginWithTwitterSync({});
     Backendless.UserService.loginWithTwitterSync({}, true);
     Backendless.UserService.loginWithTwitterSync(null, true);
-    Backendless.UserService.loginWithTwitter().then().catch().then().then();
-    Backendless.UserService.loginWithTwitter({}).then().catch().then().then();
-    Backendless.UserService.loginWithTwitter({}, true).then().catch().then().then();
-    Backendless.UserService.loginWithTwitter(null, true).then().catch().then().then();
+    promiseVoid = Backendless.UserService.loginWithTwitter();
+    promiseVoid = Backendless.UserService.loginWithTwitter({});
+    promiseVoid = Backendless.UserService.loginWithTwitter({}, true);
+    promiseVoid = Backendless.UserService.loginWithTwitter(null, true);
 
-    Backendless.UserService.loginWithFacebookSdk().then().catch().then().then();
-    Backendless.UserService.loginWithFacebookSdk({}).then().catch().then().then();
-    Backendless.UserService.loginWithFacebookSdk({}, true).then().catch().then().then();
+    promiseVoid = Backendless.UserService.loginWithFacebookSdk();
+    promiseVoid = Backendless.UserService.loginWithFacebookSdk({});
+    promiseVoid = Backendless.UserService.loginWithFacebookSdk({}, true);
 
-    Backendless.UserService.loginWithGooglePlusSdk().then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlusSdk({}).then().catch().then().then();
-    Backendless.UserService.loginWithGooglePlusSdk({}, true).then().catch().then().then();
+    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk();
+    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({});
+    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({}, true);
 
     bol = Backendless.UserService.isValidLoginSync();
-    Backendless.UserService.isValidLogin().then().catch().then().then();
+    promiseObject = Backendless.UserService.isValidLogin();
 
     Backendless.UserService.resendEmailConfirmationSync('email');
-    Backendless.UserService.resendEmailConfirmation('email').then().catch().then().then();
+    promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
 
 }
 
@@ -386,6 +392,8 @@ function testGoeService() {
     var longitude:number = circleGeoQuery.longitude;
     var radius:number = circleGeoQuery.radius;
     var units:string = circleGeoQuery.units;
+    var promiseObject:Promise<Object>;
+    var promiseVoid:Promise<void>;
 
     var inAppCallback:Backendless.GeofenceMonitoringCallbacksI = {
         onenter: function () {
@@ -393,59 +401,59 @@ function testGoeService() {
     };
 
     existPoint = Backendless.Geo.savePointSync(newGeoPoint);
-    Backendless.Geo.savePoint(newGeoPoint).then().catch().then().then();
+    promiseObject = Backendless.Geo.savePoint(newGeoPoint);
 
     geoCollectionResult = Backendless.Geo.findSync(baseGeoQuery);
-    Backendless.Geo.find(baseGeoQuery).then().catch().then().then();
+    promiseObject = Backendless.Geo.find(baseGeoQuery);
 
     geoCollectionResult = Backendless.Geo.findSync(rectangleGeoQuery);
-    Backendless.Geo.find(rectangleGeoQuery).then().catch().then().then();
+    promiseObject = Backendless.Geo.find(rectangleGeoQuery);
 
     geoCollectionResult = Backendless.Geo.findSync(circleGeoQuery);
-    Backendless.Geo.find(circleGeoQuery).then().catch().then().then();
+    promiseObject = Backendless.Geo.find(circleGeoQuery);
 
     errorStr = Backendless.Geo.deletePointSync(categoryName);
     errorStr = Backendless.Geo.deletePointSync(existPoint);
-    Backendless.Geo.deletePoint(categoryName).then().catch().then().then();
-    Backendless.Geo.deletePoint(existPoint).then().catch().then().then();
+    promiseObject = Backendless.Geo.deletePoint(categoryName);
+    promiseObject = Backendless.Geo.deletePoint(existPoint);
 
     resultObj = Backendless.Geo.loadMetadataSync(existPoint);
     resultObj = Backendless.Geo.loadMetadataSync(geoClaster);
-    Backendless.Geo.loadMetadata(existPoint).then().catch().then().then();
-    Backendless.Geo.loadMetadata(geoClaster).then().catch().then().then();
+    promiseObject = Backendless.Geo.loadMetadata(existPoint);
+    promiseObject = Backendless.Geo.loadMetadata(geoClaster);
 
     geoCollectionResult = Backendless.Geo.getClusterPointsSync(geoClaster);
-    Backendless.Geo.getClusterPoints(geoClaster).then().catch().then().then();
+    promiseObject = Backendless.Geo.getClusterPoints(geoClaster);
 
     geoCollectionResult = Backendless.Geo.getFencePointsSync(fenceName, baseGeoQuery);
-    Backendless.Geo.getFencePoints(fenceName, baseGeoQuery).then().catch().then().then();
+    promiseObject = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery);
 
     geoCollectionResult = Backendless.Geo.relativeFindSync(baseGeoQuery);
-    Backendless.Geo.relativeFind(baseGeoQuery).then().catch().then().then();
+    promiseObject = Backendless.Geo.relativeFind(baseGeoQuery);
 
     geoCategory = Backendless.Geo.addCategorySync(categoryName);
-    Backendless.Geo.addCategory(categoryName).then().catch().then().then();
+    promiseObject = Backendless.Geo.addCategory(categoryName);
 
     bool = Backendless.Geo.deleteCategorySync(categoryName);
-    Backendless.Geo.deleteCategory(categoryName).then().catch().then().then();
+    promiseObject = Backendless.Geo.deleteCategory(categoryName);
 
     geoCategories = Backendless.Geo.getCategoriesSync();
-    Backendless.Geo.getCategories().then().catch().then().then();
+    promiseObject = Backendless.Geo.getCategories();
 
     resultObj = Backendless.Geo.runOnStayActionSync(fenceName, existPoint);
-    Backendless.Geo.runOnStayAction(fenceName, existPoint).then().catch().then().then();
+    promiseObject = Backendless.Geo.runOnStayAction(fenceName, existPoint);
 
     resultObj = Backendless.Geo.runOnExitActionSync(fenceName, existPoint);
-    Backendless.Geo.runOnExitAction(fenceName, existPoint).then().catch().then().then();
+    promiseObject = Backendless.Geo.runOnExitAction(fenceName, existPoint);
 
     resultObj = Backendless.Geo.runOnEnterActionSync(fenceName, existPoint);
-    Backendless.Geo.runOnEnterAction(fenceName, existPoint).then().catch().then().then();
+    promiseObject = Backendless.Geo.runOnEnterAction(fenceName, existPoint);
 
     Backendless.Geo.startGeofenceMonitoringWithInAppCallbackSync(fenceName, inAppCallback);
-    Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback).then().catch().then().then();
+    promiseVoid = Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback);
 
     Backendless.Geo.startGeofenceMonitoringWithRemoteCallbackSync(fenceName, existPoint);
-    Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint).then().catch().then().then();
+    promiseVoid = Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint);
 
     Backendless.Geo.stopGeofenceMonitoring(fenceName);
 
@@ -461,6 +469,7 @@ function testMessaging() {
     var message:string|Object = 'str';
     var resultObj:Object;
     var resultBool:boolean = true;
+    var promiseObject:Promise<Object>;
     var bodyParts:Backendless.Bodyparts = new Backendless.Bodyparts();
     var recipients:string[] = ['str'];
     var attachments:string[] = ['str'];
@@ -475,25 +484,25 @@ function testMessaging() {
     };
 
     subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
-    Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions).then().catch().then().then();
+    promiseObject = Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions);
 
     resultObj = Backendless.Messaging.publishSync(channelName, message, publishOptions, deliveryOptions);
-    Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions).then().catch().then().then();
+    promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
 
     resultObj = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
-    Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments).then().catch().then().then();
+    promiseObject = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
     resultBool = Backendless.Messaging.cancelSync(messageId);
-    Backendless.Messaging.cancel(messageId).then().catch().then().then();
+    promiseObject = Backendless.Messaging.cancel(messageId);
 
     resultObj = Backendless.Messaging.registerDeviceSync(deviceToken, channels, expiration);
-    Backendless.Messaging.registerDevice(deviceToken, channels, expiration).then().catch().then().then();
+    promiseObject = Backendless.Messaging.registerDevice(deviceToken, channels, expiration);
 
     resultObj = Backendless.Messaging.getRegistrationsSync();
-    Backendless.Messaging.getRegistrations().then().catch().then().then();
+    promiseObject = Backendless.Messaging.getRegistrations();
 
     resultObj = Backendless.Messaging.unregisterDeviceSync();
-    Backendless.Messaging.unregisterDevice().then().catch().then().then();
+    promiseObject = Backendless.Messaging.unregisterDevice();
 
 }
 
@@ -521,24 +530,26 @@ function testFilesService() {
     var resultStr:string;
     var resultBool:boolean;
     var resultObj:Object;
+    var promiseObject:Promise<Object>;
+    var promiseVoid:Promise<void>;
 
     resultStr = Backendless.Files.restUrl;
 
     resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent, overwrite);
     resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent);
 
-    Backendless.Files.saveFile(path, fileName, fileContent, overwrite).then().catch().then().then();
-    Backendless.Files.saveFile(path, fileName, fileContent).then().catch().then().then();
+    promiseObject = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
+    promiseObject = Backendless.Files.saveFile(path, fileName, fileContent);
 
     Backendless.Files.uploadSync(file, path, overwrite);
     Backendless.Files.uploadSync(files, path, overwrite);
     Backendless.Files.uploadSync(file, path, null);
     Backendless.Files.uploadSync(files, path, null);
 
-    Backendless.Files.upload(file, path, overwrite).then().catch().then().then();
-    Backendless.Files.upload(files, path, overwrite).then().catch().then().then();
-    Backendless.Files.upload(file, path, null).then().catch().then().then();
-    Backendless.Files.upload(files, path, null).then().catch().then().then();
+    promiseVoid = Backendless.Files.upload(file, path, overwrite);
+    promiseVoid = Backendless.Files.upload(files, path, overwrite);
+    promiseVoid = Backendless.Files.upload(file, path, null);
+    promiseVoid = Backendless.Files.upload(files, path, null);
 
     resultObj = Backendless.Files.listingSync(path);
     resultObj = Backendless.Files.listingSync(path, pattern);
@@ -546,29 +557,29 @@ function testFilesService() {
     resultObj = Backendless.Files.listingSync(path, pattern, recursively, pageSize);
     resultObj = Backendless.Files.listingSync(path, pattern, recursively, pageSize, offset);
 
-    Backendless.Files.listing(path).then().catch().then().then();
-    Backendless.Files.listing(path, pattern).then().catch().then().then();
-    Backendless.Files.listing(path, pattern, recursively).then().catch().then().then();
-    Backendless.Files.listing(path, pattern, recursively, pageSize).then().catch().then().then();
-    Backendless.Files.listing(path, pattern, recursively, pageSize, offset).then().catch().then().then();
+    promiseObject = Backendless.Files.listing(path);
+    promiseObject = Backendless.Files.listing(path, pattern);
+    promiseObject = Backendless.Files.listing(path, pattern, recursively);
+    promiseObject = Backendless.Files.listing(path, pattern, recursively, pageSize);
+    promiseObject = Backendless.Files.listing(path, pattern, recursively, pageSize, offset);
 
     resultObj = Backendless.Files.renameFileSync(oldPathName, newName);
-    Backendless.Files.renameFile(oldPathName, newName).then().catch().then().then();
+    promiseObject = Backendless.Files.renameFile(oldPathName, newName);
 
     resultObj = Backendless.Files.moveFileSync(sourcePath, targetPath);
-    Backendless.Files.moveFile(sourcePath, targetPath).then().catch().then().then();
+    promiseObject = Backendless.Files.moveFile(sourcePath, targetPath);
 
     resultObj = Backendless.Files.copyFileSync(sourcePath, targetPath);
-    Backendless.Files.copyFile(sourcePath, targetPath).then().catch().then().then();
+    promiseObject = Backendless.Files.copyFile(sourcePath, targetPath);
 
     Backendless.Files.removeSync(fileURL);
-    Backendless.Files.remove(fileURL).then().catch().then().then();
+    promiseVoid = Backendless.Files.remove(fileURL);
 
     resultObj = Backendless.Files.existsSync(path);
-    Backendless.Files.exists(path).then().catch().then().then();
+    promiseObject = Backendless.Files.exists(path);
 
     Backendless.Files.removeDirectorySync(path);
-    Backendless.Files.removeDirectory(path).then().catch().then().then();
+    promiseVoid = Backendless.Files.removeDirectory(path);
 
     resultObj = Backendless.Files.Permissions.READ.grantUserSync(userid, url);
     resultObj = Backendless.Files.Permissions.READ.grantRoleSync(roleName, url);
@@ -585,20 +596,20 @@ function testFilesService() {
     resultObj = Backendless.Files.Permissions.WRITE.denyUserSync(userid, url);
     resultObj = Backendless.Files.Permissions.WRITE.denyRoleSync(roleName, url);
 
-    Backendless.Files.Permissions.READ.grantUser(userid, url).then().catch().then().then();
-    Backendless.Files.Permissions.READ.grantRole(roleName, url).then().catch().then().then();
-    Backendless.Files.Permissions.READ.denyUser(userid, url).then().catch().then().then();
-    Backendless.Files.Permissions.READ.denyRole(roleName, url).then().catch().then().then();
+    promiseObject = Backendless.Files.Permissions.READ.grantUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.READ.grantRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.READ.denyUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.READ.denyRole(roleName, url);
 
-    Backendless.Files.Permissions.DELETE.grantUser(userid, url).then().catch().then().then();
-    Backendless.Files.Permissions.DELETE.grantRole(roleName, url).then().catch().then().then();
-    Backendless.Files.Permissions.DELETE.denyUser(userid, url).then().catch().then().then();
-    Backendless.Files.Permissions.DELETE.denyRole(roleName, url).then().catch().then().then();
+    promiseObject = Backendless.Files.Permissions.DELETE.grantUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.grantRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyRole(roleName, url);
 
-    Backendless.Files.Permissions.WRITE.grantUser(userid, url).then().catch().then().then();
-    Backendless.Files.Permissions.WRITE.grantRole(roleName, url).then().catch().then().then();
-    Backendless.Files.Permissions.WRITE.denyUser(userid, url).then().catch().then().then();
-    Backendless.Files.Permissions.WRITE.denyRole(roleName, url).then().catch().then().then();
+    promiseObject = Backendless.Files.Permissions.WRITE.grantUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.grantRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyRole(roleName, url);
 }
 
 function testCommerce() {
@@ -609,17 +620,18 @@ function testCommerce() {
 
     var resultStr:string;
     var resultObj:Object;
+    var promiseObject:Promise<Object>;
 
     resultStr = Backendless.Commerce.restUrl;
 
     resultObj = Backendless.Commerce.validatePlayPurchaseSync(packageName, productId, token);
-    Backendless.Commerce.validatePlayPurchase(packageName, productId, token).then().catch().then().then();
+    promiseObject = Backendless.Commerce.validatePlayPurchase(packageName, productId, token);
 
     resultObj = Backendless.Commerce.cancelPlaySubscriptionSync(packageName, subscriptionId, token);
-    Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token).then().catch().then().then();
+    promiseObject = Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token);
 
     resultObj = Backendless.Commerce.getPlaySubscriptionStatusSync(packageName, subscriptionId, token);
-    Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token).then().catch().then().then();
+    promiseObject = Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token);
 }
 
 function testEvents() {
@@ -628,11 +640,12 @@ function testEvents() {
 
     var resultStr:string;
     var resultObj:Object;
+    var promiseObject:Promise<Object>;
 
     resultStr = Backendless.Events.restUrl;
 
     resultObj = Backendless.Events.dispatchSync(eventName, eventArgs);
-    Backendless.Events.dispatch(eventName, eventArgs).then().catch().then().then();
+    promiseObject = Backendless.Events.dispatch(eventName, eventArgs);
 }
 
 function testCache() {
@@ -643,30 +656,31 @@ function testCache() {
     var date:Date = new Date();
 
     var resultObj:Object;
+    var promiseObject:Promise<Object>;
 
     resultObj = Backendless.Cache.putSync(key, value);
     resultObj = Backendless.Cache.putSync(key, value, timeToLive);
-    Backendless.Cache.put(key, value).then().catch().then().then();
-    Backendless.Cache.put(key, value, timeToLive).then().catch().then().then();
+    promiseObject = Backendless.Cache.put(key, value);
+    promiseObject = Backendless.Cache.put(key, value, timeToLive);
 
     resultObj = Backendless.Cache.expireInSync(key, seconds);
     resultObj = Backendless.Cache.expireInSync(key, date);
-    Backendless.Cache.expireIn(key, seconds).then().catch().then().then();
-    Backendless.Cache.expireIn(key, date).then().catch().then().then();
+    promiseObject = Backendless.Cache.expireIn(key, seconds);
+    promiseObject = Backendless.Cache.expireIn(key, date);
 
     resultObj = Backendless.Cache.expireAtSync(key, seconds);
     resultObj = Backendless.Cache.expireAtSync(key, date);
-    Backendless.Cache.expireAt(key, seconds).then().catch().then().then();
-    Backendless.Cache.expireAt(key, date).then().catch().then().then();
+    promiseObject = Backendless.Cache.expireAt(key, seconds);
+    promiseObject = Backendless.Cache.expireAt(key, date);
 
     resultObj = Backendless.Cache.containsSync(key);
-    Backendless.Cache.contains(key).then().catch().then().then();
+    promiseObject = Backendless.Cache.contains(key);
 
     resultObj = Backendless.Cache.getSync(key);
-    Backendless.Cache.get(key).then().catch().then().then();
+    promiseObject = Backendless.Cache.get(key);
 
     resultObj = Backendless.Cache.removeSync(key);
-    Backendless.Cache.remove(key).then().catch().then().then();
+    promiseObject = Backendless.Cache.remove(key);
 }
 
 function testCounters() {
@@ -674,65 +688,66 @@ function testCounters() {
     var counterName:string = 'str';
     var expected:number = 123;
     var updated:number = 123;
+    var promiseObject:Promise<Object>;
  
     //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
     var resultNum:number = 123;
 
     resultNum = Backendless.Counters.getSync(counterName);
-    Backendless.Counters.get(counterName).then().catch().then().then();
+    promiseObject = Backendless.Counters.get(counterName);
 
     resultNum = Backendless.Counters.getAndIncrementSync(counterName);
-    Backendless.Counters.getAndIncrement(counterName).then().catch().then().then();
+    promiseObject = Backendless.Counters.getAndIncrement(counterName);
 
     resultNum = Backendless.Counters.incrementAndGetSync(counterName);
-    Backendless.Counters.incrementAndGet(counterName).then().catch().then().then();
+    promiseObject = Backendless.Counters.incrementAndGet(counterName);
 
     resultNum = Backendless.Counters.getAndDecrementSync(counterName);
-    Backendless.Counters.getAndDecrement(counterName).then().catch().then().then();
+    promiseObject = Backendless.Counters.getAndDecrement(counterName);
 
     resultNum = Backendless.Counters.decrementAndGetSync(counterName);
-    Backendless.Counters.decrementAndGet(counterName).then().catch().then().then();
+    promiseObject = Backendless.Counters.decrementAndGet(counterName);
 
     resultNum = Backendless.Counters.addAndGetSync(counterName, value);
-    Backendless.Counters.addAndGet(counterName, value).then().catch().then().then();
+    promiseObject = Backendless.Counters.addAndGet(counterName, value);
 
     resultNum = Backendless.Counters.getAndAddSync(counterName, value);
-    Backendless.Counters.getAndAdd(counterName, value).then().catch().then().then();
+    promiseObject = Backendless.Counters.getAndAdd(counterName, value);
 
     resultNum = Backendless.Counters.compareAndSetSync(counterName, expected, updated);
-    Backendless.Counters.compareAndSet(counterName, expected, updated).then().catch().then().then();
+    promiseObject = Backendless.Counters.compareAndSet(counterName, expected, updated);
 
     resultNum = Backendless.Counters.resetSync(counterName);
-    Backendless.Counters.reset(counterName).then().catch().then().then();
+    promiseObject = Backendless.Counters.reset(counterName);
 
     var counter:Counter = Backendless.Counters.of(counterName);
 
     resultNum = counter.getSync();
-    counter.get().then().catch().then().then();
+    promiseObject = counter.get();
 
     resultNum = counter.getAndIncrementSync();
-    counter.getAndIncrement().then().catch().then().then();
+    promiseObject = counter.getAndIncrement();
 
     resultNum = counter.incrementAndGetSync();
-    counter.incrementAndGet().then().catch().then().then();
+    promiseObject = counter.incrementAndGet();
 
     resultNum = counter.getAndDecrementSync();
-    counter.getAndDecrement().then().catch().then().then();
+    promiseObject = counter.getAndDecrement();
 
     resultNum = counter.decrementAndGetSync();
-    counter.decrementAndGet().then().catch().then().then();
+    promiseObject = counter.decrementAndGet();
 
     resultNum = counter.addAndGetSync(value);
-    counter.addAndGet(value).then().catch().then().then();
+    promiseObject = counter.addAndGet(value);
 
     resultNum = counter.getAndAddSync(value);
-    counter.getAndAdd(value).then().catch().then().then();
+    promiseObject = counter.getAndAdd(value);
 
     resultNum = counter.compareAndSetSync(expected, updated);
-    counter.compareAndSet(expected, updated).then().catch().then().then();
+    promiseObject = counter.compareAndSet(expected, updated);
 
     resultNum = counter.resetSync();
-    counter.reset().then().catch().then().then();
+    promiseObject = counter.reset();
 }
 
 function testCustomServices() {
@@ -740,9 +755,10 @@ function testCustomServices() {
     var serviceVersion:string = 'str';
     var method:string = 'str';
     var parameters:Object = {};
+    var promiseObject:Promise<Object>;
 
     var resultObj:Object = Backendless.CustomServices.invokeSync(serviceName, serviceVersion, method, parameters);
-    Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters).then().catch().then().then();
+    promiseObject = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters);
 }
 
 function testLogging() {
