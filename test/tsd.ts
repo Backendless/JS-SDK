@@ -72,7 +72,6 @@ function testDataStoreClass() {
     var model:Function|Object = dataStore.model;
     var className:string = dataStore.className;
     var restUrl:string = dataStore.restUrl;
-    var promiseObject:Promise<Object>;
 
     var dataQueryBuilder:Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
 
@@ -82,6 +81,10 @@ function testDataStoreClass() {
     var parentTableName:string = 'Test';
 
     var resultObj:Object;
+    var resultNum:number;
+    var promiseObject:Promise<Object>;
+    var promiseNum:Promise<number>;
+
 
     resultObj = dataStore.saveSync(item);
     promiseObject = dataStore.save(item);
@@ -107,6 +110,12 @@ function testDataStoreClass() {
 
     dataStore.loadRelationsSync(parentTableName, loadRelationsQueryBuilder);
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
+
+    resultNum= dataStore.getObjectCountSync();
+    resultNum= dataStore.getObjectCountSync(dataQueryBuilder);
+    promiseNum = dataStore.getObjectCount();
+    promiseNum = dataStore.getObjectCount(dataQueryBuilder);
+
 }
 
 function testPersistence() {
@@ -394,6 +403,8 @@ function testGoeService() {
     var units:string = circleGeoQuery.units;
     var promiseObject:Promise<Object>;
     var promiseVoid:Promise<void>;
+    var promiseNum:Promise<number>;
+    var resultNum:number;
 
     var inAppCallback:Backendless.GeofenceMonitoringCallbacksI = {
         onenter: function () {
@@ -411,6 +422,11 @@ function testGoeService() {
 
     geoCollectionResult = Backendless.Geo.findSync(circleGeoQuery);
     promiseObject = Backendless.Geo.find(circleGeoQuery);
+
+    resultNum= Backendless.Geo.getGeopointCountSync(baseGeoQuery);
+    resultNum= Backendless.Geo.getGeopointCountSync(fenceName, baseGeoQuery);
+    promiseNum = Backendless.Geo.getGeopointCount(baseGeoQuery);
+    promiseNum = Backendless.Geo.getGeopointCount(fenceName, baseGeoQuery);
 
     errorStr = Backendless.Geo.deletePointSync(categoryName);
     errorStr = Backendless.Geo.deletePointSync(existPoint);
