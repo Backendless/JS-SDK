@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "4.0.3-beta",
+  "version": "4.0.4-beta",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "main": "./dist/backendless.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "test:e2e:browser": "karma start test/e2e/karma.conf.js",
     "clean": "rimraf dist",
     "copy": "copyup src/* dist",
-    "minimize": "uglifyjs dist/backendless.js --mangle --source-map dist/backendless.min.map -o dist/backendless.min.js",
+    "minimize": "uglifyjs dist/backendless.js -m -o dist/backendless.min.js --source-map",
     "build": "npm run clean && npm run copy && npm run minimize",
     "prepublish": "npm run build"
   },
@@ -57,7 +57,7 @@
     "mocha": "^3.2.0",
     "rimraf": "^2.5.4",
     "typescript": "^2.0.3",
-    "uglifyjs": "^2.4.10",
+    "uglify-js": "^3.0.15",
     "watchify": "^3.8.0"
   }
 }
