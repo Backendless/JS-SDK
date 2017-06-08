@@ -31,7 +31,7 @@ describe('Backendless.Cache', function() {
       .then(() => Promise.all(cacheKeys.map(key => {
         return expect(Backendless.Cache.get(key)).to.eventually.eql(cacheValues[key])
       })))
-      //check for some unexistent key
+      //check for some non-existent key
       .then(() => expect(Backendless.Cache.get('SOME_UNEXISTING_KEY')).to.eventually.be.null)
   })
 
@@ -44,7 +44,7 @@ describe('Backendless.Cache', function() {
       .then(() => Promise.all(cacheKeys.map(key => {
         return expect(Backendless.Cache.contains(key)).to.eventually.equal(true)
       })))
-      //check for some unexistent key
+      //check for some non-existent key
       .then(() => expect(Backendless.Cache.contains('SOME_UNEXISTING_KEY')).to.eventually.equal(false))
   })
 
@@ -76,7 +76,7 @@ describe('Backendless.Cache', function() {
 
       .then(() => wait(2000))
 
-      //a should gone, b should stil be alive
+      //a should gone, b should still be alive
       .then(() => expect(Backendless.Cache.get('a')).to.eventually.be.null)
       .then(() => expect(Backendless.Cache.get('b')).to.eventually.equal(b))
 

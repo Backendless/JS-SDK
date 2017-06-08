@@ -904,7 +904,7 @@
     _extractQueryOptions: function(options) {
       var params = [];
 
-      if (typeof options.pageSize != 'undefined') {
+      if (typeof options.pageSize !== 'undefined') {
         if (options.pageSize < 1 || options.pageSize > 100) {
           throw new Error('PageSize can not be less then 1 or greater than 100');
         }
@@ -912,7 +912,7 @@
         params.push('pageSize=' + encodeURIComponent(options.pageSize));
       }
 
-      if (typeof options.offset != 'undefined') {
+      if (typeof options.offset !== 'undefined') {
         if (options.offset < 0) {
           throw new Error('Offset can not be less then 0');
         }
@@ -1037,7 +1037,7 @@
 
           for (var prop in obj) {
             if (obj.hasOwnProperty(prop)) {
-              if (typeof obj[prop] == "object" && obj[prop] != null) {
+              if (typeof obj[prop] === "object" && obj[prop] != null) {
                 if (obj[prop].hasOwnProperty("__originSubID")) {
                   result[prop] = circDepsIDs[obj[prop]["__originSubID"]];
                 } else {
@@ -1784,15 +1784,15 @@
 
     of: function(model) {
       var tableName;
+
       if (Utils.isString(model)) {
-        if (model.toLowerCase() === 'users') {
-          throw new Error("Table 'Users' is not accessible through this signature. Use Backendless.Data.of( Backendless.User ) instead");
-        }
         tableName = model;
       } else {
         tableName = Utils.getClassName(model);
       }
+
       var store = dataStoreCache[tableName];
+
       if (!store) {
         store = new DataStore(model);
         dataStoreCache[tableName] = store;
@@ -2070,9 +2070,9 @@
 
     loginSync: synchronized('_login'),
 
-    _login: function(username, password, stayLoggedIn, async) {
-      if (!username) {
-        throw new Error('Username can not be empty');
+    _login: function(identity, password, stayLoggedIn, async) {
+      if (!identity) {
+        throw new Error('User identity can not be empty');
       }
 
       if (!password) {
@@ -2093,7 +2093,7 @@
       }
 
       var data = {
-        login   : username,
+        login   : identity,
         password: password
       };
 
@@ -2120,12 +2120,10 @@
 
       for (var i in user) {
         if (user.hasOwnProperty(i)) {
-          if (i == 'user-token') {
-            if (Backendless.LocalCache.get("stayLoggedIn")) {
-              Backendless.LocalCache.set("user-token", user[i]);
-            }
-            continue;
+          if (i === 'user-token' && Backendless.LocalCache.get("stayLoggedIn")) {
+            Backendless.LocalCache.set("user-token", user[i]);
           }
+
           newUser[i] = user[i];
         }
       }
@@ -2199,7 +2197,7 @@
           },
 
           onLogoutError   = function(e) {
-            if (Utils.isObject(e) && [3064, 3091, 3090, 3023].indexOf(e.code) != -1) {
+            if (Utils.isObject(e) && [3064, 3091, 3090, 3023].indexOf(e.code) !== -1) {
               logoutUser();
             }
             if (Utils.isFunction(errorCallback)) {
