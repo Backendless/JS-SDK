@@ -1358,15 +1358,15 @@
         },
         of: function(model) {
             var tableName;
+
             if (Utils.isString(model)) {
-                if (model.toLowerCase() === 'users') {
-                    throw new Error("Table 'Users' is not accessible through this signature. Use Backendless.Data.of( BackendlessUser.class ) instead");
-                }
                 tableName = model;
             } else {
                 tableName = getClassName.call(model);
             }
+
             var store = dataStoreCache[tableName];
+
             if (!store) {
                 store = new DataStore(model);
                 dataStoreCache[tableName] = store;
@@ -1585,9 +1585,9 @@
             return this.roleHelper(identity, rolename, async, 'unassignRole');
         },
 
-        login: function(username, password, stayLoggedIn, async) {
-            if (!username) {
-                throw new Error('Username can not be empty');
+        login: function(identity, password, stayLoggedIn, async) {
+            if (!identity) {
+                throw new Error('User identity can not be empty');
             }
 
             if (!password) {
@@ -1608,7 +1608,7 @@
             }
 
             var data = {
-                login   : username,
+                login   : identity,
                 password: password
             };
 
@@ -1635,12 +1635,10 @@
 
             for (var i in user) {
                 if (user.hasOwnProperty(i)) {
-                    if (i == 'user-token') {
-                        if (Backendless.LocalCache.get("stayLoggedIn")) {
-                            Backendless.LocalCache.set("user-token", user[i]);
-                        }
-                        continue;
+                    if (i === 'user-token' && Backendless.LocalCache.get("stayLoggedIn")) {
+                        Backendless.LocalCache.set("user-token", user[i]);
                     }
+
                     newUser[i] = user[i];
                 }
             }
