@@ -1484,7 +1484,12 @@
         }
     };
 
-    function User() {
+    function User(user) {
+        user = user || {};
+
+        for (var prop in user) {
+            this[prop] = user[prop]
+        }
     }
 
     User.prototype.___class = "Users";
@@ -1585,9 +1590,9 @@
             return this.roleHelper(identity, rolename, async, 'unassignRole');
         },
 
-        login: function(identity, password, stayLoggedIn, async) {
-            if (!identity) {
-                throw new Error('User identity can not be empty');
+        login: function(login, password, stayLoggedIn, async) {
+            if (!login) {
+                throw new Error('Login can not be empty');
             }
 
             if (!password) {
@@ -1608,7 +1613,7 @@
             }
 
             var data = {
-                login   : identity,
+                login   : login,
                 password: password
             };
 
@@ -1631,19 +1636,13 @@
         _getUserFromResponse: function(user) {
             Backendless.LocalCache.set("current-user-id", user.objectId);
 
-            var newUser = new Backendless.User();
+            var userToken = user['user-token']
 
-            for (var i in user) {
-                if (user.hasOwnProperty(i)) {
-                    if (i === 'user-token' && Backendless.LocalCache.get("stayLoggedIn")) {
-                        Backendless.LocalCache.set("user-token", user[i]);
-                    }
-
-                    newUser[i] = user[i];
-                }
+            if (userToken && Backendless.LocalCache.get('stayLoggedIn')) {
+               Backendless.LocalCache.set('user-token', userToken)
             }
 
-            return newUser;
+            return new Backendless.User(user);
         },
 
         loggedInUser: function() {
@@ -4496,11 +4495,13 @@
         currentUser = null;
     };
 
-    var DataQuery = function () {
-        this.properties = [];
-        this.condition = null;
-        this.options = null;
-        this.url = null;
+    var DataQuery = function (args) {
+        args = args || {};
+
+        this.properties = args.properties || [];
+        this.condition = args.condition || null;
+        this.options = args.options || null;
+        this.url = args.url || null;
     };
 
     DataQuery.prototype = {
@@ -4510,21 +4511,23 @@
         }
     };
 
-    var GeoQuery = function() {
-        this.searchRectangle = undefined;
-        this.categories = [];
-        this.includeMetadata = true;
-        this.metadata = undefined;
-        this.condition = undefined;
-        this.relativeFindMetadata = undefined;
-        this.relativeFindPercentThreshold = undefined;
-        this.pageSize = undefined;
-        this.latitude = undefined;
-        this.longitude = undefined;
-        this.radius = undefined;
-        this.units = undefined;
-        this.degreePerPixel = undefined;
-        this.clusterGridSize = undefined;
+    var GeoQuery = function(args) {
+        args = args || {};
+
+        this.searchRectangle = args.searchRectangle || undefined;
+        this.categories = args.categories || [];
+        this.includeMetadata = args.includeMetadata || true;
+        this.metadata = args.metadata || undefined;
+        this.condition = args.condition || undefined;
+        this.relativeFindMetadata = args.relativeFindMetadata || undefined;
+        this.relativeFindPercentThreshold = args.relativeFindPercentThreshold || undefined;
+        this.pageSize = args.pageSize || undefined;
+        this.latitude = args.latitude || undefined;
+        this.longitude = args.longitude || undefined;
+        this.radius = args.radius || undefined;
+        this.units = args.units || undefined;
+        this.degreePerPixel = args.degreePerPixel || undefined;
+        this.clusterGridSize = args.clusterGridSize || undefined;
     };
 
     GeoQuery.prototype = {
