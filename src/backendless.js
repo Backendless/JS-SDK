@@ -1,6 +1,6 @@
 (function(factory) {
-  var root = (typeof self == 'object' && self.self === self && self) ||
-    (typeof global == 'object' && global.global === global && global);
+  var root = (typeof self === 'object' && self.self === self && self) ||
+    (typeof global === 'object' && global.global === global && global);
 
   if (typeof define === "function" && define.amd) {
     define([], function() {
@@ -124,9 +124,11 @@
     if (obj == null) {
       return true;
     }
+
     if (Utils.isArray(obj) || Utils.isString(obj)) {
       return obj.length === 0;
     }
+
     for (var key in obj) {
       if (obj.hasOwnProperty(key) && obj[key] !== undefined && obj[key] !== null) {
         return false;
@@ -480,11 +482,11 @@
 
           var cacheHandler = function(response) {
             response = Utils.cloneObject(response);
-            if (config.method == 'GET' && config.cacheActive) {
+            if (config.method === 'GET' && config.cacheActive) {
               response.cachePolicy = config.cachePolicy;
               Backendless.LocalCache.set(config.urlBlueprint, response);
             } else if (Backendless.LocalCache.exists(config.urlBlueprint)) {
-              if (response === true || config.method == 'DELETE') {
+              if (response === true || config.method === 'DELETE') {
                 response = undefined;
               } else {
                 response.cachePolicy = Backendless.LocalCache.getCachePolicy(config.urlBlueprint);
@@ -496,7 +498,9 @@
           };
 
           var checkInCache = function() {
-            return config.cacheActive && config.cachePolicy.policy == 'fromRemoteOrCache' && Backendless.LocalCache.exists(config.urlBlueprint);
+            return config.cacheActive
+              && config.cachePolicy.policy === 'fromRemoteOrCache'
+              && Backendless.LocalCache.exists(config.urlBlueprint);
           };
 
           xhr.open(config.method, config.url, config.isAsync);
@@ -514,7 +518,7 @@
 
           if (config.isAsync) {
             xhr.onreadystatechange = function() {
-              if (xhr.readyState == 4 && xhr.status) {
+              if (xhr.readyState === 4 && xhr.status) {
                 if (xhr.status >= 200 && xhr.status < 300) {
                   response = parseResponse(xhr);
                   cacheHandler(response);
@@ -549,8 +553,8 @@
 
     config.method = config.method || 'GET';
     config.cachePolicy = config.cachePolicy || { policy: 'ignoreCache' };
-    config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
-    config.cacheActive = (config.method == 'GET') && (cashingAllowedArr.indexOf(config.cachePolicy.policy) != -1);
+    config.isAsync = (typeof config.isAsync === 'boolean') ? config.isAsync : false;
+    config.cacheActive = (config.method === 'GET') && (cashingAllowedArr.indexOf(config.cachePolicy.policy) !== -1);
     config.urlBlueprint = config.url.replace(/([^A-Za-z0-9])/g, '');
 
     try {
@@ -563,7 +567,7 @@
   Backendless._ajax_for_nodejs = function(config) {
     config.data = config.data || "";
     config.asyncHandler = config.asyncHandler || {};
-    config.isAsync = (typeof config.isAsync == 'boolean') ? config.isAsync : false;
+    config.isAsync = (typeof config.isAsync === 'boolean') ? config.isAsync : false;
 
     if (!config.isAsync) {
       throw new Error(
@@ -696,7 +700,7 @@
     };
 
     store.deserialize = function(value) {
-      if (typeof value != 'string') {
+      if (typeof value !== 'string') {
         return undefined;
       }
       try {
@@ -738,8 +742,8 @@
 
     var expired = function(obj) {
       var result = false;
-      if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
-        if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy'] && obj['cachePolicy']['timeToLive'] != -1 && 'created' in obj['cachePolicy']) {
+      if (obj && Object.prototype.toString.call(obj).slice(8, -1) === "Object") {
+        if ('cachePolicy' in obj && 'timeToLive' in obj.cachePolicy && obj.cachePolicy.timeToLive !== -1 && 'created' in obj.cachePolicy) {
           result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive'];
         }
       }
@@ -748,7 +752,7 @@
     };
 
     var addTimestamp = function(obj) {
-      if (obj && Object.prototype.toString.call(obj).slice(8, -1) == "Object") {
+      if (obj && Object.prototype.toString.call(obj).slice(8, -1) === "Object") {
         if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
           obj['cachePolicy']['created'] = new Date().getTime();
         }
@@ -942,6 +946,7 @@
 
       return params.join('&');
     },
+
     _parseResponse      : function(response) {
       var _Model = this.model, item;
       response = response.fields || response;
@@ -1004,8 +1009,8 @@
 
       var _replCircDepsHelper = function(obj) {
         for (var prop in obj) {
-          if (obj.hasOwnProperty(prop) && typeof obj[prop] == "object" && obj[prop] != null) {
-            if ((pos = objMap.indexOf(obj[prop])) != -1) {
+          if (obj.hasOwnProperty(prop) && typeof obj[prop] === "object" && obj[prop] != null) {
+            if ((pos = objMap.indexOf(obj[prop])) !== -1) {
               objMap[pos]["__subID"] = objMap[pos]["__subID"] || genID();
               obj[prop] = { "__originSubID": objMap[pos]["__subID"] };
             } else if (Utils.isDate(obj[prop])) {
@@ -1246,7 +1251,7 @@
 
         var result;
 
-        if (Utils.getClassName(arguments[0]) == 'Object') {
+        if (Utils.getClassName(arguments[0]) === 'Object') {
           result = Backendless._ajax({
             method      : 'GET',
             url         : url + send.replace(/&$/, ""),
@@ -1949,7 +1954,12 @@
     }
   };
 
-  function User() {
+  function User(user) {
+    user = user || {};
+
+    for (var prop in user) {
+      this[prop] = user[prop]
+    }
   }
 
   User.prototype.___class = "Users";
@@ -2070,9 +2080,9 @@
 
     loginSync: synchronized('_login'),
 
-    _login: function(identity, password, stayLoggedIn, async) {
-      if (!identity) {
-        throw new Error('User identity can not be empty');
+    _login: function(login, password, stayLoggedIn, async) {
+      if (!login) {
+        throw new Error('Login can not be empty');
       }
 
       if (!password) {
@@ -2093,7 +2103,7 @@
       }
 
       var data = {
-        login   : identity,
+        login   : login,
         password: password
       };
 
@@ -2114,25 +2124,19 @@
     },
 
     _getUserFromResponse: function(user) {
-      Backendless.LocalCache.set("current-user-id", user.objectId);
+      Backendless.LocalCache.set('current-user-id', user.objectId);
 
-      var newUser = new Backendless.User();
+      var userToken = user['user-token']
 
-      for (var i in user) {
-        if (user.hasOwnProperty(i)) {
-          if (i === 'user-token' && Backendless.LocalCache.get("stayLoggedIn")) {
-            Backendless.LocalCache.set("user-token", user[i]);
-          }
-
-          newUser[i] = user[i];
-        }
+      if (userToken && Backendless.LocalCache.get('stayLoggedIn')) {
+        Backendless.LocalCache.set('user-token', userToken)
       }
 
-      return newUser;
+      return new Backendless.User(user);
     },
 
     loggedInUser: function() {
-      return Backendless.LocalCache.get("current-user-id");
+      return Backendless.LocalCache.get('current-user-id');
     },
 
     describeUserClass: promisified('_describeUserClass'),
@@ -3012,7 +3016,7 @@
     _getGeopointCount: function(fenceName, query, async) {
       var responder = Utils.extractResponder(arguments);
       var isAsync = !!responder;
-      var query = this._buildCountQueryObject(arguments, isAsync);
+      query = this._buildCountQueryObject(arguments, isAsync);
 
       this._validateQueryObject(query);
 
@@ -3134,7 +3138,7 @@
     },
 
     _getOutRectangle: function() {
-      return (arguments.length == 1) ? this._getOutRectangleNodes(arguments[1]) : this._getOutRectangleCircle(arguments[0],
+      return (arguments.length === 1) ? this._getOutRectangleNodes(arguments[1]) : this._getOutRectangleCircle(arguments[0],
         arguments[1]);
     },
 
@@ -3148,7 +3152,7 @@
         westLong = center.longitude - (180 * radius) / littleRadius;
         eastLong = 2 * center.longitude - westLong;
         westLong = this._updateDegree(westLong);
-        eastLong = eastLong % 360 == 180 ? 180 : this._updateDegree(eastLong);
+        eastLong = eastLong % 360 === 180 ? 180 : this._updateDegree(eastLong);
       } else {
         westLong = -180;
         eastLong = 180;
@@ -3229,7 +3233,7 @@
         second = tmp;
       }
 
-      if (point.latitude < first.latitude == point.latitude < second.latitude) {
+      if (point.latitude < first.latitude === point.latitude < second.latitude) {
         return 'NO_INTERSECT';
       }
 
@@ -3287,15 +3291,15 @@
         }
       }
 
-      return count % 2 == 1;
+      return count % 2 === 1;
     },
 
     _isPointInFence: function(geoPoint, geoFence) {
       return this._isPointInRectangular(geoPoint, geoFence.nwPoint, geoFence.sePoint) ||
-        geoFence.type == 'CIRCLE' && this._isPointInCircle(geoPoint, geoFence.nodes[0],
+        geoFence.type === 'CIRCLE' && this._isPointInCircle(geoPoint, geoFence.nodes[0],
           this._distance(geoFence.nodes[0].latitude, geoFence.nodes[0].longitude, geoFence.nodes[1].latitude,
             geoFence.nodes[1].longitude)) ||
-        geoFence.type == 'SHAPE' && this._isPointInShape(geoPoint, geoFence.nodes);
+        geoFence.type === 'SHAPE' && this._isPointInShape(geoPoint, geoFence.nodes);
     },
 
     _typesMapper: {
@@ -3338,7 +3342,7 @@
             self._trackedFences[k].sePoint) && self._isPointInFence(coords, self._trackedFences[k]);
         var rule = null;
 
-        if (isInFence != lastResults[self._trackedFences[k].geofenceName]) {
+        if (isInFence !== lastResults[self._trackedFences[k].geofenceName]) {
           if (lastResults[self._trackedFences[k].geofenceName]) {
             rule = 'onexit';
           } else {
@@ -3369,7 +3373,7 @@
               };
 
           if (GeoFenceCallback) {
-            if (rule == 'onenter') {
+            if (rule === 'onenter') {
               GeoFenceCallback[rule](self._trackedFences[k].geofenceName, self._trackedFences[k].objectId,
                 coords.latitude, coords.longitude);
 
@@ -3390,7 +3394,7 @@
             geoPoint.latitude = coords.latitude;
             geoPoint.longitude = coords.longitude;
 
-            if (rule == 'onenter') {
+            if (rule === 'onenter') {
               self._runFenceAction(rule, self._trackedFences[k].geofenceName, geoPoint, async);
 
               if (duration > -1) {
@@ -4067,7 +4071,7 @@
 
     if (async) {
       xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status) {
+        if (xhr.readyState === 4 && xhr.status) {
           if (xhr.status >= 200 && xhr.status < 300) {
             async.success(JSON.parse(xhr.responseText));
           } else {
@@ -4739,10 +4743,10 @@
       }
 
       if (!(timeToLive instanceof Async)) {
-        if (typeof timeToLive == 'object' && !arguments[3]) {
+        if (typeof timeToLive === 'object' && !arguments[3]) {
           async = timeToLive;
           timeToLive = null;
-        } else if (typeof timeToLive != ('number' || 'string') && timeToLive != null) {
+        } else if (typeof timeToLive !== ('number' || 'string') && timeToLive != null) {
           throw new Error('You can use only String as timeToLive attribute to put into Cache');
         }
       } else {
@@ -5301,11 +5305,13 @@
     };
   };
 
-  var DataQuery = function() {
-    this.properties = [];
-    this.condition = null;
-    this.options = null;
-    this.url = null;
+  var DataQuery = function(args) {
+    args = args || {};
+
+    this.properties = args.properties || [];
+    this.condition = args.condition || null;
+    this.options = args.options || null;
+    this.url = args.url || null;
   };
 
   DataQuery.prototype = {
@@ -5526,21 +5532,23 @@
     }
   };
 
-  var GeoQuery = function() {
-    this.searchRectangle = undefined;
-    this.categories = [];
-    this.includeMetadata = true;
-    this.metadata = undefined;
-    this.condition = undefined;
-    this.relativeFindMetadata = undefined;
-    this.relativeFindPercentThreshold = undefined;
-    this.pageSize = undefined;
-    this.latitude = undefined;
-    this.longitude = undefined;
-    this.radius = undefined;
-    this.units = undefined;
-    this.degreePerPixel = undefined;
-    this.clusterGridSize = undefined;
+  var GeoQuery = function(args) {
+    args = args || {};
+
+    this.searchRectangle = args.searchRectangle || undefined;
+    this.categories = args.categories || [];
+    this.includeMetadata = args.includeMetadata || true;
+    this.metadata = args.metadata || undefined;
+    this.condition = args.condition || undefined;
+    this.relativeFindMetadata = args.relativeFindMetadata || undefined;
+    this.relativeFindPercentThreshold = args.relativeFindPercentThreshold || undefined;
+    this.pageSize = args.pageSize || undefined;
+    this.latitude = args.latitude || undefined;
+    this.longitude = args.longitude || undefined;
+    this.radius = args.radius || undefined;
+    this.units = args.units || undefined;
+    this.degreePerPixel = args.degreePerPixel || undefined;
+    this.clusterGridSize = args.clusterGridSize || undefined;
   };
 
   GeoQuery.prototype = {

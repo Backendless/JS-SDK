@@ -125,13 +125,15 @@ describe('Persistence', function() {
       })
   })
 
-  it('Impossible to get persistence of Users using string signature', function() {
-    const db = () => Persistence.of('Users')
+  it('Possible to get persistence of Users using string signature', function() {
+    const Users = Persistence.of('Users')
 
-    const expectedError = "Table 'Users' is not accessible through this signature. " +
-      "Use Backendless.Data.of( Backendless.User ) instead"
-
-    expect(db).to.throw(expectedError)
+    return Promise.resolve()
+      .then(insertUsers)
+      .then(() => Users.find())
+      .then(users => {
+        users.forEach(object => expect(object).to.be.an.instanceof(Users.constructor))
+      })
   })
 
   it('Check instance of objects from Users table', function() {

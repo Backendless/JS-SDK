@@ -4,10 +4,12 @@ import Backendless from '../../../src/backendless'
 
 function randUser() {
   const ts = new Date().getTime()
-  const user = new Backendless.User()
-  user.email = `test_${ts}@gmail.com`
-  user.password = 'qwerty'
-  return user
+  const user = {
+    email   : `test_${ts}@gmail.com`,
+    password: 'qwerty'
+  }
+
+  return new Backendless.User(user)
 }
 
 describe('Backendless.Users', function() {
