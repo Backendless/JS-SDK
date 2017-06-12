@@ -25,7 +25,7 @@ const createSandbox = api => {
   const app = generateApp()
   const dev = generateDev()
 
-  const sandbox = { app, app, api }
+  const sandbox = { app, api, dev }
   sandbox.destroy = createDestroyer(sandbox)
 
   return Promise.resolve()

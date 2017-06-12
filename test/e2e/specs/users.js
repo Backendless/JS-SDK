@@ -4,10 +4,12 @@ import Backendless from '../../../src/backendless'
 
 function randUser() {
   const ts = new Date().getTime()
-  const user = new Backendless.User()
-  user.email = `test_${ts}@gmail.com`
-  user.password = 'qwerty'
-  return user
+  const user = {
+    email   : `test_${ts}@gmail.com`,
+    password: 'qwerty'
+  }
+
+  return new Backendless.User(user)
 }
 
 describe('Backendless.Users', function() {
@@ -153,6 +155,7 @@ describe('Backendless.Users', function() {
           expect(currentUser).to.not.equal(loggedInUser)
           expect(currentUser).to.have.property('objectId', user.objectId)
           expect(currentUser).to.have.property('email', user.email)
+          expect(currentUser).to.have.property('user-token')
         })
       })
     })
@@ -299,10 +302,17 @@ describe('Backendless.Users', function() {
     })
 
     it('neighbor', function() {
-      return Backendless.UserService.register(randUser()).then(neighbor =>
-        expect(Backendless.UserService.update(neighbor))
-          .to.eventually.be.rejected
-          .and.eventually.have.property('code', 3029)
+      const firstUser = randUser()
+      const secondUser = randUser()
+      secondUser.email = 'test@email.com'
+
+      return Backendless.UserService.register(firstUser).then(neighbor => {
+          return Backendless.UserService.register(secondUser).then(() => {
+            expect(Backendless.UserService.update(neighbor))
+              .to.eventually.be.rejected
+              .and.eventually.have.property('code', 3029)
+          })
+        }
       )
     })
   })
