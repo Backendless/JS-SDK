@@ -5227,13 +5227,13 @@
 
     invokeSync: synchronized('_invoke'),
 
-    _invoke: function(serviceName, serviceVersion, method, parameters, async) {
-      var responder = Utils.extractResponder(arguments),
-          isAsync   = responder != null;
+    _invoke: function(serviceName, method, parameters, async) {
+      var responder = Utils.extractResponder(arguments);
+      var isAsync   = responder != null;
 
       return Backendless._ajax({
         method      : "POST",
-        url         : this.restUrl + [serviceName, serviceVersion, method].join('/'),
+        url         : this.restUrl + [serviceName, method].join('/'),
         data        : JSON.stringify(parameters),
         isAsync     : isAsync,
         asyncHandler: responder

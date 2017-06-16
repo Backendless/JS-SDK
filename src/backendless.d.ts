@@ -761,8 +761,8 @@ declare module __Backendless {
      * @refers {@link Backendless.CustomServices}
      */
     class CustomServicesClass {
-        invokeSync(serviceName:string, serviceVersion:string, method:string, parameters:Object):any;
-        invoke(serviceName:string, serviceVersion:string, method:string, parameters:Object):Promise<any>;
+        invokeSync(serviceName:string, method:string, parameters:Object):any;
+        invoke(serviceName:string, method:string, parameters:Object):Promise<any>;
     }
 
     /**
