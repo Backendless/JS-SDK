@@ -556,8 +556,8 @@ declare module __Backendless {
         publishSync(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Object;
         publish(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Promise<Object>;
 
-        sendEmailSync(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):String;
-        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments:string[]):Promise<String>;
+        sendEmailSync(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments?:string[]):String;
+        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments?:string[]):Promise<String>;
 
         cancelSync(messageId:string):boolean;
         cancel(messageId:string):Promise<boolean>;
