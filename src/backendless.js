@@ -3882,16 +3882,18 @@
           if (!Utils.isEmpty(attachments)) {
             data.attachment = attachments;
           }
-        } else {
-          throw new Error('Attachments must be an array of file IDs from File Service');
         }
+      }
+
+      function responseMessageStatus(res) {
+        return res.status
       }
 
       return Backendless._ajax({
         method      : 'POST',
         url         : this.restUrl + '/email',
         isAsync     : isAsync,
-        asyncHandler: responder,
+        asyncHandler: Utils.wrapAsync(responder, responseMessageStatus),
         data        : JSON.stringify(data)
       });
     },

@@ -484,8 +484,10 @@ function testMessaging() {
     var messageId:string = 'str';
     var message:string|Object = 'str';
     var resultObj:Object;
+    var resultString:String;
     var resultBool:boolean = true;
     var promiseObject:Promise<Object>;
+    var PromiseString:Promise<String>;
     var bodyParts:Backendless.Bodyparts = new Backendless.Bodyparts();
     var recipients:string[] = ['str'];
     var attachments:string[] = ['str'];
@@ -505,8 +507,8 @@ function testMessaging() {
     resultObj = Backendless.Messaging.publishSync(channelName, message, publishOptions, deliveryOptions);
     promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
 
-    resultObj = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
-    promiseObject = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
+    resultString = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
+    PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
     resultBool = Backendless.Messaging.cancelSync(messageId);
     promiseObject = Backendless.Messaging.cancel(messageId);
