@@ -5642,7 +5642,7 @@
 
   var DeliveryOptions = function(args) {
     args = args || {};
-    this.pushPolicy = args.pushPolicy || undefined;
+    this.publishPolicy = args.publishPolicy || undefined;
     this.pushBroadcast = args.pushBroadcast || undefined;
     this.pushSinglecast = args.pushSinglecast || undefined;
     this.publishAt = args.publishAt || undefined;
