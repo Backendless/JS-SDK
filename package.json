@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "4.0.5-beta",
+  "version": "4.0.6-beta",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "main": "./dist/backendless.js",
   "scripts": {
