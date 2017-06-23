@@ -268,7 +268,7 @@ declare module __Backendless {
      * @constructor
      */
     class DeliveryOptions {
-        pushPolicy:string;
+        publishPolicy:string;
         pushBroadcast:number;
         pushSinglecast:string[];
         publishAt:number;
