@@ -2721,8 +2721,11 @@
           var isCluster;
           var GeoItemType;
 
-          for (var i = 0; i < data.collection.length; i++) {
-            geoObject = data.collection[i];
+          //TODO: refctor me when released 4.x
+          var collection = data.collection || data
+
+          for (var i = 0; i < collection.length; i++) {
+            geoObject = collection[i];
             geoObject.geoQuery = query;
 
             isCluster = geoObject.hasOwnProperty('totalPoints');
