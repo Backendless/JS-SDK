@@ -4705,15 +4705,14 @@
 
     dispatchSync: synchronized('_dispatch'),
 
-    _dispatch: function(eventname, eventArgs, Async) {
+    _dispatch: function(eventname, eventArgs) {
       if (!eventname || !Utils.isString(eventname)) {
         throw new Error('Event Name must be provided and must be not an empty STRING!');
       }
 
-      eventArgs = Utils.isObject(eventArgs) ? eventArgs : {};
+      eventArgs = (Utils.isObject(eventArgs) && !(eventArgs instanceof Async)) ? eventArgs : {};
 
-      var responder = Utils.extractResponder(arguments),
-          isAsync   = responder != null;
+      var responder = Utils.extractResponder(arguments);
 
       if (responder) {
         responder = Utils.wrapAsync(responder);
@@ -4725,7 +4724,7 @@
         method      : 'POST',
         url         : this.restUrl + '/' + eventname,
         data        : JSON.stringify(eventArgs),
-        isAsync     : isAsync,
+        isAsync     : responder != null,
         asyncHandler: responder
       });
     }
