@@ -12,7 +12,8 @@
     "clean": "rimraf dist",
     "copy": "copyup src/* dist",
     "minimize": "uglifyjs dist/backendless.js -m -o dist/backendless.min.js --source-map",
-    "build": "npm run clean && npm run copy && npm run minimize",
+    "bannerize": "bannerize ./dist/*.js --banner=./banner.ejs",
+    "build": "npm run clean && npm run copy && npm run minimize && npm run bannerize",
     "prepublish": "npm run build"
   },
   "files": [
@@ -44,6 +45,7 @@
     "babel-preset-stage-3": "^6.17.0",
     "babelify": "^7.3.0",
     "backendless-console-sdk": "^2.0.1",
+    "bannerize": "^1.1.2",
     "browserify": "^13.1.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
