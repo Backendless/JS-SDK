@@ -2288,8 +2288,8 @@
 
     loginWithGooglePlusSync: synchronized('_loginWithGooglePlus'),
 
-    _loginWithGooglePlus: function(googlePlusFieldsMapping, permissions, container, stayLoggedIn, async) {
-      return this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, container, stayLoggedIn, async);
+    _loginWithGooglePlus: function(googlePlusFieldsMapping, container, stayLoggedIn, async) {
+      return this._loginSocial('GooglePlus', googlePlusFieldsMapping, null, container, stayLoggedIn, async);
     },
 
     loginWithTwitter: promisified('_loginWithTwitter'),
@@ -2398,7 +2398,7 @@
       });
     },
 
-    loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options) {
+    loginWithFacebookSdk: function(appId, fieldsMapping, stayLoggedIn, options) {
       var users = this;
 
       return new Promise(function(resolve, reject) {
@@ -2406,7 +2406,18 @@
           return reject(new Error("Facebook SDK not found"));
         }
 
+        if (!appId) {
+          return reject(new Error("Facebook App Id cannot be empty"));
+        }
+
         var async = new Async(resolve, reject, users);
+
+        FB.init({
+          appId      : appId,
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v2.8'
+        });
 
         FB.getLoginStatus(function(response) {
           if (response.status === 'connected') {
@@ -2420,7 +2431,7 @@
       });
     },
 
-    loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
+    loginWithGooglePlusSdk: function(clientId, fieldsMapping, stayLoggedIn, async) {
       var users = this;
 
       return new Promise(function(resolve, reject) {
@@ -2428,22 +2439,28 @@
           return reject(new Error("Google Plus SDK not found"));
         }
 
+        if (!clientId) {
+          return reject(new Error("Google+ Client Id cannot be empty"));
+        }
+
         var async = new Async(resolve, reject, users);
 
         gapi.auth.authorize({
-          client_id: fieldsMapping.client_id,
+          client_id: clientId,
           scope    : "https://www.googleapis.com/auth/plus.login"
         }, function(response) {
           delete response['g-oauth-window'];
-          users._sendSocialLoginRequest(response, "googleplus", fieldsMapping, stayLoggedIn, async);
+          response.accessToken = response.accessToken || response.access_token;
+
+          users._sendSocialLoginRequest(response, "googleplus/sdk", fieldsMapping, stayLoggedIn, async);
         });
       });
     },
 
     _sendSocialLoginRequest: function(response, socialType, fieldsMapping, stayLoggedIn, async) {
-      if (fieldsMapping) {
-        response["fieldsMapping"] = fieldsMapping;
-      }
+      response.fieldsMapping = fieldsMapping || {};
+
+      var context = this;
 
       var interimCallback = new Async(function(r) {
         currentUser = context._parseResponse(r);
@@ -2455,7 +2472,7 @@
 
       Backendless._ajax({
         method      : 'POST',
-        url         : this.restUrl + "/social/" + socialType + "/login/" + Backendless.applicationId,
+        url         : this.restUrl + "/social/" + socialType + "/login",
         isAsync     : true,
         asyncHandler: interimCallback,
         data        : JSON.stringify(response)
