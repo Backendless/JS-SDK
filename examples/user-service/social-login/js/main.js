@@ -1,13 +1,9 @@
 (function($, Backendless) {
-  var SERVER_URL = "https://api.backendless.com";//'http://localhost:9000';
-  var APPLICATION_ID = '39447467-A37D-45F7-FFE0-8BE6ABDBFE00';//'A9766A1E-6BFF-DCBD-FF75-9707FDED8C00';
-  var API_KEY = '08C3247D-C330-5264-FFDB-3C66E6BCD700'; //'9E84B052-0A11-E672-FFCA-303B61BD5F00';
-  var GOOGLE_CLIENT_ID = '688882760839-u97et8gk4klvmnf4ndqoi5448756tr5h.apps.googleusercontent.com';
-  var FACEBOOK_APP_ID = '324081208014713';
-
-  var SERVER_URL = 'http://localhost:9000';
-  var APPLICATION_ID = 'A9766A1E-6BFF-DCBD-FF75-9707FDED8C00';
-  var API_KEY = '9E84B052-0A11-E672-FFCA-303B61BD5F00';
+  var SERVER_URL = "https://api.backendless.com";
+  var APPLICATION_ID;
+  var API_KEY;
+  var GOOGLE_CLIENT_ID;
+  var FACEBOOK_APP_ID;
 
   var app = {
     ui: {
