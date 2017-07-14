@@ -1974,25 +1974,42 @@
 
   UserService.prototype = {
     _wrapAsync: function(async, stayLoggedIn) {
-      var me   = this, success = function(data) {
-        currentUser = me._parseResponse(Utils.tryParseJSON(data), stayLoggedIn);
-        async.success(me._getUserFromResponse(currentUser));
-      }, error = function(data) {
-        async.fault(data);
+      var me = this;
+      var success = function(data) {
+        async.success(me._setCurrentUserFromResponse(data, stayLoggedIn));
+      };
+      var error = function(err) {
+        async.fault(err);
       };
 
       return new Async(success, error);
     },
 
-    _parseResponse: function(data, stayLoggedIn) {
-      var user = new Backendless.User();
-      Utils.deepExtend(user, data);
+    _setCurrentUserFromResponse: function(data, stayLoggedIn) {
+      var user = this._getUserFromResponse(data);
+      this._setCurrentUser(user, stayLoggedIn);
 
-      if (stayLoggedIn) {
-        Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
+      return user;
+    },
+
+    _setCurrentUser: function(user, stayLoggedIn) {
+      currentUser = user;
+      Backendless.LocalCache.set('current-user-id', user.objectId);
+      if (stayLoggedIn !== undefined) {
+        Backendless.LocalCache.set('stayLoggedIn', !!stayLoggedIn);
+      }
+
+      var userToken = user['user-token'];
+
+      if (userToken && stayLoggedIn) {
+        Backendless.LocalCache.set('user-token', userToken)
       }
 
       return user;
+    },
+
+    _getUserFromResponse: function(data) {
+      return Utils.deepExtend(new Backendless.User(), Utils.tryParseJSON(data));
     },
 
     register: promisified('_register'),
@@ -2019,7 +2036,7 @@
         data        : JSON.stringify(user)
       });
 
-      return isAsync ? result : this._parseResponse(result);
+      return isAsync ? result : this._setCurrentUserFromResponse(result);
     },
 
     getUserRoles: promisified('_getUserRoles'),
@@ -2114,23 +2131,10 @@
       });
 
       if (!isAsync && result) {
-        currentUser = this._parseResponse(result, stayLoggedIn);
-        result = this._getUserFromResponse(currentUser);
+        return this._setCurrentUserFromResponse(result, stayLoggedIn);
       }
 
       return result;
-    },
-
-    _getUserFromResponse: function(user) {
-      Backendless.LocalCache.set('current-user-id', user.objectId);
-
-      var userToken = user['user-token']
-
-      if (userToken && Backendless.LocalCache.get('stayLoggedIn')) {
-        Backendless.LocalCache.set('user-token', userToken)
-      }
-
-      return new Backendless.User(user);
     },
 
     loggedInUser: function() {
@@ -2236,19 +2240,34 @@
 
     _getCurrentUser: function(async) {
       if (currentUser) {
-        var userFromResponse = this._getUserFromResponse(currentUser);
+        var user = this._getUserFromResponse(currentUser);
 
-        return async ? async.success(userFromResponse) : userFromResponse;
+        return async ? async.success(user) : user;
       }
 
       var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
       var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
 
-      if (currentUserId) {
-        return persistence.of(User).findById(currentUserId, async);
+      if (!currentUserId) {
+        return async ? async.success(null) : null;
       }
 
-      return async ? async.success(null) : null;
+      if (!async) {
+        var userData = persistence.of(User).findByIdSync(currentUserId);
+
+        return this._setCurrentUserFromResponse(userData);
+      }
+
+      var users = this;
+
+      persistence.of(User).findById(currentUserId).then(
+        function(data) {
+          async.success(users._setCurrentUserFromResponse(data));
+        },
+        function(err) {
+          async.fault(err);
+        }
+      );
     },
 
     update: promisified('_update'),
@@ -2271,7 +2290,7 @@
         data        : JSON.stringify(user)
       });
 
-      return isAsync ? result : this._parseResponse(result);
+      return isAsync ? result : this._setCurrentUserFromResponse(result);
     },
 
     loginWithFacebook: promisified('_loginWithFacebook'),
@@ -2433,15 +2452,7 @@
           return reject(new Error(socialLoginLabels[socialType] + ' Access Token cannot be empty'));
         }
 
-        var asyncHandler = new Async(function(r) {
-          currentUser = users._parseResponse(r);
-
-          Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
-
-          resolve(users._getUserFromResponse(currentUser));
-        }, function(e) {
-          reject(e);
-        });
+        var asyncHandler = users._wrapAsync(new Async(resolve, reject), stayLoggedIn);
 
         Backendless._ajax({
           method      : 'POST',
