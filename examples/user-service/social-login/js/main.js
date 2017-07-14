@@ -1,9 +1,13 @@
 (function($, Backendless) {
-  var SERVER_URL = "https://api.backendless.com";
-  var APPLICATION_ID;
-  var API_KEY;
-  var GOOGLE_CLIENT_ID;
-  var FACEBOOK_APP_ID;
+  var SERVER_URL = "https://api.backendless.com";//'http://localhost:9000';
+  var APPLICATION_ID = '39447467-A37D-45F7-FFE0-8BE6ABDBFE00';//'A9766A1E-6BFF-DCBD-FF75-9707FDED8C00';
+  var API_KEY = '08C3247D-C330-5264-FFDB-3C66E6BCD700'; //'9E84B052-0A11-E672-FFCA-303B61BD5F00';
+  var GOOGLE_CLIENT_ID = '688882760839-u97et8gk4klvmnf4ndqoi5448756tr5h.apps.googleusercontent.com';
+  var FACEBOOK_APP_ID = '324081208014713';
+
+  var SERVER_URL = 'http://localhost:9000';
+  var APPLICATION_ID = 'A9766A1E-6BFF-DCBD-FF75-9707FDED8C00';
+  var API_KEY = '9E84B052-0A11-E672-FFCA-303B61BD5F00';
 
   var app = {
     ui: {
@@ -11,9 +15,7 @@
       loginForm          : '.form.login',
       logoutForm         : '.form.logout',
       googleLoginBtn     : '#google-plus-login',
-      googleSdkLoginBtn  : '#google-plus-sdk-login',
       facebookLoginBtn   : '#facebook-login',
-      facebookSdkLoginBtn: '#facebook-sdk-login',
       twitterLoginBtn    : '#twitter-login',
       logoutBtn          : '#logout'
     },
@@ -21,9 +23,7 @@
     toBind: [
       'onLogoutClick',
       'onGoogleLoginClick',
-      'onGoogleSDKLoginClick',
       'onFacebookLoginClick',
-      'onFacebookSDKLoginClick',
       'onTwitterLoginClick',
       'onLoggedIn'
     ],
@@ -52,15 +52,16 @@
     },
 
     setInitialState: function() {
+      var app = this;
       var cache = Backendless.LocalCache.getAll();
 
       if (cache.stayLoggedIn) {
         Backendless.UserService.isValidLogin().then(function(isLoginValid) {
           if (isLoginValid) {
-            this.showLogoutForm();
+            app.showLogoutForm();
           } else {
             Backendless.LocalCache.clear();
-            this.showLoginForm();
+            app.showLoginForm();
           }
         }, this.onError);
 
@@ -86,9 +87,7 @@
 
     initEventHandlers: function() {
       this.ui.googleLoginBtn.on('click', this.onGoogleLoginClick);
-      this.ui.googleSdkLoginBtn.on('click', this.onGoogleSDKLoginClick);
       this.ui.facebookLoginBtn.on('click', this.onFacebookLoginClick);
-      this.ui.facebookSdkLoginBtn.on('click', this.onFacebookSDKLoginClick);
       this.ui.twitterLoginBtn.on('click', this.onTwitterLoginClick);
       this.ui.logoutBtn.on('click', this.onLogoutClick)
     },
@@ -103,44 +102,97 @@
       this.ui.preloader.hide();
       this.ui.loginForm.hide();
       this.ui.logoutForm.show();
+
+      console.log(Backendless.UserService.getUserRolesSync());
     },
 
-    /*
-     * Login with Google Plus
-     */
     onGoogleLoginClick: function() {
-      Backendless.UserService.loginWithGooglePlus().then(this.onLoggedIn, this.onError);
-    },
+      if (!gapi) {
+        return alert("Google+ SDK not found");
+      }
 
-    /*
-     * Login with Google Plus SDK
-     */
-    onGoogleSDKLoginClick: function() {
       if (!GOOGLE_CLIENT_ID) {
-        alert(
+        return alert(
           'Missing Google client ID. ' +
           'Select client ID from your account on https://console.developers.google.com'
         );
-
-        return;
       }
 
-      Backendless.UserService.loginWithGooglePlusSdk(GOOGLE_CLIENT_ID).then(this.onLoggedIn, this.onError);
+      var app = this;
+
+      gapi.auth.authorize({
+        client_id: GOOGLE_CLIENT_ID,
+        scope    : "https://www.googleapis.com/auth/plus.login"
+      }, function(response) {
+        var accessToken = response && response.access_token;
+
+        app.backendlessLoginWithGooglePlusSDK(accessToken);
+      });
     },
 
-    /*
-     * Login with Facebook
-     */
     onFacebookLoginClick: function() {
-      Backendless.UserService.loginWithFacebook().then(this.onLoggedIn, this.onError);
+      if (!FB) {
+        return alert("Facebook SDK not found");
+      }
+
+      if (!FACEBOOK_APP_ID) {
+        return alert("Facebook App Id cannot be empty");
+      }
+
+      // description of options parameter: https://developers.facebook.com/docs/reference/javascript/FB.login/v2.9
+      var fbLoginOptions = {};
+      var app = this;
+
+      FB.init({
+        appId      : FACEBOOK_APP_ID,
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v2.8'
+      });
+
+      FB.getLoginStatus(function(response) {
+        if (response.status === 'connected') {
+          app.backendlessLoginWithFacebookSDK(response);
+        } else {
+          FB.login(function(response) {
+            app.backendlessLoginWithFacebookSDK(response);
+          }, fbLoginOptions);
+        }
+      });
+    },
+
+    onTwitterLoginClick: function() {
+      Backendless.UserService.loginWithTwitter().then(this.onLoggedIn, this.onError);
+    },
+
+
+    /*
+     * Backendless Login with Facebook SDK
+     *
+     * @param {Object} Facebook login status
+     */
+    backendlessLoginWithFacebookSDK: function(loginStatus) {
+      var accessToken = loginStatus && loginStatus.authResponse && loginStatus.authResponse.accessToken;
+      var fieldsMapping = {"first_name": "test"};
+      var stayLoggedIn = false;
+
+      Backendless.UserService.loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn)
+        .then(this.onLoggedIn, this.onError);
     },
 
     /*
-     * Login with Facebook SDK
+     * Backendless Login with Google+ SDK
+     *
+     * @param {accessToken} Google+ access token
      */
-    onFacebookSDKLoginClick: function() {
-      Backendless.UserService.loginWithFacebookSdk(FACEBOOK_APP_ID).then(this.onLoggedIn, this.onError);
+    backendlessLoginWithGooglePlusSDK: function(accessToken) {
+      var fieldsMapping = {};
+      var stayLoggedIn = true;
+
+      Backendless.UserService.loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn)
+        .then(this.onLoggedIn, this.onError);
     },
+
 
     /*
      * Login with Twitter
