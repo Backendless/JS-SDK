@@ -2430,15 +2430,10 @@
       return this._sendSocialLoginRequest("googleplus", accessToken, fieldsMapping, stayLoggedIn);
     },
 
-    loginWithTwitterSdk: function(accessToken, fieldsMapping, stayLoggedIn) {
-      return this._sendSocialLoginRequest("twitter", accessToken, fieldsMapping, stayLoggedIn);
-    },
-
     _sendSocialLoginRequest: function(socialType, accessToken, fieldsMapping, stayLoggedIn) {
       var socialLoginLabels = {
         googleplus: 'Google+',
-        facebook  : 'Facebook',
-        twitter   : 'Twitter'
+        facebook  : 'Facebook'
       };
       var data = {
         fieldsMapping: fieldsMapping || {},

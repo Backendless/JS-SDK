@@ -816,7 +816,6 @@ declare module __Backendless {
 
         loginWithFacebookSdk(accessToken:string, fieldsMapping?:Object, stayLoggedIn?:boolean):Promise<void>;
         loginWithGooglePlusSdk(accessToken:string, fieldsMapping?:Object, stayLoggedIn?:boolean):Promise<void>;
-        loginWithTwitterSdk(accessToken:string, fieldsMapping?:Object, stayLoggedIn?:boolean):Promise<void>;
 
         isValidLoginSync():boolean;
         isValidLogin():Promise<boolean>;
