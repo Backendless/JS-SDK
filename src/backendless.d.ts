@@ -143,6 +143,7 @@ declare module __Backendless {
 
         addProperty(prop:string):void;
         setOption(name:string, value:string|Array<string>|number):void;
+        addOption(name:string, value:string|Array<string>|number):void;
         setOptions(options:Object):void;
         getOption(name:string):string|Array<string>|number;
         toJSON():Object;
@@ -203,6 +204,8 @@ declare module __Backendless {
         setRelationName(relationName:string):Backendless.LoadRelationsQueryBuilder;
         setPageSize(pageSize:number):Backendless.LoadRelationsQueryBuilder;
         setOffset(offset:number):Backendless.LoadRelationsQueryBuilder;
+        addRelation(relation:string):Backendless.LoadRelationsQueryBuilder;
+        setRelations(relation:Array<string>):Backendless.LoadRelationsQueryBuilder;
         prepareNextPage():Backendless.LoadRelationsQueryBuilder;
         preparePreviousPage():Backendless.LoadRelationsQueryBuilder;
         build():Backendless.DataQueryValueI;
