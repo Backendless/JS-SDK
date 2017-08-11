@@ -2293,16 +2293,20 @@
       return isAsync ? result : this._setCurrentUserFromResponse(result);
     },
 
+    /** @deprecated */
     loginWithFacebook: promisified('_loginWithFacebook'),
 
+    /** @deprecated */
     loginWithFacebookSync: synchronized('_loginWithFacebook'),
 
     _loginWithFacebook: function(facebookFieldsMapping, permissions, stayLoggedIn, async) {
       return this._loginSocial('Facebook', facebookFieldsMapping, permissions, null, stayLoggedIn, async);
     },
 
+    /** @deprecated */
     loginWithGooglePlus: promisified('_loginWithGooglePlus'),
 
+    /** @deprecated */
     loginWithGooglePlusSync: synchronized('_loginWithGooglePlus'),
 
     _loginWithGooglePlus: function(googlePlusFieldsMapping, container, stayLoggedIn, async) {
@@ -2378,7 +2382,7 @@
     _loginSocial: function(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
       if (socialType !== 'Twitter') {
         console.warn(
-          'Method "loginWith' + socialType + '" is depricated.\n' +
+          'Method "loginWith' + socialType + '" is deprecated.\n' +
           'Use method "loginWith' + socialType + 'Sdk" instead.'
         );
       }
