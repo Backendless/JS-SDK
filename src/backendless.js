@@ -1547,34 +1547,6 @@
     },
 
     /**
-     * Create of several objects
-     *
-     * @param {object[]} objectsArray - array of objects
-     * @returns {Promise}
-     */
-    bulkCreate: promisified('_bulkCreate'),
-
-    /**
-     * Create of several objects (sync)
-     *
-     * @param {object[]} objectsArray - array of objects
-     * @returns {*}
-     */
-    bulkCreateSync: synchronized('_bulkCreate'),
-
-    _bulkCreate: function(objectsArray, async) {
-      this._validateBulkCreateArg(objectsArray);
-
-      return Backendless._ajax({
-        method      : 'POST',
-        url         : this.bulkRestUrl,
-        data        : JSON.stringify(objectsArray),
-        isAsync     : !!async,
-        asyncHandler: async
-      });
-    },
-
-    /**
      * Update of several objects by template
      *
      * @param {object} templateObject
@@ -1633,32 +1605,16 @@
         objects = objectsArray.map(function(obj) {
           return Utils.isString(obj) ? obj : obj.objectId;
         });
+
+        whereClause = 'objectId in (\'' + objects.join('\', \'') + '\')';
       }
 
       return Backendless._ajax({
         method      : 'DELETE',
         url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
-        data        : objects && JSON.stringify(objects),
         isAsync     : !!async,
         asyncHandler: async
       });
-    },
-
-    _validateBulkCreateArg: function(objectsArray) {
-      var MSG_ERROR = (
-        'Invalid value for the "objectsArray" argument. ' +
-        'The argument must contain only array of objects.'
-      );
-
-      if (!Utils.isArray(objectsArray)) {
-        throw new Error(MSG_ERROR);
-      }
-
-      for (var i = 0; i < objectsArray.length; i++) {
-        if (!Utils.isObject(objectsArray[i])) {
-          throw new Error(MSG_ERROR);
-        }
-      }
     },
 
     _validateBulkUpdateArgs: function(templateObject, whereClause) {

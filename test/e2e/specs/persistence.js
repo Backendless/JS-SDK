@@ -344,6 +344,77 @@ describe('Persistence', function() {
       })
   })
 
+  /**********************
+   *  BULK OPERATIONS   *
+   **********************/
+
+  describe('Bulk operations', function() {
+    const TestTableName = 'MovieAnimal'
+    const testData = [
+      {
+        name: 'Beethoven',
+        kind: 'dog'
+      },
+      {
+        name: 'Rex',
+        kind: 'dog'
+      },
+      {
+        name: 'Lessie',
+        kind: 'dog'
+      },
+      {
+        name: 'Garfield',
+        kind: 'cat'
+      }
+    ]
+
+    let testDataItems
+    let TestTable
+
+    beforeEach(() => {
+        TestTable = Persistence.of(TestTableName)
+        testDataItems = []
+
+        let saveAction = Promise.resolve()
+
+        testData.forEach(data => {
+          saveAction = saveAction
+            .then(() => TestTable.save(data)
+              .then(item => testDataItems.push(item))
+            )
+        })
+
+        return saveAction
+      }
+    )
+
+    it('Bulk delete by where clause', function() {
+      return TestTable.bulkDelete('kind=\'dog\'')
+        .then(result => {
+          expect(result).to.be.equal(3)
+        })
+    })
+
+    it('Bulk delete by array of ids', function() {
+      const ids = testDataItems
+        .filter(item => item.kind === 'dog')
+        .map(item => item.objectId)
+
+      return TestTable.bulkDelete(ids)
+        .then(result => {
+          expect(result).to.be.equal(ids.length)
+        })
+    })
+
+    it('Bulk delete by array of objects', function() {
+      return TestTable.bulkDelete(testDataItems)
+        .then(result => {
+          expect(result).to.be.equal(testDataItems.length)
+        })
+    })
+  })
+
   /****************
    *  RELATIONS   *
    ****************/
