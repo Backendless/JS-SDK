@@ -5286,14 +5286,6 @@
       this.options[name] = value;
     },
 
-    addOption: function(name, value) {
-      this.options = this.options || {};
-      var option = this.options[name] || [];
-      this.options[name] = Utils.isArray(option) ? option : Utils.castArray(option);
-
-      this.options[name].push(value);
-    },
-
     setOptions: function(options) {
       for (var key in options) {
         if (options.hasOwnProperty(key)) {
@@ -5466,10 +5458,7 @@
   };
 
   LoadRelationsQueryBuilder.prototype = {
-    /** @deprecated */
     setRelationName: function(relationName) {
-      console.warn('Calling deprecated method!');
-
       this._query.setOption('relationName', relationName);
       return this;
     },
@@ -5492,18 +5481,6 @@
 
     preparePreviousPage: function() {
       this._paging.preparePreviousPage();
-
-      return this;
-    },
-
-    addRelation: function(relation) {
-      this._query.addOption('relations', relation);
-
-      return this;
-    },
-
-    setRelations: function(relations) {
-      this._query.setOption('relations', relations);
 
       return this;
     },
