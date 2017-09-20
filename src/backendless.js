@@ -1296,18 +1296,36 @@
     _loadRelations: function(parentObjectId, queryBuilder, async) {
       this._validateLoadRelationsArguments(parentObjectId, queryBuilder);
 
+      var whereClause,
+          options,
+          query = [];
+
       var dataQuery = queryBuilder.build();
+
+      if (dataQuery.condition) {
+        whereClause = 'where=' + encodeURIComponent(dataQuery.condition);
+      }
+
+      if (dataQuery.options) {
+        options = this._extractQueryOptions(dataQuery.options);
+      }
+
+      options && query.push(options);
+      whereClause && query.push(whereClause);
+      query = query.join('&');
+
       var relationModel = dataQuery.relationModel || null;
       var responder = Utils.extractResponder(arguments);
       var relationName = dataQuery.options.relationName;
-      var query = this._extractQueryOptions(dataQuery.options);
       var url = this.restUrl + Utils.toUri(parentObjectId, relationName);
 
       responder = responder && Utils.wrapAsync(responder, function(response) {
           return this._parseFindResponse(response, relationModel);
         }, this);
 
-      url += query ? '?' + query : '';
+      if (query) {
+        url += '?' + query;
+      }
 
       var result = Backendless._ajax({
         method      : 'GET',
@@ -5482,6 +5500,11 @@
     preparePreviousPage: function() {
       this._paging.preparePreviousPage();
 
+      return this;
+    },
+
+    setWhereClause: function(whereClause) {
+      this._query.condition = whereClause;
       return this;
     },
 
