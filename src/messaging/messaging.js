@@ -6,11 +6,12 @@ import Subscription from './subscription'
 import Bodyparts from './body-parts'
 import DeliveryOptions from './delivery-options'
 import PublishOptions from './publish-options'
+import SharedObject from './shared-object'
 
 let DEVICE = null
 
 function Messaging() {
-  this.restUrl = Urls.messaging()
+  // this.restUrl = Urls.messaging()
   this.channelProperties = {}
 }
 
@@ -41,43 +42,56 @@ Messaging.prototype = {
     return result
   },
 
-  subscribe: Utils.promisified('_subscribe'),
-
-  subscribeSync: Utils.synchronized('_subscribe'),
-
-  _subscribe: function(channelName, subscriptionCallback, subscriptionOptions, async) {
-    const responder = Utils.extractResponder(arguments)
-    const isAsync = !!responder
-
-    if (isAsync) {
-      const that = this
-
-      const callback = new Async(function(props) {
-        responder.success(new Subscription({
-          channelName      : channelName,
-          options          : subscriptionOptions,
-          channelProperties: props,
-          responder        : subscriptionCallback,
-          restUrl          : that.restUrl,
-          onSubscribe      : responder
-        }))
-      }, function(data) {
-        responder.fault(data)
-      })
-
-      this._getProperties(channelName, callback)
-    } else {
-      const props = this._getProperties(channelName)
-
-      return new Subscription({
-        channelName      : channelName,
-        options          : subscriptionOptions,
-        channelProperties: props,
-        responder        : subscriptionCallback,
-        restUrl          : this.restUrl
-      })
-    }
+  subscribe: function(channelName, subscriptionCallback, subscriptionOptions) {
+    Backendless.RTClient.MESSAGING.onPubSubMessage(channelName, subscriptionCallback, subscriptionOptions)
   },
+
+  unsubscribe: function(channelName, subscriptionCallback, subscriptionOptions) {
+    Backendless.RTClient.MESSAGING.offPubSubMessage(channelName, subscriptionCallback, subscriptionOptions)
+  },
+
+  sharedObject(name, callback) {
+    //TODO: keep in local memory, don't create duplicates
+    return new SharedObject(name, callback)
+  },
+
+  // subscribe: Utils.promisified('_subscribe'),
+  //
+  // subscribeSync: Utils.synchronized('_subscribe'),
+  //
+  // _subscribe: function(channelName, subscriptionCallback, subscriptionOptions, async) {
+  //   const responder = Utils.extractResponder(arguments)
+  //   const isAsync = !!responder
+  //
+  //   if (isAsync) {
+  //     const that = this
+  //
+  //     const callback = new Async(function(props) {
+  //       responder.success(new Subscription({
+  //         channelName      : channelName,
+  //         options          : subscriptionOptions,
+  //         channelProperties: props,
+  //         responder        : subscriptionCallback,
+  //         restUrl          : that.restUrl,
+  //         onSubscribe      : responder
+  //       }))
+  //     }, function(data) {
+  //       responder.fault(data)
+  //     })
+  //
+  //     this._getProperties(channelName, callback)
+  //   } else {
+  //     const props = this._getProperties(channelName)
+  //
+  //     return new Subscription({
+  //       channelName      : channelName,
+  //       options          : subscriptionOptions,
+  //       channelProperties: props,
+  //       responder        : subscriptionCallback,
+  //       restUrl          : this.restUrl
+  //     })
+  //   }
+  // },
 
   publish: Utils.promisified('_publish'),
 

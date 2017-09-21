@@ -744,4 +744,11 @@ export default class DataStore {
     }
   }
 
+  on(event, query, callback) {
+    Backendless.RTClient.DATA.onObjectsChange(this.className, event, query, callback)
+  }
+
+  off(event, query, callback) {
+    Backendless.RTClient.DATA.offObjectsChange(this.className, event, query, callback)
+  }
 }

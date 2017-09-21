@@ -36,7 +36,13 @@ module.exports = {
   output: {
     library      : 'Backendless',
     libraryTarget: 'umd'
-  }
+  },
+
+  resolve: {
+    alias: {
+      'socket.io-client': 'socket.io-client/dist/socket.io'
+    }
+  },
 
   plugins: isProd ? [uglify] : []
 }
