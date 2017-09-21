@@ -1,0 +1,87 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "rules": {
+    // require function declarations instead of expressions
+    "func-style": [
+      "warn",
+      "declaration",
+      { "allowArrowFunctions": true }
+    ],
+
+    // disallow declaration of variables already declared in the outer scope
+   // "no-shadow": "warn",
+
+    // require let or const instead of var
+    "no-var": "warn",
+
+    "no-unused-vars": "warn",
+
+    "max-len": [
+      "warn",
+      120
+    ],
+
+    // require or disallow use of semicolons instead of ASI
+    "semi": [
+      "warn",
+      "never"
+    ],
+
+    // require the use of === and !== except null comparison
+    "eqeqeq": [
+      "warn",
+      "smart"
+    ],
+
+    // specify whether double or single quotes should be used
+    "quotes": [
+      "warn",
+      "single",
+      "avoid-escape"
+    ],
+
+    // require space before/after arrow function"s arrow
+    "arrow-spacing": [
+      "warn",
+      {
+        "before": true,
+        "after": true
+      }
+    ],
+
+    "arrow-parens": ["warn", "as-needed"],
+
+    // suggest using of const declaration for variables that are never modified after declared
+    "prefer-const": "warn",
+
+    // restrict what can be thrown as an exception
+    "no-throw-literal": "warn",
+
+    // disallow Unused Expressions
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true
+      }
+    ],
+
+    // require padding inside curly braces
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ]
+  }
+}

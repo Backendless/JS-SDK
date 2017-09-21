@@ -1,6 +1,7 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../src/backendless'
+
+const Backendless = sandbox.Backendless
 
 function randUser() {
   const ts = new Date().getTime()
@@ -22,7 +23,7 @@ describe('Backendless.Users', function() {
 
   before(function() {
     loginRandomUser = () => {
-      let user = randUser()
+      const user = randUser()
 
       return Backendless.UserService.register(user)
         .then(() => Backendless.UserService.login(user.email, user.password, true))
@@ -34,9 +35,15 @@ describe('Backendless.Users', function() {
     }
 
     BackendlessCopy = () => {
-      delete require.cache[require.resolve('../../../src/backendless')]
+      const libFilesPath = require.resolve('../../../lib').replace('/index.js', '')
 
-      const result = require('../../../src/backendless').noConflict()
+      Object.keys(require.cache).forEach(modulePath => {
+        if (modulePath.indexOf(libFilesPath) === 0) {
+          delete require.cache[modulePath]
+        }
+      })
+
+      const result = require('../../../lib').noConflict()
       result.serverURL = Backendless.serverURL
       result.initApp(Backendless.applicationId, Backendless.secretKey)
 
@@ -130,7 +137,7 @@ describe('Backendless.Users', function() {
   })
 
   describe('login', function() {
-    let user = randUser()
+    const user = randUser()
     let loginSettings
 
     beforeEach(function() {
@@ -173,7 +180,7 @@ describe('Backendless.Users', function() {
     })
 
     it('when user is disabled', function() {
-      let user = randUser()
+      const user = randUser()
       const usersTable = { name: 'Users' }
 
       return Promise.resolve()

@@ -2,88 +2,86 @@
 /// <reference path="./es6-promise.d.ts" />
 
 import Counter = __Backendless.Counter;
+
 function testMain() {
-    var applicationId:string = Backendless.applicationId;
-    var secretKey:string = Backendless.secretKey;
-    var serverURL:string = Backendless.serverURL;
-    var appPath:string = Backendless.appPath;
-    var APPLICATION_ID:string = 'my-application-id';
-    var JS_SECRET_KEY:string = 'my-js-secret-key';
+    var applicationId: string = Backendless.applicationId;
+    var secretKey: string = Backendless.secretKey;
+    var serverURL: string = Backendless.serverURL;
+    var appPath: string = Backendless.appPath;
+    var browser: { browser: string, version: string } = Backendless.browser;
 
-    Backendless.browser = {browser: 'string', version: 'string'};
-
-    Backendless.initApp(APPLICATION_ID, JS_SECRET_KEY);
+    Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
 
     Backendless.setUIState('state');
     Backendless.setUIState(null);
 }
 
 function testLocalCache() {
-    var key:string = 'key';
-    var str:string = 'string';
-    var obj:Object = {};
-    var arr:any[] = [];
-    var num:number = 1234;
-    var bol:boolean = true;
-    var nul:any = null;
+    var key: string = 'key';
+    var str: string = 'string';
+    var obj: Object = {};
+    var arr: any[] = [];
+    var num: number = 1234;
+    var bol: boolean = true;
+    var nul: any = null;
 
-    var result:boolean = Backendless.LocalCache.enabled;
-    var result1:boolean = Backendless.LocalCache.exists(key);
-    var result2:boolean = Backendless.LocalCache.set(key);
-    var result3:Object = Backendless.LocalCache.set(key, obj);
-    var result4:any[] = Backendless.LocalCache.set(key, arr);
-    var result5:number = Backendless.LocalCache.set(key, num);
-    var result6:string = Backendless.LocalCache.set(key, str);
-    var result7:any = Backendless.LocalCache.set(key, nul);
-    var result8:boolean = Backendless.LocalCache.set(key, bol);
-    var result9:any = Backendless.LocalCache.get(key);
-    var result11:boolean = Backendless.LocalCache.remove(key);
-    var result12:Object = Backendless.LocalCache.getAll();
-    var result13:Object = Backendless.LocalCache.getCachePolicy(key);
-    var result14:string = Backendless.LocalCache.serialize(obj);
-    var result15:string = Backendless.LocalCache.serialize(arr);
-    var result16:string = Backendless.LocalCache.serialize(num);
-    var result17:string = Backendless.LocalCache.serialize(str);
-    var result18:string = Backendless.LocalCache.serialize(bol);
-    var result19:any = Backendless.LocalCache.deserialize(key);
+    var result: boolean = Backendless.LocalCache.enabled;
+    var result1: boolean = Backendless.LocalCache.exists(key);
+    var result2: boolean = Backendless.LocalCache.set(key);
+    var result3: Object = Backendless.LocalCache.set(key, obj);
+    var result4: any[] = Backendless.LocalCache.set(key, arr);
+    var result5: number = Backendless.LocalCache.set(key, num);
+    var result6: string = Backendless.LocalCache.set(key, str);
+    var result7: any = Backendless.LocalCache.set(key, nul);
+    var result8: boolean = Backendless.LocalCache.set(key, bol);
+    var result9: any = Backendless.LocalCache.get(key);
+    var result11: boolean = Backendless.LocalCache.remove(key);
+    var result12: Object = Backendless.LocalCache.getAll();
+    var result13: Object = Backendless.LocalCache.getCachePolicy(key);
+    var result14: string = Backendless.LocalCache.serialize(obj);
+    var result15: string = Backendless.LocalCache.serialize(arr);
+    var result16: string = Backendless.LocalCache.serialize(num);
+    var result17: string = Backendless.LocalCache.serialize(str);
+    var result18: string = Backendless.LocalCache.serialize(bol);
+    var result19: any = Backendless.LocalCache.deserialize(key);
 
     Backendless.LocalCache.clear(key);
     Backendless.LocalCache.flushExpired();
 }
 
 function testDataQueryClass() {
-    var dataQuery:Backendless.DataQuery = new Backendless.DataQuery();
-    var properties:string[] = dataQuery.properties;
-    var condition:string = dataQuery.condition;
-    var options:Object = dataQuery.options;
-    var url:string = dataQuery.url;
-    var str:string = 'str';
+    var dataQuery: Backendless.DataQuery = new Backendless.DataQuery();
+    var properties: string[] = dataQuery.properties;
+    var condition: string = dataQuery.condition;
+    var options: Object = dataQuery.options;
+    var url: string = dataQuery.url;
+    var str: string = 'str';
 
     dataQuery.addProperty(str);
 }
 
 function testDataStoreClass() {
-    var item:Object = {};
-    var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
-    var dataStore2:Backendless.DataStore = Backendless.Persistence.of({});
-    var dataStore3:Backendless.DataStore = Backendless.Persistence.of(function () {
+    var item: Object = {};
+    var dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    var dataStore2: Backendless.DataStore = Backendless.Persistence.of({});
+    var dataStore3: Backendless.DataStore = Backendless.Persistence.of(function () {
     });
 
-    var model:Function|Object = dataStore.model;
-    var className:string = dataStore.className;
-    var restUrl:string = dataStore.restUrl;
+    var model: Function | Object = dataStore.model;
+    var className: string = dataStore.className;
+    var restUrl: string = dataStore.restUrl;
 
-    var dataQueryBuilder:Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
+    var dataQueryBuilder: Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
 
     dataQueryBuilder.setWhereClause("objectId like '%00%'");
 
-    var loadRelationsQueryBuilder:Backendless.LoadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder.create();
-    var parentTableName:string = 'Test';
+    var loadRelationsQueryBuilder: Backendless.LoadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder.create();
+    var parentTableName: string = 'Test';
 
-    var resultObj:Object;
-    var resultNum:number;
-    var promiseObject:Promise<Object>;
-    var promiseNum:Promise<number>;
+    var resultObj: Object;
+    var resultNum: number;
+    var promiseObject: Promise<Object>;
+    var promiseNum: Promise<number>;
 
 
     resultObj = dataStore.saveSync(item);
@@ -111,18 +109,18 @@ function testDataStoreClass() {
     dataStore.loadRelationsSync(parentTableName, loadRelationsQueryBuilder);
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
 
-    resultNum= dataStore.getObjectCountSync();
-    resultNum= dataStore.getObjectCountSync(dataQueryBuilder);
+    resultNum = dataStore.getObjectCountSync();
+    resultNum = dataStore.getObjectCountSync(dataQueryBuilder);
     promiseNum = dataStore.getObjectCount();
     promiseNum = dataStore.getObjectCount(dataQueryBuilder);
 
 }
 
 function testPersistence() {
-    var resultObj:Object;
-    var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
-    var Model:Function;
-    var promiseObject:Promise<Object>;
+    var resultObj: Object;
+    var dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    var Model: Function;
+    var promiseObject: Promise<Object>;
 
     resultObj = Backendless.Persistence.saveSync('model', {});
     resultObj = Backendless.Persistence.saveSync(dataStore, {});
@@ -156,10 +154,10 @@ function testPersistence() {
 }
 
 function testData() {
-    var resultObj:Object;
-    var dataStore:Backendless.DataStore = Backendless.Persistence.of('str');
-    var Model:Function;
-    var promiseObject:Promise<Object>;
+    var resultObj: Object;
+    var dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    var Model: Function;
+    var promiseObject: Promise<Object>;
 
     resultObj = Backendless.Data.saveSync('model', {});
     resultObj = Backendless.Data.saveSync(dataStore, {});
@@ -193,11 +191,11 @@ function testData() {
 }
 
 function testDataPermissions() {
-    var userId:string = 'userId';
-    var roleName:string = 'myRole';
-    var dataObj:Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
-    var resultObj:Backendless.ExistDataItemI;
-    var promiseObject:Promise<Object>;
+    var userId: string = 'userId';
+    var roleName: string = 'myRole';
+    var dataObj: Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
+    var resultObj: Backendless.ExistDataItemI;
+    var promiseObject: Promise<Object>;
 
     resultObj = Backendless.Data.Permissions.FIND.grantUserSync(userId, dataObj);
     resultObj = Backendless.Data.Permissions.FIND.grantRoleSync(roleName, dataObj);
@@ -246,23 +244,23 @@ function testDataPermissions() {
 function testUser() {
     var newUser = new Backendless.User();
 
-    var className:string = newUser.___class;
+    var className: string = newUser.___class;
 }
 
 function testUserService() {
-    var userName:string = 'userName';
-    var identity:string = 'identity';
-    var roleName:string = 'rolename';
-    var password:string = 'password';
-    var div:HTMLElement = document.createElement('div');
-    var bol:boolean = true;
-    var newUser:Backendless.User = new Backendless.User();
-    var resultObj:Object;
-    var promiseObject:Promise<Object>;
-    var promiseVoid:Promise<void>;
+    var userName: string = 'userName';
+    var identity: string = 'identity';
+    var roleName: string = 'rolename';
+    var password: string = 'password';
+    var div: HTMLElement = document.createElement('div');
+    var bol: boolean = true;
+    var newUser: Backendless.User = new Backendless.User();
+    var resultObj: Object;
+    var promiseObject: Promise<Object>;
+    var promiseVoid: Promise<void>;
 
-    var restUrl:string = Backendless.UserService.restUrl;
-    var loggedInUser:boolean = Backendless.UserService.loggedInUser();
+    var restUrl: string = Backendless.UserService.restUrl;
+    var loggedInUser: boolean = Backendless.UserService.loggedInUser();
 
     resultObj = Backendless.UserService.restorePasswordSync('email');
     promiseObject = Backendless.UserService.restorePassword('email');
@@ -352,19 +350,19 @@ function testUserService() {
 }
 
 function testGoeService() {
-    var newGeoPoint:Backendless.GeoPoint = new Backendless.GeoPoint();
+    var newGeoPoint: Backendless.GeoPoint = new Backendless.GeoPoint();
     newGeoPoint.latitude = 20;
     newGeoPoint.longitude = 30;
     newGeoPoint.categories = ["c"];
     newGeoPoint.metadata = {"owner": "XXX"};
 
-    var existPoint:Backendless.GeoPoint = new Backendless.GeoPoint();
+    var existPoint: Backendless.GeoPoint = new Backendless.GeoPoint();
     newGeoPoint.___class = 'c';
     newGeoPoint.objectId = 'id';
     newGeoPoint.latitude = 20;
     newGeoPoint.longitude = 30;
 
-    var geoClaster:Backendless.GeoCluster = new Backendless.GeoCluster();
+    var geoClaster: Backendless.GeoCluster = new Backendless.GeoCluster();
 
     geoClaster.___class = 'geo';
     geoClaster.objectId = 'id';
@@ -373,40 +371,40 @@ function testGoeService() {
     geoClaster.totalPoints = 10;
     geoClaster.geoQuery = new Backendless.GeoQuery();
 
-    var bool:boolean = true;
-    var errorStr:string = 'str';
-    var fenceName:string = 'str';
-    var categoryName:string = 'str';
-    var restUrl:string = Backendless.Geo.restUrl;
-    var EARTH_RADIUS:number = Backendless.Geo.EARTH_RADIUS;
-    var geoCollectionResult:Array<Object>;
-    var geoCategory:Backendless.GeoCategoryI;
-    var geoCategories:Backendless.GeoCategoryI[];
-    var resultObj:Object;
+    var bool: boolean = true;
+    var errorStr: string = 'str';
+    var fenceName: string = 'str';
+    var categoryName: string = 'str';
+    var restUrl: string = Backendless.Geo.restUrl;
+    var EARTH_RADIUS: number = Backendless.Geo.EARTH_RADIUS;
+    var geoCollectionResult: Array<Object>;
+    var geoCategory: Backendless.GeoCategoryI;
+    var geoCategories: Backendless.GeoCategoryI[];
+    var resultObj: Object;
 
-    var baseGeoQuery:Backendless.GeoQueryI = new Backendless.GeoQuery();
-    var rectangleGeoQuery:Backendless.RectangleGeoQueryI = {searchRectangle: [1, 2, 3, 4]};
-    var circleGeoQuery:Backendless.CircleGeoQueryI = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
-    var categories:string|string[] = baseGeoQuery.categories;
-    var includeMetadata:boolean = baseGeoQuery.includeMetadata;
-    var metadata:Object = baseGeoQuery.metadata;
-    var condition:string = baseGeoQuery.condition;
-    var relativeFindMetadata:Object = baseGeoQuery.relativeFindMetadata;
-    var relativeFindPercentThreshold:number = baseGeoQuery.relativeFindPercentThreshold;
-    var pageSize:number = baseGeoQuery.pageSize;
+    var baseGeoQuery: Backendless.GeoQueryI = new Backendless.GeoQuery();
+    var rectangleGeoQuery: Backendless.RectangleGeoQueryI = {searchRectangle: [1, 2, 3, 4]};
+    var circleGeoQuery: Backendless.CircleGeoQueryI = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
+    var categories: string | string[] = baseGeoQuery.categories;
+    var includeMetadata: boolean = baseGeoQuery.includeMetadata;
+    var metadata: Object = baseGeoQuery.metadata;
+    var condition: string = baseGeoQuery.condition;
+    var relativeFindMetadata: Object = baseGeoQuery.relativeFindMetadata;
+    var relativeFindPercentThreshold: number = baseGeoQuery.relativeFindPercentThreshold;
+    var pageSize: number = baseGeoQuery.pageSize;
 
-    var searchRectangle:number[] = rectangleGeoQuery.searchRectangle;
+    var searchRectangle: number[] = rectangleGeoQuery.searchRectangle;
 
-    var latitude:number = circleGeoQuery.latitude;
-    var longitude:number = circleGeoQuery.longitude;
-    var radius:number = circleGeoQuery.radius;
-    var units:string = circleGeoQuery.units;
-    var promiseObject:Promise<Object>;
-    var promiseVoid:Promise<void>;
-    var promiseNum:Promise<number>;
-    var resultNum:number;
+    var latitude: number = circleGeoQuery.latitude;
+    var longitude: number = circleGeoQuery.longitude;
+    var radius: number = circleGeoQuery.radius;
+    var units: string = circleGeoQuery.units;
+    var promiseObject: Promise<Object>;
+    var promiseVoid: Promise<void>;
+    var promiseNum: Promise<number>;
+    var resultNum: number;
 
-    var inAppCallback:Backendless.GeofenceMonitoringCallbacksI = {
+    var inAppCallback: Backendless.GeofenceMonitoringCallbacksI = {
         onenter: function () {
         }
     };
@@ -423,8 +421,8 @@ function testGoeService() {
     geoCollectionResult = Backendless.Geo.findSync(circleGeoQuery);
     promiseObject = Backendless.Geo.find(circleGeoQuery);
 
-    resultNum= Backendless.Geo.getGeopointCountSync(baseGeoQuery);
-    resultNum= Backendless.Geo.getGeopointCountSync(fenceName, baseGeoQuery);
+    resultNum = Backendless.Geo.getGeopointCountSync(baseGeoQuery);
+    resultNum = Backendless.Geo.getGeopointCountSync(fenceName, baseGeoQuery);
     promiseNum = Backendless.Geo.getGeopointCount(baseGeoQuery);
     promiseNum = Backendless.Geo.getGeopointCount(fenceName, baseGeoQuery);
 
@@ -476,29 +474,29 @@ function testGoeService() {
 }
 
 function testMessaging() {
-    var restUrl:string = Backendless.Messaging.restUrl;
-    var channelProperties:Object = Backendless.Messaging.channelProperties;
-    var channelName:string = 'str';
-    var deviceToken:string = 'str';
-    var subject:string = 'str';
-    var messageId:string = 'str';
-    var message:string|Object = 'str';
-    var resultObj:Object;
-    var resultString:String;
-    var resultBool:boolean = true;
-    var promiseObject:Promise<Object>;
-    var PromiseString:Promise<String>;
-    var bodyParts:Backendless.Bodyparts = new Backendless.Bodyparts();
-    var recipients:string[] = ['str'];
-    var attachments:string[] = ['str'];
-    var channels:string[] = ['str'];
-    var expiration:number|Date = 123;
-    var publishOptions:Backendless.PublishOptions = new Backendless.PublishOptions();
-    var deliveryOptions:Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
-    var subscription:Backendless.SubscriptionI;
-    var subscriptionOptions:Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
-    var subscriptionCallback = function (data:Object):void {
-        var messagesArray:Array<String> = data["messages"];
+    var restUrl: string = Backendless.Messaging.restUrl;
+    var channelProperties: Object = Backendless.Messaging.channelProperties;
+    var channelName: string = 'str';
+    var deviceToken: string = 'str';
+    var subject: string = 'str';
+    var messageId: string = 'str';
+    var message: string | Object = 'str';
+    var resultObj: Object;
+    var resultString: String;
+    var resultBool: boolean = true;
+    var promiseObject: Promise<Object>;
+    var PromiseString: Promise<String>;
+    var bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
+    var recipients: string[] = ['str'];
+    var attachments: string[] = ['str'];
+    var channels: string[] = ['str'];
+    var expiration: number | Date = 123;
+    var publishOptions: Backendless.PublishOptions = new Backendless.PublishOptions();
+    var deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
+    var subscription: Backendless.SubscriptionI;
+    var subscriptionOptions: Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
+    var subscriptionCallback = function (data: Object): void {
+        var messagesArray: Array<String> = data["messages"];
     };
 
     subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
@@ -525,31 +523,31 @@ function testMessaging() {
 }
 
 function testFilesService() {
-    var path:string = 'str';
-    var fileName:string = 'str';
-    var fileContent:Blob = new Blob();
-    var pattern:string = 'str';
-    var recursively:boolean = true;
-    var pageSize:number = 123;
-    var offset:number = 123;
-    var overwrite:boolean = true;
-    var file:File;
-    var files:File[] = [file];
-    var oldPathName:string = 'str';
-    var newName:string = 'str';
-    var sourcePath:string = 'str';
-    var targetPath:string = 'str';
-    var fileURL:string = 'str';
-    var userid:string = 'str';
-    var url:string = 'str';
-    var permissionType:string = 'str';
-    var roleName:string = 'str';
+    var path: string = 'str';
+    var fileName: string = 'str';
+    var fileContent: Blob = new Blob();
+    var pattern: string = 'str';
+    var recursively: boolean = true;
+    var pageSize: number = 123;
+    var offset: number = 123;
+    var overwrite: boolean = true;
+    var file: File;
+    var files: File[] = [file];
+    var oldPathName: string = 'str';
+    var newName: string = 'str';
+    var sourcePath: string = 'str';
+    var targetPath: string = 'str';
+    var fileURL: string = 'str';
+    var userid: string = 'str';
+    var url: string = 'str';
+    var permissionType: string = 'str';
+    var roleName: string = 'str';
 
-    var resultStr:string;
-    var resultBool:boolean;
-    var resultObj:Object;
-    var promiseObject:Promise<Object>;
-    var promiseVoid:Promise<void>;
+    var resultStr: string;
+    var resultBool: boolean;
+    var resultObj: Object;
+    var promiseObject: Promise<Object>;
+    var promiseVoid: Promise<void>;
 
     resultStr = Backendless.Files.restUrl;
 
@@ -631,14 +629,14 @@ function testFilesService() {
 }
 
 function testCommerce() {
-    var packageName:string = 'str';
-    var productId:string = 'str';
-    var token:string = 'str';
-    var subscriptionId:string = 'str';
+    var packageName: string = 'str';
+    var productId: string = 'str';
+    var token: string = 'str';
+    var subscriptionId: string = 'str';
 
-    var resultStr:string;
-    var resultObj:Object;
-    var promiseObject:Promise<Object>;
+    var resultStr: string;
+    var resultObj: Object;
+    var promiseObject: Promise<Object>;
 
     resultStr = Backendless.Commerce.restUrl;
 
@@ -653,12 +651,12 @@ function testCommerce() {
 }
 
 function testEvents() {
-    var eventName:string = 'str';
-    var eventArgs:Object = {};
+    var eventName: string = 'str';
+    var eventArgs: Object = {};
 
-    var resultStr:string;
-    var resultObj:Object;
-    var promiseObject:Promise<Object>;
+    var resultStr: string;
+    var resultObj: Object;
+    var promiseObject: Promise<Object>;
 
     resultStr = Backendless.Events.restUrl;
 
@@ -667,14 +665,14 @@ function testEvents() {
 }
 
 function testCache() {
-    var key:string = 'str';
-    var value:any = [{}, 1, 2];
-    var timeToLive:number = 123;
-    var seconds:number = 123;
-    var date:Date = new Date();
+    var key: string = 'str';
+    var value: any = [{}, 1, 2];
+    var timeToLive: number = 123;
+    var seconds: number = 123;
+    var date: Date = new Date();
 
-    var resultObj:Object;
-    var promiseObject:Promise<Object>;
+    var resultObj: Object;
+    var promiseObject: Promise<Object>;
 
     resultObj = Backendless.Cache.putSync(key, value);
     resultObj = Backendless.Cache.putSync(key, value, timeToLive);
@@ -702,14 +700,14 @@ function testCache() {
 }
 
 function testCounters() {
-    var value:number = 123;
-    var counterName:string = 'str';
-    var expected:number = 123;
-    var updated:number = 123;
-    var promiseObject:Promise<Object>;
- 
+    var value: number = 123;
+    var counterName: string = 'str';
+    var expected: number = 123;
+    var updated: number = 123;
+    var promiseObject: Promise<Object>;
+
     //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
-    var resultNum:number = 123;
+    var resultNum: number = 123;
 
     resultNum = Backendless.Counters.getSync(counterName);
     promiseObject = Backendless.Counters.get(counterName);
@@ -738,7 +736,7 @@ function testCounters() {
     resultNum = Backendless.Counters.resetSync(counterName);
     promiseObject = Backendless.Counters.reset(counterName);
 
-    var counter:Counter = Backendless.Counters.of(counterName);
+    var counter: Counter = Backendless.Counters.of(counterName);
 
     resultNum = counter.getSync();
     promiseObject = counter.get();
@@ -769,29 +767,28 @@ function testCounters() {
 }
 
 function testCustomServices() {
-    var serviceName:string = 'str';
-    var serviceVersion:string = 'str';
-    var method:string = 'str';
-    var parameters:Object = {};
-    var promiseObject:Promise<Object>;
+    var serviceName: string = 'str';
+    var serviceVersion: string = 'str';
+    var method: string = 'str';
+    var parameters: Object = {};
 
-    var resultObj:Object = Backendless.CustomServices.invokeSync(serviceName, serviceVersion, method, parameters);
-    promiseObject = Backendless.CustomServices.invoke(serviceName, serviceVersion, method, parameters);
+    var resultObj: any = Backendless.CustomServices.invokeSync(serviceName, method, parameters);
+    var promiseAny: Promise<any> = Backendless.CustomServices.invoke(serviceName, method, parameters);
 }
 
 function testLogging() {
-    var numOfMessagesValue:number = 123;
-    var timeFrequencySecValue:number = 123;
-    var loggerName:string = 'str';
-    var logger:Backendless.Logger;
-    var message:string = 'str';
+    var numOfMessagesValue: number = 123;
+    var timeFrequencySecValue: number = 123;
+    var loggerName: string = 'str';
+    var logger: Backendless.Logger;
+    var message: string = 'str';
 
-    var restUrl:string = Backendless.Logging.restUrl;
-    var loggers:Object = Backendless.Logging.loggers;
-    var logInfo:Object[] = Backendless.Logging.logInfo;
-    var messagesCount:number = Backendless.Logging.messagesCount;
-    var numOfMessages:number = Backendless.Logging.numOfMessages;
-    var timeFrequency:number = Backendless.Logging.timeFrequency;
+    var restUrl: string = Backendless.Logging.restUrl;
+    var loggers: Object = Backendless.Logging.loggers;
+    var logInfo: Object[] = Backendless.Logging.logInfo;
+    var messagesCount: number = Backendless.Logging.messagesCount;
+    var numOfMessages: number = Backendless.Logging.numOfMessages;
+    var timeFrequency: number = Backendless.Logging.timeFrequency;
 
     Backendless.Logging.setLogReportingPolicy(numOfMessagesValue, timeFrequencySecValue);
 

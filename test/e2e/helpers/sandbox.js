@@ -1,5 +1,6 @@
 import { createClient } from 'backendless-console-sdk'
-import Backendless from '../../../src/backendless'
+// import Backendless from '../../../src/backendless'
+const Backendless = require('../../../lib')
 
 const chr4 = () => Math.random().toString(16).slice(-4)
 const chr8 = () => `${chr4()}${chr4()}`
@@ -13,7 +14,7 @@ const generateDev = () => ({
 })
 
 const generateApp = () => ({
-  name: `test_${uid()}`
+  appName: `test_${uid()}`
 })
 
 const createDestroyer = sandbox => () =>
@@ -35,7 +36,7 @@ const createSandbox = api => {
     .then(() => api.user.login(dev.email, dev.pwd))
     .then(({ authKey }) => dev.authKey = authKey)
 
-    .then(() => api.apps.createApp(app.name))
+    .then(() => api.apps.createApp(app))
     .then(result => Object.assign(app, result))
 
     .then(() => api.settings.getAppSettings(app.id))
@@ -72,6 +73,7 @@ const createSandboxFor = each => () => {
 }
 
 export default {
+  Backendless,
   forTest : createSandboxFor(true),
   forSuite: createSandboxFor(false)
 }

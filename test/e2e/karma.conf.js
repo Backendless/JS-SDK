@@ -41,12 +41,12 @@ module.exports = function(config) {
         sourceMap: 'inline'
       },
       sourceFileName: function(file) {
-        return file.originalPath;
+        return file.originalPath
       }
     },
 
     basePath: '../../',
 
     frameworks: ['browserify', 'mocha']
-  });
-};
+  })
+}
