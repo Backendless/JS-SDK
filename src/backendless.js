@@ -1296,18 +1296,36 @@
     _loadRelations: function(parentObjectId, queryBuilder, async) {
       this._validateLoadRelationsArguments(parentObjectId, queryBuilder);
 
+      var whereClause,
+          options,
+          query = [];
+
       var dataQuery = queryBuilder.build();
+
+      if (dataQuery.condition) {
+        whereClause = 'where=' + encodeURIComponent(dataQuery.condition);
+      }
+
+      if (dataQuery.options) {
+        options = this._extractQueryOptions(dataQuery.options);
+      }
+
+      options && query.push(options);
+      whereClause && query.push(whereClause);
+      query = query.join('&');
+
       var relationModel = dataQuery.relationModel || null;
       var responder = Utils.extractResponder(arguments);
       var relationName = dataQuery.options.relationName;
-      var query = this._extractQueryOptions(dataQuery.options);
       var url = this.restUrl + Utils.toUri(parentObjectId, relationName);
 
       responder = responder && Utils.wrapAsync(responder, function(response) {
           return this._parseFindResponse(response, relationModel);
         }, this);
 
-      url += query ? '?' + query : '';
+      if (query) {
+        url += '?' + query;
+      }
 
       var result = Backendless._ajax({
         method      : 'GET',
@@ -1547,34 +1565,6 @@
     },
 
     /**
-     * Create of several objects
-     *
-     * @param {object[]} objectsArray - array of objects
-     * @returns {Promise}
-     */
-    bulkCreate: promisified('_bulkCreate'),
-
-    /**
-     * Create of several objects (sync)
-     *
-     * @param {object[]} objectsArray - array of objects
-     * @returns {*}
-     */
-    bulkCreateSync: synchronized('_bulkCreate'),
-
-    _bulkCreate: function(objectsArray, async) {
-      this._validateBulkCreateArg(objectsArray);
-
-      return Backendless._ajax({
-        method      : 'POST',
-        url         : this.bulkRestUrl,
-        data        : JSON.stringify(objectsArray),
-        isAsync     : !!async,
-        asyncHandler: async
-      });
-    },
-
-    /**
      * Update of several objects by template
      *
      * @param {object} templateObject
@@ -1633,32 +1623,16 @@
         objects = objectsArray.map(function(obj) {
           return Utils.isString(obj) ? obj : obj.objectId;
         });
+
+        whereClause = 'objectId in (\'' + objects.join('\', \'') + '\')';
       }
 
       return Backendless._ajax({
         method      : 'DELETE',
         url         : this.bulkRestUrl + '?' + Utils.toQueryParams({ where: whereClause }),
-        data        : objects && JSON.stringify(objects),
         isAsync     : !!async,
         asyncHandler: async
       });
-    },
-
-    _validateBulkCreateArg: function(objectsArray) {
-      var MSG_ERROR = (
-        'Invalid value for the "objectsArray" argument. ' +
-        'The argument must contain only array of objects.'
-      );
-
-      if (!Utils.isArray(objectsArray)) {
-        throw new Error(MSG_ERROR);
-      }
-
-      for (var i = 0; i < objectsArray.length; i++) {
-        if (!Utils.isObject(objectsArray[i])) {
-          throw new Error(MSG_ERROR);
-        }
-      }
     },
 
     _validateBulkUpdateArgs: function(templateObject, whereClause) {
@@ -5330,14 +5304,6 @@
       this.options[name] = value;
     },
 
-    addOption: function(name, value) {
-      this.options = this.options || {};
-      var option = this.options[name] || [];
-      this.options[name] = Utils.isArray(option) ? option : Utils.castArray(option);
-
-      this.options[name].push(value);
-    },
-
     setOptions: function(options) {
       for (var key in options) {
         if (options.hasOwnProperty(key)) {
@@ -5510,10 +5476,7 @@
   };
 
   LoadRelationsQueryBuilder.prototype = {
-    /** @deprecated */
     setRelationName: function(relationName) {
-      console.warn('Calling deprecated method!');
-
       this._query.setOption('relationName', relationName);
       return this;
     },
@@ -5540,15 +5503,8 @@
       return this;
     },
 
-    addRelation: function(relation) {
-      this._query.addOption('relations', relation);
-
-      return this;
-    },
-
-    setRelations: function(relations) {
-      this._query.setOption('relations', relations);
-
+    setWhereClause: function(whereClause) {
+      this._query.condition = whereClause;
       return this;
     },
 
