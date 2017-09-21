@@ -36,7 +36,7 @@ module.exports = {
   output: {
     library      : 'Backendless',
     libraryTarget: 'umd'
-  }
+  },
 
   plugins: isProd ? [uglify] : []
 }

@@ -33,7 +33,6 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.secretKey = secretKey
   Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
 
-  Backendless.RTClient = new RTClient()
   Backendless.UserService = new UserService()
   Backendless.Users = Backendless.UserService
   Backendless.Geo = new Geo()
