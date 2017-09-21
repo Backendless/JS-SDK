@@ -18,10 +18,7 @@ export default class LoadRelationsQueryBuilder {
     this._paging = new PagingQueryBuilder()
   }
 
-  /** @deprecated */
   setRelationName(relationName) {
-    console.warn('Calling deprecated method!')
-
     this._query.setOption('relationName', relationName)
 
     return this
@@ -51,14 +48,8 @@ export default class LoadRelationsQueryBuilder {
     return this
   }
 
-  addRelation(relation) {
-    this._query.addOption('relations', relation)
-
-    return this
-  }
-
-  setRelations(relations) {
-    this._query.setOption('relations', relations)
+  setWhereClause(whereClause) {
+    this._query.condition = whereClause
 
     return this
   }

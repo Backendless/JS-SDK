@@ -21,12 +21,6 @@ export default class DataQuery {
     this.options[name] = value
   }
 
-  addOption(name, value) {
-    this.options = this.options || {}
-    this.options[name] = Utils.castArray(this.options[name] || [])
-    this.options[name].push(value)
-  }
-
   setOptions(options) {
     for (const key in options) {
       if (options.hasOwnProperty(key)) {

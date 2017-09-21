@@ -427,18 +427,36 @@ export default class DataStore {
   _loadRelations(parentObjectId, queryBuilder, async) {
     this._validateLoadRelationsArguments(parentObjectId, queryBuilder)
 
-    const dataQuery = queryBuilder.build()
+    let whereClause
+    let options
+    let query = []
+
+    const dataQuery = queryBuilder.build();
+
+    if (dataQuery.condition) {
+      whereClause = 'where=' + encodeURIComponent(dataQuery.condition);
+    }
+
+    if (dataQuery.options) {
+      options = this._extractQueryOptions(dataQuery.options);
+    }
+
+    options && query.push(options);
+    whereClause && query.push(whereClause);
+    query = query.join('&');
+
     const relationModel = dataQuery.relationModel || null
     let responder = Utils.extractResponder(arguments)
     const relationName = dataQuery.options.relationName
-    const query = this._extractQueryOptions(dataQuery.options)
     let url = Urls.dataTable(this.className) + Utils.toUri(parentObjectId, relationName)
 
     responder = responder && Utils.wrapAsync(responder, function(response) {
       return this._parseFindResponse(response, relationModel)
     }, this)
 
-    url += query ? '?' + query : ''
+    if (query) {
+      url += '?' + query;
+    }
 
     const result = Backendless._ajax({
       method      : 'GET',
