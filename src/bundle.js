@@ -5,13 +5,17 @@ const Backendless = {}
 
 Backendless.debugMode = true
 
+//TODO: refactor me
+const root = typeof root !== 'undefined' ? root : {}
+
 const localStorageName = 'localStorage'
-const previousBackendless = typeof root !=='undefined' ? root.Backendless:null
+const previousBackendless = root.Backendless
 
 Backendless.serverURL = 'https://api.backendless.com'
 
 Backendless.noConflict = function() {
-  if (typeof root !=='undefined') {
+
+  if (root) {
     root.Backendless = previousBackendless
   }
 
