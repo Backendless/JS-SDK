@@ -1103,12 +1103,8 @@
         throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
       }
 
-      var responder = Utils.extractResponder(arguments), isAsync = false;
-
-      if (responder != null) {
-        isAsync = true;
-        responder = Utils.wrapAsync(responder, this._parseResponse, this);
-      }
+      var responder = Utils.extractResponder(arguments);
+      var isAsync = responder != null;
 
       var result;
 
@@ -1199,14 +1195,13 @@
       options && query.push(options);
       whereClause && query.push(whereClause);
       props && query.push(props);
-      query = query.join('&');
 
       if (dataQuery.url) {
         url += '/' + dataQuery.url;
       }
 
-      if (query) {
-        url += '?' + query;
+      if (query.length) {
+        url += '?' + query.join('&');
       }
 
       result = Backendless._ajax({
@@ -1312,7 +1307,6 @@
 
       options && query.push(options);
       whereClause && query.push(whereClause);
-      query = query.join('&');
 
       var relationModel = dataQuery.relationModel || null;
       var responder = Utils.extractResponder(arguments);
@@ -1323,8 +1317,8 @@
           return this._parseFindResponse(response, relationModel);
         }, this);
 
-      if (query) {
-        url += '?' + query;
+      if (query.length) {
+        url += '?' + query.join('&');
       }
 
       var result = Backendless._ajax({
