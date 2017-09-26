@@ -33,7 +33,6 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.secretKey = secretKey
   Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
 
-  Backendless.UserService = new UserService()
   Backendless.Users = Backendless.UserService
   Backendless.Geo = new Geo()
   Backendless.Persistence = persistence
@@ -46,6 +45,7 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Cache = new Cache()
   Backendless.Counters = new Counters()
 
+  Backendless.UserService = UserService
   Backendless.CustomServices = CustomServices
   Backendless.Events = Events
 
