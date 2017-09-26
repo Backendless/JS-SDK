@@ -1071,12 +1071,8 @@
                 throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values');
             }
 
-            var responder = extractResponder(arguments), isAsync = false;
-
-            if (responder != null) {
-                isAsync = true;
-                responder = wrapAsync(responder, this._parseResponse, this);
-            }
+            var responder = extractResponder(arguments);
+            var isAsync = responder != null;
 
             var result;
 
