@@ -237,12 +237,8 @@ export default class DataStore {
       throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values')
     }
 
-    let responder = Utils.extractResponder(arguments), isAsync = false
-
-    if (responder) {
-      isAsync = true
-      responder = Utils.wrapAsync(responder, this._parseResponse, this)
-    }
+    const responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
 
     let result
 
@@ -345,14 +341,12 @@ export default class DataStore {
       query.push(props)
     }
 
-    query = query.join('&')
-
     if (dataQuery.url) {
       url += '/' + dataQuery.url
     }
 
-    if (query) {
-      url += '?' + query
+    if (query.length) {
+      url += '?' + query.join('&');
     }
 
     result = Backendless._ajax({
@@ -443,7 +437,6 @@ export default class DataStore {
 
     options && query.push(options);
     whereClause && query.push(whereClause);
-    query = query.join('&');
 
     const relationModel = dataQuery.relationModel || null
     let responder = Utils.extractResponder(arguments)
@@ -451,11 +444,11 @@ export default class DataStore {
     let url = Urls.dataTable(this.className) + Utils.toUri(parentObjectId, relationName)
 
     responder = responder && Utils.wrapAsync(responder, function(response) {
-      return this._parseFindResponse(response, relationModel)
-    }, this)
+      return this._parseFindResponse(response, relationModel);
+    }, this);
 
-    if (query) {
-      url += '?' + query;
+    if (query.length) {
+      url += '?' + query.join('&');
     }
 
     const result = Backendless._ajax({
