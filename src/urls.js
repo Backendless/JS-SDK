@@ -10,6 +10,8 @@ const Urls = {
 
   blEvent: eventName => `${Urls.root()}/servercode/events/${eventName}`,
 
+  logging: () => `${Urls.root()}/log`,
+
   cache            : () => `${Urls.root()}/cache`,
   cacheItem        : key => `${Urls.cache()}/${key}`,
   cacheItemExpireIn: key => `${Urls.cacheItem(key)}/expireIn`,
@@ -24,6 +26,7 @@ const Urls = {
   dataTable           : tableName => `${Urls.data()}/${tableName}`,
   dataTableObject     : (tableName, objectId) => `${Urls.dataTable(tableName)}/${objectId}`,
   dataTableCount      : tableName => `${Urls.dataTable(tableName)}/count`,
+  dataTableProps      : tableName => `${Urls.dataTable(tableName)}/properties`,
   dataBulkTable       : tableName => `${Urls.data()}/bulk/${tableName}`,
   dataObjectPermission: (tableName, permissionType, objectId) => `${Urls.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`,
 

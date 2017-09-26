@@ -1,5 +1,6 @@
 import Backendless from '../bundle'
 import Utils from '../utils'
+import Urls from '../urls'
 import Async from '../request/async'
 
 let lastFlushListeners
@@ -56,7 +57,7 @@ Backendless.Logging = {
         method      : 'PUT',
         isAsync     : !!async,
         asyncHandler: async && new Async(cb('success'), cb('fault')),
-        url         : Backendless.appPath + '/log',
+        url         : Urls.logging(),
         data        : JSON.stringify(this.logInfo)
       })
 
