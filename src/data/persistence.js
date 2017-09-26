@@ -1,5 +1,6 @@
 import Backendless from '../bundle'
 import Utils from '../utils'
+import Urls from '../urls'
 import Async from '../request/async'
 import DataStore from './data-store'
 import Private from '../private'
@@ -15,7 +16,7 @@ const persistence = {
     const isAsync = !!responder
 
     if (Utils.isString(className)) {
-      const url = Backendless.appPath + '/data/' + className
+      const url = Urls.dataTable(className)
 
       return Backendless._ajax({
         method      : 'POST',
@@ -35,12 +36,12 @@ const persistence = {
 
   getViewSync: Utils.synchronized('_getView'),
 
-  _getView: function(viewName, whereClause, pageSize, offset, async) {
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder
+  _getView: function(viewName, whereClause, pageSize, offset/**, async */) {
+    const responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
 
     if (Utils.isString(viewName)) {
-      let url = Backendless.appPath + '/data/' + viewName
+      let url = Urls.dataTable(viewName)
 
       if ((arguments.length > 1) && !(arguments[1] instanceof Async)) {
         url += '?'
@@ -77,17 +78,15 @@ const persistence = {
 
   callStoredProcedureSync: Utils.synchronized('_callStoredProcedure'),
 
-  _callStoredProcedure: function(spName, argumentValues, async) {
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder
+  _callStoredProcedure: function(spName, argumentValues/**, async */) {
+    const responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
 
     if (Utils.isString(spName)) {
-      let url  = Backendless.appPath + '/data/' + spName,
-          data = {}
-
-      if (Utils.isObject(argumentValues)) {
-        data = JSON.stringify(argumentValues)
-      }
+      const url = Urls.dataTable(spName)
+      const data = Utils.isObject(argumentValues)
+        ? JSON.stringify(argumentValues)
+        : {}
 
       return Backendless._ajax({
         method      : 'POST',
@@ -129,7 +128,7 @@ const persistence = {
 
     return Backendless._ajax({
       method      : 'GET',
-      url         : Backendless.appPath + '/data/' + className + '/properties',
+      url         : Urls.dataTableProps(className),
       isAsync     : !!async,
       asyncHandler: async
     })

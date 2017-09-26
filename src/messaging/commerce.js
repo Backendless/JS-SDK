@@ -11,7 +11,7 @@ export default class Commerce {
 
   validatePlayPurchaseSync = Utils.synchronized('_validatePlayPurchase')
 
-  _validatePlayPurchase(packageName, productId, token, async) {
+  _validatePlayPurchase(packageName, productId, token/**, async */) {
     if (arguments.length < 3) {
       throw new Error('Package Name, Product Id, Token must be provided and must be not an empty STRING!')
     }
@@ -22,8 +22,8 @@ export default class Commerce {
       }
     }
 
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder
+    let responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
 
     if (responder) {
       responder = Utils.wrapAsync(responder)
@@ -41,7 +41,7 @@ export default class Commerce {
 
   cancelPlaySubscriptionSync = Utils.synchronized('_cancelPlaySubscription')
 
-  _cancelPlaySubscription(packageName, subscriptionId, token, Async) {
+  _cancelPlaySubscription(packageName, subscriptionId, token /**, async */) {
     if (arguments.length < 3) {
       throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!')
     }
@@ -52,8 +52,8 @@ export default class Commerce {
       }
     }
 
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder
+    let responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
 
     if (responder) {
       responder = Utils.wrapAsync(responder)
@@ -67,12 +67,11 @@ export default class Commerce {
     })
   }
 
-
   getPlaySubscriptionStatus = Utils.promisified('_getPlaySubscriptionStatus')
 
   getPlaySubscriptionStatusSync = Utils.synchronized('_getPlaySubscriptionStatus')
 
-  _getPlaySubscriptionStatus(packageName, subscriptionId, token, Async) {
+  _getPlaySubscriptionStatus(packageName, subscriptionId, token /**, async */) {
     if (arguments.length < 3) {
       throw new Error('Package Name, Subscription Id, Token must be provided and must be not an empty STRING!')
     }
@@ -83,8 +82,8 @@ export default class Commerce {
       }
     }
 
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder
+    let responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
 
     if (responder) {
       responder = Utils.wrapAsync(responder)

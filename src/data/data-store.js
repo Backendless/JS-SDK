@@ -11,6 +11,17 @@ const createModelClassFromString = (/** className */) => {
   }
 }
 
+const genID = () => {
+  //TODO: refactor me
+  let b = ''
+
+  for (let a = b; a++ < 36; b += a * 51
+  && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
+  }
+
+  return b
+}
+
 export default class DataStore {
 
   constructor(model) {
@@ -72,7 +83,8 @@ export default class DataStore {
 
     if (options.relations) {
       if (Utils.isArray(options.relations)) {
-        params.push('loadRelations=' + (options.relations.length ? Utils.encodeArrayToUriComponent(options.relations) : '*'))
+        const loadRelations = options.relations.length ? Utils.encodeArrayToUriComponent(options.relations) : '*'
+        params.push('loadRelations=' + loadRelations)
       }
     }
 
@@ -94,12 +106,12 @@ export default class DataStore {
     const _Model = model === undefined ? this.model : model
     let result
 
-    const sanitizeResponseItem = function(response) {
+    const sanitizeResponseItem = resp => {
       const item = Utils.isFunction(_Model) ? new _Model() : {}
 
-      response = response.fields || response
+      resp = resp.fields || resp
 
-      return Utils.deepExtend(item, response)
+      return Utils.deepExtend(item, resp)
     }
 
     if (Utils.isArray(response)) {
@@ -111,7 +123,7 @@ export default class DataStore {
     return this._formCircDeps(result)
   }
 
-  _load(url, async) {
+  _load(url/**, async */) {
     if (url) {
       let responder = Utils.extractResponder(arguments), isAsync = false
 
@@ -131,24 +143,20 @@ export default class DataStore {
     }
   }
 
-  _replCircDeps(obj) {
-    const objMap = [obj]
+  _replCircDeps(object) {
+    const objMap = [object]
     let pos
 
-    const genID = function() {
-      for (var b = '', a = b; a++ < 36; b += a * 51 && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
-      }
-      return b
-    }
-
-    const _replCircDepsHelper = function(obj) {
+    const _replCircDepsHelper = obj => {
       for (const prop in obj) {
         if (obj.hasOwnProperty(prop) && typeof obj[prop] === 'object' && obj[prop] != null) {
           if ((pos = objMap.indexOf(obj[prop])) !== -1) {
             objMap[pos]['__subID'] = objMap[pos]['__subID'] || genID()
             obj[prop] = { '__originSubID': objMap[pos]['__subID'] }
+
           } else if (Utils.isDate(obj[prop])) {
             obj[prop] = obj[prop].getTime()
+
           } else {
             objMap.push(obj[prop])
             _replCircDepsHelper(obj[prop])
@@ -157,7 +165,7 @@ export default class DataStore {
       }
     }
 
-    _replCircDepsHelper(obj)
+    _replCircDepsHelper(object)
   }
 
   _formCircDeps(obj) {
@@ -165,12 +173,12 @@ export default class DataStore {
     const circDepsIDs = {}
     const iteratedObjects = []
 
-    const _formCircDepsHelper = function(obj, result) {
+    const _formCircDepsHelper = (obj, res) => {
       if (iteratedObjects.indexOf(obj) === -1) {
         iteratedObjects.push(obj)
 
         if (obj.hasOwnProperty('__subID')) {
-          circDepsIDs[obj['__subID']] = result
+          circDepsIDs[obj['__subID']] = res
           delete obj['__subID']
         }
 
@@ -178,13 +186,13 @@ export default class DataStore {
           if (obj.hasOwnProperty(prop)) {
             if (typeof obj[prop] === 'object' && obj[prop] != null) {
               if (obj[prop].hasOwnProperty('__originSubID')) {
-                result[prop] = circDepsIDs[obj[prop]['__originSubID']]
+                res[prop] = circDepsIDs[obj[prop]['__originSubID']]
               } else {
-                result[prop] = new (obj[prop].constructor)()
-                _formCircDepsHelper(obj[prop], result[prop])
+                res[prop] = new (obj[prop].constructor)()
+                _formCircDepsHelper(obj[prop], res[prop])
               }
             } else {
-              result[prop] = obj[prop]
+              res[prop] = obj[prop]
             }
           }
         }
@@ -200,13 +208,13 @@ export default class DataStore {
 
   saveSync = Utils.synchronized('_save')
 
-  _save(obj, async) {
+  _save(obj/**, async */) {
     this._replCircDeps(obj)
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = false,
-        method    = 'PUT',
-        url       = Urls.dataTable(this.className),
-        objRef    = obj
+    let responder = Utils.extractResponder(arguments)
+    let isAsync = false
+    const method = 'PUT'
+    const url = Urls.dataTable(this.className)
+    const objRef = obj
 
     if (responder) {
       isAsync = true
@@ -232,7 +240,7 @@ export default class DataStore {
 
   removeSync = Utils.synchronized('_remove')
 
-  _remove(objId, async) {
+  _remove(objId/**, async */) {
     if (!Utils.isObject(objId) && !Utils.isString(objId)) {
       throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values')
     }
@@ -266,7 +274,7 @@ export default class DataStore {
   find = Utils.promisified('_find')
   findSync = Utils.synchronized('_find')
 
-  _find(queryBuilder) {
+  _find(/** queryBuilder */) {
     const args = this._parseFindArguments(arguments)
     const dataQuery = args.queryBuilder ? args.queryBuilder.build() : {}
 
@@ -304,14 +312,13 @@ export default class DataStore {
   _findUtil(dataQuery) {
     dataQuery = dataQuery || {}
 
-    let props,
-        whereClause,
-        options,
-        query     = [],
-        url       = Urls.dataTable(this.className),
-        responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder,
-        result
+    let props
+    let whereClause
+    let options
+    const query = []
+    let url = Urls.dataTable(this.className)
+    let responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
 
     if (dataQuery.properties && dataQuery.properties.length) {
       props = 'props=' + Utils.encodeArrayToUriComponent(dataQuery.properties)
@@ -346,10 +353,10 @@ export default class DataStore {
     }
 
     if (query.length) {
-      url += '?' + query.join('&');
+      url += '?' + query.join('&')
     }
 
-    result = Backendless._ajax({
+    const result = Backendless._ajax({
       method      : 'GET',
       url         : url,
       isAsync     : isAsync,
@@ -379,8 +386,8 @@ export default class DataStore {
       return this._findUtil(argsObj, responder)
     } else if (Utils.isObject(arguments[0])) {
       argsObj = arguments[0]
-      let url = Urls.dataTable(this.className)
-      let isAsync = !!responder
+      const url = Urls.dataTable(this.className)
+      const isAsync = !!responder
       let send = '/pk?'
 
       for (const key in argsObj) {
@@ -418,25 +425,25 @@ export default class DataStore {
 
   loadRelationsSync = Utils.synchronized('_loadRelations')
 
-  _loadRelations(parentObjectId, queryBuilder, async) {
+  _loadRelations(parentObjectId, queryBuilder/**, async */) {
     this._validateLoadRelationsArguments(parentObjectId, queryBuilder)
 
     let whereClause
     let options
-    let query = []
+    const query = []
 
-    const dataQuery = queryBuilder.build();
+    const dataQuery = queryBuilder.build()
 
     if (dataQuery.condition) {
-      whereClause = 'where=' + encodeURIComponent(dataQuery.condition);
+      whereClause = 'where=' + encodeURIComponent(dataQuery.condition)
     }
 
     if (dataQuery.options) {
-      options = this._extractQueryOptions(dataQuery.options);
+      options = this._extractQueryOptions(dataQuery.options)
     }
 
-    options && query.push(options);
-    whereClause && query.push(whereClause);
+    options && query.push(options)
+    whereClause && query.push(whereClause)
 
     const relationModel = dataQuery.relationModel || null
     let responder = Utils.extractResponder(arguments)
@@ -444,11 +451,11 @@ export default class DataStore {
     let url = Urls.dataTable(this.className) + Utils.toUri(parentObjectId, relationName)
 
     responder = responder && Utils.wrapAsync(responder, function(response) {
-      return this._parseFindResponse(response, relationModel);
-    }, this);
+      return this._parseFindResponse(response, relationModel)
+    }, this)
 
     if (query.length) {
-      url += '?' + query.join('&');
+      url += '?' + query.join('&')
     }
 
     const result = Backendless._ajax({
@@ -508,7 +515,7 @@ export default class DataStore {
 
   getObjectCountSync = Utils.synchronized('_getObjectCount')
 
-  _getObjectCount(queryBuilder, async) {
+  _getObjectCount(/**queryBuilder, async */) {
     const args = this._parseFindArguments(arguments)
     const dataQuery = args.queryBuilder ? args.queryBuilder.build() : {}
     let url = Urls.dataTableCount(this.className)

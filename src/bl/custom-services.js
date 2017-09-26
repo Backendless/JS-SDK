@@ -1,24 +1,12 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
-import Urls from '../urls'
 
-const invoke = (serviceName, method, parameters, async) => {
-  const responder = Utils.extractResponder(arguments)
-
-  return Backendless._ajax({
-    method      : 'POST',
-    url         : Urls.blServiceMethod(serviceName, method),
-    data        : JSON.stringify(parameters),
-    isAsync     : !!responder,
-    asyncHandler: responder
-  })
-}
+import { invokeServiceMethod } from './invoke-service-method'
 
 const CustomServices = {
 
-  invoke: Utils.promisified(invoke),
+  invoke: Utils.promisified(invokeServiceMethod),
 
-  invokeSync: Utils.synchronized(invoke)
+  invokeSync: Utils.synchronized(invokeServiceMethod)
 
 }
 

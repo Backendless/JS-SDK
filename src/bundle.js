@@ -1,295 +1,303 @@
 import Utils from './utils'
 import Private from './private'
 
-  const Backendless = {}
+const Backendless = {}
 
-  Backendless.debugMode = true
+Backendless.debugMode = true
 
-  const localStorageName = 'localStorage'
-  const previousBackendless = typeof root !=='undefined' ? root.Backendless:null
+const localStorageName = 'localStorage'
+const previousBackendless = typeof root !=='undefined' ? root.Backendless:null
 
-  Backendless.serverURL = 'https://api.backendless.com'
+Backendless.serverURL = 'https://api.backendless.com'
 
-  Backendless.noConflict = function() {
-    if (typeof root !=='undefined') {
-      root.Backendless = previousBackendless
-    }
-
-    return Backendless
+Backendless.noConflict = function() {
+  if (typeof root !=='undefined') {
+    root.Backendless = previousBackendless
   }
 
-  Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' && XMLHttpRequest
+  return Backendless
+}
 
-  const browser = (function() {
-    let ua = 'NodeJS'
+Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' && XMLHttpRequest
 
-    if (Utils.isBrowser) {
-      ua = navigator.userAgent ? navigator.userAgent.toLowerCase() : 'hybrid-app'
-    }
+const browser = (function() {
+  let ua = 'NodeJS'
 
-    let match   = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
-      /(webkit)[ \/]([\w.]+)/.exec(ua) ||
-      /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
-      /(msie) ([\w.]+)/.exec(ua) ||
-      ua.indexOf('compatible') < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) || []),
-        matched = {
-          browser: match[1] || '',
-          version: match[2] || '0'
-        },
-        browser = {}
-    if (matched.browser) {
-      browser[matched.browser] = true
-      browser.version = matched.version
-    }
+  if (Utils.isBrowser) {
+    ua = navigator.userAgent ? navigator.userAgent.toLowerCase() : 'hybrid-app'
+  }
 
-    return browser
-  })()
+  const match = (/(chrome)[ \/]([\w.]+)/.exec(ua) ||
+    /(webkit)[ \/]([\w.]+)/.exec(ua) ||
+    /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
+    /(msie) ([\w.]+)/.exec(ua) ||
+    ua.indexOf('compatible') < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) || [])
 
-  Backendless.browser = browser
+  const matched = {
+    browser: match[1] || '',
+    version: match[2] || '0'
+  }
 
-  function setCache() {
-    let store   = {},
-        storage = {}
+  const browser = {}
 
-    store.enabled = false
+  if (matched.browser) {
+    browser[matched.browser] = true
+    browser.version = matched.version
+  }
 
-    store.exists = function(key) {
-      return store.get(key) !== undefined
-    }
+  return browser
+})()
 
-    store.set = function(key, value) {
-      return storage[key] = store.serialize(value)
-    }
+Backendless.browser = browser
 
-    store.get = function(key) {
-      const result = storage[key]
+function setCache() {
+  const store = {}
+  let storage = {}
 
-      return result && store.deserialize(result)
-    }
+  store.enabled = false
 
-    store.remove = function(key) {
-      return delete storage[key]
-    }
+  store.exists = function(key) {
+    return store.get(key) !== undefined
+  }
 
-    store.clear = function() {
-      storage = {}
-    }
+  store.set = function(key, value) {
+    return storage[key] = store.serialize(value)
+  }
 
-    store.flushExpired = function() {
-    }
+  store.get = function(key) {
+    const result = storage[key]
 
-    store.getCachePolicy = function(key) {
-    }
+    return result && store.deserialize(result)
+  }
 
-    store.getAll = function() {
-      const result = {}
+  store.remove = function(key) {
+    return delete storage[key]
+  }
 
-      for (const prop in storage) {
-        if (storage.hasOwnProperty(prop)) {
-          result[prop] = storage[prop]
-        }
-      }
+  store.clear = function() {
+    storage = {}
+  }
 
-      return result
-    }
+  store.flushExpired = function() {
+  }
 
-    store.serialize = function(value) {
-      return JSON.stringify(value)
-    }
+  store.getCachePolicy = function(/** key */) {
+  }
 
-    store.deserialize = function(value) {
-      if (typeof value !== 'string') {
-        return undefined
-      }
-      try {
-        return JSON.parse(value)
-      } catch (e) {
-        return value || undefined
+  store.getAll = function() {
+    const result = {}
+
+    for (const prop in storage) {
+      if (storage.hasOwnProperty(prop)) {
+        result[prop] = storage[prop]
       }
     }
 
-    function isLocalStorageSupported() {
-      try {
-        if (Utils.isBrowser && (localStorageName in window && window[localStorageName])) {
-          localStorage.setItem('localStorageTest', true)
-          localStorage.removeItem('localStorageTest')
-          return true
-        } else {
-          return false
-        }
-      } catch (e) {
+    return result
+  }
+
+  store.serialize = function(value) {
+    return JSON.stringify(value)
+  }
+
+  store.deserialize = function(value) {
+    if (typeof value !== 'string') {
+      return undefined
+    }
+    try {
+      return JSON.parse(value)
+    } catch (e) {
+      return value || undefined
+    }
+  }
+
+  function isLocalStorageSupported() {
+    try {
+      if (Utils.isBrowser && (localStorageName in window && window[localStorageName])) {
+        localStorage.setItem('localStorageTest', true)
+        localStorage.removeItem('localStorageTest')
+        return true
+      } else {
         return false
       }
+    } catch (e) {
+      return false
     }
-
-    if (isLocalStorageSupported()) {
-      return extendToLocalStorageCache(store)
-    }
-
-    return store
   }
 
-  function extendToLocalStorageCache(store) {
-    const storage = window[localStorageName]
+  if (isLocalStorageSupported()) {
+    return extendToLocalStorageCache(store)
+  }
 
-    const createBndlsStorage = function() {
-      if (!(storage.getItem('Backendless'))) {
-        storage.setItem('Backendless', store.serialize({}))
+  return store
+}
+
+function extendToLocalStorageCache(store) {
+  const storage = window[localStorageName]
+
+  const createBndlsStorage = () => {
+    if (!(storage.getItem('Backendless'))) {
+      storage.setItem('Backendless', store.serialize({}))
+    }
+  }
+
+  const expired = obj => {
+    let result = false
+
+    if (obj && Object.prototype.toString.call(obj).slice(8, -1) === 'Object') {
+      if ('cachePolicy' in obj
+        && 'timeToLive' in obj.cachePolicy
+        && obj.cachePolicy.timeToLive !== -1
+        && 'created' in obj.cachePolicy) {
+
+        result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive']
       }
     }
 
-    const expired = function(obj) {
-      let result = false
-      if (obj && Object.prototype.toString.call(obj).slice(8, -1) === 'Object') {
-        if ('cachePolicy' in obj && 'timeToLive' in obj.cachePolicy && obj.cachePolicy.timeToLive !== -1 && 'created' in obj.cachePolicy) {
-          result = (new Date().getTime() - obj['cachePolicy']['created']) > obj['cachePolicy']['timeToLive']
-        }
-      }
+    return result
+  }
 
-      return result
+  const addTimestamp = obj => {
+    if (obj && Object.prototype.toString.call(obj).slice(8, -1) === 'Object') {
+      if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
+        obj['cachePolicy']['created'] = new Date().getTime()
+      }
     }
+  }
 
-    const addTimestamp = function(obj) {
-      if (obj && Object.prototype.toString.call(obj).slice(8, -1) === 'Object') {
-        if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
-          obj['cachePolicy']['created'] = new Date().getTime()
-        }
-      }
+  createBndlsStorage()
+
+  store.enabled = true
+
+  store.exists = function(key) {
+    return store.get(key) !== undefined
+  }
+
+  store.set = function(key, val) {
+    if (val === undefined) {
+      return store.remove(key)
     }
 
     createBndlsStorage()
 
-    store.enabled = true
+    let backendlessObj = store.deserialize(storage.getItem('Backendless'))
 
-    store.exists = function(key) {
-      return store.get(key) !== undefined
-    }
+    addTimestamp(val)
 
-    store.set = function(key, val) {
-      if (val === undefined) {
-        return store.remove(key)
-      }
+    backendlessObj[key] = val
 
-      createBndlsStorage()
-
-      let backendlessObj = store.deserialize(storage.getItem('Backendless'))
-
-      addTimestamp(val)
-
-      backendlessObj[key] = val
-
-      try {
-        storage.setItem('Backendless', store.serialize(backendlessObj))
-      } catch (e) {
-        backendlessObj = {}
-        backendlessObj[key] = val
-        storage.setItem('Backendless', store.serialize(backendlessObj))
-      }
-
-      return val
-    }
-
-    store.get = function(key) {
-      createBndlsStorage()
-
-      let backendlessObj = store.deserialize(storage.getItem('Backendless')),
-          obj            = backendlessObj[key],
-          result         = obj
-
-      if (expired(obj)) {
-        delete backendlessObj[key]
-        storage.setItem('Backendless', store.serialize(backendlessObj))
-        result = undefined
-      }
-
-      if (result && result['cachePolicy']) {
-        delete result['cachePolicy']
-      }
-
-      return result
-    }
-
-    store.remove = function(key) {
-      let result
-
-      createBndlsStorage()
-
-      key = key.replace(/([^A-Za-z0-9-])/g, '')
-
-      const backendlessObj = store.deserialize(storage.getItem('Backendless'))
-
-      if (backendlessObj.hasOwnProperty(key)) {
-        result = delete backendlessObj[key]
-      }
-
+    try {
       storage.setItem('Backendless', store.serialize(backendlessObj))
-
-      return result
+    } catch (e) {
+      backendlessObj = {}
+      backendlessObj[key] = val
+      storage.setItem('Backendless', store.serialize(backendlessObj))
     }
 
-    store.clear = function() {
-      storage.setItem('Backendless', store.serialize({}))
+    return val
+  }
+
+  store.get = function(key) {
+    createBndlsStorage()
+
+    const backendlessObj = store.deserialize(storage.getItem('Backendless'))
+    const obj = backendlessObj[key]
+    let result = obj
+
+    if (expired(obj)) {
+      delete backendlessObj[key]
+      storage.setItem('Backendless', store.serialize(backendlessObj))
+      result = undefined
     }
 
-    store.getAll = function() {
-      createBndlsStorage()
+    if (result && result['cachePolicy']) {
+      delete result['cachePolicy']
+    }
 
-      const backendlessObj = store.deserialize(storage.getItem('Backendless'))
-      const ret = {}
+    return result
+  }
 
-      for (const prop in backendlessObj) {
-        if (backendlessObj.hasOwnProperty(prop)) {
-          ret[prop] = backendlessObj[prop]
-          if (ret[prop] !== null && ret[prop].hasOwnProperty('cachePolicy')) {
-            delete ret[prop]['cachePolicy']
-          }
+  store.remove = function(key) {
+    let result
+
+    createBndlsStorage()
+
+    key = key.replace(/([^A-Za-z0-9-])/g, '')
+
+    const backendlessObj = store.deserialize(storage.getItem('Backendless'))
+
+    if (backendlessObj.hasOwnProperty(key)) {
+      result = delete backendlessObj[key]
+    }
+
+    storage.setItem('Backendless', store.serialize(backendlessObj))
+
+    return result
+  }
+
+  store.clear = function() {
+    storage.setItem('Backendless', store.serialize({}))
+  }
+
+  store.getAll = function() {
+    createBndlsStorage()
+
+    const backendlessObj = store.deserialize(storage.getItem('Backendless'))
+    const ret = {}
+
+    for (const prop in backendlessObj) {
+      if (backendlessObj.hasOwnProperty(prop)) {
+        ret[prop] = backendlessObj[prop]
+        if (ret[prop] !== null && ret[prop].hasOwnProperty('cachePolicy')) {
+          delete ret[prop]['cachePolicy']
         }
       }
-
-      return ret
     }
 
-    store.flushExpired = function() {
-      createBndlsStorage()
+    return ret
+  }
 
-      let backendlessObj = store.deserialize(storage.getItem('Backendless')),
-          obj
+  store.flushExpired = function() {
+    createBndlsStorage()
 
-      for (const prop in backendlessObj) {
-        if (backendlessObj.hasOwnProperty(prop)) {
-          obj = backendlessObj[prop]
-          if (expired(obj)) {
-            delete backendlessObj[prop]
-            storage.setItem('Backendless', store.serialize(backendlessObj))
-          }
+    const backendlessObj = store.deserialize(storage.getItem('Backendless'))
+    let obj
+
+    for (const prop in backendlessObj) {
+      if (backendlessObj.hasOwnProperty(prop)) {
+        obj = backendlessObj[prop]
+        if (expired(obj)) {
+          delete backendlessObj[prop]
+          storage.setItem('Backendless', store.serialize(backendlessObj))
         }
       }
     }
-
-    store.getCachePolicy = function(key) {
-      createBndlsStorage()
-
-      const backendlessObj = store.deserialize(storage.getItem('Backendless'))
-      const obj = backendlessObj[key]
-
-      return obj ? obj['cachePolicy'] : undefined
-    }
-
-    return store
   }
 
-  Backendless.LocalCache = setCache()
+  store.getCachePolicy = function(key) {
+    createBndlsStorage()
 
-  if (Backendless.LocalCache.enabled) {
-    Backendless.LocalCache.flushExpired()
+    const backendlessObj = store.deserialize(storage.getItem('Backendless'))
+    const obj = backendlessObj[key]
+
+    return obj ? obj['cachePolicy'] : undefined
   }
 
-  Backendless.setUIState = function(stateName) {
-    if (stateName === undefined) {
-      throw new Error('UI state name must be defined or explicitly set to null')
-    }
+  return store
+}
 
-    Private.setUIState(stateName)
+Backendless.LocalCache = setCache()
+
+if (Backendless.LocalCache.enabled) {
+  Backendless.LocalCache.flushExpired()
+}
+
+Backendless.setUIState = function(stateName) {
+  if (stateName === undefined) {
+    throw new Error('UI state name must be defined or explicitly set to null')
   }
+
+  Private.setUIState(stateName)
+}
 
 export default Backendless

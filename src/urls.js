@@ -1,12 +1,16 @@
+/* eslint-disable max-len */
+
 import Backendless from './bundle'
 
 const Urls = {
   root: () => Backendless.appPath,
 
-  blServices     : (serviceName, method) => `${Urls.root()}/services`,
-  blServiceMethod: (serviceName, method) => `${Urls.blServices()}/${serviceName}/${method}`,
+  blServices     : () => `${Urls.root()}/services`,
+  blServiceMethod: (name, method) => `${Urls.blServices()}/${name}/${method}`,
 
   blEvent: eventName => `${Urls.root()}/servercode/events/${eventName}`,
+
+  logging: () => `${Urls.root()}/log`,
 
   cache            : () => `${Urls.root()}/cache`,
   cacheItem        : key => `${Urls.cache()}/${key}`,
@@ -15,20 +19,21 @@ const Urls = {
   cacheItemCheck   : key => `${Urls.cacheItem(key)}/check`,
 
   counters     : () => `${Urls.root()}/counters`,
-  counter      : counterName => `${Urls.counters()}/${counterName}`,
-  counterMethod: (counterName, method) => `${Urls.counter(counterName)}/${method}`,
+  counter      : name => `${Urls.counters()}/${name}`,
+  counterMethod: (name, method) => `${Urls.counter(name)}/${method}`,
 
   data                : () => `${Urls.root()}/data`,
   dataTable           : tableName => `${Urls.data()}/${tableName}`,
   dataTableObject     : (tableName, objectId) => `${Urls.dataTable(tableName)}/${objectId}`,
-  dataTableCount     : tableName => `${Urls.dataTable(tableName)}/count`,
+  dataTableCount      : tableName => `${Urls.dataTable(tableName)}/count`,
+  dataTableProps      : tableName => `${Urls.dataTable(tableName)}/properties`,
   dataBulkTable       : tableName => `${Urls.data()}/bulk/${tableName}`,
   dataObjectPermission: (tableName, permissionType, objectId) => `${Urls.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`,
 
   messaging                  : () => `${Urls.root()}/messaging`,
   messagingEmail             : () => `${Urls.messaging()}/email`,
-  messagingChannel           : channelName => `${Urls.messaging()}/${channelName}`,
-  messagingChannelProps      : channelName => `${Urls.messagingChannel()}/properties`,
+  messagingChannel           : channel => `${Urls.messaging()}/${channel}`,
+  messagingChannelProps      : channel => `${Urls.messagingChannel(channel)}/properties`,
   messagingMessage           : messageId => `${Urls.messaging()}/${messageId}`,
   messagingRegistrations     : () => `${Urls.messaging()}/registrations`,
   messagingRegistrationDevice: deviceId => `${Urls.messagingRegistrations()}/${deviceId}`,
@@ -39,7 +44,7 @@ const Urls = {
   geoPoint        : pointId => `${Urls.geoPoints()}/${pointId}`,
   geoPointMetaData: pointId => `${Urls.geoPoint(pointId)}/metadata`,
   geoCategories   : () => `${Urls.geo()}/categories`,
-  geoCategory     : categoryName => `${Urls.geoCategories()}/${categoryName}`,
+  geoCategory     : name => `${Urls.geoCategories()}/${name}`,
   geoClusters     : () => `${Urls.geo()}/clusters`,
   geoClusterPoints: clusterId => `${Urls.geoClusters()}/${clusterId}/points`,
   geoCount        : () => `${Urls.geo()}/count`,

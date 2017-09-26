@@ -38,7 +38,8 @@ function sendData(options) {
     xhr.setRequestHeader('uiState', Private.getUIState())
   }
 
-  const userToken = Private.getCurrentUser() && Private.getCurrentUser()['user-token'] || Backendless.LocalCache.get('user-token')
+  const currentUser = Private.getCurrentUser()
+  const userToken = currentUser && currentUser['user-token'] || Backendless.LocalCache.get('user-token')
 
   if (userToken) {
     xhr.setRequestHeader('user-token', userToken)
@@ -191,8 +192,6 @@ export default class Files {
           files = [files]
         }
 
-        let filesError = 0
-
         for (let i = 0, len = files.length; i < len; i++) {
           try {
             const reader = new FileReader()
@@ -216,7 +215,7 @@ export default class Files {
             reader.readAsBinaryString(files[i])
 
           } catch (err) {
-            filesError++
+
           }
         }
       }
@@ -251,9 +250,9 @@ export default class Files {
 
   listingSync = Utils.synchronized('_listing')
 
-  _listing(path, pattern, recursively, pagesize, offset, async) {
-    let responder = Utils.extractResponder(arguments)
-    let isAsync = !!responder
+  _listing(path, pattern, recursively, pagesize, offset/**, async */) {
+    const responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
     let url = Urls.filePath(path)
 
     if ((arguments.length > 1) && !(arguments[1] instanceof Async)) {
@@ -339,7 +338,7 @@ export default class Files {
     return path
   }
 
-  _doAction(actionType, parameters, async) {
+  _doAction(actionType, parameters/**, async */) {
     const responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
 
@@ -356,7 +355,7 @@ export default class Files {
 
   removeSync = Utils.synchronized('_remove')
 
-  _remove(path, async) {
+  _remove(path/**, async */) {
     const responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
 
@@ -374,14 +373,14 @@ export default class Files {
 
   existsSync = Utils.synchronized('_exists')
 
-  _exists(path, async) {
+  _exists(path/**, async */) {
     if (!path || !Utils.isString(path)) {
       throw new Error('Missing value for the "path" argument. The argument must contain a string value')
     }
 
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder,
-        url       = Urls.filePath(path) + '?action=exists'
+    const responder = Utils.extractResponder(arguments)
+    const isAsync = !!responder
+    const url = Urls.filePath(path) + '?action=exists'
 
     return Backendless._ajax({
       method      : 'GET',
@@ -395,7 +394,7 @@ export default class Files {
 
   removeDirectorySync = Utils.synchronized('_removeDirectory')
 
-  _removeDirectory(path, async) {
+  _removeDirectory(path /**, async */) {
     const responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
 
@@ -411,7 +410,7 @@ export default class Files {
 
   getFileCountSync = Utils.synchronized('_getFileCount')
 
-  _getFileCount(path, pattern, recursive, countDirectories, async) {
+  _getFileCount(path, /** pattern, recursive, countDirectories, async */) {
     const responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
     const query = this._buildCountQueryObject(arguments, isAsync)

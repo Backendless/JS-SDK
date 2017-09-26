@@ -2,7 +2,7 @@
 // import Utils from '../utils'
 // import Async from '../request/async'
 // import PollingProxy from './polling-proxy'
-// // import SocketProxy from './socket-proxy'
+// import SocketProxy from './socket-proxy'
 //
 // export default class Subscription {
 //
@@ -47,16 +47,16 @@
 //       this.rtClientConnected = true
 //
 //       Backendless.RTClient.MESSAGING.onMessage(this.channelName, this.options, this.responder)
-//       // const url = this.channelProperties['websocket'] + '/' + this.subscriptionId
-//       // this.proxy = new SocketProxy(url)
-//       //
-//       // this.proxy.on('socketClose', () => {
-//       //   this._switchToPolling()
-//       // })
-//       //
-//       // this.proxy.on('messageReceived', () => {
-//       //   this.responder()
-//       // })
+//       const url = this.channelProperties['websocket'] + '/' + this.subscriptionId
+//       this.proxy = new SocketProxy(url)
+//
+//       this.proxy.on('socketClose', () => {
+//         this._switchToPolling()
+//       })
+//
+//       this.proxy.on('messageReceived', () => {
+//         this.responder()
+//       })
 //     } else {
 //       this._switchToPolling()
 //     }
@@ -65,12 +65,8 @@
 //   }
 //
 //   cancelSubscription() {
-//     if (this.rtClientConnected) {
-//       Backendless.RTClient.MESSAGING.offMessage(this.channelName, this.options, this.responder)
-//     }
-//
 //     this.proxy && this.proxy.close()
-//     this._startSubscription = Utils.emptyFn
+//     this._startSubscription = function(){}
 //   }
 //
 //   _switchToPolling() {

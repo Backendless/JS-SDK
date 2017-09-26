@@ -14,10 +14,8 @@ import UserService from './user/user-service'
 import Geo from './geo/geo-service'
 import Files from './file/files'
 import Commerce from './messaging/commerce'
-import Events from './bl/events'
-import Cache from './cache/cache'
+import Cache from './cache'
 import Counters from './counters/counters'
-import CustomServices from './bl/custom-services'
 import persistence from './data/persistence'
 import Messaging from './messaging/messaging'
 import FilePermissions from './file/file-persmission'
@@ -27,13 +25,15 @@ import './logging/logging'
 import './request/request'
 import Private from './private'
 
+import CustomServices from './bl/custom-services'
+import Events from './bl/events'
+
 
 Backendless.initApp = (appId, secretKey) => {
   Backendless.applicationId = appId
   Backendless.secretKey = secretKey
   Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
 
-  Backendless.UserService = new UserService()
   Backendless.Users = Backendless.UserService
   Backendless.Geo = new Geo()
   Backendless.Persistence = persistence
@@ -43,10 +43,12 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Files = new Files()
   Backendless.Files.Permissions = new FilePermissions()
   Backendless.Commerce = new Commerce()
-  Backendless.Events = Events
   Backendless.Cache = new Cache()
   Backendless.Counters = new Counters()
+
+  Backendless.UserService = UserService
   Backendless.CustomServices = CustomServices
+  Backendless.Events = Events
 
   Private.resetDataStore()
 
