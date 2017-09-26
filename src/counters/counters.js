@@ -34,7 +34,7 @@ Object.assign(Counter.prototype, {
     }
   },
 
-  _implementMethod(method, urlPart, async) {
+  _implementMethod(method, urlPart/**, async */) {
     let responder = Utils.extractResponder(arguments)
 
     if (responder) {
@@ -49,7 +49,7 @@ Object.assign(Counter.prototype, {
     })
   },
 
-  _implementMethodWithValue(urlPart, value, async) {
+  _implementMethodWithValue(urlPart, value/**, async */) {
     if (!value) {
       throw new Error('Missing value for the "value" argument. The argument must contain a numeric value.')
     }
@@ -59,7 +59,7 @@ Object.assign(Counter.prototype, {
     }
 
     let responder = Utils.extractResponder(arguments)
-    let isAsync = !!responder
+    const isAsync = !!responder
 
     if (responder) {
       responder = Utils.wrapAsync(responder)
@@ -117,7 +117,7 @@ Object.assign(Counter.prototype, {
 
   getSync: Utils.synchronized('_get'),
 
-  _get(async) {
+  _get(/** async */) {
     let responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
 
@@ -153,13 +153,17 @@ Object.assign(Counter.prototype, {
 
   compareAndSetSync: Utils.synchronized('_compareAndSet'),
 
-  _compareAndSet(expected, updated, async) {
+  _compareAndSet(expected, updated/**, async */) {
     if (null == expected || null == updated) {
-      throw new Error('Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values')
+      throw new Error(
+        'Missing values for the "expected" and/or "updated" arguments. The arguments must contain numeric values'
+      )
     }
 
     if (!Utils.isNumber(expected) || !Utils.isNumber(updated)) {
-      throw new Error('Missing value for the "expected" and/or "updated" arguments. The arguments must contain a numeric value')
+      throw new Error(
+        'Missing value for the "expected" and/or "updated" arguments. The arguments must contain a numeric value'
+      )
     }
 
     let responder = Utils.extractResponder(arguments)
@@ -169,9 +173,11 @@ Object.assign(Counter.prototype, {
       responder = Utils.wrapAsync(responder)
     }
 
+    const queryParams = '?expected=' + expected + '&updatedvalue=' + updated
+
     return Backendless._ajax({
       method      : 'PUT',
-      url         : Urls.counterMethod(this.name, CounterMethods.getCompareAndSet) + '?expected=' + expected + '&updatedvalue=' + updated,
+      url         : Urls.counterMethod(this.name, CounterMethods.getCompareAndSet) + queryParams,
       isAsync     : isAsync,
       asyncHandler: responder
     })

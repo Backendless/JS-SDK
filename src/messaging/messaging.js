@@ -45,7 +45,7 @@ Messaging.prototype = {
 
   subscribeSync: Utils.synchronized('_subscribe'),
 
-  _subscribe: function(channelName, subscriptionCallback, subscriptionOptions, async) {
+  _subscribe: function(channelName, subscriptionCallback, subscriptionOptions /**, async */) {
     const responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
 
@@ -83,7 +83,7 @@ Messaging.prototype = {
 
   publishSync: Utils.synchronized('_publish'),
 
-  _publish: function(channelName, message, publishOptions, deliveryTarget, async) {
+  _publish: function(channelName, message, publishOptions, deliveryTarget/**, async */) {
     const responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
 
@@ -120,7 +120,7 @@ Messaging.prototype = {
 
   sendEmailSync: Utils.synchronized('_sendEmail'),
 
-  _sendEmail: function(subject, bodyParts, recipients, attachments, async) {
+  _sendEmail: function(subject, bodyParts, recipients, attachments/**, async */) {
     const responder = Utils.extractResponder(arguments)
     const isAsync = !!responder
     const data = {}
@@ -183,7 +183,7 @@ Messaging.prototype = {
 
   registerDeviceSync: Utils.synchronized('_registerDevice'),
 
-  _registerDevice: function(deviceToken, channels, expiration, async) {
+  _registerDevice: function(deviceToken, channels /**, expiration, async */) {
     assertDeviceDefined()
 
     const responder = Utils.extractResponder(arguments)
@@ -220,7 +220,7 @@ Messaging.prototype = {
 
   getRegistrationsSync: Utils.synchronized('_getRegistrations'),
 
-  _getRegistrations: function(async) {
+  _getRegistrations: function(/** async */) {
     assertDeviceDefined()
 
     const responder = Utils.extractResponder(arguments)
@@ -238,7 +238,7 @@ Messaging.prototype = {
 
   unregisterDeviceSync: Utils.synchronized('_unregisterDevice'),
 
-  _unregisterDevice: function(async) {
+  _unregisterDevice: function(/** async */) {
     assertDeviceDefined()
 
     const responder = Utils.extractResponder(arguments)
@@ -256,7 +256,7 @@ Messaging.prototype = {
 
   getMessageStatusSync: Utils.synchronized('_getMessageStatus'),
 
-  _getMessageStatus: function(messageId, async) {
+  _getMessageStatus: function(messageId /**, async */) {
     if (!messageId) {
       throw Error('Message ID is required.')
     }

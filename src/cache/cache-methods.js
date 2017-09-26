@@ -8,7 +8,8 @@ export function cacheMethod(method, key, contain, async) {
     throw new Error('The "key" argument must be String')
   }
 
-  let responder = Utils.extractResponder(arguments)
+  //TODO: refactor me
+  let responder = async
   const isAsync = !!responder
 
   if (responder) {
@@ -21,13 +22,4 @@ export function cacheMethod(method, key, contain, async) {
     isAsync     : isAsync,
     asyncHandler: responder
   })
-}
-
-
-export function contains(key, async) {
-  return cacheMethod('GET', key, true, async)
-}
-
-export function remove(key, async) {
-  return cacheMethod('DELETE', key, false, async)
 }

@@ -2,7 +2,7 @@ import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
 
-export function expireIn(key, seconds, async) {
+export function expireIn(key, seconds /**, async */) {
   if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
     seconds = (Utils.isDate(seconds)) ? seconds.getTime() : seconds
 

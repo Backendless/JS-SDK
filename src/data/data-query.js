@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 export default class DataQuery {
   constructor(args) {
     args = args || {}

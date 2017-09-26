@@ -3,7 +3,7 @@ import Utils from '../utils'
 import Urls from '../urls'
 import { Parsers } from './parsers'
 
-export function get(key, async) {
+export function get(key /**, async */) {
   if (!Utils.isString(key)) {
     throw new Error('The "key" argument must be String')
   }

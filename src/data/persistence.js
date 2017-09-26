@@ -35,9 +35,9 @@ const persistence = {
 
   getViewSync: Utils.synchronized('_getView'),
 
-  _getView: function(viewName, whereClause, pageSize, offset, async) {
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder
+  _getView: function(viewName, whereClause, pageSize, offset/**, async */) {
+    const responder = Utils.extractResponder(arguments)
+    const isAsync   = !!responder
 
     if (Utils.isString(viewName)) {
       let url = Backendless.appPath + '/data/' + viewName
@@ -77,13 +77,13 @@ const persistence = {
 
   callStoredProcedureSync: Utils.synchronized('_callStoredProcedure'),
 
-  _callStoredProcedure: function(spName, argumentValues, async) {
-    let responder = Utils.extractResponder(arguments),
-        isAsync   = !!responder
+  _callStoredProcedure: function(spName, argumentValues/**, async */) {
+    const responder = Utils.extractResponder(arguments)
+    const isAsync   = !!responder
 
     if (Utils.isString(spName)) {
-      let url  = Backendless.appPath + '/data/' + spName,
-          data = {}
+      const url  = Backendless.appPath + '/data/' + spName
+      let data = {}
 
       if (Utils.isObject(argumentValues)) {
         data = JSON.stringify(argumentValues)

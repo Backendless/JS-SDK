@@ -65,8 +65,8 @@ export default class Subscription {
   }
 
   cancelSubscription() {
-    this.proxy && this.proxy.close();
-    this._startSubscription = function(){};
+    this.proxy && this.proxy.close()
+    this._startSubscription = function(){}
   }
 
   _switchToPolling() {

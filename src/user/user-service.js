@@ -1,4 +1,3 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 
 import { register } from './register'

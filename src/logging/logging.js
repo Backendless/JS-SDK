@@ -10,7 +10,8 @@ Backendless.Logging = {
   messagesCount: 0,
   numOfMessages: 10,
   timeFrequency: 1,
-  getLogger    : function(loggerName) {
+
+  getLogger: function(loggerName) {
     if (!Utils.isString(loggerName)) {
       throw new Error("Invalid 'loggerName' value. LoggerName must be a string value")
     }
@@ -30,18 +31,19 @@ Backendless.Logging = {
     const async = Utils.extractResponder(arguments)
 
     if (this.logInfo.length) {
-      this.flushInterval && clearTimeout(this.flushInterval)
+      if (this.flushInterval) {
+        clearTimeout(this.flushInterval)
+      }
 
       let listeners
-      const cb = function(method) {
-        return function() {
-          for (let i = 0; i < listeners.length; i++) {
-            listeners[i][method].apply(null, arguments)
-          }
 
-          if (listeners === lastFlushListeners) {
-            lastFlushListeners = null
-          }
+      const cb = method => function() {
+        for (let i = 0; i < listeners.length; i++) {
+          listeners[i][method].apply(null, arguments)
+        }
+
+        if (listeners === lastFlushListeners) {
+          lastFlushListeners = null
         }
       }
 
