@@ -46,6 +46,8 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Cache = new Cache()
   Backendless.Counters = new Counters()
 
+  RTClient = new RTClient()
+
   Backendless.UserService = UserService
   Backendless.CustomServices = CustomServices
   Backendless.Events = Events
