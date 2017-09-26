@@ -6,12 +6,12 @@ import Private from './private'
   Backendless.debugMode = true
 
   const localStorageName = 'localStorage'
-  const previousBackendless = root && root.Backendless
+  const previousBackendless = typeof root !=='undefined' ? root.Backendless:null
 
   Backendless.serverURL = 'https://api.backendless.com'
 
   Backendless.noConflict = function() {
-    if (root) {
+    if (typeof root !=='undefined') {
       root.Backendless = previousBackendless
     }
 

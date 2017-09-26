@@ -64,9 +64,17 @@ export class Subscriptions {
   }
 
   findSub(name, options) {
-    return this.subscriptions.find(subscription => {
-      return subscription.name === name && _isEqual(subscription.options, options)
+    let subscription
+
+    Object.keys(this.subscriptions).forEach(subscriptionId => {
+      const sub = this.subscriptions[subscriptionId]
+
+      if (sub.data.name === name && _isEqual(sub.data.options, options)) {
+        subscription = sub
+      }
     })
+
+    return subscription
   }
 
   onSubscriptionResponse(data) {
