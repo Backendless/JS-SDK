@@ -262,11 +262,11 @@ const Utils = {
     return new Async(success, error)
   },
 
-  promisified(methodName) {
+  promisified(method) {
     return function() {
       const args = [].slice.call(arguments)
       const context = this
-      const fn = context[methodName]
+      const fn = typeof method === 'function' ? method : context[method]
 
       return new Promise(function(resolve, reject) {
         args.push(new Async(resolve, reject, context))
@@ -275,12 +275,12 @@ const Utils = {
     }
   },
 
-  synchronized(methodName) {
+  synchronized(method) {
     return function() {
       console.warn('Using of sync methods is an outdated approach. Please, use async methods.')
 
       const context = this
-      const fn = context[methodName]
+      const fn = typeof method === 'function' ? method : context[method]
 
       return fn.apply(context, arguments)
     }
