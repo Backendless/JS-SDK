@@ -9,7 +9,6 @@ import PublishOptions from './messaging/publish-options'
 import DeliveryOptions from './messaging/delivery-options'
 import Bodyparts from './messaging/body-parts'
 import SubscriptionOptions from './messaging/subscriptions-options'
-import Utils from './utils'
 import DataPermissions from './data/data-permissions'
 import UserService from './user/user-service'
 import Geo from './geo/geo-service'
@@ -34,7 +33,6 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.secretKey = secretKey
   Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
 
-  Backendless.RTClient = new RTClient()
   Backendless.UserService = new UserService()
   Backendless.Users = Backendless.UserService
   Backendless.Geo = new Geo()
@@ -45,10 +43,10 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Files = new Files()
   Backendless.Files.Permissions = new FilePermissions()
   Backendless.Commerce = new Commerce()
-  Backendless.Events = new Events()
+  Backendless.Events = Events
   Backendless.Cache = new Cache()
   Backendless.Counters = new Counters()
-  Backendless.CustomServices = new CustomServices()
+  Backendless.CustomServices = CustomServices
 
   Private.resetDataStore()
 
