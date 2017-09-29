@@ -2324,7 +2324,7 @@
     _socialContainer: function(socialType, container) {
       var loadingMsg;
 
-      if (container) {
+      if (HTMLElement && container instanceof HTMLElement) {
         var client;
 
         container = container[0];
