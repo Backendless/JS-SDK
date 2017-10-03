@@ -44,7 +44,8 @@ const createSandbox = api => {
     .then(() => sandbox)
 }
 
-const serverUrl = process.env.API_SERVER || 'http://localhost:9000'
+const serverUrl = process.env.API_SERVER || 'https://apitest.backendless.com'
+const clientUrl = process.env.CLIENT_URL || 'https://devtest.backendless.com'
 
 const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
@@ -52,7 +53,7 @@ const createSandboxFor = each => () => {
 
   beforeHook(function() {
     this.timeout(20000)
-    this.consoleApi = createClient(serverUrl)
+    this.consoleApi = createClient(clientUrl)
 
     return createSandbox(this.consoleApi).then(sandbox => {
       this.sandbox = sandbox
