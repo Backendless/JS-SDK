@@ -37,7 +37,7 @@ const createSandbox = api => {
     .then(() => api.user.login(dev.email, dev.pwd))
     .then(({ authKey }) => dev.authKey = authKey)
 
-    .then(() => api.apps.createApp(app.name))
+    .then(() => api.apps.createApp({ appName: app.name, refCode: null }))
     .then(result => Object.assign(app, result))
 
     .then(() => api.settings.getAppSettings(app.id))
