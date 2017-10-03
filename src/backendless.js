@@ -569,11 +569,6 @@
     config.asyncHandler = config.asyncHandler || {};
     config.isAsync = (typeof config.isAsync === 'boolean') ? config.isAsync : false;
 
-    console.log('SEND REQUEST LOGS')
-    console.log('config url: ', config.url)
-    console.log('config data: ', JSON.stringify(config.data))
-    console.log('config method: ', config.method)
-
     if (!config.isAsync) {
       throw new Error(
         'Using the sync methods of the Backendless API in Node.js is disallowed. ' +
