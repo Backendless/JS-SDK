@@ -122,6 +122,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeRename)
         .then(() => expect(Files.renameFile(beforeRename, 'file-after')).to.eventually.have.string(afterRename))
+        .then(() => Files.listing('/'))
         .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
     })
