@@ -165,6 +165,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeMove)
         .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
+        .then(() => Files.listing('/'))
         .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
     })
@@ -207,6 +208,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeCopy)
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
+        .then(() => Files.listing('/'))
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
     })
@@ -217,6 +219,7 @@ describe('Backendless.Files', function() {
 
       return createDir('', beforeCopy)
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
+        .then(() => Files.listing('/'))
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
     })

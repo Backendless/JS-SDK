@@ -1,7 +1,5 @@
-import { createClient, Request } from 'backendless-console-sdk'
+import { createClient } from 'backendless-console-sdk'
 import Backendless from '../../../src/backendless'
-
-Request.verbose = true
 
 const chr4 = () => Math.random().toString(16).slice(-4)
 const chr8 = () => `${chr4()}${chr4()}`
@@ -61,8 +59,6 @@ const createSandboxFor = each => () => {
       this.sandbox = sandbox
       this.dev = sandbox.dev
       this.app = sandbox.app
-
-      console.log('sandbox: ', JSON.stringify(sandbox))
 
       Backendless.serverURL = serverUrl
       Backendless.initApp(this.app.id, this.app.devices.JS)
