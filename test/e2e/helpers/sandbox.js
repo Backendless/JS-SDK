@@ -59,8 +59,6 @@ const createSandboxFor = each => () => {
       this.dev = sandbox.dev
       this.app = sandbox.app
 
-      console.log('sandbox: ', JSON.stringify(sandbox))
-
       Backendless.serverURL = serverUrl
       Backendless.initApp(this.app.id, this.app.devices.JS)
     })
