@@ -44,7 +44,7 @@
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-stage-3": "^6.17.0",
     "babelify": "^7.3.0",
-    "backendless-console-sdk": "^2.0.1",
+    "backendless-console-sdk": "^2.0.12",
     "bannerize": "^1.1.2",
     "browserify": "^13.1.1",
     "chai": "^3.5.0",
