@@ -387,6 +387,11 @@
   };
 
   Backendless._ajax_for_browser = function(config) {
+    console.log('SEND REQUEST LOGS')
+    console.log('config url: ', config.url)
+    console.log('config data: ', JSON.stringify(config.data))
+    console.log('config method: ', config.method)
+
     var cashingAllowedArr = [
           'cacheOnly', 'remoteDataOnly', 'fromCacheOrRemote', 'fromRemoteOrCache', 'fromCacheAndRemote'],
         cacheMethods      = {
