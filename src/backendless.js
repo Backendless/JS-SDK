@@ -387,11 +387,6 @@
   };
 
   Backendless._ajax_for_browser = function(config) {
-    console.log('SEND REQUEST LOGS')
-    console.log('config url: ', config.url)
-    console.log('config data: ', JSON.stringify(config.data))
-    console.log('config method: ', config.method)
-
     var cashingAllowedArr = [
           'cacheOnly', 'remoteDataOnly', 'fromCacheOrRemote', 'fromRemoteOrCache', 'fromCacheAndRemote'],
         cacheMethods      = {
@@ -573,6 +568,11 @@
     config.data = config.data || "";
     config.asyncHandler = config.asyncHandler || {};
     config.isAsync = (typeof config.isAsync === 'boolean') ? config.isAsync : false;
+
+    console.log('SEND REQUEST LOGS')
+    console.log('config url: ', config.url)
+    console.log('config data: ', JSON.stringify(config.data))
+    console.log('config method: ', config.method)
 
     if (!config.isAsync) {
       throw new Error(
