@@ -1,7 +1,7 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
 import Backendless from '../../../src/backendless'
-// import { wait } from '../helpers/promise'
+import { wait } from '../helpers/promise'
 
 function Foo(opts) {
   Object.assign(this, opts || {})
@@ -59,7 +59,7 @@ describe('Backendless.Cache', function() {
   })
 
   // TODO: this test gives floating results, need to be discovered
-/*  it('ttl', function() {
+  xit('ttl', function() {
     const a = 'a'
     const b = 'b'
 
@@ -83,5 +83,5 @@ describe('Backendless.Cache', function() {
 
       .then(() => wait(3000))
       .then(() => expect(Backendless.Cache.get('b')).to.eventually.be.null)
-  })*/
+  })
 })
