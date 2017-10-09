@@ -1,11 +1,23 @@
+import Backendless from '../bundle'
+
 import { Subscriptions } from './subscriptions'
 import { Methods } from './methods'
-import { NativeSocketEvents } from './constants'
 import { RTSocket } from './socket'
 
-import Data from './services/data'
-import Messaging from './services/messaging'
-import RemoteSharedObject from './services/rso'
+const NativeSocketEvents = {
+  CONNECT          : 'connect',
+  CONNECT_ERROR    : 'connect_error',
+  CONNECT_TIMEOUT  : 'connect_timeout',
+  DISCONNECT       : 'disconnect',
+  RECONNECT        : 'reconnect',
+  RECONNECT_ATTEMPT: 'reconnect_attempt',
+  RECONNECTING     : 'reconnecting',
+  RECONNECT_ERROR  : 'reconnect_error',
+  RECONNECT_FAILED : 'reconnect_failed',
+  ERROR            : 'error',
+  PING             : 'ping',
+  PONG             : 'pong',
+}
 
 const delayedOnEvent = event => function(cb) {
   this.runDelayedMethod('on', event, cb)
@@ -15,24 +27,33 @@ const delayedOffEvent = event => function(cb) {
   this.runDelayedMethod('off', event, cb)
 }
 
-export class RTClient {
+export default class RTClient {
 
   constructor() {
     RTSocket.destroy()
-    RTSocket.onInit(this.socketInit.bind(this))
+    RTSocket.onInit(this.getInitOptions)
 
     this.initialized = false
     this.delayedCallbacks = []
 
     this.subscriptions = new Subscriptions(this)
     this.methods = new Methods(this)
-
-    this.DATA = new Data(this)
-    this.MESSAGING = new Messaging(this)
-    this.RSO = new RemoteSharedObject(this)
   }
 
-  socketInit() {
+  getInitOptions = () => {
+    return {
+      onInit   : this.socketInit,
+      userToken: Backendless.getUserToken()
+    }
+  }
+
+  updateUserToken() {
+    if (this.initialized) {
+      this.methods.updateUserToken({ userToken: Backendless.getUserToken() })
+    }
+  }
+
+  socketInit = () => {
     this.initialized = true
 
     this.delayedCallbacks.forEach(([method, args]) => this[method](...args))
@@ -46,18 +67,6 @@ export class RTClient {
     } else {
       this.delayedCallbacks.push([method, args])
     }
-  }
-
-  subscribe(name, options, callback) {
-    this.subscriptions.subscribe(name, options, callback)
-  }
-
-  unsubscribe(name, options, callback) {
-    this.subscriptions.unsubscribe(name, options, callback)
-  }
-
-  send(name, options, callback) {
-    this.methods.send(name, options, callback)
   }
 }
 

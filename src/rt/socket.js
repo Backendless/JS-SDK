@@ -18,12 +18,12 @@ const logMessage = (type, event, data) => {
 
 let rtSocketPromise = null
 
-let initializeCallbacks = []
+let initializer
 
 export class RTSocket {
 
-  static onInit(cb) {
-    initializeCallbacks.push(cb)
+  static onInit(_initializer) {
+    initializer = _initializer
   }
 
   static destroy() {
@@ -32,29 +32,32 @@ export class RTSocket {
       rtSocketPromise = undefined
     }
 
-    initializeCallbacks = []
+    initializer = undefined
   }
 
   static proxy(rtClientMethod) {
     return (...args) => {
       if (!rtSocketPromise) {
+        const { userToken, onInit } = initializer()
+
         rtSocketPromise = getRTServerHost().then(({ host, token }) => {
-          const rtClient = new RTSocket(host, token)
+          const rtSocket = new RTSocket(host, token, userToken)
 
-          initializeCallbacks.forEach(cb => cb())
 
-          return rtClient
+          onInit()
+
+          return rtSocket
         })
       }
 
-      rtSocketPromise.then(rtClient => rtClient[rtClientMethod](...args))
+      rtSocketPromise.then(rtSocket => rtSocket[rtClientMethod](...args))
     }
   }
 
-  constructor(host, token) {
+  constructor(host, token, userToken) {
     this.host = host
     this.token = token
-    this.socket = io(this.host, { path: `/${Backendless.applicationId}/${this.token}` })
+    this.socket = io(this.host, { path: `/${Backendless.applicationId}/${this.token}`, query: { userToken } })
 
     this.events = {}
     this.subscribedEvents = {}

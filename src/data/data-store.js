@@ -22,6 +22,17 @@ const genID = () => {
   return b
 }
 
+const ListenerTypes = Utils.mirrorKeys({
+  CHANGES: null,
+  ERROR  : null,
+})
+
+const ChangesTypes = {
+  CREATED: 'created',
+  UPDATED: 'updated',
+  DELETED: 'deleted',
+}
+
 export default class DataStore {
 
   constructor(model) {
@@ -43,6 +54,9 @@ export default class DataStore {
     if (!this.className) {
       throw new Error('Class name should be specified')
     }
+
+    this.subscriptions = {}
+    this.simpleListeners = {}
 
     // this.restUrl = Urls.dataTable(this.className)
     // this.bulkRestUrl = Urls.dataBulkTable(this.className)
@@ -744,11 +758,169 @@ export default class DataStore {
     }
   }
 
-  on(event, query, callback) {
-    Backendless.RTClient.DATA.onObjectsChange(this.className, event, query, callback)
+  //--------------------------------------//
+  //----------------- RT -----------------//
+
+  addSubscription(type, subscriberFn, callback, extraOptions) {
+    const subscriptionsStack = this.subscriptions[type] = this.subscriptions[type] || []
+
+    const options = {
+      tableName: this.className,
+      ...extraOptions
+    }
+
+    const subscription = subscriberFn(options, callback, {
+      onError: this.onError,
+      onStop : () => this.subscriptions[type] = this.subscriptions[type].filter(s => s.subscription !== subscription),
+    })
+
+    subscriptionsStack.push({ callback, extraOptions, subscription })
   }
 
-  off(event, query, callback) {
-    Backendless.RTClient.DATA.offObjectsChange(this.className, event, query, callback)
+  stopSubscription(type, { callback, argumentsMatcher }) {
+    const subscriptionsStack = this.subscriptions[type] = this.subscriptions[type] || []
+
+    if (argumentsMatcher) {
+      subscriptionsStack.forEach(s => {
+        if (argumentsMatcher(s)) {
+          s.subscription.stop()
+        }
+      })
+
+    } else {
+      subscriptionsStack.forEach(s => {
+        if (!callback || s.callback === callback) {
+          s.subscription.stop()
+        }
+      })
+    }
+  }
+
+  addSimpleListener(type, callback) {
+    const listenersStack = this.simpleListeners[type] = this.simpleListeners[type] || []
+
+    listenersStack.push(callback)
+
+    return this
+  }
+
+  removeSimpleListener(type, callback) {
+    if (this.simpleListeners[type]) {
+      this.simpleListeners[type] = callback
+        ? this.simpleListeners[type].filter(cb => cb !== callback)
+        : []
+    }
+
+    return this
+  }
+
+  onError = error => {
+    const listenersStack = this.simpleListeners[ListenerTypes.ERROR] || []
+
+    listenersStack.forEach(callback => callback(error))
+  }
+
+  addCreateListener(whereClause, callback) {
+    this.addChangesListener(ChangesTypes.CREATED, whereClause, callback)
+
+    return this
+  }
+
+  removeCreateListener(whereClause, callback) {
+    this.removeChangesListener(ChangesTypes.CREATED, whereClause, callback)
+
+    return this
+  }
+
+  addUpdateListener(whereClause, callback) {
+    this.addChangesListener(ChangesTypes.UPDATED, whereClause, callback)
+
+    return this
+  }
+
+  removeUpdateListener(whereClause, callback) {
+    this.removeChangesListener(ChangesTypes.UPDATED, whereClause, callback)
+
+    return this
+  }
+
+  addDeleteListener(whereClause, callback) {
+    this.addChangesListener(ChangesTypes.DELETED, whereClause, callback)
+
+    return this
+  }
+
+  removeDeleteListener(whereClause, callback) {
+    this.removeChangesListener(ChangesTypes.DELETED, whereClause, callback)
+
+    return this
+  }
+
+  removeAllListeners() {
+    this.delayedOperations = []
+
+    Object.keys(this.subscriptions).map(listenerType => {
+      this.subscriptions[listenerType].forEach(({ subscription }) => subscription.stop())
+    })
+
+    Object.keys(this.simpleListeners).map(listenerType => {
+      this.simpleListeners[listenerType] = []
+    })
+
+    return this
+  }
+
+  addErrorListener(callback) {
+    return this.addSimpleListener(ListenerTypes.ERROR, callback)
+  }
+
+  removeErrorListener(callback) {
+    return this.removeSimpleListener(ListenerTypes.ERROR, callback)
+  }
+
+  addChangesListener(event, whereClause, callback) {
+    if (typeof whereClause === 'function') {
+      callback = whereClause
+      whereClause = undefined
+    }
+
+    this.addSubscription(ListenerTypes.CHANGES, Backendless.RT.subscriptions.onObjectsChanges, callback, {
+      event,
+      whereClause
+    })
+  }
+
+  removeChangesListener(event, whereClause, callback) {
+    if (typeof whereClause === 'function') {
+      callback = whereClause
+      whereClause = undefined
+    }
+
+    const argumentsMatcher = subscription => {
+      const extraOptions = subscription.extraOptions
+
+      if (extraOptions.event !== event) {
+        return false
+      }
+
+      const isWhereClauseEqual = extraOptions.whereClause === whereClause
+      const isCallbackEqual = subscription.callback === callback
+
+      if (whereClause && callback) {
+        return isWhereClauseEqual && isCallbackEqual
+      }
+
+      if (whereClause) {
+        return isWhereClauseEqual
+      }
+
+      if (callback) {
+        return !extraOptions.whereClause && isCallbackEqual
+      }
+
+      return true
+    }
+
+    this.stopSubscription(ListenerTypes.CHANGES, { argumentsMatcher })
   }
 }

@@ -20,14 +20,13 @@ import persistence from './data/persistence'
 import Messaging from './messaging/messaging'
 import FilePermissions from './file/file-persmission'
 import User from './user/user'
-import { RTClient } from './rt'
+import RTClient  from './rt'
 import './logging/logging'
 import './request/request'
 import Private from './private'
 
 import CustomServices from './bl/custom-services'
 import Events from './bl/events'
-
 
 Backendless.initApp = (appId, secretKey) => {
   Backendless.applicationId = appId
@@ -38,7 +37,7 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Persistence = persistence
   Backendless.Data = persistence
   Backendless.Data.Permissions = new DataPermissions()
-  Backendless.Messaging = new Messaging()
+  Backendless.Messaging = Messaging
   Backendless.Files = new Files()
   Backendless.Files.Permissions = new FilePermissions()
   Backendless.Commerce = new Commerce()
@@ -50,7 +49,7 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.CustomServices = CustomServices
   Backendless.Events = Events
 
-  Backendless.RTClient = new RTClient()
+  Backendless.RT = new RTClient()
 
   Private.resetDataStore()
 

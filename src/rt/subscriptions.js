@@ -1,6 +1,33 @@
-import _isEqual from 'lodash/isEqual'
-import { SubscriptionEvents } from './constants'
+import Utils from '../utils'
 import { RTUtils } from './utils'
+
+const Events = Utils.mirrorKeys({
+  SUB_ON : null,
+  SUB_OFF: null,
+  SUB_RES: null,
+})
+
+const Types = Utils.mirrorKeys({
+  OBJECTS_CHANGES: null,
+
+  PUB_SUB_CONNECT : null,
+  PUB_SUB_MESSAGES: null,
+  PUB_SUB_COMMANDS: null,
+  PUB_SUB_USERS   : null,
+
+  RSO_CONNECT : null,
+  RSO_CHANGES : null,
+  RSO_CLEARED : null,
+  RSO_COMMANDS: null,
+  RSO_INVOKES : null,
+  RSO_USERS   : null,
+
+  SUBSCRIPTION_SCOPE: null,
+})
+
+const subscription = type => function(data, onData, callbacks) {
+  return this.subscribe(type, data, onData, callbacks)
+}
 
 export class Subscriptions {
 
@@ -12,8 +39,7 @@ export class Subscriptions {
 
   initialize() {
     if (!this.initialized) {
-      this.rtClient.on(SubscriptionEvents.SUB_RES, data => this.onSubscriptionResponse(data))
-      this.rtClient.on(SubscriptionEvents.SUB_END, data => this.onSubscriptionEnd(data))
+      this.rtClient.on(Events.SUB_RES, data => this.onSubscriptionResponse(data))
       this.rtClient.onReconnect(() => this.reconnectSubscriptions())
 
       this.initialized = true
@@ -24,71 +50,116 @@ export class Subscriptions {
     Object.keys(this.subscriptions).forEach(subscriptionId => this.onSubscription(subscriptionId))
   }
 
-  subscribe(name, options, callback) {
+  subscribe(name, options, onData, { onError, onStop, onReady } = {}) {
     this.initialize()
     //TODO: make sure of unique subscriptionId
     const subscriptionId = RTUtils.generateUID()
 
     this.subscriptions[subscriptionId] = {
-      data: { id: subscriptionId, name, options },
-      callback
+      data : { id: subscriptionId, name, options },
+      ready: false,
+      onData,
+      onError,
+      onStop,
+      onReady,
     }
 
     this.onSubscription(subscriptionId)
-  }
 
-  unsubscribe(name, options, callback) {
-    const subscription = this.findSub(name, options)
+    return {
+      isReady: () => {
+        return !!this.subscriptions[subscriptionId] && this.subscriptions[subscriptionId].ready
+      },
 
-    //TODO: remove all subscription according to options
-    //TODO: [subName, {foo:bar}, callback] => unsubscribe all subscriptions for specific callback
-    //TODO: [subName, {foo:bar}] => unsubscribe all subscriptions for specific options
-    //TODO: [subName] => unsubscribe all subscriptions for specific subName
-    //TODO: [] => unsubscribe all subscriptions
-
-    if (subscription) {
-      this.offSubscription(subscription.data.id)
+      stop: () => {
+        if (this.subscriptions[subscriptionId]) {
+          this.offSubscription(subscriptionId)
+        }
+      },
     }
   }
 
   onSubscription(subscriptionId) {
     const subscription = this.subscriptions[subscriptionId]
 
-    this.rtClient.emit(SubscriptionEvents.SUB_ON, subscription.data)
+    this.rtClient.emit(Events.SUB_ON, subscription.data)
   }
 
   offSubscription(subscriptionId) {
-    this.rtClient.emit(SubscriptionEvents.SUB_OFF, { id: subscriptionId })
+    const subscription = this.subscriptions[subscriptionId]
 
-    delete this.subscriptions[subscriptionId]
-  }
+    if (subscription) {
+      this.rtClient.emit(Events.SUB_OFF, { id: subscriptionId })
 
-  findSub(name, options) {
-    let subscription
-
-    Object.keys(this.subscriptions).forEach(subscriptionId => {
-      const sub = this.subscriptions[subscriptionId]
-
-      if (sub.data.name === name && _isEqual(sub.data.options, options)) {
-        subscription = sub
+      if (subscription.onStop) {
+        subscription.onStop()
       }
-    })
 
-    return subscription
-  }
-
-  onSubscriptionResponse(data) {
-    const subscription = this.subscriptions[data.id]
-
-    if (subscription && subscription.callback) {
-      subscription.callback(data.error, data.result)
+      delete this.subscriptions[subscriptionId]
     }
   }
 
-  onSubscriptionEnd(data) {
-    this.onSubscriptionResponse(data)
+  onSubscriptionResponse({ id, result, error }) {
+    const subscription = this.subscriptions[id]
 
-    delete this.subscriptions[data.id]
+    if (subscription) {
+      if (error) {
+
+        if (subscription.onError) {
+          subscription.onError(error)
+        }
+
+        if (subscription.onStop) {
+          subscription.onStop(error)
+        }
+
+        delete this.subscriptions[id]
+
+      } else {
+        if (!subscription.ready) {
+          subscription.ready = true
+
+          if (subscription.onReady) {
+            subscription.onReady()
+          }
+        }
+
+        if (subscription.onData) {
+          subscription.onData(result)
+        }
+      }
+    }
   }
 
+  //---------------------------------------//
+  //----------- DATA SUBSCRIPTIONS --------//
+
+  onObjectsChanges = subscription(Types.OBJECTS_CHANGES).bind(this)
+
+  //----------- DATA SUBSCRIPTIONS --------//
+  //---------------------------------------//
+
+  //---------------------------------------//
+  //-------- PUB_SUB SUBSCRIPTIONS --------//
+
+  connectToPubSub = subscription(Types.PUB_SUB_CONNECT).bind(this)
+  onPubSubMessage = subscription(Types.PUB_SUB_MESSAGES).bind(this)
+  onPubSubCommand = subscription(Types.PUB_SUB_COMMANDS).bind(this)
+  onPubSubUserStatus = subscription(Types.PUB_SUB_USERS).bind(this)
+
+  //-------- PUB_SUB SUBSCRIPTIONS --------//
+  //---------------------------------------//
+
+  //---------------------------------------//
+  //----------- RSO SUBSCRIPTIONS ---------//
+
+  connectToRSO = subscription(Types.RSO_CONNECT).bind(this)
+  onRSOChanges = subscription(Types.RSO_CHANGES).bind(this)
+  onRSOClear = subscription(Types.RSO_CLEARED).bind(this)
+  onRSOCommand = subscription(Types.RSO_COMMANDS).bind(this)
+  onRSOInvokes = subscription(Types.RSO_INVOKES).bind(this)
+  onRSOUserStatus = subscription(Types.RSO_USERS).bind(this)
+
+  //----------- RSO SUBSCRIPTIONS ---------//
+  //---------------------------------------//
 }

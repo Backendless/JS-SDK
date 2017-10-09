@@ -1,3 +1,6 @@
+import Backendless from './bundle'
+
+
 let UIState = null
 
 let dataStoreCache = {}
@@ -29,6 +32,8 @@ const Private = {
   setCurrentUser: user => {
     //TODO: move it to ./user/current-user.js
     currentUser = user
+
+    Backendless.RT.updateUserToken()
   },
 
   getCurrentUser: () => {
