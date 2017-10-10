@@ -34,10 +34,6 @@ function sendData(options) {
     xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary)
   }
 
-  if (Private.getUIState() !== null) {
-    xhr.setRequestHeader('uiState', Private.getUIState())
-  }
-
   const currentUser = Private.getCurrentUser()
   const userToken = currentUser && currentUser['user-token'] || Backendless.LocalCache.get('user-token')
 

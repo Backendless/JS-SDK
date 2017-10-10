@@ -947,7 +947,7 @@
       return params.join('&');
     },
 
-    _parseResponse      : function(response) {
+    _parseResponse: function(response) {
       var _Model = this.model, item;
       response = response.fields || response;
       item = new _Model();
@@ -1002,7 +1002,8 @@
       var pos;
 
       var genID = function() {
-        for (var b = '', a = b; a++ < 36; b += a * 51 && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
+        for (var b = '',
+                 a = b; a++ < 36; b += a * 51 && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
         }
         return b;
       };
@@ -1234,9 +1235,9 @@
         return this._findUtil(argsObj, responder);
       } else if (Utils.isObject(arguments[0])) {
         argsObj = arguments[0];
-        var url       = this.restUrl,
-            isAsync   = responder != null,
-            send      = "/pk?";
+        var url     = this.restUrl,
+            isAsync = responder != null,
+            send    = "/pk?";
 
         for (var key in argsObj) {
           send += key + '=' + argsObj[key] + '&';
@@ -5201,7 +5202,7 @@
 
     _invoke: function(serviceName, method, parameters, async) {
       var responder = Utils.extractResponder(arguments);
-      var isAsync   = responder != null;
+      var isAsync = responder != null;
 
       return Backendless._ajax({
         method      : "POST",

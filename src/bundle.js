@@ -1,9 +1,10 @@
 import Utils from './utils'
-import Private from './private'
+import request from 'backendless-request'
 
 const Backendless = {}
 
 Backendless.debugMode = true
+Backendless.Request = request
 
 //TODO: refactor me
 const root = typeof root !== 'undefined' ? root : {}
@@ -294,14 +295,6 @@ Backendless.LocalCache = setCache()
 
 if (Backendless.LocalCache.enabled) {
   Backendless.LocalCache.flushExpired()
-}
-
-Backendless.setUIState = function(stateName) {
-  if (stateName === undefined) {
-    throw new Error('UI state name must be defined or explicitly set to null')
-  }
-
-  Private.setUIState(stateName)
 }
 
 export default Backendless

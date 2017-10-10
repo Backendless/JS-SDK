@@ -15,7 +15,8 @@
   ],
   "typings": "backendless.d.ts",
   "scripts": {
-    "dev": "watch 'npm run build:commonjs' ./src",
+    "dev": "watch 'npm run build:umd' ./src",
+    "dev:umd": "watch 'npm run build:umd' ./src",
     "clean": "rimraf lib dist es",
     "lint": "eslint src --fix",
     "check": "npm run lint && npm run test",
@@ -84,5 +85,6 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
+    "backendless-request": "../Request"
   }
 }

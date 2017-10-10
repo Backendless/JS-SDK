@@ -35,12 +35,6 @@ declare module __Backendless {
     function setupDevice(deviceProps:Object):void;
 
     /**
-     * @public
-     * @type: Function
-     **/
-    function setUIState(state:string):void;
-
-    /**
      * @namespace Backendless.LocalCache
      **/
     var LocalCache:Backendless.LocalCacheI;
