@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "4.1.0",
+  "version": "4.0.11",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -62,7 +62,7 @@
     "babel-preset-stage-1": "^6.24.1",
     "babel-preset-stage-3": "^6.17.0",
     "babelify": "^7.3.0",
-    "backendless-console-sdk": "^2.0.12",
+    "backendless-console-sdk": "^2.0.13",
     "bannerize": "^1.1.2",
     "browserify": "^13.1.1",
     "chai": "^3.5.0",

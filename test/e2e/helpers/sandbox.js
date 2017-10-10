@@ -14,7 +14,7 @@ const generateDev = () => ({
 })
 
 const generateApp = () => ({
-  appName: `test_${uid()}`
+  name: `test_${uid()}`
 })
 
 const createDestroyer = sandbox => () =>
@@ -36,7 +36,7 @@ const createSandbox = api => {
     .then(() => api.user.login(dev.email, dev.pwd))
     .then(({ authKey }) => dev.authKey = authKey)
 
-    .then(() => api.apps.createApp(app))
+    .then(() => api.apps.createApp({ appName: app.name, refCode: null }))
     .then(result => Object.assign(app, result))
 
     .then(() => api.settings.getAppSettings(app.id))
@@ -45,7 +45,8 @@ const createSandbox = api => {
     .then(() => sandbox)
 }
 
-const serverUrl = process.env.API_SERVER || 'http://localhost:9000'
+const apiServerURL = process.env.API_SERVER || 'http://localhost:9000'
+const consoleServerURL = process.env.CONSOLE_SERVER || 'http://localhost:3000'
 
 const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
@@ -53,14 +54,14 @@ const createSandboxFor = each => () => {
 
   beforeHook(function() {
     this.timeout(20000)
-    this.consoleApi = createClient(serverUrl)
+    this.consoleApi = createClient(consoleServerURL)
 
     return createSandbox(this.consoleApi).then(sandbox => {
       this.sandbox = sandbox
       this.dev = sandbox.dev
       this.app = sandbox.app
 
-      Backendless.serverURL = serverUrl
+      Backendless.serverURL = apiServerURL
       Backendless.initApp(this.app.id, this.app.devices.JS)
     })
   })

@@ -1,2 +1,2 @@
 --compilers js:babel-core/register
---timeout 5000
+--timeout 10000
