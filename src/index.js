@@ -41,7 +41,7 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Files = new Files()
   Backendless.Files.Permissions = new FilePermissions()
   Backendless.Commerce = new Commerce()
-  Backendless.Counters = new Counters()
+  Backendless.Counters = Counters
 
   Backendless.Cache = Cache
   Backendless.UserService = UserService
