@@ -1,6 +1,8 @@
 'use strict';
 
 const backendless = require('../../../es');
+const fs = require('fs');
+const path = require('path');
 
 const APPLICATION_ID = '';
 const SECRET_KEY = '';
