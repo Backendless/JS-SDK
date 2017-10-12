@@ -11,7 +11,7 @@ import UserService from './user/user-service'
 import Geo from './geo'
 import GeoTrackerMonitor from './geo/tracker-monitor'
 import Files from './file/files'
-import Commerce from './messaging/commerce'
+import Commerce from './commerce'
 import Cache from './cache'
 import Counters from './counters/counters'
 import persistence from './data/persistence'
@@ -31,6 +31,8 @@ Backendless.Logging = Logging
 Backendless.Counters = Counters
 
 Backendless.Cache = Cache
+
+Backendless.Commerce = Commerce
 
 Backendless.UserService = UserService
 Backendless.Users = UserService
@@ -71,8 +73,6 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Messaging = new Messaging()
   Backendless.Files = new Files()
   Backendless.Files.Permissions = new FilePermissions()
-  Backendless.Commerce = new Commerce()
-
 }
 
 export default Backendless
