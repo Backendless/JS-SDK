@@ -41,7 +41,7 @@ export function ajaxForNode(config) {
   }
 
   let buffer
-  const httpx = require(https ? 'https' : 'http')
+  var httpx = https ? require('https') : require('http');
 
   const req = httpx.request(options, function(res) {
     res.setEncoding('utf8')

@@ -296,6 +296,16 @@ if (Backendless.LocalCache.enabled) {
   Backendless.LocalCache.flushExpired()
 }
 
+Backendless.getUserToken = () => {
+  const currentUser = Private.getCurrentUser()
+
+  if (currentUser && currentUser['user-token']) {
+    return currentUser['user-token'] || null
+  }
+
+  return Backendless.LocalCache.get('user-token') || null
+}
+
 Backendless.setUIState = function(stateName) {
   if (stateName === undefined) {
     throw new Error('UI state name must be defined or explicitly set to null')
