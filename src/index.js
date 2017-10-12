@@ -18,13 +18,15 @@ import persistence from './data/persistence'
 import Messaging from './messaging/messaging'
 import FilePermissions from './file/file-persmission'
 import User from './user/user'
-import './logging/logging'
+import Logging from './logging'
+import LoggingCollector from './logging/collector'
 import './request/request'
 import Private from './private'
 
 import CustomServices from './bl/custom-services'
 import Events from './bl/events'
 
+Backendless.Logging = Logging
 
 Backendless.Counters = Counters
 
@@ -52,6 +54,13 @@ Backendless.SubscriptionOptions = SubscriptionOptions
 Backendless.PublishOptionsHeaders = PublishOptionsHeaders
 
 Backendless.initApp = (appId, secretKey) => {
+
+  LoggingCollector.reset()
+  GeoTrackerMonitor.reset()
+
+  Private.resetDataStore()
+  Private.setCurrentUser()
+
   Backendless.applicationId = appId
   Backendless.secretKey = secretKey
   Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
@@ -64,13 +73,7 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.Files.Permissions = new FilePermissions()
   Backendless.Commerce = new Commerce()
 
-  GeoTrackerMonitor.reset()
-
-  Private.resetDataStore()
-
-  Private.setCurrentUser(null)
 }
-
 
 export default Backendless
 

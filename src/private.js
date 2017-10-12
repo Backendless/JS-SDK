@@ -28,7 +28,7 @@ const Private = {
 
   setCurrentUser: user => {
     //TODO: move it to ./user/current-user.js
-    currentUser = user
+    currentUser = user || null
   },
 
   getCurrentUser: () => {
