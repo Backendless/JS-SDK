@@ -515,21 +515,27 @@ export default class DataStore {
 
   getObjectCountSync = Utils.synchronized('_getObjectCount')
 
-  _getObjectCount(/**queryBuilder, async */) {
-    const args = this._parseFindArguments(arguments)
-    const dataQuery = args.queryBuilder ? args.queryBuilder.build() : {}
-    let url = Urls.dataTableCount(this.className)
-    const isAsync = !!args.async
+  _getObjectCount(condition, async) {
+    if (condition instanceof Async) {
+      async = condition
+      condition = null
+    }
 
-    if (dataQuery.condition) {
-      url += '?where=' + encodeURIComponent(dataQuery.condition)
+    if (condition instanceof Backendless.DataQueryBuilder) {
+      condition = condition.build().condition
+    }
+
+    let url = Urls.dataTableCount(this.className)
+
+    if (condition) {
+      url += '?where=' + encodeURIComponent(condition)
     }
 
     return Backendless._ajax({
       method      : 'GET',
       url         : url,
-      isAsync     : isAsync,
-      asyncHandler: args.async
+      isAsync     : !!async,
+      asyncHandler: async
     })
   }
 
