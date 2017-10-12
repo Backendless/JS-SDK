@@ -1377,7 +1377,7 @@
     /**
      * Count of object
      *
-     * @param {DataQueryBuilder} [queryBuilder]
+     * @param {String|DataQueryBuilder} [condition]
      *
      * @return {Promise}
      */
@@ -1386,27 +1386,33 @@
     /**
      * Count of object (sync)
      *
-     * @param {DataQueryBuilder} [queryBuilder]
+     * @param {String|DataQueryBuilder} [condition]
      *
      * @return {number}
      */
     getObjectCountSync: synchronized('_getObjectCount'),
 
-    _getObjectCount: function(queryBuilder, async) {
-      var args = this._parseFindArguments(arguments);
-      var dataQuery = args.queryBuilder ? args.queryBuilder.build() : {};
-      var url = this.restUrl + '/count';
-      var isAsync = !!args.async;
+    _getObjectCount: function(condition, async) {
+      if (condition instanceof Async) {
+        async = condition;
+        condition = null;
+      }
 
-      if (dataQuery.condition) {
-        url += '?where=' + encodeURIComponent(dataQuery.condition);
+      if (condition instanceof Backendless.DataQueryBuilder) {
+        condition = condition.build().condition;
+      }
+
+      var url = this.restUrl + '/count';
+
+      if (condition) {
+        url += '?where=' + encodeURIComponent(condition);
       }
 
       return Backendless._ajax({
         method      : 'GET',
         url         : url,
-        isAsync     : isAsync,
-        asyncHandler: args.async
+        isAsync     : !!async,
+        asyncHandler: async
       });
     },
 

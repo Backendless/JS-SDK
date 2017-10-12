@@ -1,9 +1,6 @@
 import Backendless from './bundle'
 import DataQueryBuilder from './data/data-query-builder'
 import LoadRelationsQueryBuilder from './data/load-relations-query-builder'
-import GeoQuery from './geo/geo-query'
-import GeoPoint from './geo/geo-point'
-import GeoCluster from './geo/geo-cluster'
 import PublishOptionsHeaders from './messaging/publish-options-header'
 import PublishOptions from './messaging/publish-options'
 import DeliveryOptions from './messaging/delivery-options'
@@ -11,7 +8,8 @@ import Bodyparts from './messaging/body-parts'
 import SubscriptionOptions from './messaging/subscriptions-options'
 import DataPermissions from './data/data-permissions'
 import UserService from './user/user-service'
-import Geo from './geo/geo-service'
+import Geo from './geo'
+import GeoTrackerMonitor from './geo/tracker-monitor'
 import Files from './file/files'
 import Commerce from './messaging/commerce'
 import Cache from './cache'
@@ -21,81 +19,63 @@ import Messaging from './messaging/messaging'
 import FilePermissions from './file/file-persmission'
 import User from './user/user'
 import RTClient  from './rt'
-import './logging/logging'
+import Logging from './logging'
+import LoggingCollector from './logging/collector'
 import './request/request'
 import Private from './private'
 
 import CustomServices from './bl/custom-services'
 import Events from './bl/events'
 
-Backendless.initApp = (appId, secretKey) => {
-  Backendless.applicationId = appId
-  Backendless.secretKey = secretKey
-  Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
+Backendless.Logging = Logging
 
-  Backendless.Geo = new Geo()
-  Backendless.Persistence = persistence
-  Backendless.Data = persistence
-  Backendless.Data.Permissions = new DataPermissions()
-  Backendless.Messaging = Messaging
-  Backendless.Files = new Files()
-  Backendless.Files.Permissions = new FilePermissions()
-  Backendless.Commerce = new Commerce()
-  Backendless.Counters = new Counters()
+Backendless.Counters = Counters
 
-  Backendless.Cache = Cache
-  Backendless.UserService = UserService
-  Backendless.Users = UserService
-  Backendless.CustomServices = CustomServices
-  Backendless.Events = Events
+Backendless.Cache = Cache
 
-  Backendless.RT = new RTClient()
-
-  Private.resetDataStore()
-
-  Private.setCurrentUser(null)
-}
-
+Backendless.UserService = UserService
+Backendless.Users = UserService
 Backendless.User = User
+
+Backendless.CustomServices = CustomServices
+Backendless.Events = Events
+
+Backendless.Geo = Geo
+Backendless.GeoQuery = Backendless.Geo.Query
+Backendless.GeoPoint = Backendless.Geo.Point
+Backendless.GeoCluster = Backendless.Geo.Cluster
+
 Backendless.DataQueryBuilder = DataQueryBuilder
 Backendless.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
-Backendless.GeoQuery = GeoQuery
-Backendless.GeoPoint = GeoPoint
-Backendless.GeoCluster = GeoCluster
+
 Backendless.Bodyparts = Bodyparts
 Backendless.PublishOptions = PublishOptions
 Backendless.DeliveryOptions = DeliveryOptions
 Backendless.SubscriptionOptions = SubscriptionOptions
 Backendless.PublishOptionsHeaders = PublishOptionsHeaders
 
-try {
-  const root = this || {}
+Backendless.initApp = (appId, secretKey) => {
 
-  /** @deprecated */
-  root.GeoPoint = Backendless.GeoPoint
+  LoggingCollector.reset()
+  GeoTrackerMonitor.reset()
 
-  /** @deprecated */
-  root.GeoCluster = Backendless.GeoCluster
+  Private.resetDataStore()
+  Private.setCurrentUser()
 
-  /** @deprecated */
-  root.BackendlessGeoQuery = Backendless.GeoQuery
+  Backendless.applicationId = appId
+  Backendless.secretKey = secretKey
+  Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
 
-  /** @deprecated */
-  root.Bodyparts = Backendless.Bodyparts
+  Backendless.RT = new RTClient()
 
-  /** @deprecated */
-  root.PublishOptions = Backendless.PublishOptions
+  Backendless.Persistence = persistence
+  Backendless.Data = persistence
+  Backendless.Data.Permissions = new DataPermissions()
+  Backendless.Messaging = new Messaging()
+  Backendless.Files = new Files()
+  Backendless.Files.Permissions = new FilePermissions()
+  Backendless.Commerce = new Commerce()
 
-  /** @deprecated */
-  root.DeliveryOptions = Backendless.DeliveryOptions
-
-  /** @deprecated */
-  root.SubscriptionOptions = Backendless.SubscriptionOptions
-
-  /** @deprecated */
-  root.PublishOptionsHeaders = Backendless.PublishOptionsHeaders
-} catch (error) {
-  console && console.warn(error)
 }
 
 export default Backendless
