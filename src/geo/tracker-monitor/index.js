@@ -1,4 +1,4 @@
-import Utils from '../utils'
+import Utils from '../../utils'
 
 import GeoTracker from './tracker'
 import GeoFenceActions from './fence-actions'

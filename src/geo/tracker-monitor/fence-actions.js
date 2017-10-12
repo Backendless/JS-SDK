@@ -1,5 +1,5 @@
 import Backendless from '../../bundle'
-import Utils from '../utils'
+import Utils from '../../utils'
 import Urls from '../../urls'
 import Async from '../../request/async'
 
@@ -38,8 +38,8 @@ const runOnEnterAction = (geoFenceName, geoPoint, async) => runFenceAction('onen
 const GeoFenceActions = {
   run: runFenceAction,
 
-  enter: runOnStayAction,
-  stay : runOnEnterAction,
+  enter: runOnEnterAction,
+  stay : runOnStayAction,
   exist: runOnExitAction,
 }
 
