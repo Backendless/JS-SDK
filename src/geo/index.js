@@ -23,8 +23,7 @@ const Geo = {
   EARTH_RADIUS,
   UNITS,
 
-  Utils         : GeoUtils,
-  TrackerMonitor: GeoTrackerMonitor,
+  Utils: GeoUtils,
 
   Cluster: GeoCluster,
   Point  : GeoPoint,

@@ -404,8 +404,8 @@ declare module __Backendless {
         loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise<Array<Object>>;
         loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Array<Object>;
 
-        getObjectCount(query?:Backendless.DataQueryBuilder):Promise<number>
-        getObjectCountSync(query?:Backendless.DataQueryBuilder):number
+        getObjectCount(query?:Backendless.DataQueryBuilder|string):Promise<number>
+        getObjectCountSync(query?:Backendless.DataQueryBuilder|string):number
 
         setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
         setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
