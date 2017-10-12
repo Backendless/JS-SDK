@@ -5,8 +5,9 @@ import PublishOptions from './publish-options'
 import DeliveryOptions from './delivery-options'
 import Bodyparts from './body-parts'
 import SubscriptionOptions from './subscriptions-options'
+import RSO from './rso'
+import Channel from './channel'
 
-import { subscribe } from './subscribe'
 import { publish } from './publish'
 import { sendEmail } from './send-email'
 import { cancel } from './cancel'
@@ -23,8 +24,21 @@ const Messaging = {
   SubscriptionOptions  : SubscriptionOptions,
   PublishOptionsHeaders: PublishOptionsHeaders,
 
-  subscribe    : Utils.promisified(subscribe),
-  subscribeSync: Utils.synchronized(subscribe),
+  rso(name) {
+    return new RSO({ name })
+  },
+
+  subscribe: function(channelName, subscriptionCallback, subscriptionOptions) {
+    const { subtopic, selector } = subscriptionOptions || {}
+
+    const channel = new Channel({ channel: channelName, subtopic })
+
+    if (subscriptionCallback) {
+      channel.addMessageListener(selector, subscriptionCallback)
+    }
+
+    return channel
+  },
 
   publish    : Utils.promisified(publish),
   publishSync: Utils.synchronized(publish),
