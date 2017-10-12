@@ -29,14 +29,14 @@ const toBiteArray = content => {
     content = new Blob(content)
 
   } else if (typeof Buffer !== 'undefined') {
-
     const value = Buffer.from(content)
 
     content = {
       value  : value,
       options: {
-        filepath   : 'blob',
-        knownLength: value.byteLength
+        filename   : 'blob',
+        knownLength: value.byteLength,
+        contentType: 'application/octet-stream'
       }
     }
   }
@@ -44,7 +44,15 @@ const toBiteArray = content => {
   return content
 }
 
-function sendFile(options) {
+const getContentSize = content => {
+  if (content.size) {
+    return content.size
+  }
+
+  return content.options && content.options.knownLength
+}
+
+const sendFile = options => {
   const url = Urls.filePath(options.path) + '/' + sanitizeFileName(options.fileName)
   const query = {}
 
@@ -69,7 +77,7 @@ export default class Files {
   /**
    * @param {String} path
    * @param {String} fileName
-   * @param {Buffer|Uint8Array} fileContent
+   * @param {String|Uint8Array} fileContent
    * @param {Boolean} overwrite
    * @returns {Promise.<String>}
    */
@@ -79,7 +87,7 @@ export default class Files {
    * @deprecated All sync API methods are deprecated
    * @param {String} path
    * @param {String} fileName
-   * @param {Buffer|Uint8Array} fileContent
+   * @param {String|Uint8Array} fileContent
    * @param {Boolean} overwrite
    * @returns {String}
    */
@@ -101,7 +109,7 @@ export default class Files {
 
     fileContent = toBiteArray(fileContent)
 
-    if ((fileContent.size || fileContent.byteLength) > 2800000) {
+    if (getContentSize(fileContent) > 2800000) {
       throw new Error('File Content size must be less than 2,800,000 bytes')
     }
 

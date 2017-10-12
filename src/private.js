@@ -26,12 +26,6 @@ const Private = {
   getCurrentUser: function() {
     //TODO: move it to ./user/current-user.js
     return currentUser
-  },
-
-  getUserToken: function() {
-    const currentUser = this.getCurrentUser() || {}
-
-    return currentUser['user-token'] || Backendless.LocalCache.get('user-token')
   }
 }
 

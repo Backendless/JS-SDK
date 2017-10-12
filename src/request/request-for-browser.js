@@ -1,6 +1,5 @@
 import Backendless from '../bundle'
 import Utils from '../utils'
-import Private from '../private'
 
 const parseResponse = xhr => {
   let result = true
@@ -29,46 +28,39 @@ const badResponse = xhr => {
 
 const sendRequest = config => {
   const xhr = new Backendless.XMLHttpRequest()
-  const contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded'
-  let response
+  const query = Utils.toQueryParams(config.query)
+  const url = config.url + (query ? '?' + query : '')
 
-  xhr.open(config.method, config.url, config.isAsync)
-  xhr.setRequestHeader('Content-Type', contentType)
+  xhr.open(config.method, url, false)
 
-  const userToken = Private.getUserToken()
+  const userToken = Backendless.getUserToken()
 
   if (userToken) {
     xhr.setRequestHeader('user-token', userToken)
   }
 
-  if (config.isAsync) {
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4 && xhr.status) {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          response = parseResponse(xhr)
-          config.asyncHandler.success && config.asyncHandler.success(response)
+  if (config.form) {
+    const formData = new FormData()
 
-        } else {
-          config.asyncHandler.fault && config.asyncHandler.fault(badResponse(xhr))
-        }
+    for (let key in config.form) {
+      const value = config.form[key]
+
+      if (value) {
+        formData.append(key, value)
       }
     }
 
-    if (config.asyncHandler.fault) {
-      xhr.onerror = Utils.onHttpRequestErrorHandler(xhr, config.asyncHandler.fault, badResponse)
-    }
+    config.data = formData
+  } else {
+    const contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded'
+
+    xhr.setRequestHeader('Content-Type', contentType)
   }
 
   xhr.send(config.data)
 
-  if (config.isAsync) {
-    return xhr
-  }
-
   if (xhr.status >= 200 && xhr.status < 300) {
-    response = parseResponse(xhr)
-
-    return response
+    return parseResponse(xhr)
   }
 
   throw badResponse(xhr)

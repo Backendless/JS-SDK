@@ -112,6 +112,7 @@ const Utils = {
   },
 
   toQueryParams(params) {
+    params = params || {}
     const result = []
 
     for (const key in params) {

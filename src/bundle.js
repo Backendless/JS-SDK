@@ -1,4 +1,5 @@
 import Utils from './utils'
+import Private from './private'
 import request from 'backendless-request'
 
 const Backendless = {}

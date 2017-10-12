@@ -1,5 +1,4 @@
 import Backendless from '../bundle'
-import Private from '../private'
 import { ajaxForBrowser } from './request-for-browser'
 
 Backendless._ajax = function(config) {
@@ -23,19 +22,19 @@ Backendless._ajax = function(config) {
 
   Backendless.Request.XMLHttpRequest = Backendless.XMLHttpRequest
 
-  const path = config.url
+  const url = config.url
   const method = (config.method || 'GET').toLowerCase()
   const headers = config.headers || {}
   const onError = config.asyncHandler.fault || function(error) { throw error }
   const onSuccess = config.asyncHandler.success || function(result) { return result }
 
-  const userToken = Private.getUserToken()
+  const userToken = Backendless.getUserToken()
 
   if (userToken) {
     headers['user-token'] = userToken
   }
 
-  return Backendless.Request[method](path, config.data)
+  return Backendless.Request[method](url, config.data)
     .set(headers)
     .query(config.query)
     .form(config.form)
