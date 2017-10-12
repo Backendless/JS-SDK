@@ -297,4 +297,14 @@ if (Backendless.LocalCache.enabled) {
   Backendless.LocalCache.flushExpired()
 }
 
+Backendless.getUserToken = () => {
+  const currentUser = Private.getCurrentUser()
+
+  if (currentUser && currentUser['user-token']) {
+    return currentUser['user-token'] || null
+  }
+
+  return Backendless.LocalCache.get('user-token') || null
+}
+
 export default Backendless

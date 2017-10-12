@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "4.0.10",
+  "version": "4.0.11",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -16,7 +16,6 @@
   "typings": "backendless.d.ts",
   "scripts": {
     "dev": "watch 'npm run build:umd' ./src",
-    "dev:umd": "watch 'npm run build:umd' ./src",
     "clean": "rimraf lib dist es",
     "lint": "eslint src --fix",
     "check": "npm run lint && npm run test",

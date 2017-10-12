@@ -14,7 +14,7 @@ const generateDev = () => ({
 })
 
 const generateApp = () => ({
-  appName: `test_${uid()}`
+  name: `test_${uid()}`
 })
 
 const createDestroyer = sandbox => () =>

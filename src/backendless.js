@@ -601,7 +601,7 @@
     }
 
     var buffer;
-    var httpx = require(https ? 'https' : 'http');
+    var httpx = https ? require('https') : require('http');
     var req = httpx.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function(chunk) {
