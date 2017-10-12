@@ -1,0 +1,31 @@
+body {
+    background: #161a24;
+    font: 12px Arial, Helvetica, sans-serif;
+}
+
+.form {
+    text-align: center;
+    background: #fff;
+    margin: 150px 0 0 -125px;
+    width: 250px;
+    position: relative;
+    left: 50%;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.login,
+.logout {
+    display: none
+}
+
+.social-login-buttons {
+    width: 210px;
+    margin: 0 auto;
+}
+
+.social-login-btn {
+    display: block;
+    width: 100%;
+    margin: 5px 0 0 0;
+}

@@ -805,15 +805,14 @@ declare module __Backendless {
         loginWithFacebookSync(fields?:Object, permissions?:Object, stayLoggedIn?:boolean):void;
         loginWithFacebook(fields?:Object, permissions?:Object, stayLoggedIn?:boolean):Promise<void>;
 
-        loginWithGooglePlusSync(fields?:Object, permissions?:Object, container?:HTMLElement, stayLoggedIn?:boolean):void;
-        loginWithGooglePlus(fields?:Object, permissions?:Object, container?:HTMLElement, stayLoggedIn?:boolean):Promise<void>;
+        loginWithGooglePlusSync(fields?:Object, container?:HTMLElement, stayLoggedIn?:boolean):void;
+        loginWithGooglePlus(fields?:Object, container?:HTMLElement, stayLoggedIn?:boolean):Promise<void>;
 
         loginWithTwitterSync(fields?:Object, stayLoggedIn?:boolean):void;
         loginWithTwitter(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
 
-        loginWithFacebookSdk(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
-
-        loginWithGooglePlusSdk(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
+        loginWithFacebookSdk(accessToken:string, fieldsMapping?:Object, stayLoggedIn?:boolean):Promise<void>;
+        loginWithGooglePlusSdk(accessToken:string, fieldsMapping?:Object, stayLoggedIn?:boolean):Promise<void>;
 
         isValidLoginSync():boolean;
         isValidLogin():Promise<boolean>;

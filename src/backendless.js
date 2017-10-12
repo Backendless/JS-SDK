@@ -1948,25 +1948,42 @@
 
   UserService.prototype = {
     _wrapAsync: function(async, stayLoggedIn) {
-      var me   = this, success = function(data) {
-        currentUser = me._parseResponse(Utils.tryParseJSON(data), stayLoggedIn);
-        async.success(me._getUserFromResponse(currentUser));
-      }, error = function(data) {
-        async.fault(data);
+      var me = this;
+      var success = function(data) {
+        async.success(me._setCurrentUserFromResponse(data, stayLoggedIn));
+      };
+      var error = function(err) {
+        async.fault(err);
       };
 
       return new Async(success, error);
     },
 
-    _parseResponse: function(data, stayLoggedIn) {
-      var user = new Backendless.User();
-      Utils.deepExtend(user, data);
+    _setCurrentUserFromResponse: function(data, stayLoggedIn) {
+      var user = this._getUserFromResponse(data);
+      this._setCurrentUser(user, stayLoggedIn);
 
-      if (stayLoggedIn) {
-        Backendless.LocalCache.set("stayLoggedIn", stayLoggedIn);
+      return user;
+    },
+
+    _setCurrentUser: function(user, stayLoggedIn) {
+      currentUser = user;
+      Backendless.LocalCache.set('current-user-id', user.objectId);
+      if (stayLoggedIn !== undefined) {
+        Backendless.LocalCache.set('stayLoggedIn', !!stayLoggedIn);
+      }
+
+      var userToken = user['user-token'];
+
+      if (userToken && stayLoggedIn) {
+        Backendless.LocalCache.set('user-token', userToken)
       }
 
       return user;
+    },
+
+    _getUserFromResponse: function(data) {
+      return Utils.deepExtend(new Backendless.User(), Utils.tryParseJSON(data));
     },
 
     register: promisified('_register'),
@@ -1993,7 +2010,7 @@
         data        : JSON.stringify(user)
       });
 
-      return isAsync ? result : this._parseResponse(result);
+      return isAsync ? result : this._setCurrentUserFromResponse(result);
     },
 
     getUserRoles: promisified('_getUserRoles'),
@@ -2004,14 +2021,12 @@
       var responder = Utils.extractResponder(arguments);
       var isAsync = responder != null;
 
-      var result = Backendless._ajax({
+      return Backendless._ajax({
         method      : 'GET',
         url         : this.restUrl + '/userroles',
         isAsync     : isAsync,
         asyncHandler: responder
       });
-
-      return isAsync ? result : this._parseResponse(result);
     },
 
     _roleHelper: function(identity, rolename, async, operation) {
@@ -2090,23 +2105,10 @@
       });
 
       if (!isAsync && result) {
-        currentUser = this._parseResponse(result, stayLoggedIn);
-        result = this._getUserFromResponse(currentUser);
+        return this._setCurrentUserFromResponse(result, stayLoggedIn);
       }
 
       return result;
-    },
-
-    _getUserFromResponse: function(user) {
-      Backendless.LocalCache.set('current-user-id', user.objectId);
-
-      var userToken = user['user-token']
-
-      if (userToken && Backendless.LocalCache.get('stayLoggedIn')) {
-        Backendless.LocalCache.set('user-token', userToken)
-      }
-
-      return new Backendless.User(user);
     },
 
     loggedInUser: function() {
@@ -2212,19 +2214,34 @@
 
     _getCurrentUser: function(async) {
       if (currentUser) {
-        var userFromResponse = this._getUserFromResponse(currentUser);
+        var user = this._getUserFromResponse(currentUser);
 
-        return async ? async.success(userFromResponse) : userFromResponse;
+        return async ? async.success(user) : user;
       }
 
       var stayLoggedIn = Backendless.LocalCache.get("stayLoggedIn");
       var currentUserId = stayLoggedIn && Backendless.LocalCache.get("current-user-id");
 
-      if (currentUserId) {
-        return persistence.of(User).findById(currentUserId, async);
+      if (!currentUserId) {
+        return async ? async.success(null) : null;
       }
 
-      return async ? async.success(null) : null;
+      if (!async) {
+        var userData = persistence.of(User).findByIdSync(currentUserId);
+
+        return this._setCurrentUserFromResponse(userData);
+      }
+
+      var users = this;
+
+      persistence.of(User).findById(currentUserId).then(
+        function(data) {
+          async.success(users._setCurrentUserFromResponse(data));
+        },
+        function(err) {
+          async.fault(err);
+        }
+      );
     },
 
     update: promisified('_update'),
@@ -2247,23 +2264,27 @@
         data        : JSON.stringify(user)
       });
 
-      return isAsync ? result : this._parseResponse(result);
+      return isAsync ? result : this._setCurrentUserFromResponse(result);
     },
 
+    /** @deprecated */
     loginWithFacebook: promisified('_loginWithFacebook'),
 
+    /** @deprecated */
     loginWithFacebookSync: synchronized('_loginWithFacebook'),
 
     _loginWithFacebook: function(facebookFieldsMapping, permissions, stayLoggedIn, async) {
       return this._loginSocial('Facebook', facebookFieldsMapping, permissions, null, stayLoggedIn, async);
     },
 
+    /** @deprecated */
     loginWithGooglePlus: promisified('_loginWithGooglePlus'),
 
+    /** @deprecated */
     loginWithGooglePlusSync: synchronized('_loginWithGooglePlus'),
 
-    _loginWithGooglePlus: function(googlePlusFieldsMapping, permissions, container, stayLoggedIn, async) {
-      return this._loginSocial('GooglePlus', googlePlusFieldsMapping, permissions, container, stayLoggedIn, async);
+    _loginWithGooglePlus: function(googlePlusFieldsMapping, container, stayLoggedIn, async) {
+      return this._loginSocial('GooglePlus', googlePlusFieldsMapping, null, container, stayLoggedIn, async);
     },
 
     loginWithTwitter: promisified('_loginWithTwitter'),
@@ -2277,7 +2298,7 @@
     _socialContainer: function(socialType, container) {
       var loadingMsg;
 
-      if (container) {
+      if (HTMLElement && container instanceof HTMLElement) {
         var client;
 
         container = container[0];
@@ -2333,6 +2354,13 @@
     },
 
     _loginSocial: function(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
+      if (socialType !== 'Twitter') {
+        console.warn(
+          'Method "loginWith' + socialType + '" is deprecated.\n' +
+          'Use method "loginWith' + socialType + 'Sdk" instead.'
+        );
+      }
+
       var socialContainer = new this._socialContainer(socialType, container);
       async = Utils.extractResponder(arguments);
       async = this._wrapAsync(async, stayLoggedIn);
@@ -2372,67 +2400,40 @@
       });
     },
 
-    loginWithFacebookSdk: function(fieldsMapping, stayLoggedIn, options) {
+    loginWithFacebookSdk: function(accessToken, fieldsMapping, stayLoggedIn) {
+      return this._sendSocialLoginRequest("facebook", accessToken, fieldsMapping, stayLoggedIn);
+    },
+
+    loginWithGooglePlusSdk: function(accessToken, fieldsMapping, stayLoggedIn) {
+      return this._sendSocialLoginRequest("googleplus", accessToken, fieldsMapping, stayLoggedIn);
+    },
+
+    _sendSocialLoginRequest: function(socialType, accessToken, fieldsMapping, stayLoggedIn) {
+      var socialLoginLabels = {
+        googleplus: 'Google+',
+        facebook  : 'Facebook'
+      };
+      var data = {
+        fieldsMapping: fieldsMapping || {},
+        accessToken  : accessToken
+      };
+      var url = this.restUrl + "/social/" + socialType + "/sdk/login";
       var users = this;
 
       return new Promise(function(resolve, reject) {
-        if (!FB) {
-          return reject(new Error("Facebook SDK not found"));
+        if (!accessToken) {
+          return reject(new Error(socialLoginLabels[socialType] + ' Access Token cannot be empty'));
         }
 
-        var async = new Async(resolve, reject, users);
+        var asyncHandler = users._wrapAsync(new Async(resolve, reject), stayLoggedIn);
 
-        FB.getLoginStatus(function(response) {
-          if (response.status === 'connected') {
-            users._sendSocialLoginRequest(response, "facebook", fieldsMapping, stayLoggedIn, async);
-          } else {
-            FB.login(function(response) {
-              users._sendSocialLoginRequest(response, "facebook", fieldsMapping, stayLoggedIn, async);
-            }, options);
-          }
+        Backendless._ajax({
+          method      : 'POST',
+          url         : url,
+          isAsync     : true,
+          asyncHandler: asyncHandler,
+          data        : JSON.stringify(data)
         });
-      });
-    },
-
-    loginWithGooglePlusSdk: function(fieldsMapping, stayLoggedIn, async) {
-      var users = this;
-
-      return new Promise(function(resolve, reject) {
-        if (!gapi) {
-          return reject(new Error("Google Plus SDK not found"));
-        }
-
-        var async = new Async(resolve, reject, users);
-
-        gapi.auth.authorize({
-          client_id: fieldsMapping.client_id,
-          scope    : "https://www.googleapis.com/auth/plus.login"
-        }, function(response) {
-          delete response['g-oauth-window'];
-          users._sendSocialLoginRequest(response, "googleplus", fieldsMapping, stayLoggedIn, async);
-        });
-      });
-    },
-
-    _sendSocialLoginRequest: function(response, socialType, fieldsMapping, stayLoggedIn, async) {
-      if (fieldsMapping) {
-        response["fieldsMapping"] = fieldsMapping;
-      }
-
-      var interimCallback = new Async(function(r) {
-        currentUser = context._parseResponse(r);
-        Backendless.LocalCache.set("stayLoggedIn", !!stayLoggedIn);
-        async.success(context._getUserFromResponse(currentUser));
-      }, function(e) {
-        async.fault(e);
-      });
-
-      Backendless._ajax({
-        method      : 'POST',
-        url         : this.restUrl + "/social/" + socialType + "/login/" + Backendless.applicationId,
-        isAsync     : true,
-        asyncHandler: interimCallback,
-        data        : JSON.stringify(response)
       });
     },
 
