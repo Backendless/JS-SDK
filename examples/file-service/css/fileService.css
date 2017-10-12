@@ -6,6 +6,14 @@ body {
 input[type="file"] {
     line-height: 1;
 }
+
+.navbar-inner a {
+    margin-right: 10px;
+}
+
+.navbar-inner .container {
+    margin-top: 15px;
+}
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 
@@ -47,7 +55,7 @@ input[type="file"] {
     margin-top: 10px;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"], textarea {
     width: 400px;
 }
 
