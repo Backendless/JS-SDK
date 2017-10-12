@@ -23,7 +23,7 @@ Backendless.noConflict = function() {
   return Backendless
 }
 
-Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' && XMLHttpRequest
+Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' ? XMLHttpRequest : undefined
 
 const browser = (function() {
   let ua = 'NodeJS'

@@ -6,93 +6,59 @@ import Private from '../private'
 
 const isRemoteUrl = url => url.startsWith('http://') || url.startsWith('https://')
 
-function sendData(options) {
-  const async = options.async
-  const encoded = options.encoded
-  const boundary = '-backendless-multipart-form-boundary-' + Utils.getNow()
-  const xhr = new Backendless.XMLHttpRequest()
-
-  const badResponse = xhr => {
-    let result = {}
-
-    try {
-      result = JSON.parse(xhr.responseText)
-    } catch (e) {
-      result.message = xhr.responseText
-    }
-
-    result.statusCode = xhr.status
-
-    return result
+const getFileName = file => {
+  if (file.name) {
+    return file.name
   }
 
-  xhr.open(options.method, options.url, !!async)
-
-  if (encoded) {
-    xhr.setRequestHeader('Content-Type', 'text/plain')
-  } else {
-    xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary)
-  }
-
-  const currentUser = Private.getCurrentUser()
-  const userToken = currentUser && currentUser['user-token'] || Backendless.LocalCache.get('user-token')
-
-  if (userToken) {
-    xhr.setRequestHeader('user-token', userToken)
-  }
-
-  if (async) {
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4 && xhr.status) {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          async.success(JSON.parse(xhr.responseText))
-        } else {
-          async.fault(JSON.parse(xhr.responseText))
-        }
-      }
-    }
-
-    xhr.onerror = Utils.onHttpRequestErrorHandler(xhr, async.fault, badResponse)
-  }
-
-  xhr.send(encoded ? options.data : Utils.stringToBiteArray(getBuilder(options.fileName, options.data, boundary)))
-
-  if (async) {
-    return xhr
-  }
-
-  if (xhr.status >= 200 && xhr.status < 300) {
-    return xhr.responseText ? JSON.parse(xhr.responseText) : true
-  } else {
-    throw badResponse(xhr)
+  if (file.path) {
+    const path = file.path.split('/')
+    return path[path.length - 1] //last item of the file path
   }
 }
 
-function getBuilder(filename, filedata, boundary) {
-  const dashdash = '--'
-  const crlf = '\r\n'
-  let builder = ''
+const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
 
-  builder += dashdash
-  builder += boundary
-  builder += crlf
-  builder += 'Content-Disposition: form-data; name="file"'
-  builder += '; filename="' + filename + '"'
-  builder += crlf
+const toBiteArray = content => {
+  if (typeof Blob !== 'undefined') {
 
-  builder += 'Content-Type: application/octet-stream'
-  builder += crlf
-  builder += crlf
+    if (!Array.isArray(content)) {
+      content = [content]
+    }
 
-  builder += filedata
-  builder += crlf
+    content = new Blob(content)
 
-  builder += dashdash
-  builder += boundary
-  builder += dashdash
-  builder += crlf
+  } else if (typeof Buffer !== 'undefined') {
 
-  return builder
+    const value = Buffer.from(content)
+
+    content = {
+      value  : value,
+      options: {
+        filepath   : 'blob',
+        knownLength: value.byteLength
+      }
+    }
+  }
+
+  return content
+}
+
+function sendFile(options) {
+  const url = Urls.filePath(options.path) + '/' + sanitizeFileName(options.fileName)
+  const query = {}
+
+  if (Utils.isBoolean(options.overwrite)) {
+    query.overwrite = options.overwrite
+  }
+
+  return Backendless._ajax({
+    method      : 'POST',
+    url         : url,
+    query       : query,
+    form        : { file: options.file },
+    asyncHandler: options.asyncHandler
+  })
 }
 
 export default class Files {
@@ -100,146 +66,87 @@ export default class Files {
     // this.restUrl = Urls.files()
   }
 
+  /**
+   * @param {String} path
+   * @param {String} fileName
+   * @param {Buffer|Uint8Array} fileContent
+   * @param {Boolean} overwrite
+   * @returns {Promise.<String>}
+   */
   saveFile = Utils.promisified('_saveFile')
 
+  /**
+   * @deprecated All sync API methods are deprecated
+   * @param {String} path
+   * @param {String} fileName
+   * @param {Buffer|Uint8Array} fileContent
+   * @param {Boolean} overwrite
+   * @returns {String}
+   */
   saveFileSync = Utils.synchronized('_saveFile')
 
-  _saveFile(path, fileName, fileContent, overwrite, async) {
+  _saveFile(path, fileName, fileContent, overwrite, asyncHandler) {
     if (!path || !Utils.isString(path)) {
       throw new Error('Missing value for the "path" argument. The argument must contain a string value')
     }
 
-    if (!fileName || !Utils.isString(path)) {
+    if (!fileName || !Utils.isString(fileName)) {
       throw new Error('Missing value for the "fileName" argument. The argument must contain a string value')
     }
 
     if (overwrite instanceof Async) {
-      async = overwrite
+      asyncHandler = overwrite
       overwrite = null
     }
 
-    if (typeof File !== 'undefined' && !(fileContent instanceof File)) {
-      fileContent = new Blob([fileContent])
-    }
+    fileContent = toBiteArray(fileContent)
 
-    if (fileContent.size > 2800000) {
+    if ((fileContent.size || fileContent.byteLength) > 2800000) {
       throw new Error('File Content size must be less than 2,800,000 bytes')
     }
 
-    let baseUrl = Urls.fileBinary(path, (Utils.isString(fileName) && fileName))
-
-    if (overwrite) {
-      baseUrl += '?overwrite=true'
-    }
-
-    fileName = encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
-
-    function send(content) {
-      sendData({
-        url     : baseUrl,
-        data    : content,
-        fileName: fileName,
-        encoded : true,
-        async   : async,
-        method  : 'PUT'
-      })
-    }
-
-    if (typeof Blob !== 'undefined' && fileContent instanceof Blob) {
-      const reader = new FileReader()
-      reader.fileName = fileName
-      reader.onloadend = function(e) {
-        send(e.target.result.split(',')[1])
-      }
-
-      reader.onerror = function(evn) {
-        async.fault(evn)
-      }
-
-      reader.readAsDataURL(fileContent)
-    } else {
-      send(fileContent)
-    }
-
-    if (!async) {
-      return true
-    }
+    return sendFile({
+      overwrite   : overwrite,
+      path        : path,
+      fileName    : fileName,
+      file        : fileContent,
+      asyncHandler: asyncHandler
+    })
   }
 
+  /**
+   * @param {File} file
+   * @param {String} path
+   * @param {Boolean} overwrite
+   * @returns {Promise.<String>}
+   */
   upload = Utils.promisified('_upload')
 
+  /**
+   * @deprecated All sync API methods are deprecated
+   * @param {File} file
+   * @param {String} path
+   * @param {Boolean} overwrite
+   * @returns {String}
+   */
   uploadSync = Utils.synchronized('_upload')
 
-  _upload(files, path, overwrite, async) {
-    async = Utils.extractResponder(arguments)
-    files = files.files || files
+  _upload(file, path, overwrite, asyncHandler) {
+    let fileName = getFileName(file)
 
-    const baseUrl = Urls.filePath(path) + '/'
-
-    let overwriting = ''
-
-    if (Utils.isBoolean(overwrite)) {
-      overwriting = '?overwrite=' + overwrite
+    if (!fileName) {
+      throw new Error('Wrong type of the file source object. Can not get file name')
     }
 
-    if (Utils.isBrowser) {
-      if (window.File && window.FileList) {
-        if (files instanceof File) {
-          files = [files]
-        }
+    asyncHandler = Utils.extractResponder(arguments)
 
-        for (let i = 0, len = files.length; i < len; i++) {
-          try {
-            const reader = new FileReader()
-            const fileName = encodeURIComponent(files[i].name).replace(/'/g, '%27').replace(/"/g, '%22')
-            const url = baseUrl + fileName + overwriting
-
-            reader.fileName = fileName
-            reader.onloadend = function(e) {
-              sendData({
-                url     : url,
-                data    : e.target.result,
-                fileName: fileName,
-                async   : async,
-                method  : 'POST'
-              })
-            }
-
-            reader.onerror = function(evn) {
-              async.fault(evn)
-            }
-            reader.readAsBinaryString(files[i])
-
-          } catch (err) {
-
-          }
-        }
-      }
-      else {
-        //IE iframe hack
-        const ifrm = document.createElement('iframe')
-        ifrm.id = ifrm.name = 'ifr' + Utils.getNow()
-        ifrm.width = ifrm.height = '0'
-
-        document.body.appendChild(ifrm)
-        const form = document.createElement('form')
-        form.target = ifrm.name
-        form.enctype = 'multipart/form-data'
-        form.method = 'POST'
-        document.body.appendChild(form)
-        form.appendChild(files)
-        let fileName = encodeURIComponent(files.value).replace(/'/g, '%27').replace(/"/g, '%22')
-        const index = fileName.lastIndexOf('\\')
-
-        if (index) {
-          fileName = fileName.substring(index + 1)
-        }
-        form.action = baseUrl + fileName + overwriting
-        form.submit()
-      }
-    } else {
-      throw new Error('Upload File not supported with NodeJS')
-    }
+    return sendFile({
+      overwrite   : overwrite,
+      path        : path,
+      fileName    : fileName,
+      file        : file,
+      asyncHandler: asyncHandler
+    })
   }
 
   listing = Utils.promisified('_listing')

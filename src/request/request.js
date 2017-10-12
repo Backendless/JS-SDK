@@ -4,7 +4,7 @@ import { ajaxForBrowser } from './request-for-browser'
 
 Backendless._ajax = function(config) {
   //--TODO remove this checking when we get rid of all sync methods
-  if (config.isAsync === false) {
+  if (config.isAsync === false || !config.asyncHandler) {
     if (Backendless.XMLHttpRequest) {
       console.warn(
         'The sync methods of the Backendless API are deprecated and will be removed in the nearest future.\n' +
@@ -25,10 +25,9 @@ Backendless._ajax = function(config) {
 
   const path = config.url
   const method = (config.method || 'GET').toLowerCase()
-  const headers = {}
-  const body = config.data
-  const onError = config.asyncHandler.fault || function() {}
-  const onSuccess = config.asyncHandler.success || function() {}
+  const headers = config.headers || {}
+  const onError = config.asyncHandler.fault || function(error) { throw error }
+  const onSuccess = config.asyncHandler.success || function(result) { return result }
 
   const userToken = Private.getUserToken()
 
@@ -36,7 +35,9 @@ Backendless._ajax = function(config) {
     headers['user-token'] = userToken
   }
 
-  return Backendless.Request[method](path, body)
+  return Backendless.Request[method](path, config.data)
     .set(headers)
+    .query(config.query)
+    .form(config.form)
     .then(onSuccess, onError)
 }
