@@ -59,7 +59,6 @@ const Urls = {
   files          : () => `${Urls.root()}/files`,
   filePath       : path => `${Urls.files()}/${path}`,
   fileAction     : actionType => `${Urls.files()}/${actionType}`,
-  fileBinary     : (path, fileName) => `${Urls.files()}/binary/${path}${fileName ? `/${fileName}` : ''}`,
   filePermissions: () => `${Urls.files()}/permissions`,
   filePermission : (type, url) => `${Urls.filePermissions()}/${type}/${encodeURIComponent(url)}`,
 
