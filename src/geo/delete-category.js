@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function deleteCategory(name /**, async */) {
   if (!name) {
@@ -12,8 +12,7 @@ export function deleteCategory(name /**, async */) {
   let result = {}
 
   try {
-    result = Backendless._ajax({
-      method      : 'DELETE',
+    result = Request.delete({
       url         : Urls.geoCategory(name),
       isAsync     : isAsync,
       asyncHandler: responder

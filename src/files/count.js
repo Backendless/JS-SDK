@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function getFileCount(path, /** pattern, recursive, countDirectories, async */) {
   const responder = Utils.extractResponder(arguments)
@@ -27,8 +27,7 @@ export function getFileCount(path, /** pattern, recursive, countDirectories, asy
 
   const url = Urls.filePath(path) + '?' + Utils.toQueryParams(query)
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : url,
     isAsync     : isAsync,
     asyncHandler: responder

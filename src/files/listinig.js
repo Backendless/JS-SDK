@@ -1,7 +1,7 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
 import Async from '../request/async'
+import Request from '../request'
 
 export function listing(path, pattern, recursively, pagesize, offset/**, async */) {
   const responder = Utils.extractResponder(arguments)
@@ -28,8 +28,7 @@ export function listing(path, pattern, recursively, pagesize, offset/**, async *
     url += '&offset=' + offset
   }
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : url,
     isAsync     : isAsync,
     asyncHandler: responder

@@ -1,6 +1,7 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
+import Request from '../request'
 import Async from '../request/async'
+
 import GeoCluster from './cluster'
 import GeoPoint from './point'
 
@@ -49,8 +50,7 @@ export function loadItems(query/**, async */) {
 
   responder = responderOverride(responder)
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : url,
     isAsync     : isAsync,
     asyncHandler: responder

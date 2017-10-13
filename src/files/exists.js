@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function exists(path/**, async */) {
   if (!path || !Utils.isString(path)) {
@@ -11,8 +11,7 @@ export function exists(path/**, async */) {
   const isAsync = !!responder
   const url = Urls.filePath(path) + '?action=exists'
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : url,
     isAsync     : isAsync,
     asyncHandler: responder

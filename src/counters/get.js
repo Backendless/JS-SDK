@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function get(counterName, /** async */) {
   let responder = Utils.extractResponder(arguments)
@@ -10,8 +10,7 @@ export function get(counterName, /** async */) {
     responder = Utils.wrapAsync(responder)
   }
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : Urls.counter(counterName),
     isAsync     : isAsync,
     asyncHandler: responder

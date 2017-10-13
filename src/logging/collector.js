@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 import Async from '../request/async'
 
 import Logger from './logger'
@@ -72,8 +72,7 @@ const LoggingCollector = {
         listeners.push(async)
       }
 
-      Backendless._ajax({
-        method      : 'PUT',
+      Request.put({
         isAsync     : !!async,
         asyncHandler: async && new Async(cb('success'), cb('fault')),
         url         : Urls.logging(),

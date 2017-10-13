@@ -1,5 +1,5 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
+import Request from '../../request'
 import Urls from '../../urls'
 
 import LoadRelationsQueryBuilder from '../load-relations-query-builder'
@@ -54,7 +54,7 @@ function manageRelation(method, className, parent, columnName, children, async) 
     )
   }
 
-  return Backendless._ajax({
+  return Request.send({
     method      : method,
     url         : buildRelationUrl(className, relation),
     isAsync     : !!responder,
@@ -120,8 +120,7 @@ export function loadRelations(parentObjectId, queryBuilder/**, async */) {
     url += '?' + query.join('&')
   }
 
-  const result = Backendless._ajax({
-    method      : 'GET',
+  const result = Request.get({
     url         : url,
     isAsync     : !!responder,
     asyncHandler: responder

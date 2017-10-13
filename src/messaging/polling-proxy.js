@@ -1,4 +1,4 @@
-import Backendless from '../bundle'
+import Request from '../request'
 import Async from '../request/async'
 import Proxy from './proxy'
 
@@ -33,8 +33,7 @@ export default class PollingProxy extends Proxy {
       this.onTimeout()
     }, 30 * 1000)
 
-    this.xhr = Backendless._ajax({
-      method      : 'GET',
+    this.xhr = Request.get({
       url         : this.restUrl,
       isAsync     : true,
       asyncHandler: this.responder

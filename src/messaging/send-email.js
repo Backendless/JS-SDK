@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 import Bodyparts from './body-parts'
 
 export function sendEmail(subject, bodyParts, recipients, attachments/**, async */) {
@@ -38,8 +38,7 @@ export function sendEmail(subject, bodyParts, recipients, attachments/**, async 
     return res.status
   }
 
-  return Backendless._ajax({
-    method      : 'POST',
+  return Request.post({
     url         : Urls.messagingEmail(),
     isAsync     : isAsync,
     asyncHandler: Utils.wrapAsync(responder, responseMessageStatus),

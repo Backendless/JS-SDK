@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 import { Parsers } from './parsers'
 
 export function get(key /**, async */) {
@@ -29,8 +29,7 @@ export function get(key /**, async */) {
     responder = Utils.wrapAsync(responder, parseResult, this)
   }
 
-  const result = Backendless._ajax({
-    method      : 'GET',
+  const result = Request.get({
     url         : Urls.cacheItem(key),
     isAsync     : isAsync,
     asyncHandler: responder

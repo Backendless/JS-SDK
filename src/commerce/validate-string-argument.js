@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function validateStringArgument(label, value) {
   if (!value || !Utils.isString(value)) {
@@ -17,8 +17,7 @@ export function cancelPlaySubscription(packageName, subscriptionId, token, async
     async = Utils.wrapAsync(async)
   }
 
-  return Backendless._ajax({
-    method      : 'POST',
+  return Request.post({
     url         : Urls.commerceSubCancel(packageName, subscriptionId, token),
     isAsync     : !!async,
     asyncHandler: async

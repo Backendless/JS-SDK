@@ -1,7 +1,8 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 import Async from '../request/async'
+
 import GeoPoint from './point'
 
 export function savePoint(geopoint /**, async */) {
@@ -41,7 +42,7 @@ export function savePoint(geopoint /**, async */) {
 
   responder = responderOverride(responder)
 
-  return Backendless._ajax({
+  return Request.send({
     method      : method,
     url         : url,
     data        : geopoint,

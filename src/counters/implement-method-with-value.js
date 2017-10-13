@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function implementMethodWithValue(counterName, urlPart, value/**, async */) {
   if (!value) {
@@ -18,8 +18,7 @@ export function implementMethodWithValue(counterName, urlPart, value/**, async *
     responder = Utils.wrapAsync(responder)
   }
 
-  return Backendless._ajax({
-    method      : 'PUT',
+  return Request.put({
     url         : Urls.counterMethod(counterName, urlPart) + ((value) ? value : ''),
     isAsync     : isAsync,
     asyncHandler: responder

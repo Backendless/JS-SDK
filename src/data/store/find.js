@@ -1,7 +1,7 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Urls from '../../urls'
 import Async from '../../request/async'
+import Request from '../../request'
 
 import QueryBuilder from '../query-builder'
 
@@ -53,8 +53,7 @@ export function findUtil(className, Model, dataQuery, async) {
     url += '?' + query.join('&')
   }
 
-  const result = Backendless._ajax({
-    method      : 'GET',
+  const result = Request.get({
     url         : url,
     isAsync     : !!async,
     asyncHandler: async,
@@ -115,15 +114,13 @@ export function findById() {
     let result
 
     if (Utils.getClassName(arguments[0]) === 'Object') {
-      result = Backendless._ajax({
-        method      : 'GET',
+      result = Request.get({
         url         : url + send.replace(/&$/, ''),
         isAsync     : isAsync,
         asyncHandler: responder
       })
     } else {
-      result = Backendless._ajax({
-        method      : 'PUT',
+      result = Request.put({
         url         : url,
         data        : argsObj,
         isAsync     : isAsync,

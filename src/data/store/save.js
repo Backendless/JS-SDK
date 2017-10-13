@@ -1,6 +1,6 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Urls from '../../urls'
+import Request from '../../request'
 
 import { parseFindResponse } from './parse'
 
@@ -49,8 +49,7 @@ export function save(obj, async) {
     async = Utils.wrapAsync(async, resp => parseFindResponse(resp, this.model))
   }
 
-  const result = Backendless._ajax({
-    method      : 'PUT',
+  const result = Request.put({
     url         : Urls.dataTable(this.className),
     data        : obj,
     isAsync     : !!async,

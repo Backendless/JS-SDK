@@ -1,6 +1,6 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Urls from '../../urls'
+import Request from '../../request'
 import Async from '../../request/async'
 
 import GeoPoint from '../point'
@@ -28,7 +28,7 @@ function runFenceAction(action, geoFenceName, geoPoint /**, async */) {
     data.data = geoPoint
   }
 
-  return Backendless._ajax(data)
+  return Request.send(data)
 }
 
 const runOnStayAction = (geoFenceName, geoPoint, async) => runFenceAction('onstay', geoFenceName, geoPoint, async)

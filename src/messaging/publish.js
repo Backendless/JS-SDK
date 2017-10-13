@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 import DeliveryOptions from './delivery-options'
 import PublishOptions from './publish-options'
 
@@ -28,8 +28,7 @@ export function publish(channelName, message, publishOptions, deliveryTarget/**,
     Utils.deepExtend(data, deliveryTarget)
   }
 
-  return Backendless._ajax({
-    method      : 'POST',
+  return Request.post({
     url         : Urls.messagingChannel(channelName),
     isAsync     : isAsync,
     asyncHandler: responder,

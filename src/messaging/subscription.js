@@ -1,6 +1,7 @@
 import Backendless from '../bundle'
 import Utils from '../utils'
 import Async from '../request/async'
+import Request from '../request'
 import PollingProxy from './polling-proxy'
 import SocketProxy from './socket-proxy'
 
@@ -28,8 +29,7 @@ export default class Subscription {
       responder.fault(e)
     })
 
-    const subscription = Backendless._ajax({
-      method      : 'POST',
+    const subscription = Request.post({
       url         : this.restUrl + '/subscribe',
       isAsync     : isAsync,
       data        : this.options,

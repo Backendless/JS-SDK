@@ -1,7 +1,7 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
 import Async from '../request/async'
+import Request from '../request'
 
 export function put(key, value, timeToLive, async) {
   if (!Utils.isString(key)) {
@@ -31,8 +31,7 @@ export function put(key, value, timeToLive, async) {
     responder = Utils.wrapAsync(responder)
   }
 
-  return Backendless._ajax({
-    method      : 'PUT',
+  return Request.put({
     url         : Urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
     headers     : { 'Content-Type': 'application/json' },
     data        : JSON.stringify(value),

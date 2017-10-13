@@ -1,6 +1,6 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Urls from '../../urls'
+import Request from '../../request'
 
 export function bulkCreate(objectsArray, async) {
   const MSG_ERROR = (
@@ -18,8 +18,7 @@ export function bulkCreate(objectsArray, async) {
     }
   }
 
-  return Backendless._ajax({
-    method      : 'POST',
+  return Request.post({
     url         : Urls.dataBulkTable(this.className),
     data        : objectsArray,
     isAsync     : !!async,
@@ -36,8 +35,7 @@ export function bulkUpdate(templateObject, whereClause, async) {
     throw new Error('Invalid whereClause argument. The first argument must contain "whereClause" string.')
   }
 
-  return Backendless._ajax({
-    method      : 'PUT',
+  return Request.put({
     url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
     data        : templateObject,
     isAsync     : !!async,
@@ -71,8 +69,7 @@ export function bulkDelete(objectsArray, async) {
     whereClause = 'objectId in (\'' + objects.join('\', \'') + '\')'
   }
 
-  return Backendless._ajax({
-    method      : 'DELETE',
+  return Request.delete({
     url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
     isAsync     : !!async,
     asyncHandler: async

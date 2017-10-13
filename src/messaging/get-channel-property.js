@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 const channelProperties = {}
 
@@ -18,8 +18,7 @@ export function getChannelProperties(channelName, async) {
     return props
   }
 
-  const result = Backendless._ajax({
-    method      : 'GET',
+  const result = Request.get({
     url         : Urls.messagingChannelProps(channelName),
     isAsync     : isAsync,
     asyncHandler: responder

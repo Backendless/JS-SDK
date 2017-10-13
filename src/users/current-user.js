@@ -4,6 +4,7 @@ import User from './user'
 import persistence from '../data'
 import Private from '../private'
 import Urls from '../urls'
+import Request from '../request'
 
 import { getUserFromResponse } from './utils'
 
@@ -34,9 +35,8 @@ export function isValidLogin(/** async */) {
   if (userToken) {
     if (!isAsync) {
       try {
-        const result = Backendless._ajax({
-          method: 'GET',
-          url   : Urls.userTokenCheck(userToken)
+        const result = Request.get({
+          url: Urls.userTokenCheck(userToken)
         })
         return !!result
       } catch (e) {
@@ -44,8 +44,7 @@ export function isValidLogin(/** async */) {
       }
     }
 
-    return Backendless._ajax({
-      method      : 'GET',
+    return Request.get({
       url         : Urls.userTokenCheck(userToken),
       isAsync     : isAsync,
       asyncHandler: responder

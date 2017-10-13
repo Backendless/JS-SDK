@@ -1,6 +1,7 @@
 import Backendless from '../../bundle'
 import Urls from '../../urls'
 import Async from '../../request/async'
+import Request from '../../request'
 
 export function getObjectCount(condition, async) {
   if (condition instanceof Async) {
@@ -18,8 +19,7 @@ export function getObjectCount(condition, async) {
     url += '?where=' + encodeURIComponent(condition)
   }
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : url,
     isAsync     : !!async,
     asyncHandler: async

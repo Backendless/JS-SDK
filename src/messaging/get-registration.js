@@ -1,12 +1,11 @@
-import Backendless from '../bundle'
 import Urls from '../urls'
 import Device from '../device'
+import Request from '../request'
 
 export function getRegistrations(async) {
   const device = Device.required()
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : Urls.messagingRegistrationDevice(device.uuid),
     isAsync     : !!async,
     asyncHandler: async

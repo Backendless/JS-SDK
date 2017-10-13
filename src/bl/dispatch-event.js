@@ -1,5 +1,5 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
+import Request from '../request'
 import Async from '../request/async'
 import Urls from '../urls'
 
@@ -18,8 +18,7 @@ export function dispatchEvent(eventName, eventArgs) {
 
   eventArgs = eventArgs instanceof Async ? {} : eventArgs
 
-  return Backendless._ajax({
-    method      : 'POST',
+  return Request.post({
     url         : Urls.blEvent(eventName),
     data        : eventArgs,
     isAsync     : !!responder,

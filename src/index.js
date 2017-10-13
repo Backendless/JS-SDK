@@ -1,3 +1,5 @@
+import Request from 'backendless-request'
+
 import Backendless from './bundle'
 
 import Logging from './logging'
@@ -16,10 +18,20 @@ import Messaging from './messaging'
 import Device from './device'
 import Files from './files'
 
-import './request/request'
 import Private from './private'
 
+Backendless.debugMode = true
 
+Backendless.serverURL = 'https://api.backendless.com'
+
+Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' ? XMLHttpRequest : undefined
+
+Backendless.setupDevice = Device.setup
+
+Backendless.Request = Request
+
+///-------------------------------------///
+///-------------- SERVICES -------------///
 Backendless.Logging = Logging
 
 Backendless.Counters = Counters
@@ -54,8 +66,8 @@ Backendless.PublishOptionsHeaders = Messaging.PublishOptionsHeaders
 
 Backendless.Files = Files
 
-
-Backendless.setupDevice = Device.setup
+///-------------- SERVICES -------------///
+///-------------------------------------///
 
 Backendless.initApp = (appId, secretKey) => {
 

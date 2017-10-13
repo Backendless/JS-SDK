@@ -2,6 +2,7 @@ import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Async from '../../request/async'
 import Urls from '../../urls'
+import Request from '../../request'
 
 import { wrapAsync } from '../utils'
 
@@ -39,8 +40,7 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
   request.fieldsMapping = fieldsMapping || {}
   request.permissions = permissions || []
 
-  Backendless._ajax({
-    method      : 'POST',
+  Request.post({
     url         : Urls.userSocialOAuth(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,

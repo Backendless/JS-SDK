@@ -1,11 +1,8 @@
 import Utils from './utils'
 import Private from './private'
-import request from 'backendless-request'
 
 const Backendless = {}
 
-Backendless.debugMode = true
-Backendless.Request = request
 
 //TODO: refactor me
 const root = typeof root !== 'undefined' ? root : {}
@@ -13,7 +10,6 @@ const root = typeof root !== 'undefined' ? root : {}
 const localStorageName = 'localStorage'
 const previousBackendless = root.Backendless
 
-Backendless.serverURL = 'https://api.backendless.com'
 
 Backendless.noConflict = function() {
 
@@ -24,7 +20,6 @@ Backendless.noConflict = function() {
   return Backendless
 }
 
-Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' ? XMLHttpRequest : undefined
 
 const browser = (function() {
   let ua = 'NodeJS'

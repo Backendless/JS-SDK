@@ -2,6 +2,7 @@ import Backendless from '../bundle'
 import Utils from '../utils'
 import Private from '../private'
 import Urls from '../urls'
+import Request from '../request'
 
 export function logout(/** async */) {
   const responder = Utils.extractResponder(arguments)
@@ -39,8 +40,7 @@ export function logout(/** async */) {
   }
 
   try {
-    result = Backendless._ajax({
-      method      : 'GET',
+    result = Request.get({
       url         : Urls.userLogout(),
       isAsync     : isAsync,
       asyncHandler: responder

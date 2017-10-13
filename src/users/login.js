@@ -2,6 +2,7 @@ import Backendless from '../bundle'
 import Utils from '../utils'
 import Private from '../private'
 import Urls from '../urls'
+import Request from '../request'
 
 import { parseResponse, getUserFromResponse, wrapAsync } from './utils'
 
@@ -32,8 +33,7 @@ export function login(login, password, stayLoggedIn, /** async */) {
     password: password
   }
 
-  let result = Backendless._ajax({
-    method      : 'POST',
+  let result = Request.post({
     url         : Urls.userLogin(),
     isAsync     : isAsync,
     asyncHandler: responder,

@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function compareAndSet(counterName, expected, updated/**, async */) {
   if (null == expected || null == updated) {
@@ -24,8 +24,7 @@ export function compareAndSet(counterName, expected, updated/**, async */) {
 
   const queryParams = '?expected=' + expected + '&updatedvalue=' + updated
 
-  return Backendless._ajax({
-    method      : 'PUT',
+  return Request.put({
     url         : Urls.counterMethod(counterName, 'get/compareandset') + queryParams,
     isAsync     : isAsync,
     asyncHandler: responder

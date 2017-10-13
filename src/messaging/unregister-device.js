@@ -1,12 +1,11 @@
-import Backendless from '../bundle'
 import Urls from '../urls'
 import Device from '../device'
+import Request from '../request'
 
 export function unregisterDevice(async) {
   const device = Device.required()
 
-  Backendless._ajax({
-    method      : 'DELETE',
+  Request.delete({
     url         : Urls.messagingRegistrationDevice(device.uuid),
     isAsync     : !!async,
     asyncHandler: async

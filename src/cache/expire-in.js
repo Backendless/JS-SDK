@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function expireIn(key, seconds /**, async */) {
   if (Utils.isString(key) && (Utils.isNumber(seconds) || Utils.isDate(seconds)) && seconds) {
@@ -13,8 +13,7 @@ export function expireIn(key, seconds /**, async */) {
       responder = Utils.wrapAsync(responder)
     }
 
-    return Backendless._ajax({
-      method      : 'PUT',
+    return Request.put({
       url         : Urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
       data        : {},
       isAsync     : isAsync,

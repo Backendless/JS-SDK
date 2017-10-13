@@ -2,6 +2,7 @@ import Backendless from '../../bundle'
 import Async from '../../request/async'
 import Private from '../../private'
 import Urls from '../../urls'
+import Request from '../../request'
 
 import { parseResponse, getUserFromResponse } from '../utils'
 
@@ -18,8 +19,7 @@ export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stay
     async.fault(e)
   })
 
-  Backendless._ajax({
-    method      : 'POST',
+  Request.post({
     url         : Urls.userSocialLogin(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,

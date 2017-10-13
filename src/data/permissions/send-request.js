@@ -1,5 +1,5 @@
-import Backendless from '../../bundle'
 import Urls from '../../urls'
+import Request from '../../request'
 
 export function sendRequest(permission, type, object, options, async) {
   const { userId, roleName } = options
@@ -18,8 +18,7 @@ export function sendRequest(permission, type, object, options, async) {
     data.role = roleName
   }
 
-  return Backendless._ajax({
-    method      : 'PUT',
+  return Request.put({
     url         : Urls.dataObjectPermission(object.___class, type, object.objectId),
     data        : data,
     isAsync     : !!async,

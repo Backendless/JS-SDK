@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function addCategory(name /**, async */) {
   if (!name) {
@@ -10,8 +10,7 @@ export function addCategory(name /**, async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  const result = Backendless._ajax({
-    method      : 'PUT',
+  const result = Request.put({
     url         : Urls.geoCategory(name),
     isAsync     : isAsync,
     asyncHandler: responder

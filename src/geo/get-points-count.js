@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 import { validateQueryObject } from './query-validator'
 import { toQueryParams } from './query-params'
@@ -14,8 +14,7 @@ export function getGeopointCount(fenceName, query /**, async */) {
 
   const url = Urls.geoCount() + '?' + toQueryParams(query)
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : url,
     isAsync     : isAsync,
     asyncHandler: responder

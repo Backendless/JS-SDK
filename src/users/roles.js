@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 import { parseResponse } from './utils'
 
@@ -15,8 +15,7 @@ function roleHelper(identity, rolename, async, operation) {
 
   const responder = Utils.extractResponder(arguments)
 
-  return Backendless._ajax({
-    method      : 'POST',
+  return Request.post({
     url         : Urls.userRoleOperation(operation),
     isAsync     : !!responder,
     asyncHandler: responder,
@@ -28,8 +27,7 @@ export function getUserRoles(/** async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  const result = Backendless._ajax({
-    method      : 'GET',
+  const result = Request.get({
     url         : Urls.userRoles(),
     isAsync     : isAsync,
     asyncHandler: responder

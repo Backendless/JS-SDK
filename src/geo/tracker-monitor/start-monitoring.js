@@ -1,5 +1,5 @@
-import Backendless from '../../bundle'
 import Urls from '../../urls'
+import Request from '../../request'
 
 import GeoPoint from '../point'
 import GeoUtils from '../utils'
@@ -13,8 +13,7 @@ const INTERVAL = 5000
 //TODO: refactor me
 
 const _getFences = function(geoFence) {
-  return Backendless._ajax({
-    method: 'GET',
+  return Request.get({
     url   : Urls.geoFences(geoFence)
   })
 }

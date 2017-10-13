@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 import { parseResponse, wrapAsync } from './utils'
 
@@ -12,8 +12,7 @@ export function update(user /** async */) {
     responder = wrapAsync(responder)
   }
 
-  const result = Backendless._ajax({
-    method      : 'PUT',
+  const result = Request.put({
     url         : Urls.userObject(user.objectId),
     isAsync     : isAsync,
     asyncHandler: responder,

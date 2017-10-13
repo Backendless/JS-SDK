@@ -1,6 +1,7 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
+
 import GeoCluster from './cluster'
 import GeoPoint from './point'
 import GeoQuery from './query'
@@ -44,8 +45,7 @@ export function loadMetadata(geoObject /**, async */) {
     isAsync = true
   }
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : url,
     isAsync     : isAsync,
     asyncHandler: responder

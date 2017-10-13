@@ -1,7 +1,7 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
 import Device from '../device'
+import Request from '../request'
 import Async from '../request/async'
 
 export function registerDevice(deviceToken, channels, expiration, async) {
@@ -29,8 +29,7 @@ export function registerDevice(deviceToken, channels, expiration, async) {
       : expiration
   }
 
-  Backendless._ajax({
-    method      : 'POST',
+  Request.post({
     url         : Urls.messagingRegistrations(),
     data        : data,
     isAsync     : !!async,

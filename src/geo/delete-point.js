@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 export function deletePoint(point /**, async */) {
   if (!point || Utils.isFunction(point)) {
@@ -13,8 +13,7 @@ export function deletePoint(point /**, async */) {
   let result = {}
 
   try {
-    result = Backendless._ajax({
-      method      : 'DELETE',
+    result = Request.delete({
       url         : Urls.geoPoint(pointId),
       isAsync     : isAsync,
       asyncHandler: responder

@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
 //TODO: rename me
 export function cacheMethod(method, key, contain, async) {
@@ -16,7 +16,7 @@ export function cacheMethod(method, key, contain, async) {
     responder = Utils.wrapAsync(responder)
   }
 
-  return Backendless._ajax({
+  return Request.send({
     method      : method,
     url         : contain ? Urls.cacheItemCheck(key) : Urls.cacheItem(key),
     isAsync     : isAsync,

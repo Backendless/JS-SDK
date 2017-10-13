@@ -1,6 +1,6 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Urls from '../../urls'
+import Request from '../../request'
 
 import { parseFindResponse } from './parse'
 
@@ -9,8 +9,7 @@ export function remove(object, async) {
     throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values')
   }
 
-  const result = Backendless._ajax({
-    method      : 'DELETE',
+  const result = Request.delete({
     url         : Urls.dataTableObject(this.className, object.objectId || object),
     isAsync     : !!async,
     asyncHandler: async
