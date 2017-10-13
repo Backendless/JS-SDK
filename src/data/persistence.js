@@ -21,7 +21,7 @@ const persistence = {
       return Backendless._ajax({
         method      : 'POST',
         url         : url,
-        data        : JSON.stringify(obj),
+        data        : obj,
         isAsync     : isAsync,
         asyncHandler: responder
       })
@@ -84,9 +84,7 @@ const persistence = {
 
     if (Utils.isString(spName)) {
       const url = Urls.dataTable(spName)
-      const data = Utils.isObject(argumentValues)
-        ? JSON.stringify(argumentValues)
-        : {}
+      const data = Utils.isObject(argumentValues) ? argumentValues : {}
 
       return Backendless._ajax({
         method      : 'POST',

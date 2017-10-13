@@ -43,7 +43,7 @@ export function sendEmail(subject, bodyParts, recipients, attachments/**, async 
     url         : Urls.messagingEmail(),
     isAsync     : isAsync,
     asyncHandler: Utils.wrapAsync(responder, responseMessageStatus),
-    data        : JSON.stringify(data)
+    data        : data
   })
 }
 

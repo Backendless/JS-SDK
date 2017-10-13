@@ -20,7 +20,7 @@ function roleHelper(identity, rolename, async, operation) {
     url         : Urls.userRoleOperation(operation),
     isAsync     : !!responder,
     asyncHandler: responder,
-    data        : JSON.stringify({ user: identity, roleName: rolename })
+    data        : { user: identity, roleName: rolename }
   })
 }
 

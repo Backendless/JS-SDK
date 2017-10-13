@@ -32,7 +32,7 @@ export default class Subscription {
       method      : 'POST',
       url         : this.restUrl + '/subscribe',
       isAsync     : isAsync,
-      data        : JSON.stringify(this.options),
+      data        : this.options,
       asyncHandler: _async
     })
 

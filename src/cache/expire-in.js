@@ -16,7 +16,7 @@ export function expireIn(key, seconds /**, async */) {
     return Backendless._ajax({
       method      : 'PUT',
       url         : Urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
-      data        : JSON.stringify({}),
+      data        : {},
       isAsync     : isAsync,
       asyncHandler: responder
     })

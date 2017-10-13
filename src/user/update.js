@@ -17,7 +17,7 @@ export function update(user /** async */) {
     url         : Urls.userObject(user.objectId),
     isAsync     : isAsync,
     asyncHandler: responder,
-    data        : JSON.stringify(user)
+    data        : user
   })
 
   return isAsync ? result : parseResponse(result)

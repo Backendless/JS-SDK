@@ -33,6 +33,6 @@ export function publish(channelName, message, publishOptions, deliveryTarget/**,
     url         : Urls.messagingChannel(channelName),
     isAsync     : isAsync,
     asyncHandler: responder,
-    data        : JSON.stringify(data)
+    data        : data
   })
 }

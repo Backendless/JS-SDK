@@ -23,6 +23,6 @@ export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stay
     url         : Urls.userSocialLogin(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,
-    data        : JSON.stringify(response)
+    data        : response
   })
 }

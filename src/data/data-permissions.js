@@ -125,7 +125,7 @@ class DataPermission {
     return Backendless._ajax({
       method      : 'PUT',
       url         : Urls.dataObjectPermission(dataObject.___class, options.permissionType, dataObject.objectId),
-      data        : JSON.stringify(data),
+      data        : data,
       isAsync     : isAsync,
       asyncHandler: responder
     })

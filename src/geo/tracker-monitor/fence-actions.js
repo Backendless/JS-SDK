@@ -25,7 +25,7 @@ function runFenceAction(action, geoFenceName, geoPoint /**, async */) {
   }
 
   if (geoPoint) {
-    data.data = JSON.stringify(geoPoint)
+    data.data = geoPoint
   }
 
   return Backendless._ajax(data)

@@ -224,7 +224,7 @@ export default class DataStore {
     const result = Backendless._ajax({
       method      : method,
       url         : url,
-      data        : JSON.stringify(obj),
+      data        : obj,
       isAsync     : isAsync,
       asyncHandler: responder
     })
@@ -262,7 +262,7 @@ export default class DataStore {
       result = Backendless._ajax({
         method      : 'DELETE',
         url         : Urls.dataTable(this.className),
-        data        : JSON.stringify(objId),
+        data        : objId,
         isAsync     : isAsync,
         asyncHandler: responder
       })
@@ -408,7 +408,7 @@ export default class DataStore {
         result = Backendless._ajax({
           method      : 'PUT',
           url         : url,
-          data        : JSON.stringify(argsObj),
+          data        : argsObj,
           isAsync     : isAsync,
           asyncHandler: responder
         })
@@ -450,8 +450,8 @@ export default class DataStore {
     let url = Urls.dataTable(this.className) + Utils.toUri(parentObjectId, relationName)
 
     responder = responder && Utils.wrapAsync(responder, function(response) {
-      return this._parseFindResponse(response, relationModel)
-    }, this)
+        return this._parseFindResponse(response, relationModel)
+      }, this)
 
     if (query.length) {
       url += '?' + query.join('&')
@@ -632,7 +632,7 @@ export default class DataStore {
       url         : this._buildRelationUrl(relation),
       isAsync     : !!responder,
       asyncHandler: responder,
-      data        : relation.childrenIds && JSON.stringify(relation.childrenIds)
+      data        : relation.childrenIds
     })
   }
 
@@ -656,7 +656,7 @@ export default class DataStore {
     return Backendless._ajax({
       method      : 'POST',
       url         : Urls.dataBulkTable(this.className),
-      data        : JSON.stringify(objectsArray),
+      data        : objectsArray,
       isAsync     : !!async,
       asyncHandler: async
     })
@@ -672,7 +672,7 @@ export default class DataStore {
     return Backendless._ajax({
       method      : 'PUT',
       url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
-      data        : JSON.stringify(templateObject),
+      data        : templateObject,
       isAsync     : !!async,
       asyncHandler: async
     })
@@ -685,21 +685,22 @@ export default class DataStore {
   _bulkDelete(objectsArray, async) {
     this._validateBulkDeleteArg(objectsArray)
 
-    let whereClause
-    let objects
+    const query = {}
 
     if (Utils.isString(objectsArray)) {
-      whereClause = objectsArray
+      query.where = objectsArray
     } else if (Utils.isArray(objectsArray)) {
-      objects = objectsArray.map(function(obj) {
+      const objects = objectsArray.map(function(obj) {
         return Utils.isString(obj) ? obj : obj.objectId
       })
+
+      query.where = 'objectId in (\'' + objects.join('\', \'') + '\')'
     }
 
     return Backendless._ajax({
       method      : 'DELETE',
-      url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
-      data        : objects && JSON.stringify(objects),
+      url         : Urls.dataBulkTable(this.className),
+      query       : query,
       isAsync     : !!async,
       asyncHandler: async
     })
