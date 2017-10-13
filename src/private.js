@@ -6,24 +6,24 @@ let currentUser = null
 
 const Private = {
 
-  setDataToStore: function(key, value) {
+  setDataToStore(key, value) {
     dataStoreCache[key] = value
   },
 
-  getDataFromStore: function(key) {
+  getDataFromStore(key) {
     return dataStoreCache[key]
   },
 
-  resetDataStore: function() {
+  resetDataStore() {
     dataStoreCache = {}
   },
 
-  setCurrentUser: function(user) {
+  setCurrentUser(user) {
     //TODO: move it to ./user/current-user.js
     currentUser = user || null
   },
 
-  getCurrentUser: function() {
+  getCurrentUser() {
     //TODO: move it to ./user/current-user.js
     return currentUser
   }

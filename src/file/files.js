@@ -2,7 +2,8 @@ import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
 import Async from '../request/async'
-import Private from '../private'
+
+const MAX_CONTENT_SIZE = 2800000
 
 const isRemoteUrl = url => url.startsWith('http://') || url.startsWith('https://')
 
@@ -19,7 +20,7 @@ const getFileName = file => {
 
 const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
 
-const toBiteArray = content => {
+const toByteArray = content => {
   if (typeof Blob !== 'undefined') {
 
     if (!Array.isArray(content)) {
@@ -107,9 +108,9 @@ export default class Files {
       overwrite = null
     }
 
-    fileContent = toBiteArray(fileContent)
+    fileContent = toByteArray(fileContent)
 
-    if (getContentSize(fileContent) > 2800000) {
+    if (getContentSize(fileContent) > MAX_CONTENT_SIZE) {
       throw new Error('File Content size must be less than 2,800,000 bytes')
     }
 
