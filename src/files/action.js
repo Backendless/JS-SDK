@@ -9,7 +9,7 @@ export function doAction(actionType, parameters/**, async */) {
   return Backendless._ajax({
     method      : 'PUT',
     url         : Urls.fileAction(actionType),
-    data        : JSON.stringify(parameters),
+    data        : parameters,
     isAsync     : isAsync,
     asyncHandler: responder
   })

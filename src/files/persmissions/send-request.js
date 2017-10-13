@@ -17,7 +17,7 @@ export function sendRequest(permission, type, path, options, async) {
   return Backendless._ajax({
     method      : 'PUT',
     url         : Urls.filePermission(type, path),
-    data        : JSON.stringify(data),
+    data        : data,
     isAsync     : !!async,
     asyncHandler: async
   })
