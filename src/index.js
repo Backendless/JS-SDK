@@ -1,24 +1,24 @@
 import Backendless from './bundle'
-// import DataPermissions from './data/data-permissions'
-import UserService from './user/user-service'
-import Geo from './geo'
-import GeoTrackerMonitor from './geo/tracker-monitor'
-import Files from './file/files'
-import Commerce from './commerce'
-import Cache from './cache'
-import Counters from './counters/counters'
-import Data from './data'
-import Messaging from './messaging'
-import FilePermissions from './file/file-persmission'
-import User from './user/user'
+
 import Logging from './logging'
 import LoggingCollector from './logging/collector'
-import './request/request'
-import Device from './device'
-import Private from './private'
-
+import Counters from './counters/counters'
+import Cache from './cache'
+import Commerce from './commerce'
+import UserService from './user'
+import User from './user/user'
 import CustomServices from './bl/custom-services'
 import Events from './bl/events'
+import Geo from './geo'
+import GeoTrackerMonitor from './geo/tracker-monitor'
+import Data from './data'
+import Messaging from './messaging'
+import Device from './device'
+import Files from './files'
+
+import './request/request'
+import Private from './private'
+
 
 Backendless.Logging = Logging
 
@@ -52,6 +52,9 @@ Backendless.DeliveryOptions = Messaging.DeliveryOptions
 Backendless.SubscriptionOptions = Messaging.SubscriptionOptions
 Backendless.PublishOptionsHeaders = Messaging.PublishOptionsHeaders
 
+Backendless.Files = Files
+
+
 Backendless.setupDevice = Device.setup
 
 Backendless.initApp = (appId, secretKey) => {
@@ -66,10 +69,6 @@ Backendless.initApp = (appId, secretKey) => {
   Backendless.applicationId = appId
   Backendless.secretKey = secretKey
   Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
-
-  // Backendless.Data.Permissions = new DataPermissions()
-  Backendless.Files = new Files()
-  Backendless.Files.Permissions = new FilePermissions()
 }
 
 export default Backendless

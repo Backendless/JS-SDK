@@ -1,12 +1,8 @@
 import Backendless from '../../bundle'
 import Urls from '../../urls'
 
-export function sendRequest(permission, type, object, options, async) {
+export function sendRequest(permission, type, path, options, async) {
   const { userId, roleName } = options
-
-  if (!object.___class || !object.objectId) {
-    throw new Error('"dataObject.___class" and "dataObject.objectId" need to be specified')
-  }
 
   const data = {
     permission
@@ -20,7 +16,7 @@ export function sendRequest(permission, type, object, options, async) {
 
   return Backendless._ajax({
     method      : 'PUT',
-    url         : Urls.dataObjectPermission(object.___class, type, object.objectId),
+    url         : Urls.filePermission(type, path),
     data        : JSON.stringify(data),
     isAsync     : !!async,
     asyncHandler: async
