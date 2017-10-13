@@ -1,4 +1,4 @@
-import DataQuery from './data-query'
+import Query from './query'
 import PagingQueryBuilder from './paging-query-builder'
 
 export default class LoadRelationsQueryBuilder {
@@ -12,7 +12,7 @@ export default class LoadRelationsQueryBuilder {
   }
 
   constructor(RelationModel) {
-    this._query = new DataQuery()
+    this._query = new Query()
     this._query.relationModel = RelationModel
 
     this._paging = new PagingQueryBuilder()

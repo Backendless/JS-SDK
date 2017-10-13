@@ -1,7 +1,7 @@
 import Backendless from '../bundle'
 import Utils from '../utils'
 import User from './user'
-import persistence from '../data/persistence'
+import persistence from '../data'
 import Private from '../private'
 import Urls from '../urls'
 

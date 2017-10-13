@@ -3,7 +3,7 @@ const PAGING_DEFAULTS = {
   offset  : 0
 }
 
-class PagingQueryBuilder {
+export default class DataPagingQueryBuilder {
 
   constructor() {
     this.offset = PAGING_DEFAULTS.offset
@@ -51,5 +51,3 @@ class PagingQueryBuilder {
     }
   }
 }
-
-export default PagingQueryBuilder

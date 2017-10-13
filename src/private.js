@@ -1,7 +1,5 @@
 let UIState = null
 
-let dataStoreCache = {}
-
 let currentUser = null
 
 const Private = {
@@ -12,18 +10,6 @@ const Private = {
 
   getUIState: () => {
     return UIState
-  },
-
-  setDataToStore: (key, value) => {
-    dataStoreCache[key] = value
-  },
-
-  getDataFromStore: key => {
-    return dataStoreCache[key]
-  },
-
-  resetDataStore: () => {
-    dataStoreCache = {}
   },
 
   setCurrentUser: user => {

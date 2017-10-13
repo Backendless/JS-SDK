@@ -166,7 +166,7 @@ export function startMonitoring(geofenceName, secondParam, async) {
     return result
   }
 
-  const getPosition = (position) => {
+  const getPosition = position => {
     _checkPosition(geofenceName, position.coords, fences, (isGeoPoint) ? secondParam : null, (!isGeoPoint) ? secondParam : null, tracker._lastResults, async)
   }
 
