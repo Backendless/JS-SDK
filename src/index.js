@@ -3,7 +3,6 @@ import Request from 'backendless-request'
 import Backendless from './bundle'
 
 import Logging from './logging'
-import LoggingCollector from './logging/collector'
 import Counters from './counters/counters'
 import Cache from './cache'
 import Commerce from './commerce'
@@ -12,13 +11,12 @@ import User from './users/user'
 import CustomServices from './bl/custom-services'
 import Events from './bl/events'
 import Geo from './geo'
-import GeoTrackerMonitor from './geo/tracker-monitor'
 import Data from './data'
 import Messaging from './messaging'
 import Device from './device'
 import Files from './files'
 
-import Private from './private'
+import { initApp } from './init-app'
 
 Backendless.debugMode = true
 
@@ -30,8 +28,11 @@ Backendless.setupDevice = Device.setup
 
 Backendless.Request = Request
 
+Backendless.initApp = initApp
+
 ///-------------------------------------///
 ///-------------- SERVICES -------------///
+
 Backendless.Logging = Logging
 
 Backendless.Counters = Counters
@@ -68,20 +69,6 @@ Backendless.Files = Files
 
 ///-------------- SERVICES -------------///
 ///-------------------------------------///
-
-Backendless.initApp = (appId, secretKey) => {
-
-  LoggingCollector.reset()
-  GeoTrackerMonitor.reset()
-
-  //TODO: remove it
-  Data.reset()
-  Private.setCurrentUser()
-
-  Backendless.applicationId = appId
-  Backendless.secretKey = secretKey
-  Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
-}
 
 export default Backendless
 
