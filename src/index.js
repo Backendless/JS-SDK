@@ -1,7 +1,5 @@
 import Backendless from './bundle'
-import DataQueryBuilder from './data/data-query-builder'
-import LoadRelationsQueryBuilder from './data/load-relations-query-builder'
-import DataPermissions from './data/data-permissions'
+// import DataPermissions from './data/data-permissions'
 import UserService from './user/user-service'
 import Geo from './geo'
 import GeoTrackerMonitor from './geo/tracker-monitor'
@@ -9,7 +7,7 @@ import Files from './file/files'
 import Commerce from './commerce'
 import Cache from './cache'
 import Counters from './counters/counters'
-import persistence from './data/persistence'
+import Data from './data'
 import Messaging from './messaging'
 import FilePermissions from './file/file-persmission'
 import User from './user/user'
@@ -42,8 +40,10 @@ Backendless.GeoQuery = Geo.Query
 Backendless.GeoPoint = Geo.Point
 Backendless.GeoCluster = Geo.Cluster
 
-Backendless.DataQueryBuilder = DataQueryBuilder
-Backendless.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
+Backendless.Data = Data
+Backendless.Persistence = Data
+Backendless.DataQueryBuilder = Data.QueryBuilder
+Backendless.LoadRelationsQueryBuilder = Data.LoadRelationsQueryBuilder
 
 Backendless.Messaging = Messaging
 Backendless.Bodyparts = Messaging.Bodyparts
@@ -59,16 +59,15 @@ Backendless.initApp = (appId, secretKey) => {
   LoggingCollector.reset()
   GeoTrackerMonitor.reset()
 
-  Private.resetDataStore()
+  //TODO: remove it
+  Data.reset()
   Private.setCurrentUser()
 
   Backendless.applicationId = appId
   Backendless.secretKey = secretKey
   Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
 
-  Backendless.Persistence = persistence
-  Backendless.Data = persistence
-  Backendless.Data.Permissions = new DataPermissions()
+  // Backendless.Data.Permissions = new DataPermissions()
   Backendless.Files = new Files()
   Backendless.Files.Permissions = new FilePermissions()
 }
