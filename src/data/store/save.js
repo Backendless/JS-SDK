@@ -52,7 +52,7 @@ export function save(obj, async) {
   const result = Backendless._ajax({
     method      : 'PUT',
     url         : Urls.dataTable(this.className),
-    data        : JSON.stringify(obj),
+    data        : obj,
     isAsync     : !!async,
     asyncHandler: async
   })

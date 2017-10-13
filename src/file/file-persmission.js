@@ -112,7 +112,7 @@ class FilePermission {
     return Backendless._ajax({
       method      : 'PUT',
       url         : Urls.filePermission(type, url),
-      data        : JSON.stringify(data),
+      data        : data,
       isAsync     : isAsync,
       asyncHandler: responder
     })

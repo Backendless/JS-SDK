@@ -44,7 +44,7 @@ export function savePoint(geopoint /**, async */) {
   return Backendless._ajax({
     method      : method,
     url         : url,
-    data        : JSON.stringify(geopoint),
+    data        : geopoint,
     isAsync     : isAsync,
     asyncHandler: responder
   })

@@ -218,7 +218,8 @@ jQuery(function($) {
     var record = new Task(newTitle);
 
     saveItem(record).then(function(savedItem) {
-      App.todos.push(savedItem)
+      App.todos.push(savedItem);
+      App.render();
     }, console.error);
   }
 

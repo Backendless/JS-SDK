@@ -21,7 +21,7 @@ export function bulkCreate(objectsArray, async) {
   return Backendless._ajax({
     method      : 'POST',
     url         : Urls.dataBulkTable(this.className),
-    data        : JSON.stringify(objectsArray),
+    data        : objectsArray,
     isAsync     : !!async,
     asyncHandler: async
   })
@@ -39,7 +39,7 @@ export function bulkUpdate(templateObject, whereClause, async) {
   return Backendless._ajax({
     method      : 'PUT',
     url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
-    data        : JSON.stringify(templateObject),
+    data        : templateObject,
     isAsync     : !!async,
     asyncHandler: async
   })
