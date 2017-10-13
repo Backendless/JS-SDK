@@ -44,6 +44,6 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
     url         : Urls.userSocialOAuth(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,
-    data        : JSON.stringify(request)
+    data        : request
   })
 }

@@ -37,7 +37,7 @@ export function login(login, password, stayLoggedIn, /** async */) {
     url         : Urls.userLogin(),
     isAsync     : isAsync,
     asyncHandler: responder,
-    data        : JSON.stringify(data)
+    data        : data
   })
 
   if (!isAsync && result) {

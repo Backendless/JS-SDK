@@ -14,7 +14,7 @@ export function expireAt(key, timestamp /**, async */) {
     return Backendless._ajax({
       method      : 'PUT',
       url         : Urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
-      data        : JSON.stringify({}),
+      data        : {},
       isAsync     : isAsync,
       asyncHandler: responder
     })

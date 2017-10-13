@@ -8,7 +8,7 @@ export function invokeServiceMethod(serviceName, method, parameters /**, async *
   return Backendless._ajax({
     method      : 'POST',
     url         : Urls.blServiceMethod(serviceName, method),
-    data        : JSON.stringify(parameters),
+    data        : parameters,
     isAsync     : !!responder,
     asyncHandler: responder
   })

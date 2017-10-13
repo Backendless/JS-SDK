@@ -21,7 +21,7 @@ export function dispatchEvent(eventName, eventArgs) {
   return Backendless._ajax({
     method      : 'POST',
     url         : Urls.blEvent(eventName),
-    data        : JSON.stringify(eventArgs),
+    data        : eventArgs,
     isAsync     : !!responder,
     asyncHandler: responder
   })

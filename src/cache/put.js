@@ -34,6 +34,7 @@ export function put(key, value, timeToLive, async) {
   return Backendless._ajax({
     method      : 'PUT',
     url         : Urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+    headers     : { 'Content-Type': 'application/json' },
     data        : JSON.stringify(value),
     isAsync     : isAsync,
     asyncHandler: responder

@@ -32,7 +32,7 @@ export function registerDevice(deviceToken, channels, expiration, async) {
   Backendless._ajax({
     method      : 'POST',
     url         : Urls.messagingRegistrations(),
-    data        : JSON.stringify(data),
+    data        : data,
     isAsync     : !!async,
     asyncHandler: async
   })

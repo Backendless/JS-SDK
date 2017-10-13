@@ -18,7 +18,7 @@ export function register(user /** async */) {
     url         : Urls.userRegister(),
     isAsync     : isAsync,
     asyncHandler: responder && wrapAsync(responder),
-    data        : JSON.stringify(user)
+    data        : user
   })
 
   return isAsync ? result : parseResponse(result)

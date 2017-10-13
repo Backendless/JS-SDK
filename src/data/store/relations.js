@@ -59,7 +59,7 @@ function manageRelation(method, className, parent, columnName, children, async) 
     url         : buildRelationUrl(className, relation),
     isAsync     : !!responder,
     asyncHandler: responder,
-    data        : relation.childrenIds && JSON.stringify(relation.childrenIds)
+    data        : relation.childrenIds
   })
 }
 

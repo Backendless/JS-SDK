@@ -125,7 +125,7 @@ export function findById() {
       result = Backendless._ajax({
         method      : 'PUT',
         url         : url,
-        data        : JSON.stringify(argsObj),
+        data        : argsObj,
         isAsync     : isAsync,
         asyncHandler: responder
       })

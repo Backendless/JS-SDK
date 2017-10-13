@@ -77,7 +77,7 @@ const LoggingCollector = {
         isAsync     : !!async,
         asyncHandler: async && new Async(cb('success'), cb('fault')),
         url         : Urls.logging(),
-        data        : JSON.stringify(this.pool)
+        data        : this.pool
       })
 
       this.pool = []
