@@ -1,9 +1,11 @@
 import Utils from './utils'
 import Private from './private'
+import request from 'backendless-request'
 
 const Backendless = {}
 
 Backendless.debugMode = true
+Backendless.Request = request
 
 //TODO: refactor me
 const root = typeof root !== 'undefined' ? root : {}
@@ -22,7 +24,7 @@ Backendless.noConflict = function() {
   return Backendless
 }
 
-Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' && XMLHttpRequest
+Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' ? XMLHttpRequest : undefined
 
 const browser = (function() {
   let ua = 'NodeJS'
@@ -304,14 +306,6 @@ Backendless.getUserToken = () => {
   }
 
   return Backendless.LocalCache.get('user-token') || null
-}
-
-Backendless.setUIState = function(stateName) {
-  if (stateName === undefined) {
-    throw new Error('UI state name must be defined or explicitly set to null')
-  }
-
-  Private.setUIState(stateName)
 }
 
 export default Backendless

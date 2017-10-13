@@ -84,5 +84,6 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
+    "backendless-request": "^0.0.8"
   }
 }
