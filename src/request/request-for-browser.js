@@ -43,7 +43,7 @@ const sendRequest = config => {
   if (config.form) {
     const formData = new FormData()
 
-    for (let key in config.form) {
+    for (const key in config.form) {
       const value = config.form[key]
 
       if (value) {

@@ -18,9 +18,11 @@ export function getClusterPoints(geoObject /**, async */) {
       if (geoObject.geoQuery instanceof GeoQuery) {
         url = Urls.geoClusterPoints(geoObject.objectId) + '?'
 
-        for (const prop in geoObject.geoQuery) {
-          if (geoObject.geoQuery.hasOwnProperty(prop) && FindHelpers.hasOwnProperty(prop) && geoObject.geoQuery[prop] != null) {
-            url += '&' + FindHelpers[prop](geoObject.geoQuery[prop])
+        const geoQuery = geoObject.geoQuery
+
+        for (const prop in geoQuery) {
+          if (geoQuery.hasOwnProperty(prop) && FindHelpers.hasOwnProperty(prop) && geoQuery[prop] != null) {
+            url += '&' + FindHelpers[prop](geoQuery[prop])
           }
         }
       } else {

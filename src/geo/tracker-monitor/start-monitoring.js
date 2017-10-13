@@ -9,20 +9,19 @@ import GeoFenceActions from './fence-actions'
 
 const INTERVAL = 5000
 
-
 //TODO: refactor me
 
-const _getFences = function(geoFence) {
+function getFences(geoFence) {
   return Request.get({
-    url   : Urls.geoFences(geoFence)
+    url: Urls.geoFences(geoFence)
   })
 }
 
-const _isDefiniteRect = function(nwPoint, sePoint) {
+function isDefiniteRect(nwPoint, sePoint) {
   return nwPoint != null && sePoint != null
 }
 
-const _typesMapper = {
+const TypesMapper = {
   'RECT'  : function(fence) {
     fence.nwPoint = fence.nodes[0]
     fence.sePoint = fence.nodes[1]
@@ -51,13 +50,13 @@ const _typesMapper = {
   }
 }
 
-const _checkPosition = function(geofenceName, coords, fences, geoPoint, GeoFenceCallback, lastResults, async) {
+function checkPosition(geofenceName, coords, fences, geoPoint, GeoFenceCallback, lastResults, async) {
   const tracker = GeoTracker.get()
 
   for (let k = 0; k < tracker._trackedFences.length; k++) {
     const _trackedFences = tracker._trackedFences[k]
 
-    const isInFence = _isDefiniteRect(_trackedFences.nwPoint, _trackedFences.sePoint)
+    const isInFence = isDefiniteRect(_trackedFences.nwPoint, _trackedFences.sePoint)
       && GeoUtils.isPointInFence(coords, _trackedFences)
 
     let rule = null
@@ -142,11 +141,11 @@ export function startMonitoring(geofenceName, secondParam, async) {
     isGeoPoint = true
   }
 
-  const fences = _getFences(geofenceName)
+  const fences = getFences(geofenceName)
 
   for (let ii = 0; ii < fences.length; ii++) {
     if (!_containsByPropName(tracker._trackedFences, fences[ii], 'geofenceName')) {
-      _typesMapper[fences[ii].type](fences[ii])
+      TypesMapper[fences[ii].type](fences[ii])
       tracker._lastResults[fences[ii].geofenceName] = false
       tracker._trackedFences.push(fences[ii])
     }
@@ -166,7 +165,10 @@ export function startMonitoring(geofenceName, secondParam, async) {
   }
 
   const getPosition = position => {
-    _checkPosition(geofenceName, position.coords, fences, (isGeoPoint) ? secondParam : null, (!isGeoPoint) ? secondParam : null, tracker._lastResults, async)
+    const geoPoint = isGeoPoint ? secondParam : null
+    const callback = !isGeoPoint ? secondParam : null
+
+    checkPosition(geofenceName, position.coords, fences, geoPoint, callback, tracker._lastResults, async)
   }
 
   function errorCallback(error) {
