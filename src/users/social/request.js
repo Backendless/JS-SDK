@@ -1,8 +1,9 @@
-import Backendless from '../../bundle'
 import Async from '../../request/async'
-import Private from '../../private'
 import Urls from '../../urls'
 import Request from '../../request'
+import LocalCache from '../../local-cache'
+import { getLocalCurrentUser, setLocalCurrentUser } from '../current-user'
+
 
 import { parseResponse, getUserFromResponse } from '../utils'
 
@@ -12,9 +13,9 @@ export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stay
   }
 
   const interimCallback = new Async(function(r) {
-    Private.setCurrentUser(parseResponse(r))
-    Backendless.LocalCache.set('stayLoggedIn', !!stayLoggedIn)
-    async.success(getUserFromResponse(Private.getCurrentUser()))
+    setLocalCurrentUser(parseResponse(r))
+    LocalCache.set('stayLoggedIn', !!stayLoggedIn)
+    async.success(getUserFromResponse(getLocalCurrentUser()))
   }, function(e) {
     async.fault(e)
   })

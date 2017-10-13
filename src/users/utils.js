@@ -1,36 +1,38 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Async from '../request/async'
-import Private from '../private'
+import LocalCache from '../local-cache'
+
+import User from './user'
+import { getLocalCurrentUser, setLocalCurrentUser } from './current-user'
 
 export const parseResponse = (data, stayLoggedIn) => {
-  const user = new Backendless.User()
+  const user = new User()
   Utils.deepExtend(user, data)
 
   if (stayLoggedIn) {
-    Backendless.LocalCache.set('stayLoggedIn', stayLoggedIn)
+    LocalCache.set('stayLoggedIn', stayLoggedIn)
   }
 
   return user
 }
 
 export const getUserFromResponse = user => {
-  Backendless.LocalCache.set('current-user-id', user.objectId)
+  LocalCache.set('current-user-id', user.objectId)
 
   const userToken = user['user-token']
 
-  if (userToken && Backendless.LocalCache.get('stayLoggedIn')) {
-    Backendless.LocalCache.set('user-token', userToken)
+  if (userToken && LocalCache.get('stayLoggedIn')) {
+    LocalCache.set('user-token', userToken)
   }
 
-  return new Backendless.User(user)
+  return new User(user)
 }
 
 export const wrapAsync = (async, stayLoggedIn) => {
   const success = data => {
-    Private.setCurrentUser(parseResponse(Utils.tryParseJSON(data), stayLoggedIn))
+    setLocalCurrentUser(parseResponse(Utils.tryParseJSON(data), stayLoggedIn))
 
-    async.success(getUserFromResponse(Private.getCurrentUser()))
+    async.success(getUserFromResponse(getLocalCurrentUser()))
   }
 
   const error = data => {

@@ -1,5 +1,8 @@
-import Backendless from '../bundle'
 import Request from 'backendless-request'
+
+import Backendless from '../bundle'
+import { getCurrentUserToken } from '../users/current-user'
+
 import { ajaxForBrowser } from './request-for-browser'
 
 export const sendRequest = config => {
@@ -33,7 +36,7 @@ export const sendRequest = config => {
     return result
   }
 
-  const userToken = Backendless.getUserToken()
+  const userToken = getCurrentUserToken()
 
   if (userToken) {
     headers['user-token'] = userToken

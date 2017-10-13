@@ -1,34 +1,50 @@
 import Backendless from '../bundle'
 import Utils from '../utils'
 import User from './user'
-import persistence from '../data'
-import Private from '../private'
+import Data from '../data'
 import Urls from '../urls'
 import Request from '../request'
+import LocalCache from '../local-cache'
 
 import { getUserFromResponse } from './utils'
 
-export const getCurrentUser = async => {
-  const currentUser = Private.getCurrentUser()
+let currentUser = null
 
+export function setLocalCurrentUser(user){
+  currentUser = user || null
+}
+
+export function getLocalCurrentUser(){
+  return currentUser
+}
+
+export function getCurrentUserToken() {
+  if (currentUser && currentUser['user-token']) {
+    return currentUser['user-token'] || null
+  }
+
+  return LocalCache.get('user-token') || null
+}
+
+export const getCurrentUser = async => {
   if (currentUser) {
     const userFromResponse = getUserFromResponse(currentUser)
 
     return async ? async.success(userFromResponse) : userFromResponse
   }
 
-  const stayLoggedIn = Backendless.LocalCache.get('stayLoggedIn')
-  const currentUserId = stayLoggedIn && Backendless.LocalCache.get('current-user-id')
+  const stayLoggedIn = LocalCache.get('stayLoggedIn')
+  const currentUserId = stayLoggedIn && LocalCache.get('current-user-id')
 
   if (currentUserId) {
-    return persistence.of(User).findById(currentUserId, async)
+    return Data.of(User).findById(currentUserId, async)
   }
 
   return async ? async.success(null) : null
 }
 
 export function isValidLogin(/** async */) {
-  const userToken = Backendless.LocalCache.get('user-token')
+  const userToken = LocalCache.get('user-token')
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
@@ -59,5 +75,5 @@ export function isValidLogin(/** async */) {
 }
 
 export const loggedInUser = () => {
-  return Backendless.LocalCache.get('current-user-id')
+  return LocalCache.get('current-user-id')
 }

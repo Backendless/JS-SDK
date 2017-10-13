@@ -1,4 +1,3 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Async from '../request/async'
 import Request from '../request'
@@ -44,9 +43,6 @@ export default class Subscription {
 
   _startSubscription() {
     if (WebSocket) {
-      this.rtClientConnected = true
-
-      Backendless.RTClient.MESSAGING.onMessage(this.channelName, this.options, this.responder)
       const url = this.channelProperties['websocket'] + '/' + this.subscriptionId
       this.proxy = new SocketProxy(url)
 

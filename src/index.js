@@ -15,8 +15,11 @@ import Data from './data'
 import Messaging from './messaging'
 import Device from './device'
 import Files from './files'
+import LocalCache from './local-cache'
 
 import { initApp } from './init-app'
+import { getUserAgent } from './user-agent'
+import { getCurrentUserToken } from './users/current-user'
 
 Backendless.debugMode = true
 
@@ -28,7 +31,13 @@ Backendless.setupDevice = Device.setup
 
 Backendless.Request = Request
 
+Backendless.LocalCache = LocalCache
+
 Backendless.initApp = initApp
+
+Backendless.browser = getUserAgent()
+
+Backendless.getCurrentUserToken = getCurrentUserToken
 
 ///-------------------------------------///
 ///-------------- SERVICES -------------///

@@ -1,12 +1,13 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
 
+import User from './user'
+
 import { parseResponse, wrapAsync } from './utils'
 
 export function register(user /** async */) {
-  if (!(user instanceof Backendless.User)) {
+  if (!(user instanceof User)) {
     throw new Error('Only Backendless.User accepted')
   }
 

@@ -1,8 +1,8 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
-import Private from '../private'
 import Urls from '../urls'
 import Request from '../request'
+import LocalCache from '../local-cache'
+import { setLocalCurrentUser } from './current-user'
 
 export function logout(/** async */) {
   const responder = Utils.extractResponder(arguments)
@@ -12,10 +12,10 @@ export function logout(/** async */) {
   let result = {}
 
   const logoutUser = () => {
-    Backendless.LocalCache.remove('user-token')
-    Backendless.LocalCache.remove('current-user-id')
-    Backendless.LocalCache.remove('stayLoggedIn')
-    Private.setCurrentUser(null)
+    LocalCache.remove('user-token')
+    LocalCache.remove('current-user-id')
+    LocalCache.remove('stayLoggedIn')
+    setLocalCurrentUser(null)
   }
 
   const onLogoutSuccess = () => {

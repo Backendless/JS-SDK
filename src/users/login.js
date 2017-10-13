@@ -1,8 +1,8 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
-import Private from '../private'
 import Urls from '../urls'
 import Request from '../request'
+import LocalCache from '../local-cache'
+import { getLocalCurrentUser, setLocalCurrentUser } from './current-user'
 
 import { parseResponse, getUserFromResponse, wrapAsync } from './utils'
 
@@ -17,9 +17,9 @@ export function login(login, password, stayLoggedIn, /** async */) {
 
   stayLoggedIn = stayLoggedIn === true
 
-  Backendless.LocalCache.remove('user-token')
-  Backendless.LocalCache.remove('current-user-id')
-  Backendless.LocalCache.set('stayLoggedIn', false)
+  LocalCache.remove('user-token')
+  LocalCache.remove('current-user-id')
+  LocalCache.set('stayLoggedIn', false)
 
   let responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
@@ -41,8 +41,9 @@ export function login(login, password, stayLoggedIn, /** async */) {
   })
 
   if (!isAsync && result) {
-    Private.setCurrentUser(parseResponse(result, stayLoggedIn))
-    result = getUserFromResponse(Private.getCurrentUser())
+    setLocalCurrentUser(parseResponse(result, stayLoggedIn))
+
+    result = getUserFromResponse(getLocalCurrentUser())
   }
 
   return result

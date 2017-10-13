@@ -1,7 +1,8 @@
-import Backendless from '../../bundle'
 import Urls from '../../urls'
 import Async from '../../request/async'
 import Request from '../../request'
+
+import DataQueryBuilder from '../query-builder'
 
 export function getObjectCount(condition, async) {
   if (condition instanceof Async) {
@@ -9,7 +10,7 @@ export function getObjectCount(condition, async) {
     condition = null
   }
 
-  if (condition instanceof Backendless.DataQueryBuilder) {
+  if (condition instanceof DataQueryBuilder) {
     condition = condition.build().condition
   }
 

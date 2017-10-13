@@ -1,5 +1,6 @@
 import Backendless from '../bundle'
 import Utils from '../utils'
+import { getCurrentUserToken } from '../users/current-user'
 
 const parseResponse = xhr => {
   let result = true
@@ -33,7 +34,7 @@ const sendRequest = config => {
 
   xhr.open(config.method, url, false)
 
-  const userToken = Backendless.getUserToken()
+  const userToken = getCurrentUserToken()
 
   if (userToken) {
     xhr.setRequestHeader('user-token', userToken)
