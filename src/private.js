@@ -1,4 +1,4 @@
-let UIState = null
+import Backendless from './bundle'
 
 let dataStoreCache = {}
 
@@ -6,35 +6,27 @@ let currentUser = null
 
 const Private = {
 
-  setUIState: uiState => {
-    UIState = uiState
-  },
-
-  getUIState: () => {
-    return UIState
-  },
-
-  setDataToStore: (key, value) => {
+  setDataToStore(key, value) {
     dataStoreCache[key] = value
   },
 
-  getDataFromStore: key => {
+  getDataFromStore(key) {
     return dataStoreCache[key]
   },
 
-  resetDataStore: () => {
+  resetDataStore() {
     dataStoreCache = {}
   },
 
-  setCurrentUser: user => {
+  setCurrentUser(user) {
     //TODO: move it to ./user/current-user.js
     currentUser = user || null
   },
 
-  getCurrentUser: () => {
+  getCurrentUser() {
     //TODO: move it to ./user/current-user.js
     return currentUser
-  },
+  }
 }
 
 export default Private

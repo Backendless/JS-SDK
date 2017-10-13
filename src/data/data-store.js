@@ -360,8 +360,7 @@ export default class DataStore {
       method      : 'GET',
       url         : url,
       isAsync     : isAsync,
-      asyncHandler: responder,
-      cachePolicy : dataQuery.cachePolicy
+      asyncHandler: responder
     })
 
     return isAsync ? result : this._parseFindResponse(result)
