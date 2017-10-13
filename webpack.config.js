@@ -21,6 +21,7 @@ const uglify = new webpack.optimize.UglifyJsPlugin({
 })
 
 module.exports = {
+  devtool: 'inline-source-map',
   target: 'node',
 
   module: {
