@@ -111,7 +111,7 @@ export default class Files {
     fileContent = toByteArray(fileContent)
 
     if (getContentSize(fileContent) > MAX_CONTENT_SIZE) {
-      throw new Error('File Content size must be less than 2,800,000 bytes')
+      throw new Error('File Content size must be less than ' + MAX_CONTENT_SIZE + ' bytes')
     }
 
     return sendFile({
