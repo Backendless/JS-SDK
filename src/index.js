@@ -20,6 +20,7 @@ import LocalCache from './local-cache'
 import { initApp } from './init-app'
 import { getUserAgent } from './user-agent'
 import { getCurrentUserToken } from './users/current-user'
+import { noConflict } from './no-conflct'
 
 Backendless.debugMode = true
 
@@ -38,6 +39,8 @@ Backendless.initApp = initApp
 Backendless.browser = getUserAgent()
 
 Backendless.getCurrentUserToken = getCurrentUserToken
+
+Backendless.noConflict = noConflict
 
 ///-------------------------------------///
 ///-------------- SERVICES -------------///
