@@ -33,8 +33,7 @@ export function put(key, value, timeToLive, async) {
 
   return Request.put({
     url         : Urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
-    headers     : { 'Content-Type': 'application/json' },
-    data        : JSON.stringify(value),
+    data        : value,
     isAsync     : isAsync,
     asyncHandler: responder
   })
