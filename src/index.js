@@ -6,7 +6,7 @@ import Logging from './logging'
 import Counters from './counters/counters'
 import Cache from './cache'
 import Commerce from './commerce'
-import UserService from './users'
+import Users from './users'
 import User from './users/user'
 import CustomServices from './bl/custom-services'
 import Events from './bl/events'
@@ -46,40 +46,38 @@ Backendless.noConflict = noConflict
 ///-------------- SERVICES -------------///
 
 Backendless.Logging = Logging
-
 Backendless.Counters = Counters
-
 Backendless.Cache = Cache
-
 Backendless.Commerce = Commerce
-
-Backendless.UserService = UserService
-Backendless.Users = UserService
+Backendless.Users = Users
 Backendless.User = User
-
 Backendless.CustomServices = CustomServices
 Backendless.Events = Events
-
 Backendless.Geo = Geo
+Backendless.Data = Data
+Backendless.Messaging = Messaging
+Backendless.Files = Files
+
+///-------------- SERVICES -------------///
+///-------------------------------------///
+
+
+///-------------------------------------///
+///--------BACKWARD COMPATIBILITY-------///
+//TODO: do we need to remove it?
+Backendless.UserService = Users
 Backendless.GeoQuery = Geo.Query
 Backendless.GeoPoint = Geo.Point
 Backendless.GeoCluster = Geo.Cluster
-
-Backendless.Data = Data
 Backendless.Persistence = Data
 Backendless.DataQueryBuilder = Data.QueryBuilder
 Backendless.LoadRelationsQueryBuilder = Data.LoadRelationsQueryBuilder
-
-Backendless.Messaging = Messaging
 Backendless.Bodyparts = Messaging.Bodyparts
 Backendless.PublishOptions = Messaging.PublishOptions
 Backendless.DeliveryOptions = Messaging.DeliveryOptions
 Backendless.SubscriptionOptions = Messaging.SubscriptionOptions
 Backendless.PublishOptionsHeaders = Messaging.PublishOptionsHeaders
-
-Backendless.Files = Files
-
-///-------------- SERVICES -------------///
+///--------BACKWARD COMPATIBILITY-------///
 ///-------------------------------------///
 
 export default Backendless

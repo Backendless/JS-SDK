@@ -1,4 +1,5 @@
 import Utils from '../../utils'
+import { deprecated } from '../../decorators'
 
 import GeoTracker from './tracker'
 import GeoFenceActions from './fence-actions'
