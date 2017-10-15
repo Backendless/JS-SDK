@@ -1,4 +1,5 @@
 import Utils from '../../utils'
+import { deprecated } from '../../decorators'
 
 import { sendRequest } from './send-request'
 
@@ -31,28 +32,38 @@ function deny(url, async) {
   return sendRequest(this.permission, PermissionTypes.DENY, url, { userId: '*' }, async)
 }
 
+
+//TODO: will be removed when remove sync methods
+const namespaceLabel = 'Backendless.Files.Permissions.{READ|DELETE|WRITE}'
+
 export default class FilePermission {
 
   constructor(permission) {
     this.permission = permission
   }
 
-  grantUser = Utils.promisified(grantUser)
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantUser`)
   grantUserSync = Utils.synchronized(grantUser)
+  grantUser = Utils.promisified(grantUser)
 
-  grantRole = Utils.promisified(grantRole)
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantRole`)
   grantRoleSync = Utils.synchronized(grantRole)
+  grantRole = Utils.promisified(grantRole)
 
-  grant = Utils.promisified(grant)
+  @deprecated(namespaceLabel, `${namespaceLabel}.grant`)
   grantSync = Utils.synchronized(grant)
+  grant = Utils.promisified(grant)
 
-  denyUser = Utils.promisified(denyUser)
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyUser`)
   denyUserSync = Utils.synchronized(denyUser)
+  denyUser = Utils.promisified(denyUser)
 
-  denyRole = Utils.promisified(denyRole)
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyRole`)
   denyRoleSync = Utils.synchronized(denyRole)
+  denyRole = Utils.promisified(denyRole)
 
-  deny = Utils.promisified(deny)
+  @deprecated(namespaceLabel, `${namespaceLabel}.deny`)
   denySync = Utils.synchronized(deny)
+  deny = Utils.promisified(deny)
 
 }

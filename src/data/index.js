@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import { deprecated } from '../decorators'
 
 import Permissions from './permissions'
 import Store from './store'
@@ -30,17 +31,17 @@ const Data = {
     })
   },
 
-  describe    : Utils.promisified(describe),
+  @deprecated('Backendless.Data', 'Backendless.Data.describe')
   describeSync: Utils.synchronized(describe),
+  describe    : Utils.promisified(describe),
 
-
+  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   save(className, obj){
-    console.warn('Backendless.Data.save is deprecated method and will be remove soon')
     return this.of(className).save(obj)
   },
 
+  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   saveSync(className, obj, async){
-    console.warn('Backendless.Data.saveSync is deprecated method and will be remove soon')
     return this.of(className).saveSync(obj, async)
   }
 
