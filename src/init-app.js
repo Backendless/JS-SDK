@@ -1,4 +1,4 @@
-import Backendless from './bundle'
+import LocalVars from './local-vars'
 import LoggingCollector from './logging/collector'
 import GeoTrackerMonitor from './geo/tracker-monitor'
 import Data from './data'
@@ -13,7 +13,7 @@ export function initApp(appId, secretKey) {
 
   setLocalCurrentUser()
 
-  Backendless.applicationId = appId
-  Backendless.secretKey = secretKey
-  Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
+  LocalVars.applicationId = appId
+  LocalVars.secretKey = secretKey
+  LocalVars.appPath = [LocalVars.serverURL, appId, secretKey].join('/')
 }

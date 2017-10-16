@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 
-import Backendless from './bundle'
+import LocalVars from './local-vars'
 
 const Urls = {
-  root: () => Backendless.appPath,
+  root: () => LocalVars.appPath,
 
   blServices     : () => `${Urls.root()}/services`,
   blServiceMethod: (name, method) => `${Urls.blServices()}/${name}/${method}`,
@@ -75,7 +75,7 @@ const Urls = {
   userResendConfirmation: email => `${Urls.users()}/resendconfirmation/${email}`,
   userSocial            : () => `${Urls.users()}/social`,
   userSocialOAuth       : socialType => `${Urls.userSocial()}/oauth/${socialType.toLowerCase()}/request_url`,
-  userSocialLogin       : socialType => `${Urls.userSocial()}/${socialType.toLowerCase()}/login/${Backendless.applicationId}`,
+  userSocialLogin       : socialType => `${Urls.userSocial()}/${socialType.toLowerCase()}/login/${LocalVars.applicationId}`,
 }
 
 export default Urls

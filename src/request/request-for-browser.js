@@ -1,5 +1,5 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
+import LocalVars from '../local-vars'
 import { getCurrentUserToken } from '../users/current-user'
 
 const parseResponse = xhr => {
@@ -28,7 +28,7 @@ const badResponse = xhr => {
 }
 
 const sendRequest = config => {
-  const xhr = new Backendless.XMLHttpRequest()
+  const xhr = new LocalVars.XMLHttpRequest()
   const query = Utils.toQueryParams(config.query)
   const url = config.url + (query ? '?' + query : '')
 

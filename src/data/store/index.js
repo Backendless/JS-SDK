@@ -1,6 +1,6 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import { deprecated } from '../../decorators'
+import User from '../../users/user'
 
 import { loadRelations, setRelation, addRelation, deleteRelation } from './relations'
 import { bulkCreate, bulkUpdate, bulkDelete } from './bulk'
@@ -23,8 +23,8 @@ class DataStore {
   constructor(model) {
     if (Utils.isString(model)) {
       this.className = model
-      this.model = model === Backendless.User.className
-        ? Backendless.User
+      this.model = model === User.className
+        ? User
         : createModelClassFromString(model)
 
     } else {

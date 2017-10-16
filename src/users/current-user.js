@@ -1,9 +1,9 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import User from './user'
 import Data from '../data'
 import Urls from '../urls'
 import Request from '../request'
+import Async from '../request/async'
 import LocalCache from '../local-cache'
 
 import { getUserFromResponse } from './utils'
@@ -71,7 +71,7 @@ export function isValidLogin(/** async */) {
     return !!getCurrentUser()
   }
 
-  getCurrentUser(new Backendless.Async(user => responder.success(!!user), () => responder.success(false)))
+  getCurrentUser(new Async(user => responder.success(!!user), () => responder.success(false)))
 }
 
 export const loggedInUser = () => {

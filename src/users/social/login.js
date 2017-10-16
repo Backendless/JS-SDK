@@ -1,8 +1,8 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Async from '../../request/async'
 import Urls from '../../urls'
 import Request from '../../request'
+import LocalVars from '../../local-vars'
 
 import { wrapAsync } from '../utils'
 
@@ -15,7 +15,7 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
   async = wrapAsync(async, stayLoggedIn)
 
   Utils.addEvent('message', window, function(e) {
-    if (e.origin === Backendless.serverURL) {
+    if (e.origin === LocalVars.serverURL) {
       const result = JSON.parse(e.data)
 
       if (result.fault) {

@@ -1,7 +1,5 @@
 import Request from 'backendless-request'
 
-import Backendless from './bundle'
-
 import Logging from './logging'
 import Counters from './counters/counters'
 import Cache from './cache'
@@ -16,69 +14,99 @@ import Messaging from './messaging'
 import Device from './device'
 import Files from './files'
 import LocalCache from './local-cache'
+import LocalVars from './local-vars'
 
 import { initApp } from './init-app'
 import { getUserAgent } from './user-agent'
 import { getCurrentUserToken } from './users/current-user'
 import { noConflict } from './no-conflct'
 
-Backendless.debugMode = true
+const Backendless = {
 
-Backendless.serverURL = 'https://api.backendless.com'
+  get debugMode() {
+    return LocalVars.debugMode
+  },
 
-Backendless.XMLHttpRequest = typeof XMLHttpRequest !== 'undefined' ? XMLHttpRequest : undefined
+  set debugMode(debugMode) {
+    LocalVars.debugMode = !!debugMode
+  },
 
-Backendless.setupDevice = Device.setup
+  get serverURL() {
+    return LocalVars.serverURL
+  },
 
-Backendless.Request = Request
+  set serverURL(serverURL) {
+    LocalVars.serverURL = serverURL
+  },
 
-Backendless.LocalCache = LocalCache
+  get XMLHttpRequest() {
+    return LocalVars.XMLHttpRequest
+  },
 
-Backendless.initApp = initApp
+  set XMLHttpRequest(XMLHttpRequest) {
+    LocalVars.XMLHttpRequest = XMLHttpRequest
+  },
 
-Backendless.browser = getUserAgent()
+  get applicationId() {
+    return LocalVars.applicationId
+  },
 
-Backendless.getCurrentUserToken = getCurrentUserToken
+  get secretKey() {
+    return LocalVars.secretKey
+  },
 
-Backendless.noConflict = noConflict
+  get appPath() {
+    return LocalVars.appPath
+  },
 
-///-------------------------------------///
-///-------------- SERVICES -------------///
+  initApp,
+  noConflict,
+  getCurrentUserToken,
+  setupDevice: Device.setup,
+  browser    : getUserAgent(),
 
-Backendless.Logging = Logging
-Backendless.Counters = Counters
-Backendless.Cache = Cache
-Backendless.Commerce = Commerce
-Backendless.Users = Users
-Backendless.User = User
-Backendless.CustomServices = CustomServices
-Backendless.Events = Events
-Backendless.Geo = Geo
-Backendless.Data = Data
-Backendless.Messaging = Messaging
-Backendless.Files = Files
+  Request,
 
-///-------------- SERVICES -------------///
-///-------------------------------------///
+  ///-------------------------------------///
+  ///-------------- SERVICES -------------///
 
+  Logging       : Logging,
+  Counters      : Counters,
+  Cache         : Cache,
+  Commerce      : Commerce,
+  Users         : Users,
+  User          : User,
+  CustomServices: CustomServices,
+  Events        : Events,
+  Geo           : Geo,
+  Data          : Data,
+  Messaging     : Messaging,
+  Files         : Files,
 
-///-------------------------------------///
-///--------BACKWARD COMPATIBILITY-------///
-//TODO: do we need to remove it?
-Backendless.UserService = Users
-Backendless.GeoQuery = Geo.Query
-Backendless.GeoPoint = Geo.Point
-Backendless.GeoCluster = Geo.Cluster
-Backendless.Persistence = Data
-Backendless.DataQueryBuilder = Data.QueryBuilder
-Backendless.LoadRelationsQueryBuilder = Data.LoadRelationsQueryBuilder
-Backendless.Bodyparts = Messaging.Bodyparts
-Backendless.PublishOptions = Messaging.PublishOptions
-Backendless.DeliveryOptions = Messaging.DeliveryOptions
-Backendless.SubscriptionOptions = Messaging.SubscriptionOptions
-Backendless.PublishOptionsHeaders = Messaging.PublishOptionsHeaders
-///--------BACKWARD COMPATIBILITY-------///
-///-------------------------------------///
+  ///-------------- SERVICES -------------///
+  ///-------------------------------------///
+
+  ///-------------------------------------///
+  ///--------BACKWARD COMPATIBILITY-------///
+
+  //TODO: do we need to remove it?
+  UserService              : Users,
+  GeoQuery                 : Geo.Query,
+  GeoPoint                 : Geo.Point,
+  GeoCluster               : Geo.Cluster,
+  Persistence              : Data,
+  DataQueryBuilder         : Data.QueryBuilder,
+  LoadRelationsQueryBuilder: Data.LoadRelationsQueryBuilder,
+  Bodyparts                : Messaging.Bodyparts,
+  PublishOptions           : Messaging.PublishOptions,
+  DeliveryOptions          : Messaging.DeliveryOptions,
+  SubscriptionOptions      : Messaging.SubscriptionOptions,
+  PublishOptionsHeaders    : Messaging.PublishOptionsHeaders,
+
+  LocalCache,
+  ///--------BACKWARD COMPATIBILITY-------///
+  ///-------------------------------------///
+}
 
 export default Backendless
 
