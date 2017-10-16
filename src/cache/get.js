@@ -3,37 +3,38 @@ import Urls from '../urls'
 import Request from '../request'
 import { Parsers } from './parsers'
 
-export function get(key /**, async */) {
-  if (!Utils.isString(key)) {
-    throw new Error('The "key" argument must be String')
-  }
+function parseResult(result) {
+  const className = result && result.___class
 
-  function parseResult(result) {
-    const className = result && result.___class
+  if (className) {
+    const Class = Parsers.get(className)
 
-    if (className) {
-      const clazz = Parsers.get(className) // || root[className]
-
-      if (clazz) {
-        result = new clazz(result)
-      }
+    if (Class) {
+      result = new Class(result)
     }
-
-    return result
   }
 
-  let responder = Utils.extractResponder(arguments), isAsync = false
+  return result
+}
 
-  if (responder) {
-    isAsync = true
-    responder = Utils.wrapAsync(responder, parseResult, this)
+export function get(key, asyncHandler) {
+  if (!key || !Utils.isString(key)) {
+    throw new Error('Cache Key must be non empty String')
+  }
+
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, parseResult)
   }
 
   const result = Request.get({
     url         : Urls.cacheItem(key),
-    isAsync     : isAsync,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 
-  return isAsync ? result : parseResult(result)
+  if (asyncHandler) {
+    return result
+  }
+
+  return parseResult(result)
 }
