@@ -14,7 +14,7 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
   asyncHandler = Utils.extractResponder(arguments)
   asyncHandler = wrapAsync(asyncHandler, stayLoggedIn)
 
-  Utils.addEvent('message', window, function(e) {
+  addWindowEventListener('message', window, function(e) {
     if (e.origin === LocalVars.serverURL) {
       const result = JSON.parse(e.data)
 
@@ -24,7 +24,7 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
         asyncHandler.success(result)
       }
 
-      Utils.removeEvent('message', window)
+      removeWindowEventListener('message', window)
       socialContainer.closeContainer()
     }
   })
@@ -46,4 +46,27 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
     asyncHandler: interimCallback,
     data        : request
   })
+}
+
+
+function addWindowEventListener(event, elem, func) {
+  if (elem.addEventListener) {
+    elem.addEventListener(event, func, false)
+
+  } else if (elem.attachEvent) {
+    elem.attachEvent('on' + event, func)
+
+  } else {
+    elem[event] = func
+  }
+}
+
+function removeWindowEventListener(event, elem) {
+  if (elem.removeEventListener) {
+    elem.removeEventListener(event, null, false)
+  } else if (elem.detachEvent) {
+    elem.detachEvent('on' + event, null)
+  }
+
+  elem[event] = null
 }

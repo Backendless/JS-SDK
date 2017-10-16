@@ -3,7 +3,7 @@ export default class Async {
   constructor(successCallback, faultCallback, context) {
     if (!(faultCallback instanceof Function)) {
       context = faultCallback
-      faultCallback = null
+      faultCallback = undefined
     }
 
     this.successCallback = successCallback

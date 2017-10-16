@@ -12,7 +12,7 @@ export default class Subscription {
     this.channelProperties = config.channelProperties
     this.subscriptionId = null
     this.restUrl = config.restUrl + '/' + config.channelName
-    this.responder = config.responder || Utils.emptyFn
+    this.responder = config.responder
     this._subscribe(config.onSubscribe)
   }
 
@@ -51,18 +51,22 @@ export default class Subscription {
       })
 
       this.proxy.on('messageReceived', () => {
-        this.responder()
+        if (this.responder) {
+          this.responder()
+        }
       })
     } else {
       this._switchToPolling()
     }
 
-    this._startSubscription = Utils.emptyFn
+    this._startSubscription = function() {
+    }
   }
 
   cancelSubscription() {
     this.proxy && this.proxy.close()
-    this._startSubscription = function(){}
+    this._startSubscription = function() {
+    }
   }
 
   _switchToPolling() {
