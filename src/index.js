@@ -19,7 +19,11 @@ import LocalVars from './local-vars'
 import { initApp } from './init-app'
 import { getUserAgent } from './user-agent'
 import { getCurrentUserToken } from './users/current-user'
-import { noConflict } from './no-conflct'
+
+const root = (typeof self === 'object' && self.self === self && self) ||
+  (typeof global === 'object' && global.global === global && global)
+
+const previousBackendless = root && root.Backendless
 
 const Backendless = {
 
@@ -60,12 +64,22 @@ const Backendless = {
   },
 
   initApp,
-  noConflict,
+
   getCurrentUserToken,
+
   setupDevice: Device.setup,
+
   browser    : getUserAgent(),
 
   Request,
+
+  noConflict() {
+    if (root) {
+      root.Backendless = previousBackendless
+    }
+
+    return Backendless
+  },
 
   ///-------------------------------------///
   ///-------------- SERVICES -------------///
