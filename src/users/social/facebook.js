@@ -3,8 +3,8 @@ import Async from '../../request/async'
 import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
 
-export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, async) => {
-  return loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn, async)
+export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyncHandler) => {
+  return loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
 }
 
 export const loginWithFacebookSdk = (fieldsMapping, stayLoggedIn, options) => {
@@ -13,14 +13,14 @@ export const loginWithFacebookSdk = (fieldsMapping, stayLoggedIn, options) => {
       return reject(new Error('Facebook SDK not found'))
     }
 
-    const async = new Async(resolve, reject)
+    const asyncHandler = new Async(resolve, reject)
 
     FB.getLoginStatus(response => {
       if (response.status === 'connected') {
-        sendSocialLoginRequest(response, 'facebook', fieldsMapping, stayLoggedIn, async)
+        sendSocialLoginRequest(response, 'facebook', fieldsMapping, stayLoggedIn, asyncHandler)
       } else {
         FB.login(response => {
-          sendSocialLoginRequest(response, 'facebook', fieldsMapping, stayLoggedIn, async)
+          sendSocialLoginRequest(response, 'facebook', fieldsMapping, stayLoggedIn, asyncHandler)
         }, options)
       }
     })

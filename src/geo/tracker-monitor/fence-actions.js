@@ -31,9 +31,17 @@ function runFenceAction(action, geoFenceName, geoPoint /**, async */) {
   return Request.send(data)
 }
 
-const runOnStayAction = (geoFenceName, geoPoint, async) => runFenceAction('onstay', geoFenceName, geoPoint, async)
-const runOnExitAction = (geoFenceName, geoPoint, async) => runFenceAction('onexit', geoFenceName, geoPoint, async)
-const runOnEnterAction = (geoFenceName, geoPoint, async) => runFenceAction('onenter', geoFenceName, geoPoint, async)
+const runOnStayAction = (geoFenceName, geoPoint, asyncHandler) => {
+  return runFenceAction('onstay', geoFenceName, geoPoint, asyncHandler)
+}
+
+const runOnExitAction = (geoFenceName, geoPoint, asyncHandler) => {
+  return runFenceAction('onexit', geoFenceName, geoPoint, asyncHandler)
+}
+
+const runOnEnterAction = (geoFenceName, geoPoint, asyncHandler) => {
+  return runFenceAction('onenter', geoFenceName, geoPoint, asyncHandler)
+}
 
 const GeoFenceActions = {
   run: runFenceAction,

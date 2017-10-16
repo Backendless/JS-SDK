@@ -8,7 +8,7 @@ import QueryBuilder from '../query-builder'
 import { parseFindResponse } from './parse'
 import { extractQueryOptions } from './extract-query-options'
 
-export function findUtil(className, Model, dataQuery, async) {
+export function findUtil(className, Model, dataQuery, asyncHandler) {
   dataQuery = dataQuery || {}
 
   let props
@@ -29,8 +29,8 @@ export function findUtil(className, Model, dataQuery, async) {
     options = extractQueryOptions(dataQuery.options)
   }
 
-  if (async) {
-    async = Utils.wrapAsync(async, resp => parseFindResponse(resp, Model))
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, Model))
   }
 
   if (options) {
@@ -55,23 +55,23 @@ export function findUtil(className, Model, dataQuery, async) {
 
   const result = Request.get({
     url         : url,
-    isAsync     : !!async,
-    asyncHandler: async,
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler,
     cachePolicy : dataQuery.cachePolicy
   })
 
-  if (async) {
+  if (asyncHandler) {
     return result
   }
 
   return parseFindResponse(result, Model)
 }
 
-export function find(queryBuilder, async) {
+export function find(queryBuilder, asyncHandler) {
   //TODO: add an ability to get object as QueryBuilder
 
   if (queryBuilder instanceof Async) {
-    async = queryBuilder
+    asyncHandler = queryBuilder
     queryBuilder = undefined
   }
 
@@ -81,7 +81,7 @@ export function find(queryBuilder, async) {
 
   const dataQuery = queryBuilder ? queryBuilder.build() : {}
 
-  return findUtil(this.className, this.model, dataQuery, async)
+  return findUtil(this.className, this.model, dataQuery, asyncHandler)
 }
 
 export function findById() {
@@ -134,24 +134,24 @@ export function findById() {
   }
 }
 
-export function findFirst(dataQuery, async) {
+export function findFirst(dataQuery, asyncHandler) {
   if (dataQuery instanceof Async) {
-    async = dataQuery
+    asyncHandler = dataQuery
     dataQuery = {}
   }
 
   dataQuery.url = 'first'
 
-  return findUtil(this.className, this.model, dataQuery, async)
+  return findUtil(this.className, this.model, dataQuery, asyncHandler)
 }
 
-export function findLast(dataQuery, async) {
+export function findLast(dataQuery, asyncHandler) {
   if (dataQuery instanceof Async) {
-    async = dataQuery
+    asyncHandler = dataQuery
     dataQuery = {}
   }
 
   dataQuery.url = 'last'
 
-  return findUtil(this.className, this.model, dataQuery, async)
+  return findUtil(this.className, this.model, dataQuery, asyncHandler)
 }

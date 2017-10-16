@@ -4,18 +4,18 @@ import Request from '../request'
 
 import { validateStringArgument } from './validate-string-argument'
 
-export function validatePlayPurchase(packageName, productId, token, async) {
+export function validatePlayPurchase(packageName, productId, token, asyncHandler) {
   validateStringArgument('Package Name', packageName)
   validateStringArgument('Product Id', productId)
   validateStringArgument('Token', token)
 
-  if (async) {
-    async = Utils.wrapAsync(async)
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
   return Request.get({
     url         : Urls.commerceValidate(packageName, productId, token),
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

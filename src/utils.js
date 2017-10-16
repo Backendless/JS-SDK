@@ -247,17 +247,17 @@ const Utils = {
     return null
   },
 
-  wrapAsync(async, parser, context) {
+  wrapAsync(asyncHandler, parser, context) {
     const success = data => {
       if (parser) {
         data = parser.call(context, data)
       }
 
-      async.success(data)
+      asyncHandler.success(data)
     }
 
     const error = data => {
-      async.fault(data)
+      asyncHandler.fault(data)
     }
 
     return new Async(success, error)

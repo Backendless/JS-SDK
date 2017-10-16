@@ -1,7 +1,7 @@
 import Urls from '../../urls'
 import Request from '../../request'
 
-export function sendRequest(permission, type, path, options, async) {
+export function sendRequest(permission, type, path, options, asyncHandler) {
   const { userId, roleName } = options
 
   const data = {
@@ -17,7 +17,7 @@ export function sendRequest(permission, type, path, options, async) {
   return Request.put({
     url         : Urls.filePermission(type, path),
     data        : data,
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

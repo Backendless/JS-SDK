@@ -4,20 +4,20 @@ import Subscription from './subscription'
 
 import { getChannelProperties } from './get-channel-property'
 
-export function subscribe(channelName, subscriptionCallback, subscriptionOptions, async) {
-  if (async) {
+export function subscribe(channelName, subscriptionCallback, subscriptionOptions, asyncHandler) {
+  if (asyncHandler) {
     const callback = new Async(function(props) {
-      async.success(new Subscription({
+      asyncHandler.success(new Subscription({
         channelName      : channelName,
         options          : subscriptionOptions,
         channelProperties: props,
         responder        : subscriptionCallback,
         restUrl          : Urls.messaging(),
-        onSubscribe      : async
+        onSubscribe      : asyncHandler
       }))
 
     }, function(data) {
-      async.fault(data)
+      asyncHandler.fault(data)
     })
 
     getChannelProperties(channelName, callback)

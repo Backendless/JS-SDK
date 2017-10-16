@@ -8,20 +8,20 @@ import { wrapAsync } from '../utils'
 
 import { SocialContainer } from './container'
 
-export function loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn, async) {
+export function loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) {
   const socialContainer = new SocialContainer(socialType, container)
 
-  async = Utils.extractResponder(arguments)
-  async = wrapAsync(async, stayLoggedIn)
+  asyncHandler = Utils.extractResponder(arguments)
+  asyncHandler = wrapAsync(asyncHandler, stayLoggedIn)
 
   Utils.addEvent('message', window, function(e) {
     if (e.origin === LocalVars.serverURL) {
       const result = JSON.parse(e.data)
 
       if (result.fault) {
-        async.fault(result.fault)
+        asyncHandler.fault(result.fault)
       } else {
-        async.success(result)
+        asyncHandler.success(result)
       }
 
       Utils.removeEvent('message', window)
@@ -33,7 +33,7 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
     socialContainer.doAuthorizationActivity(r)
   }, function(e) {
     socialContainer.closeContainer()
-    async.fault(e)
+    asyncHandler.fault(e)
   })
 
   const request = {}

@@ -23,7 +23,7 @@ export function savePoint(geopoint /**, async */) {
   let responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  const responderOverride = async => {
+  const responderOverride = asyncHandler => {
     const success = data => {
       const geoPoint = new GeoPoint()
       geoPoint.categories = data.geopoint.categories
@@ -32,10 +32,10 @@ export function savePoint(geopoint /**, async */) {
       geoPoint.metadata = data.geopoint.metadata
       geoPoint.objectId = data.geopoint.objectId
 
-      async.success(geoPoint)
+      asyncHandler.success(geoPoint)
     }
 
-    const error = data => async.fault(data)
+    const error = data => asyncHandler.fault(data)
 
     return new Async(success, error)
   }

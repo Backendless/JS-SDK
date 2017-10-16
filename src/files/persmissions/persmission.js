@@ -8,28 +8,28 @@ const PermissionTypes = {
   DENY : 'DENY',
 }
 
-function grantUser(userId, url, async) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId }, async)
+function grantUser(userId, url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId }, asyncHandler)
 }
 
-function grantRole(roleName, url, async) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName }, async)
+function grantRole(roleName, url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName }, asyncHandler)
 }
 
-function grant(url, async) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId: '*' }, async)
+function grant(url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
 }
 
-function denyUser(userId, url, async) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId }, async)
+function denyUser(userId, url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId }, asyncHandler)
 }
 
-function denyRole(roleName, url, async) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { roleName }, async)
+function denyRole(roleName, url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.DENY, url, { roleName }, asyncHandler)
 }
 
-function deny(url, async) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId: '*' }, async)
+function deny(url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId: '*' }, asyncHandler)
 }
 
 

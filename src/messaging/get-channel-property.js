@@ -4,7 +4,7 @@ import Request from '../request'
 
 const channelProperties = {}
 
-export function getChannelProperties(channelName, async) {
+export function getChannelProperties(channelName, asyncHandler) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
@@ -12,7 +12,7 @@ export function getChannelProperties(channelName, async) {
 
   if (props) {
     if (isAsync) {
-      async.success(props)
+      asyncHandler.success(props)
     }
 
     return props

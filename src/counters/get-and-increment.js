@@ -1,5 +1,5 @@
 import { implementMethod } from './implement-method'
 
-export function getAndIncrement(counterName, async) {
-  return implementMethod(counterName, 'get/increment', async)
+export function getAndIncrement(counterName, asyncHandler) {
+  return implementMethod(counterName, 'get/increment', asyncHandler)
 }

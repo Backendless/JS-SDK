@@ -38,16 +38,16 @@ export function getClusterPoints(geoObject /**, async */) {
     throw new Error('Method argument must be a valid instance of GeoCluster persisted on the server')
   }
 
-  const responderOverride = async => {
+  const responderOverride = asyncHandler => {
     const success = geoCollection => {
       for (let i = 0; i < geoCollection.length; i++) {
         geoCollection[i] = new GeoPoint(geoCollection[i])
       }
 
-      async.success(geoCollection)
+      asyncHandler.success(geoCollection)
     }
 
-    const error = data => async.fault(data)
+    const error = data => asyncHandler.fault(data)
 
     return new Async(success, error)
   }

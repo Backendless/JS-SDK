@@ -1,5 +1,5 @@
 import { cacheMethod } from './cache-methods'
 
-export function contains(key, async) {
-  return cacheMethod('GET', key, true, async)
+export function contains(key, asyncHandler) {
+  return cacheMethod('GET', key, true, asyncHandler)
 }

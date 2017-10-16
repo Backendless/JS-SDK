@@ -40,23 +40,23 @@ export function replCircDeps(object) {
   _replCircDepsHelper(object)
 }
 
-export function save(obj, async) {
+export function save(obj, asyncHandler) {
   replCircDeps(obj)
 
   const objRef = obj
 
-  if (async) {
-    async = Utils.wrapAsync(async, resp => parseFindResponse(resp, this.model))
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, this.model))
   }
 
   const result = Request.put({
     url         : Urls.dataTable(this.className),
     data        : obj,
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 
-  if (async) {
+  if (asyncHandler) {
     return result
   }
 

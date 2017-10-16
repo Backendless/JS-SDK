@@ -4,7 +4,7 @@ import Request from '../request'
 
 import { parseResponse } from './utils'
 
-function roleHelper(identity, rolename, async, operation) {
+function roleHelper(identity, rolename, asyncHandler, operation) {
   if (!identity) {
     throw new Error('User identity can not be empty')
   }
@@ -36,5 +36,10 @@ export function getUserRoles(/** async */) {
   return isAsync ? result : parseResponse(result)
 }
 
-export const assignRole = (identity, rolename, async) => roleHelper(identity, rolename, async, 'assignRole')
-export const unassignRole = (identity, rolename, async) => roleHelper(identity, rolename, async, 'unassignRole')
+export const assignRole = (identity, rolename, asyncHandler) => {
+  return roleHelper(identity, rolename, asyncHandler, 'assignRole')
+}
+
+export const unassignRole = (identity, rolename, asyncHandler) => {
+  return roleHelper(identity, rolename, asyncHandler, 'unassignRole')
+}

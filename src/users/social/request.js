@@ -7,7 +7,7 @@ import { getLocalCurrentUser, setLocalCurrentUser } from '../current-user'
 
 import { parseResponse, getUserFromResponse } from '../utils'
 
-export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stayLoggedIn, async) => {
+export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stayLoggedIn, asyncHandler) => {
   if (fieldsMapping) {
     response['fieldsMapping'] = fieldsMapping
   }
@@ -15,9 +15,9 @@ export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stay
   const interimCallback = new Async(function(r) {
     setLocalCurrentUser(parseResponse(r))
     LocalCache.set('stayLoggedIn', !!stayLoggedIn)
-    async.success(getUserFromResponse(getLocalCurrentUser()))
+    asyncHandler.success(getUserFromResponse(getLocalCurrentUser()))
   }, function(e) {
-    async.fault(e)
+    asyncHandler.fault(e)
   })
 
   Request.post({

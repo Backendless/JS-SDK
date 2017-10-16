@@ -16,7 +16,7 @@ export function loadItems(query/**, async */) {
 
   const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
 
-  const responderOverride = async => {
+  const responderOverride = asyncHandler => {
     const success = data => {
       const geoCollection = []
       let geoObject
@@ -36,10 +36,10 @@ export function loadItems(query/**, async */) {
         geoCollection.push(new GeoItemType(geoObject))
       }
 
-      async.success(geoCollection)
+      asyncHandler.success(geoCollection)
     }
 
-    const error = data => async.fault(data)
+    const error = data => asyncHandler.fault(data)
 
     return new Async(success, error)
   }

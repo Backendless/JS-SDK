@@ -26,21 +26,21 @@ export function getCurrentUserToken() {
   return LocalCache.get('user-token') || null
 }
 
-export const getCurrentUser = async => {
+export const getCurrentUser = asyncHandler => {
   if (currentUser) {
     const userFromResponse = getUserFromResponse(currentUser)
 
-    return async ? async.success(userFromResponse) : userFromResponse
+    return asyncHandler ? asyncHandler.success(userFromResponse) : userFromResponse
   }
 
   const stayLoggedIn = LocalCache.get('stayLoggedIn')
   const currentUserId = stayLoggedIn && LocalCache.get('current-user-id')
 
   if (currentUserId) {
-    return Data.of(User).findById(currentUserId, async)
+    return Data.of(User).findById(currentUserId, asyncHandler)
   }
 
-  return async ? async.success(null) : null
+  return asyncHandler ? asyncHandler.success(null) : null
 }
 
 export function isValidLogin(/** async */) {

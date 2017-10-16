@@ -1,7 +1,7 @@
 import Urls from '../../urls'
 import Request from '../../request'
 
-export function sendRequest(permission, type, object, options, async) {
+export function sendRequest(permission, type, object, options, asyncHandler) {
   const { userId, roleName } = options
 
   if (!object.___class || !object.objectId) {
@@ -21,7 +21,7 @@ export function sendRequest(permission, type, object, options, async) {
   return Request.put({
     url         : Urls.dataObjectPermission(object.___class, type, object.objectId),
     data        : data,
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

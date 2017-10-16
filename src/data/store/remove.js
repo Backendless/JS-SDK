@@ -4,18 +4,18 @@ import Request from '../../request'
 
 import { parseFindResponse } from './parse'
 
-export function remove(object, async) {
+export function remove(object, asyncHandler) {
   if (!Utils.isObject(object) && !Utils.isString(object)) {
     throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values')
   }
 
   const result = Request.delete({
     url         : Urls.dataTableObject(this.className, object.objectId || object),
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 
-  if (async) {
+  if (asyncHandler) {
     return result
   }
 

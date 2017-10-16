@@ -50,7 +50,7 @@ const TypesMapper = {
   }
 }
 
-function checkPosition(geofenceName, coords, fences, geoPoint, GeoFenceCallback, lastResults, async) {
+function checkPosition(geofenceName, coords, fences, geoPoint, GeoFenceCallback, lastResults, asyncHandler) {
   const tracker = GeoTracker.get()
 
   for (let k = 0; k < tracker._trackedFences.length; k++) {
@@ -85,7 +85,7 @@ function checkPosition(geofenceName, coords, fences, geoPoint, GeoFenceCallback,
 
       const timeoutFuncRemote = (savedK, savedCoords, duration, geoPoint) => {
         const callBack = () => {
-          GeoFenceActions.run('onstay', tracker._trackedFences[savedK].geofenceName, geoPoint, async)
+          GeoFenceActions.run('onstay', tracker._trackedFences[savedK].geofenceName, geoPoint, asyncHandler)
         }
 
         tracker._timers[tracker._trackedFences[savedK].geofenceName] = setTimeout(callBack, duration)
@@ -114,25 +114,25 @@ function checkPosition(geofenceName, coords, fences, geoPoint, GeoFenceCallback,
         geoPoint.longitude = coords.longitude
 
         if (rule === 'onenter') {
-          GeoFenceActions.run(rule, tracker._trackedFences[k].geofenceName, geoPoint, async)
+          GeoFenceActions.run(rule, tracker._trackedFences[k].geofenceName, geoPoint, asyncHandler)
 
           if (duration > -1) {
             (function(k, coords, duration, geoPoint) {
               return timeoutFuncRemote(k, coords, duration, geoPoint)
             })(k, coords, duration, geoPoint)
           } else {
-            GeoFenceActions.run('onstay', tracker._trackedFences[k].geofenceName, geoPoint, async)
+            GeoFenceActions.run('onstay', tracker._trackedFences[k].geofenceName, geoPoint, asyncHandler)
           }
         } else {
           clearTimeout(tracker._timers[tracker._trackedFences[k].geofenceName])
-          GeoFenceActions.run(rule, tracker._trackedFences[k].geofenceName, geoPoint, async)
+          GeoFenceActions.run(rule, tracker._trackedFences[k].geofenceName, geoPoint, asyncHandler)
         }
       }
     }
   }
 }
 
-export function startMonitoring(geofenceName, secondParam, async) {
+export function startMonitoring(geofenceName, secondParam, asyncHandler) {
   const tracker = GeoTracker.get()
 
   let isGeoPoint = false
@@ -168,7 +168,7 @@ export function startMonitoring(geofenceName, secondParam, async) {
     const geoPoint = isGeoPoint ? secondParam : null
     const callback = !isGeoPoint ? secondParam : null
 
-    checkPosition(geofenceName, position.coords, fences, geoPoint, callback, tracker._lastResults, async)
+    checkPosition(geofenceName, position.coords, fences, geoPoint, callback, tracker._lastResults, asyncHandler)
   }
 
   function errorCallback(error) {

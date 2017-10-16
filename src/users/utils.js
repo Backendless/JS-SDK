@@ -28,15 +28,15 @@ export const getUserFromResponse = user => {
   return new User(user)
 }
 
-export const wrapAsync = (async, stayLoggedIn) => {
+export const wrapAsync = (asyncHandler, stayLoggedIn) => {
   const success = data => {
     setLocalCurrentUser(parseResponse(Utils.tryParseJSON(data), stayLoggedIn))
 
-    async.success(getUserFromResponse(getLocalCurrentUser()))
+    asyncHandler.success(getUserFromResponse(getLocalCurrentUser()))
   }
 
   const error = data => {
-    async.fault(data)
+    asyncHandler.fault(data)
   }
 
   return new Async(success, error)

@@ -4,11 +4,11 @@ import Device from '../device'
 import Request from '../request'
 import Async from '../request/async'
 
-export function registerDevice(deviceToken, channels, expiration, async) {
+export function registerDevice(deviceToken, channels, expiration, asyncHandler) {
   const device = Device.required()
 
   if (expiration instanceof Async) {
-    async = expiration
+    asyncHandler = expiration
     expiration = undefined
   }
 
@@ -32,7 +32,7 @@ export function registerDevice(deviceToken, channels, expiration, async) {
   Request.post({
     url         : Urls.messagingRegistrations(),
     data        : data,
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

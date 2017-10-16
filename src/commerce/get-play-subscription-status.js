@@ -4,18 +4,18 @@ import Request from '../request'
 
 import { validateStringArgument } from './validate-string-argument'
 
-export function getPlaySubscriptionStatus(packageName, subscriptionId, token, async) {
+export function getPlaySubscriptionStatus(packageName, subscriptionId, token, asyncHandler) {
   validateStringArgument('Package Name', packageName)
   validateStringArgument('Subscription Id', subscriptionId)
   validateStringArgument('Token', token)
 
-  if (async) {
-    async = Utils.wrapAsync(async)
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
   return Request.get({
     url         : Urls.commerceSubStatus(packageName, subscriptionId, token),
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

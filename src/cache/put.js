@@ -3,20 +3,20 @@ import Urls from '../urls'
 import Async from '../request/async'
 import Request from '../request'
 
-export function put(key, value, timeToLive, async) {
+export function put(key, value, timeToLive, asyncHandler) {
   if (!Utils.isString(key)) {
     throw new Error('You can use only String as key to put into Cache')
   }
 
   if (!(timeToLive instanceof Async)) {
     if (typeof timeToLive === 'object' && !arguments[3]) {
-      async = timeToLive
+      asyncHandler = timeToLive
       timeToLive = null
     } else if (typeof timeToLive !== ('number' || 'string') && timeToLive != null) {
       throw new Error('You can use only String as timeToLive attribute to put into Cache')
     }
   } else {
-    async = timeToLive
+    asyncHandler = timeToLive
     timeToLive = null
   }
 
@@ -24,7 +24,7 @@ export function put(key, value, timeToLive, async) {
     value.___class = value.___class || Utils.getClassName(value)
   }
 
-  let responder = Utils.extractResponder([async])
+  let responder = Utils.extractResponder([asyncHandler])
   const isAsync = !!responder
 
   if (responder) {

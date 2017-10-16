@@ -2,7 +2,7 @@ import Utils from '../../utils'
 import Urls from '../../urls'
 import Request from '../../request'
 
-export function bulkCreate(objectsArray, async) {
+export function bulkCreate(objectsArray, asyncHandler) {
   const MSG_ERROR = (
     'Invalid value for the "objectsArray" argument. ' +
     'The argument must contain only array of objects.'
@@ -21,12 +21,12 @@ export function bulkCreate(objectsArray, async) {
   return Request.post({
     url         : Urls.dataBulkTable(this.className),
     data        : objectsArray,
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }
 
-export function bulkUpdate(templateObject, whereClause, async) {
+export function bulkUpdate(templateObject, whereClause, asyncHandler) {
   if (!templateObject || !Utils.isObject(templateObject)) {
     throw new Error('Invalid templateObject argument. The first argument must contain object')
   }
@@ -38,12 +38,12 @@ export function bulkUpdate(templateObject, whereClause, async) {
   return Request.put({
     url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
     data        : templateObject,
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }
 
-export function bulkDelete(objectsArray, async) {
+export function bulkDelete(objectsArray, asyncHandler) {
   const MSG_ERROR = (
     'Invalid bulkDelete argument. ' +
     'The first argument must contain array of objects or array of id or "whereClause" string'
@@ -71,7 +71,7 @@ export function bulkDelete(objectsArray, async) {
 
   return Request.delete({
     url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

@@ -28,9 +28,9 @@ function collectRelationObject(parent, columnName, children) {
   return relation
 }
 
-function manageRelation(method, className, parent, columnName, children, async) {
+function manageRelation(method, className, parent, columnName, children, asyncHandler) {
   const relation = collectRelationObject(parent, columnName, children)
-  const responder = async
+  const responder = asyncHandler
 
   if (!relation.parentId) {
     throw new Error(
@@ -129,14 +129,14 @@ export function loadRelations(parentObjectId, queryBuilder/**, async */) {
   return !!responder ? result : parseFindResponse(result, relationModel)
 }
 
-export function setRelation(parent, columnName, children, async) {
-  return manageRelation('POST', this.className, parent, columnName, children, async)
+export function setRelation(parent, columnName, children, asyncHandler) {
+  return manageRelation('POST', this.className, parent, columnName, children, asyncHandler)
 }
 
-export function addRelation(parent, columnName, children, async) {
-  return manageRelation('PUT', this.className, parent, columnName, children, async)
+export function addRelation(parent, columnName, children, asyncHandler) {
+  return manageRelation('PUT', this.className, parent, columnName, children, asyncHandler)
 }
 
-export function deleteRelation(parent, columnName, children, async) {
-  return manageRelation('DELETE', this.className, parent, columnName, children, async)
+export function deleteRelation(parent, columnName, children, asyncHandler) {
+  return manageRelation('DELETE', this.className, parent, columnName, children, asyncHandler)
 }

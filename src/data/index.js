@@ -41,8 +41,8 @@ const Data = {
   },
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  saveSync(className, obj, async){
-    return this.of(className).saveSync(obj, async)
+  saveSync(className, obj, asyncHandler){
+    return this.of(className).saveSync(obj, asyncHandler)
   }
 
 }

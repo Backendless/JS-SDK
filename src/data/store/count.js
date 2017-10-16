@@ -4,9 +4,9 @@ import Request from '../../request'
 
 import DataQueryBuilder from '../query-builder'
 
-export function getObjectCount(condition, async) {
+export function getObjectCount(condition, asyncHandler) {
   if (condition instanceof Async) {
-    async = condition
+    asyncHandler = condition
     condition = null
   }
 
@@ -22,7 +22,7 @@ export function getObjectCount(condition, async) {
 
   return Request.get({
     url         : url,
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }
