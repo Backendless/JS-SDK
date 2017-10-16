@@ -2,14 +2,14 @@ import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
 
-//TODO: looks like is's the same as removeFile method
-export function removeDirectory(path /**, async */) {
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
+export function removeDirectory(path, asyncHandler) {
+  if (!path || !Utils.isString(path)) {
+    throw new Error('Directory "path" must not be empty and must be String')
+  }
 
-  return Request.delete({
+  Request.delete({
     url         : Urls.filePath(path),
-    isAsync     : isAsync,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

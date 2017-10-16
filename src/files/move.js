@@ -1,13 +1,18 @@
+import Urls from '../urls'
+import Request from '../request'
+
 import FilesUtils from './utils'
 
-import { doAction } from './action'
-
 export function moveFile(sourcePath, targetPath, asyncHandler) {
-
   const parameters = {
     sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
     targetPath: FilesUtils.ensureSlashInPath(targetPath)
   }
 
-  return doAction('move', parameters, asyncHandler)
+  return Request.put({
+    url         : Urls.fileMove(),
+    data        : parameters,
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
+  })
 }

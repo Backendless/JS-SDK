@@ -4,15 +4,14 @@ import Request from '../request'
 
 const isRemoteUrl = url => url.startsWith('http://') || url.startsWith('https://')
 
-export function remove(path/**, async */) {
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-
-  const url = isRemoteUrl(path) ? path : Urls.filePath(path)
+export function remove(path, asyncHandler) {
+  if (!path || !Utils.isString(path)) {
+    throw new Error('File "path" must not be empty and must be String')
+  }
 
   Request.delete({
-    url         : url,
-    isAsync     : isAsync,
-    asyncHandler: responder
+    url         : isRemoteUrl(path) ? path : Urls.filePath(path),
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

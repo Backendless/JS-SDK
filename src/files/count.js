@@ -1,47 +1,45 @@
 import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
+import Async from '../request/async'
 
-export function getFileCount(path, /** pattern, recursive, countDirectories, async */) {
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-  const query = buildCountQueryObject(arguments, isAsync)
+export function getFileCount(path, pattern, recursive, countDirectories, asyncHandler) {
 
-  if (!query.path || !Utils.isString(query.path)) {
-    throw new Error('Missing value for the "path" argument. The argument must contain a string value')
+  if (countDirectories instanceof Async) {
+    asyncHandler = countDirectories
+    countDirectories = undefined
+
+  } else if (recursive instanceof Async) {
+    asyncHandler = recursive
+    recursive = undefined
+    countDirectories = undefined
+
+  } else if (pattern instanceof Async) {
+    asyncHandler = pattern
+    pattern = undefined
+    recursive = undefined
+    countDirectories = undefined
+  }
+
+  const query = {
+    action          : 'count',
+    pattern         : pattern !== undefined ? pattern : '*',
+    recursive       : !!recursive,
+    countDirectories: !!countDirectories
+  }
+
+  if (!path || !Utils.isString(path)) {
+    throw new Error('Files "path" must not be empty and must be String')
   }
 
   if (!query.pattern || !Utils.isString(query.pattern)) {
-    throw new Error('Missing value for the "pattern" argument. The argument must contain a string value')
+    throw new Error('Files "path" must not be empty and must be String')
   }
-
-  if (!Utils.isBoolean(query.recursive)) {
-    throw new Error('Missing value for the "recursive" argument. The argument must contain a boolean value')
-  }
-
-  if (!Utils.isBoolean(query.countDirectories)) {
-    throw new Error('Missing value for the "countDirectories" argument. The argument must contain a boolean value')
-  }
-
-  delete query.path
-
-  const url = Urls.filePath(path) + '?' + Utils.toQueryParams(query)
 
   return Request.get({
-    url         : url,
-    isAsync     : isAsync,
-    asyncHandler: responder
+    url         : Urls.filePath(path),
+    query       : query,
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
-}
-
-export function buildCountQueryObject(args, isAsync) {
-  args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args
-
-  return {
-    action          : 'count',
-    path            : args[0],
-    pattern         : args[1] !== undefined ? args[1] : '*',
-    recursive       : args[2] !== undefined ? args[2] : false,
-    countDirectories: args[3] !== undefined ? args[3] : false
-  }
 }

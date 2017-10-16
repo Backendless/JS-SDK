@@ -1,4 +1,4 @@
-import Utils from '../utils'
+import Async from '../request/async'
 
 import { sendFile } from './send'
 
@@ -17,6 +17,7 @@ const getFileName = file => {
  * @param {File} file
  * @param {String} path
  * @param {Boolean} overwrite
+ * @param {Async} asyncHandler
  * @returns {Promise.<String>}
  */
 export function upload(file, path, overwrite, asyncHandler) {
@@ -26,7 +27,10 @@ export function upload(file, path, overwrite, asyncHandler) {
     throw new Error('Wrong type of the file source object. Can not get file name')
   }
 
-  asyncHandler = Utils.extractResponder(arguments)
+  if (overwrite instanceof Async) {
+    asyncHandler = overwrite
+    overwrite = undefined
+  }
 
   return sendFile({
     overwrite   : overwrite,

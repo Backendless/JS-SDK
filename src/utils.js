@@ -57,17 +57,6 @@ const Utils = {
     return true
   },
 
-  stringToBiteArray(str) {
-    const data = new ArrayBuffer(str.length)
-    const ui8a = new Uint8Array(data, 0)
-
-    for (let i = 0; i < str.length; i++) {
-      ui8a[i] = (str.charCodeAt(i) & 0xff)
-    }
-
-    return ui8a
-  },
-
   toQueryParams(params) {
     params = params || {}
     const result = []

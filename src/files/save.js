@@ -43,6 +43,7 @@ const getContentSize = content => {
  * @param {String} fileName
  * @param {String|Uint8Array} fileContent
  * @param {Boolean} overwrite
+ * @param {Async} asyncHandler
  * @returns {Promise.<String>}
  */
 export function saveFile(path, fileName, fileContent, overwrite, asyncHandler) {
@@ -56,7 +57,7 @@ export function saveFile(path, fileName, fileContent, overwrite, asyncHandler) {
 
   if (overwrite instanceof Async) {
     asyncHandler = overwrite
-    overwrite = null
+    overwrite = undefined
   }
 
   fileContent = toByteArray(fileContent)

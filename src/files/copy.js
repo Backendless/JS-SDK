@@ -1,13 +1,19 @@
+import Urls from '../urls'
+import Request from '../request'
+
 import FilesUtils from './utils'
 
-import { doAction } from './action'
-
 export function copyFile(sourcePath, targetPath, asyncHandler) {
-
   const parameters = {
     sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
     targetPath: FilesUtils.ensureSlashInPath(targetPath)
   }
 
-  return doAction('copy', parameters, asyncHandler)
+  return Request.put({
+    url         : Urls.fileCopy(),
+    data        : parameters,
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
+  })
 }
+

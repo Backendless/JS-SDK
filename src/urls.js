@@ -65,7 +65,9 @@ const Urls = {
 
   files          : () => `${Urls.root()}/files`,
   filePath       : path => `${Urls.files()}/${path}`,
-  fileAction     : actionType => `${Urls.files()}/${actionType}`,
+  fileCopy       : () => `${Urls.files()}/copy`,
+  fileMove       : () => `${Urls.files()}/move`,
+  fileRename     : () => `${Urls.files()}/rename`,
   filePermissions: () => `${Urls.files()}/permissions`,
   filePermission : (type, url) => `${Urls.filePermissions()}/${type}/${encodeURIComponent(url)}`,
 

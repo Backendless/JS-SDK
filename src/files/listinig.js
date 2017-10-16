@@ -3,34 +3,52 @@ import Urls from '../urls'
 import Async from '../request/async'
 import Request from '../request'
 
-export function listing(path, pattern, recursively, pagesize, offset/**, async */) {
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-  let url = Urls.filePath(path)
+export function listing(path, pattern, recursively, pagesize, offset, asyncHandler) {
+  if (offset instanceof Async) {
+    asyncHandler = offset
+    offset = undefined
 
-  if ((arguments.length > 1) && !(arguments[1] instanceof Async)) {
-    url += '?'
+  } else if (pagesize instanceof Async) {
+    asyncHandler = pagesize
+    pagesize = undefined
+    offset = undefined
+
+  } else if (recursively instanceof Async) {
+    asyncHandler = recursively
+    recursively = undefined
+    pagesize = undefined
+    offset = undefined
+
+  } else if (pattern instanceof Async) {
+    asyncHandler = pattern
+    pattern = undefined
+    recursively = undefined
+    pagesize = undefined
+    offset = undefined
   }
 
+  const query = {}
+
   if (Utils.isString(pattern)) {
-    url += ('pattern=' + pattern)
+    query.pattern = pattern
   }
 
   if (Utils.isBoolean(recursively)) {
-    url += ('&sub=' + recursively)
+    query.sub = recursively
   }
 
   if (Utils.isNumber(pagesize)) {
-    url += '&pagesize=' + pagesize
+    query.pagesize = pagesize
   }
 
   if (Utils.isNumber(offset)) {
-    url += '&offset=' + offset
+    query.offset = offset
   }
 
   return Request.get({
-    url         : url,
-    isAsync     : isAsync,
-    asyncHandler: responder
+    url         : Urls.filePath(path),
+    query       : query,
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }
