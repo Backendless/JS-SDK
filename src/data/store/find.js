@@ -8,42 +8,31 @@ import QueryBuilder from '../query-builder'
 import { parseFindResponse } from './parse'
 import { extractQueryOptions } from './extract-query-options'
 
+
+//TODO: refactor me
+
 export function findUtil(className, Model, dataQuery, asyncHandler) {
   dataQuery = dataQuery || {}
 
-  let props
-  let whereClause
-  let options
   const query = []
-  let url = Urls.dataTable(className)
-
-  if (dataQuery.properties && dataQuery.properties.length) {
-    props = 'props=' + Utils.encodeArrayToUriComponent(dataQuery.properties)
-  }
-
-  if (dataQuery.condition) {
-    whereClause = 'where=' + encodeURIComponent(dataQuery.condition)
-  }
-
-  if (dataQuery.options) {
-    options = extractQueryOptions(dataQuery.options)
-  }
 
   if (asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, Model))
   }
 
-  if (options) {
-    query.push(options)
+  if (dataQuery.options) {
+    query.push(extractQueryOptions(dataQuery.options))
   }
 
-  if (whereClause) {
-    query.push(whereClause)
+  if (dataQuery.condition) {
+    query.push('where=' + encodeURIComponent(dataQuery.condition))
   }
 
-  if (props) {
-    query.push(props)
+  if (dataQuery.properties && dataQuery.properties.length) {
+    query.push('props=' + Utils.encodeArrayToUriComponent(dataQuery.properties))
   }
+
+  let url = Urls.dataTable(className)
 
   if (dataQuery.url) {
     url += '/' + dataQuery.url
@@ -129,8 +118,6 @@ export function findById() {
     }
 
     return isAsync ? result : parseFindResponse(result, this.model)
-  } else {
-    throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values')
   }
 }
 

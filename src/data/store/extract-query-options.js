@@ -1,5 +1,9 @@
 import Utils from '../../utils'
 
+
+//TODO: refactor me
+//TODO: does make sense to move this logic into QueryBuilder?
+
 export function extractQueryOptions(options) {
   const params = []
 

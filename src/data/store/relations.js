@@ -7,6 +7,8 @@ import LoadRelationsQueryBuilder from '../load-relations-query-builder'
 import { extractQueryOptions } from './extract-query-options'
 import { parseFindResponse } from './parse'
 
+//TODO: refactor me
+
 function collectRelationObject(parent, columnName, children) {
   const relation = {
     columnName
@@ -73,12 +75,12 @@ function buildRelationUrl(className, relation) {
   return url
 }
 
-export function loadRelations(parentObjectId, queryBuilder/**, async */) {
+export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
   if (!parentObjectId || !Utils.isString(parentObjectId)) {
     throw new Error('The parentObjectId is required argument and must be a nonempty string')
   }
 
-  if (!queryBuilder || !(queryBuilder instanceof LoadRelationsQueryBuilder)) {
+  if (!(queryBuilder instanceof LoadRelationsQueryBuilder)) {
     throw new Error(
       'Invalid queryBuilder object.' +
       'The queryBuilder is required and must be instance of the Backendless.LoadRelationsQueryBuilder'
@@ -93,27 +95,25 @@ export function loadRelations(parentObjectId, queryBuilder/**, async */) {
     throw new Error('The options relationName is required and must contain string value')
   }
 
-  let whereClause
   let options
   const query = []
-
-  if (dataQuery.condition) {
-    whereClause = 'where=' + encodeURIComponent(dataQuery.condition)
-  }
 
   if (dataQuery.options) {
     options = extractQueryOptions(dataQuery.options)
   }
 
-  options && query.push(options)
-  whereClause && query.push(whereClause)
+  if (options) {
+    query.push(options)
+  }
 
-  const relationModel = dataQuery.relationModel || null
-  let responder = Utils.extractResponder(arguments)
+  if (dataQuery.condition) {
+    query.push('where=' + encodeURIComponent(dataQuery.condition))
+  }
+
   let url = Urls.dataTable(this.className) + Utils.toUri(parentObjectId, relationName)
 
-  if (responder) {
-    responder = Utils.wrapAsync(responder, resp => parseFindResponse(resp, relationModel))
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, dataQuery.relationModel))
   }
 
   if (query.length) {
@@ -122,11 +122,15 @@ export function loadRelations(parentObjectId, queryBuilder/**, async */) {
 
   const result = Request.get({
     url         : url,
-    isAsync     : !!responder,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 
-  return !!responder ? result : parseFindResponse(result, relationModel)
+  if (asyncHandler) {
+    return result
+  }
+
+  return parseFindResponse(result, dataQuery.relationModel)
 }
 
 export function setRelation(parent, columnName, children, asyncHandler) {

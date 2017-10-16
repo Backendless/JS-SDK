@@ -1,5 +1,7 @@
 import Utils from '../../utils'
 
+//TODO: refactor me
+
 function formCircDeps(obj) {
   const result = new obj.constructor()
   const circDepsIDs = {}

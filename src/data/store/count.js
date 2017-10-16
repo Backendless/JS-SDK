@@ -7,21 +7,16 @@ import DataQueryBuilder from '../query-builder'
 export function getObjectCount(condition, asyncHandler) {
   if (condition instanceof Async) {
     asyncHandler = condition
-    condition = null
+    condition = undefined
   }
 
   if (condition instanceof DataQueryBuilder) {
     condition = condition.build().condition
   }
 
-  let url = Urls.dataTableCount(this.className)
-
-  if (condition) {
-    url += '?where=' + encodeURIComponent(condition)
-  }
-
   return Request.get({
-    url         : url,
+    url         : Urls.dataTableCount(this.className),
+    query       : { where: condition },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -10,14 +10,12 @@ let lastFlushListeners
 const LoggingCollector = {
   loggers      : {},
   pool         : [],
-  messagesCount: 0,
   numOfMessages: 10,
   timeFrequency: 1,
 
   reset() {
     this.loggers = {}
     this.pool = []
-    this.messagesCount = 0
     this.numOfMessages = 10
     this.timeFrequency = 1
   },
@@ -40,16 +38,20 @@ const LoggingCollector = {
     }
 
     this.pool.push(messageObj)
-    this.messagesCount++
+
     this.checkMessagesLen()
+  },
+
+  checkMessagesLen: function() {
+    if (this.pool.length >= this.numOfMessages) {
+      this.sendRequest()
+    }
   },
 
   flush    : Utils.promisified('_flush'),
   flushSync: Utils.synchronized('_flush'),
 
-  _flush: function() {
-    const asyncHandler = Utils.extractResponder(arguments)
-
+  _flush: function(asyncHandler) {
     if (this.pool.length) {
       if (this.flushInterval) {
         clearTimeout(this.flushInterval)
@@ -80,7 +82,6 @@ const LoggingCollector = {
       })
 
       this.pool = []
-      this.messagesCount = 0
 
     } else if (asyncHandler) {
       if (lastFlushListeners) {
@@ -100,9 +101,7 @@ const LoggingCollector = {
     this.timeFrequency = timeFrequency
 
     //TODO: check when set new timeFrequency
-    if (this.messagesCount > (this.numOfMessages - 1)) {
-      this.sendRequest()
-    }
+    this.checkMessagesLen()
   }
 }
 

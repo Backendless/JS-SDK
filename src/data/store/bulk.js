@@ -12,11 +12,11 @@ export function bulkCreate(objectsArray, asyncHandler) {
     throw new Error(MSG_ERROR)
   }
 
-  for (let i = 0; i < objectsArray.length; i++) {
-    if (!Utils.isObject(objectsArray[i])) {
+  objectsArray.forEach(obj => {
+    if (!Utils.isObject(obj)) {
       throw new Error(MSG_ERROR)
     }
-  }
+  })
 
   return Request.post({
     url         : Urls.dataBulkTable(this.className),
@@ -26,17 +26,18 @@ export function bulkCreate(objectsArray, asyncHandler) {
   })
 }
 
-export function bulkUpdate(templateObject, whereClause, asyncHandler) {
+export function bulkUpdate(templateObject, where, asyncHandler) {
   if (!templateObject || !Utils.isObject(templateObject)) {
     throw new Error('Invalid templateObject argument. The first argument must contain object')
   }
 
-  if (!whereClause || !Utils.isString(whereClause)) {
+  if (!where || !Utils.isString(where)) {
     throw new Error('Invalid whereClause argument. The first argument must contain "whereClause" string.')
   }
 
   return Request.put({
-    url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
+    url         : Urls.dataBulkTable(this.className),
+    query       : { where },
     data        : templateObject,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
@@ -49,28 +50,31 @@ export function bulkDelete(objectsArray, asyncHandler) {
     'The first argument must contain array of objects or array of id or "whereClause" string'
   )
 
-  if (!objectsArray || (!Utils.isArray(objectsArray) && !Utils.isString(objectsArray))) {
+  if (!Utils.isArray(objectsArray) && !Utils.isString(objectsArray)) {
     throw new Error(MSG_ERROR)
   }
 
-  for (let i = 0; i < objectsArray.length; i++) {
-    if (!Utils.isObject(objectsArray[i]) && !Utils.isString(objectsArray[i])) {
-      throw new Error(MSG_ERROR)
-    }
-  }
-
-  let whereClause
+  let where
 
   if (Utils.isString(objectsArray)) {
-    whereClause = objectsArray
-  } else if (Utils.isArray(objectsArray)) {
-    const objects = objectsArray.map(obj => Utils.isString(obj) ? obj : obj.objectId)
+    where = objectsArray
 
-    whereClause = 'objectId in (\'' + objects.join('\', \'') + '\')'
+  } else if (Utils.isArray(objectsArray)) {
+
+    const objects = objectsArray.map(obj => {
+      if (!Utils.isObject(obj) && !Utils.isString(obj)) {
+        throw new Error(MSG_ERROR)
+      }
+
+      return `'${Utils.isString(obj) ? obj : obj.objectId}'`
+    })
+
+    where = `objectId in (${objects.join(',')})`
   }
 
   return Request.delete({
-    url         : Urls.dataBulkTable(this.className) + '?' + Utils.toQueryParams({ where: whereClause }),
+    url         : Urls.dataBulkTable(this.className),
+    query       : { where },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })
