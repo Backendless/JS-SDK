@@ -2,15 +2,17 @@ import Utils from '../utils'
 import { deprecated } from '../decorators'
 
 import Counter from './counter'
-import { incrementAndGet } from './increment-and-get'
-import { decrementAndGet } from './decrement-and-get'
-import { get } from './get'
-import { getAndIncrement } from './get-and-increment'
-import { getAndDecrement } from './get-and-decrement'
-import { getAndAdd } from './get-and-add'
-import { addAndGet } from './add-and-get'
-import { compareAndSet } from './compare-and-set'
-import { reset } from './reset'
+import {
+  incrementAndGet,
+  decrementAndGet,
+  get,
+  getAndIncrement,
+  getAndDecrement,
+  getAndAdd,
+  addAndGet,
+  compareAndSet,
+  reset
+} from './methods'
 
 const Counters = {
 

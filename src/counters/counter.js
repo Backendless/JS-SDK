@@ -1,54 +1,72 @@
 import Utils from '../utils'
+import { deprecated } from '../decorators'
 
-import Counters from './counters'
+import {
+  incrementAndGet,
+  decrementAndGet,
+  get,
+  getAndIncrement,
+  getAndDecrement,
+  getAndAdd,
+  addAndGet,
+  compareAndSet,
+  reset
+} from './methods'
+
 
 export default class Counter {
   constructor(name) {
-    if (!name) {
-      throw new Error('Missing value for the "counterName" argument. The argument must contain a string value.')
-    }
-
-    if (!Utils.isString(name)) {
-      //TODO: fix me
-      throw new Error('Invalid value for the "name" argument. The argument must contain only string values')
+    if (!name || !Utils.isString(name)) {
+      throw new Error('Counter Name must be non empty String')
     }
 
     this.name = name
   }
 }
 
-const proxyToCounters = method => function(...args){
-  return Counters[method](this.name, ...args)
-}
+const withCounterName = method => (...args) => method(this.name, ...args)
+
+//TODO: will be removed when remove sync methods
+const namespaceLabel = 'Backendless.Counter.of(<CounterName>)'
+
 
 Object.setPrototypeOf(Counter.prototype, {
 
-  incrementAndGet: proxyToCounters('incrementAndGet'),
-  incrementAndGetSync: proxyToCounters('incrementAndGetSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.incrementAndGet`)
+  incrementAndGetSync: Utils.synchronized(withCounterName(incrementAndGet)),
+  incrementAndGet    : Utils.promisified(withCounterName(incrementAndGet)),
 
-  getAndIncrement: proxyToCounters('getAndIncrement'),
-  getAndIncrementSync: proxyToCounters('getAndIncrementSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.getAndIncrement`)
+  getAndIncrementSync: Utils.synchronized(withCounterName(getAndIncrement)),
+  getAndIncrement    : Utils.promisified(withCounterName(getAndIncrement)),
 
-  decrementAndGet: proxyToCounters('decrementAndGet'),
-  decrementAndGetSync: proxyToCounters('decrementAndGetSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.decrementAndGet`)
+  decrementAndGetSync: Utils.synchronized(withCounterName(decrementAndGet)),
+  decrementAndGet    : Utils.promisified(withCounterName(decrementAndGet)),
 
-  getAndDecrement: proxyToCounters('getAndDecrement'),
-  getAndDecrementSync: proxyToCounters('getAndDecrementSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.getAndDecrement`)
+  getAndDecrementSync: Utils.synchronized(withCounterName(getAndDecrement)),
+  getAndDecrement    : Utils.promisified(withCounterName(getAndDecrement)),
 
-  reset: proxyToCounters('reset'),
-  resetSync: proxyToCounters('resetSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.reset`)
+  resetSync: Utils.synchronized(withCounterName(reset)),
+  reset    : Utils.promisified(withCounterName(reset)),
 
-  get: proxyToCounters('get'),
-  getSync: proxyToCounters('getSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.get`)
+  getSync: Utils.synchronized(withCounterName(get)),
+  get    : Utils.promisified(withCounterName(get)),
 
-  addAndGet: proxyToCounters('addAndGet'),
-  addAndGetSync: proxyToCounters('addAndGetSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.addAndGet`)
+  addAndGetSync: Utils.synchronized(withCounterName(addAndGet)),
+  addAndGet    : Utils.promisified(withCounterName(addAndGet)),
 
-  getAndAdd: proxyToCounters('getAndAdd'),
-  getAndAddSync: proxyToCounters('getAndAddSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.getAndAdd`)
+  getAndAddSync: Utils.synchronized(withCounterName(getAndAdd)),
+  getAndAdd    : Utils.promisified(withCounterName(getAndAdd)),
 
-  compareAndSet: proxyToCounters('compareAndSet'),
-  compareAndSetSync: proxyToCounters('compareAndSetSync'),
+  @deprecated(namespaceLabel, `${namespaceLabel}.compareAndSet`)
+  compareAndSetSync: Utils.synchronized(withCounterName(compareAndSet)),
+  compareAndSet    : Utils.promisified(withCounterName(compareAndSet)),
 
 })
 

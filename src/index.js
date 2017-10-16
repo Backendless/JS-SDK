@@ -1,7 +1,7 @@
 import Request from 'backendless-request'
 
 import Logging from './logging'
-import Counters from './counters/counters'
+import Counters from './counters'
 import Cache from './cache'
 import Commerce from './commerce'
 import Users from './users'
