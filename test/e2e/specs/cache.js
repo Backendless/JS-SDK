@@ -60,7 +60,7 @@ describe('Backendless.Cache', function() {
   })
 
   // TODO: this test gives floating results, need to be discovered
-  xit('ttl', function() {
+  it('ttl', function() {
     const a = 'a'
     const b = 'b'
 

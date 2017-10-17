@@ -1,4 +1,4 @@
-/// <reference path="../src/backendless.d.ts" />
+/// <reference path="../backendless.d.ts" />
 /// <reference path="./es6-promise.d.ts" />
 
 import Counter = __Backendless.Counter;
@@ -11,9 +11,6 @@ function testMain() {
     var browser: { browser: string, version: string } = Backendless.browser;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
-
-    Backendless.setUIState('state');
-    Backendless.setUIState(null);
 }
 
 function testLocalCache() {

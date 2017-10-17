@@ -25,10 +25,10 @@
 
 <div class="navbar navbar-inverse navbar-static-top">
     <div class="navbar-inner">
-               
         <div class="container">
             <a class="lead" href="#myCarousel" data-slide-to="0">Upload file</a>
-            <a class="lead" href="#myCarousel" data-slide-to="1" id="browse-uploaded-link">Browse uploaded</a> 
+            <a class="lead" href="#myCarousel" data-slide-to="1">Save to file</a>
+            <a class="lead" href="#myCarousel" data-slide-to="2" id="browse-uploaded-link">Browse uploaded</a> 
         </div>
            
     </div>
@@ -44,6 +44,20 @@
                         <output id="list"></output>
                         <div>
                             <input id="upload-btn" class="btn btn-large btn-primary" type="button" value="Upload File"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="item" style="background-color: #FAFAFA">
+            <div class="container">
+                <div class="carousel-caption">
+                    <div class="container">
+                        <div><textarea id="textToSave" rows="10" placeholder="Enter text"></textarea></div>
+                        <div><input type="text" id="fileName" placeholder="File name, foo.txt by default"/></div>
+                        <div>
+                            <input id="save-btn" class="btn btn-large btn-primary" type="button" value="Save to File"/>
                         </div>
                     </div>
                 </div>

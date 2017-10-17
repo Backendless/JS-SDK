@@ -1,15 +1,17 @@
-import Backendless from '../bundle'
-import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
+import Async from '../request/async'
 
-export function invokeServiceMethod(serviceName, method, parameters /**, async */) {
-  const responder = Utils.extractResponder(arguments)
+export function invokeServiceMethod(serviceName, method, parameters, asyncHandler) {
+  if (parameters instanceof Async) {
+    asyncHandler = parameters
+    parameters = undefined
+  }
 
-  return Backendless._ajax({
-    method      : 'POST',
+  return Request.post({
     url         : Urls.blServiceMethod(serviceName, method),
-    data        : JSON.stringify(parameters),
-    isAsync     : !!responder,
-    asyncHandler: responder
+    data        : parameters,
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

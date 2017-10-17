@@ -1,79 +1,127 @@
-import Backendless from './bundle'
-import DataQueryBuilder from './data/data-query-builder'
-import LoadRelationsQueryBuilder from './data/load-relations-query-builder'
-import DataPermissions from './data/data-permissions'
-import UserService from './user/user-service'
-import Geo from './geo'
-import GeoTrackerMonitor from './geo/tracker-monitor'
-import Files from './file/files'
-import Commerce from './commerce'
-import Cache from './cache'
-import Counters from './counters/counters'
-import persistence from './data/persistence'
-import Messaging from './messaging'
-import FilePermissions from './file/file-persmission'
-import User from './user/user'
-import RTClient  from './rt'
-import Logging from './logging'
-import LoggingCollector from './logging/collector'
-import './request/request'
-import Device from './device'
-import Private from './private'
+import Request from 'backendless-request'
 
+import Logging from './logging'
+import Counters from './counters'
+import Cache from './cache'
+import Commerce from './commerce'
+import Users from './users'
+import User from './users/user'
 import CustomServices from './bl/custom-services'
 import Events from './bl/events'
+import Geo from './geo'
+import Data from './data'
+import Messaging from './messaging'
+import Device from './device'
+import Files from './files'
+import RTClient  from './rt'
+import LocalCache from './local-cache'
+import LocalVars from './local-vars'
 
-Backendless.Logging = Logging
+import { initApp } from './init-app'
+import { getUserAgent } from './user-agent'
+import { getCurrentUserToken } from './users/current-user'
 
-Backendless.Counters = Counters
+const root = (typeof self === 'object' && self.self === self && self) ||
+  (typeof global === 'object' && global.global === global && global)
 
-Backendless.Cache = Cache
+const previousBackendless = root && root.Backendless
 
-Backendless.Commerce = Commerce
+const Backendless = {
 
-Backendless.UserService = UserService
-Backendless.Users = UserService
-Backendless.User = User
+  get debugMode() {
+    return LocalVars.debugMode
+  },
 
-Backendless.CustomServices = CustomServices
-Backendless.Events = Events
+  set debugMode(debugMode) {
+    LocalVars.debugMode = !!debugMode
+  },
 
-Backendless.Geo = Geo
-Backendless.GeoQuery = Geo.Query
-Backendless.GeoPoint = Geo.Point
-Backendless.GeoCluster = Geo.Cluster
+  get serverURL() {
+    return LocalVars.serverURL
+  },
 
-Backendless.DataQueryBuilder = DataQueryBuilder
-Backendless.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
+  set serverURL(serverURL) {
+    LocalVars.serverURL = serverURL
+  },
 
-Backendless.Messaging = Messaging
-Backendless.Bodyparts = Messaging.Bodyparts
-Backendless.PublishOptions = Messaging.PublishOptions
-Backendless.DeliveryOptions = Messaging.DeliveryOptions
-Backendless.SubscriptionOptions = Messaging.SubscriptionOptions
-Backendless.PublishOptionsHeaders = Messaging.PublishOptionsHeaders
+  get XMLHttpRequest() {
+    return LocalVars.XMLHttpRequest
+  },
 
-Backendless.setupDevice = Device.setup
+  set XMLHttpRequest(XMLHttpRequest) {
+    LocalVars.XMLHttpRequest = XMLHttpRequest
+  },
 
-Backendless.initApp = (appId, secretKey) => {
+  get applicationId() {
+    return LocalVars.applicationId
+  },
 
-  LoggingCollector.reset()
-  GeoTrackerMonitor.reset()
+  get secretKey() {
+    return LocalVars.secretKey
+  },
 
-  Private.resetDataStore()
-  Private.setCurrentUser()
+  get appPath() {
+    return LocalVars.appPath
+  },
 
-  Backendless.applicationId = appId
-  Backendless.secretKey = secretKey
-  Backendless.appPath = [Backendless.serverURL, appId, secretKey].join('/')
+  initApp,
 
-  Backendless.RT = new RTClient()
+  getCurrentUserToken,
 
-  Backendless.Persistence = persistence
-  Backendless.Data = persistence
-  Backendless.Data.Permissions = new DataPermissions()
-  Backendless.Files = new Files()
-  Backendless.Files.Permissions = new FilePermissions()
+  setupDevice: Device.setup,
+
+  browser    : getUserAgent(),
+
+  Request,
+
+  noConflict() {
+    if (root) {
+      root.Backendless = previousBackendless
+    }
+
+    return Backendless
+  },
+
+  ///-------------------------------------///
+  ///-------------- SERVICES -------------///
+
+  Logging       : Logging,
+  Counters      : Counters,
+  Cache         : Cache,
+  Commerce      : Commerce,
+  Users         : Users,
+  User          : User,
+  CustomServices: CustomServices,
+  Events        : Events,
+  Geo           : Geo,
+  Data          : Data,
+  Messaging     : Messaging,
+  Files         : Files,
+  RTClient      : RTClient,
+
+  ///-------------- SERVICES -------------///
+  ///-------------------------------------///
+
+  ///-------------------------------------///
+  ///--------BACKWARD COMPATIBILITY-------///
+
+  //TODO: do we need to remove it?
+  UserService              : Users,
+  GeoQuery                 : Geo.Query,
+  GeoPoint                 : Geo.Point,
+  GeoCluster               : Geo.Cluster,
+  Persistence              : Data,
+  DataQueryBuilder         : Data.QueryBuilder,
+  LoadRelationsQueryBuilder: Data.LoadRelationsQueryBuilder,
+  Bodyparts                : Messaging.Bodyparts,
+  PublishOptions           : Messaging.PublishOptions,
+  DeliveryOptions          : Messaging.DeliveryOptions,
+  SubscriptionOptions      : Messaging.SubscriptionOptions,
+  PublishOptionsHeaders    : Messaging.PublishOptionsHeaders,
+
+  LocalCache,
+  ///--------BACKWARD COMPATIBILITY-------///
+  ///-------------------------------------///
 }
 
 export default Backendless

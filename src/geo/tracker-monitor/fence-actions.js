@@ -1,39 +1,45 @@
-import Backendless from '../../bundle'
 import Utils from '../../utils'
 import Urls from '../../urls'
+import Request from '../../request'
 import Async from '../../request/async'
 
 import GeoPoint from '../point'
 
-function runFenceAction(action, geoFenceName, geoPoint /**, async */) {
+//TODO: refactor me
+
+function runFenceAction(action, geoFenceName, geoPoint, asyncHandler) {
+  if (geoPoint instanceof Async) {
+    asyncHandler = geoPoint
+    geoPoint = undefined
+  }
+
   if (!Utils.isString(geoFenceName)) {
     throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String")
   }
 
-  if (geoPoint && !(geoPoint instanceof Async) && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
+  if (geoPoint && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
     throw new Error('Method argument must be a valid instance of GeoPoint persisted on the server')
   }
 
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-
-  const data = {
-    method      : 'POST',
+  return Request.post({
     url         : Urls.geoFence(action, geoFenceName),
-    isAsync     : isAsync,
-    asyncHandler: responder
-  }
-
-  if (geoPoint) {
-    data.data = JSON.stringify(geoPoint)
-  }
-
-  return Backendless._ajax(data)
+    isAsync     : !!asyncHandler,
+    data        : geoPoint,
+    asyncHandler: asyncHandler
+  })
 }
 
-const runOnStayAction = (geoFenceName, geoPoint, async) => runFenceAction('onstay', geoFenceName, geoPoint, async)
-const runOnExitAction = (geoFenceName, geoPoint, async) => runFenceAction('onexit', geoFenceName, geoPoint, async)
-const runOnEnterAction = (geoFenceName, geoPoint, async) => runFenceAction('onenter', geoFenceName, geoPoint, async)
+const runOnStayAction = (geoFenceName, geoPoint, asyncHandler) => {
+  return runFenceAction('onstay', geoFenceName, geoPoint, asyncHandler)
+}
+
+const runOnExitAction = (geoFenceName, geoPoint, asyncHandler) => {
+  return runFenceAction('onexit', geoFenceName, geoPoint, asyncHandler)
+}
+
+const runOnEnterAction = (geoFenceName, geoPoint, asyncHandler) => {
+  return runFenceAction('onenter', geoFenceName, geoPoint, asyncHandler)
+}
 
 const GeoFenceActions = {
   run: runFenceAction,

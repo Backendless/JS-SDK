@@ -1,58 +1,42 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
-import Async from '../request/async'
+import Request from '../request'
+
 import GeoCluster from './cluster'
 import GeoPoint from './point'
 
 import { validateQueryObject } from './query-validator'
 import { toQueryParams } from './query-params'
 
-export function loadItems(query/**, async */) {
-  let responder = Utils.extractResponder(arguments)
-  let isAsync = false
+//TODO: refactor me
 
+export function loadItems(query, asyncHandler) {
   validateQueryObject(query)
 
   const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
 
-  const responderOverride = async => {
-    const success = data => {
-      const geoCollection = []
-      let geoObject
-      let isCluster
-      let GeoItemType
-
-      //TODO: refctor me when released 4.x
-      const collection = data.collection || data
-
-      for (let i = 0; i < collection.length; i++) {
-        geoObject = collection[i]
-        geoObject.geoQuery = query
-
-        isCluster = geoObject.hasOwnProperty('totalPoints')
-        GeoItemType = isCluster ? GeoCluster : GeoPoint
-
-        geoCollection.push(new GeoItemType(geoObject))
-      }
-
-      async.success(geoCollection)
-    }
-
-    const error = data => async.fault(data)
-
-    return new Async(success, error)
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => responseParser(resp, query))
   }
 
-  if (responder) {
-    isAsync = true
-  }
-
-  responder = responderOverride(responder)
-
-  return Backendless._ajax({
-    method      : 'GET',
+  const result = Request.get({
     url         : url,
-    isAsync     : isAsync,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
+  })
+
+  if (asyncHandler) {
+    return result
+  }
+
+  return responseParser(result, query)
+}
+
+function responseParser(resp, geoQuery) {
+  return resp.map(geoObject => {
+    const GeoItem = geoObject.hasOwnProperty('totalPoints')
+      ? GeoCluster
+      : GeoPoint
+
+    return new GeoItem({ ...geoObject, geoQuery })
   })
 }

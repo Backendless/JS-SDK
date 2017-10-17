@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 
-import Backendless from './bundle'
+import LocalVars from './local-vars'
 
 const Urls = {
-  root: () => Backendless.appPath,
+  root: () => LocalVars.appPath,
 
   blServices     : () => `${Urls.root()}/services`,
   blServiceMethod: (name, method) => `${Urls.blServices()}/${name}/${method}`,
@@ -18,17 +18,25 @@ const Urls = {
   cacheItemExpireAt: key => `${Urls.cacheItem(key)}/expireAt`,
   cacheItemCheck   : key => `${Urls.cacheItem(key)}/check`,
 
-  counters     : () => `${Urls.root()}/counters`,
-  counter      : name => `${Urls.counters()}/${name}`,
-  counterMethod: (name, method) => `${Urls.counter(name)}/${method}`,
+  counters              : () => `${Urls.root()}/counters`,
+  counter               : name => `${Urls.counters()}/${name}`,
+  counterAddAndGet      : name => `${Urls.counter(name)}/incrementby/get`,
+  counterGetAndAdd      : name => `${Urls.counter(name)}/get/incrementby`,
+  counterIncrementAndGet: name => `${Urls.counter(name)}/increment/get`,
+  counterDecrementAndGet: name => `${Urls.counter(name)}/decrement/get`,
+  counterGetAndDecrement: name => `${Urls.counter(name)}/get/decrement`,
+  counterGetAndIncrement: name => `${Urls.counter(name)}/get/increment`,
+  counterCompareAndSet  : name => `${Urls.counter(name)}/get/compareandset`,
+  counterReset          : name => `${Urls.counter(name)}/reset`,
 
-  data                : () => `${Urls.root()}/data`,
-  dataTable           : tableName => `${Urls.data()}/${tableName}`,
-  dataTableObject     : (tableName, objectId) => `${Urls.dataTable(tableName)}/${objectId}`,
-  dataTableCount      : tableName => `${Urls.dataTable(tableName)}/count`,
-  dataTableProps      : tableName => `${Urls.dataTable(tableName)}/properties`,
-  dataBulkTable       : tableName => `${Urls.data()}/bulk/${tableName}`,
-  dataObjectPermission: (tableName, permissionType, objectId) => `${Urls.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`,
+  data                   : () => `${Urls.root()}/data`,
+  dataTable              : tableName => `${Urls.data()}/${tableName}`,
+  dataTableObject        : (tableName, objectId) => `${Urls.dataTable(tableName)}/${objectId}`,
+  dataTableObjectRelation: (tableName, objectId, columnName) => `${Urls.dataTableObject(tableName, objectId)}/${columnName}`,
+  dataTableCount         : tableName => `${Urls.dataTable(tableName)}/count`,
+  dataTableProps         : tableName => `${Urls.dataTable(tableName)}/properties`,
+  dataBulkTable          : tableName => `${Urls.data()}/bulk/${tableName}`,
+  dataObjectPermission   : (tableName, permissionType, objectId) => `${Urls.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`,
 
   messaging                  : () => `${Urls.root()}/messaging`,
   messagingEmail             : () => `${Urls.messaging()}/email`,
@@ -58,8 +66,9 @@ const Urls = {
 
   files          : () => `${Urls.root()}/files`,
   filePath       : path => `${Urls.files()}/${path}`,
-  fileAction     : actionType => `${Urls.files()}/${actionType}`,
-  fileBinary     : (path, fileName) => `${Urls.files()}/binary/${path}${fileName ? `/${fileName}` : ''}`,
+  fileCopy       : () => `${Urls.files()}/copy`,
+  fileMove       : () => `${Urls.files()}/move`,
+  fileRename     : () => `${Urls.files()}/rename`,
   filePermissions: () => `${Urls.files()}/permissions`,
   filePermission : (type, url) => `${Urls.filePermissions()}/${type}/${encodeURIComponent(url)}`,
 
@@ -76,7 +85,7 @@ const Urls = {
   userResendConfirmation: email => `${Urls.users()}/resendconfirmation/${email}`,
   userSocial            : () => `${Urls.users()}/social`,
   userSocialOAuth       : socialType => `${Urls.userSocial()}/oauth/${socialType.toLowerCase()}/request_url`,
-  userSocialLogin       : socialType => `${Urls.userSocial()}/${socialType.toLowerCase()}/login/${Backendless.applicationId}`,
+  userSocialLogin       : socialType => `${Urls.userSocial()}/${socialType.toLowerCase()}/login/${LocalVars.applicationId}`,
 }
 
 export default Urls

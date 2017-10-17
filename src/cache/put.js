@@ -1,41 +1,35 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
 import Async from '../request/async'
+import Request from '../request'
 
-export function put(key, value, timeToLive, async) {
-  if (!Utils.isString(key)) {
-    throw new Error('You can use only String as key to put into Cache')
+export function put(key, value, timeToLive, asyncHandler) {
+  if (!key || !Utils.isString(key)) {
+    throw new Error('Cache Key must be non empty String')
   }
 
-  if (!(timeToLive instanceof Async)) {
-    if (typeof timeToLive === 'object' && !arguments[3]) {
-      async = timeToLive
-      timeToLive = null
-    } else if (typeof timeToLive !== ('number' || 'string') && timeToLive != null) {
-      throw new Error('You can use only String as timeToLive attribute to put into Cache')
-    }
-  } else {
-    async = timeToLive
-    timeToLive = null
+  if (timeToLive instanceof Async) {
+    asyncHandler = timeToLive
+    timeToLive = undefined
+  }
+
+  if (timeToLive && !Utils.isNumber(key)) {
+    throw new Error('Cache timeToLive must be Number')
   }
 
   if (Utils.isObject(value) && value.constructor !== Object) {
     value.___class = value.___class || Utils.getClassName(value)
   }
 
-  let responder = Utils.extractResponder([async])
-  const isAsync = !!responder
-
-  if (responder) {
-    responder = Utils.wrapAsync(responder)
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Backendless._ajax({
-    method      : 'PUT',
+  return Request.put({
     url         : Urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+    headers     : { 'Content-Type': 'application/json' },
     data        : JSON.stringify(value),
-    isAsync     : isAsync,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

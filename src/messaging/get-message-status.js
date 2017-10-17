@@ -1,15 +1,14 @@
-import Backendless from '../bundle'
 import Urls from '../urls'
+import Request from '../request'
 
-export function getMessageStatus(messageId, async) {
+export function getMessageStatus(messageId, asyncHandler) {
   if (!messageId) {
     throw Error('Message ID is required.')
   }
 
-  return Backendless._ajax({
-    method      : 'GET',
+  return Request.get({
     url         : Urls.messagingMessage(messageId),
-    isAsync     : !!async,
-    asyncHandler: async
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }

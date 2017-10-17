@@ -31,31 +31,12 @@ const Utils = {
 
   isBrowser: (new Function('try {return this===window;}catch(e){ return false;}'))(),
 
-  emptyFn: function() {
-  },
-
-  getNow() {
-    return new Date().getTime()
-  },
-
   castArray(value) {
     if (Utils.isArray(value)) {
       return value
     }
 
     return [value]
-  },
-
-  addEvent(evnt, elem, func) {
-    if (elem.addEventListener) {
-      elem.addEventListener(evnt, func, false)
-    }
-    else if (elem.attachEvent) {
-      elem.attachEvent('on' + evnt, func)
-    }
-    else {
-      elem[evnt] = func
-    }
   },
 
   isEmpty(obj) {
@@ -76,42 +57,8 @@ const Utils = {
     return true
   },
 
-  removeEvent(event, elem) {
-    if (elem.removeEventListener) {
-      elem.removeEventListener(event, null, false)
-    } else if (elem.detachEvent) {
-      elem.detachEvent('on' + event, null)
-    }
-
-    elem[event] = null
-  },
-
-  stringToBiteArray(str) {
-    const data = new ArrayBuffer(str.length)
-    const ui8a = new Uint8Array(data, 0)
-
-    for (let i = 0; i < str.length; i++) {
-      ui8a[i] = (str.charCodeAt(i) & 0xff)
-    }
-
-    return ui8a
-  },
-
-  onHttpRequestErrorHandler(xhr, errorHandler, responseParser) {
-    return function() {
-      let errorMessage = 'Unable to connect to the network'
-
-      //this part is needed for those implementations of XMLHttpRequest
-      //which call the onerror handler on an any bad request
-      if (xhr.status >= 400) {
-        errorMessage = responseParser(xhr)
-      }
-
-      errorHandler(errorMessage)
-    }
-  },
-
   toQueryParams(params) {
+    params = params || {}
     const result = []
 
     for (const key in params) {
@@ -121,28 +68,6 @@ const Utils = {
     }
 
     return result.join('&')
-  },
-
-  toUri() {
-    let uri = ''
-    let arg
-
-    for (let i = 0; i < arguments.length; i++) {
-      arg = arguments[i]
-
-      if (!arg) {
-        continue
-      }
-
-      if (Utils.isArray(arg)) {
-        uri += this.toUri.apply(this, arg)
-      } else if (Utils.isString(arg)) {
-        uri += '/'
-        uri += encodeURIComponent(arg)
-      }
-    }
-
-    return uri
   },
 
   tryParseJSON(s) {
@@ -172,49 +97,12 @@ const Utils = {
     return arr.map(item => encodeURIComponent(item)).join(',')
   },
 
-  classWrapper(obj) {
-    const wrapper = obj => {
-      let wrapperName = null
-      let Wrapper = null
-
-      for (const property in obj) {
-        if (obj.hasOwnProperty(property)) {
-          if (property === '___class') {
-            wrapperName = obj[property]
-            break
-          }
-        }
-      }
-
-      if (wrapperName) {
-        try {
-          Wrapper = eval(wrapperName)
-          obj = Utils.deepExtend(new Wrapper(), obj)
-        } catch (e) {
-        }
-      }
-
-      return obj
-    }
-
-    if (Utils.isObject(obj) && obj != null) {
-      if (Utils.isArray(obj)) {
-        for (let i = obj.length; i--;) {
-          obj[i] = wrapper(obj[i])
-        }
-      } else {
-        obj = wrapper(obj)
-      }
-    }
-
-    return obj
-  },
-
   deepExtend(destination, source) {
+    //TODO: refactor it
     for (const property in source) {
       if (source[property] !== undefined && source.hasOwnProperty(property)) {
         destination[property] = destination[property] || {}
-        destination[property] = Utils.classWrapper(source[property])
+        destination[property] = classWrapper(source[property])
 
         if (
           destination[property]
@@ -223,7 +111,7 @@ const Utils = {
           && destination[property][property].hasOwnProperty('__originSubID')
         ) {
 
-          destination[property][property] = Utils.classWrapper(destination[property])
+          destination[property][property] = classWrapper(destination[property])
         }
       }
     }
@@ -231,32 +119,30 @@ const Utils = {
     return destination
   },
 
-  cloneObject(obj) {
-    return Utils.isArray(obj) ? obj.slice() : Utils.deepExtend({}, obj)
-  },
-
   extractResponder(args) {
-    let i, len
-    for (i = 0, len = args.length; i < len; ++i) {
+    for (let i = 0; i < args.length; i++) {
       if (args[i] instanceof Async) {
         return args[i]
       }
     }
-
-    return null
   },
 
-  wrapAsync(async, parser, context) {
+  wrapAsync(asyncHandler, parser, context) {
+    //TODO: should we remove it?
+    if (asyncHandler instanceof Async && !parser) {
+      return asyncHandler
+    }
+
     const success = data => {
       if (parser) {
         data = parser.call(context, data)
       }
 
-      async.success(data)
+      asyncHandler.success(data)
     }
 
     const error = data => {
-      async.fault(data)
+      asyncHandler.fault(data)
     }
 
     return new Async(success, error)
@@ -264,6 +150,8 @@ const Utils = {
 
   promisified(method) {
     return function() {
+      Utils.checkPromiseSupport()
+
       const args = [].slice.call(arguments)
       const context = this
       const fn = typeof method === 'function' ? method : context[method]
@@ -286,18 +174,53 @@ const Utils = {
     }
   },
 
-  mirrorKeys(obj) {
-    const mirroredObject = {}
+  checkPromiseSupport() {
+    if (typeof Promise === 'undefined') {
+      throw new Error(
+        'This browser doesn\'t support Promise API. Please use polyfill.\n' +
+        'More info is in the Backendless JS-SDK docs: https://backendless.com/docs/js/doc.html#sync-and-async-calls'
+      )
+    }
+  }
+}
 
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        mirroredObject[key] = key
+function classWrapper(obj) {
+  //TODO: refactor it
+  const wrapper = obj => {
+    let wrapperName = null
+    let Wrapper = null
+
+    for (const property in obj) {
+      if (obj.hasOwnProperty(property)) {
+        if (property === '___class') {
+          wrapperName = obj[property]
+          break
+        }
       }
     }
 
-    return mirroredObject
+    if (wrapperName) {
+      try {
+        Wrapper = eval(wrapperName)
+        obj = Utils.deepExtend(new Wrapper(), obj)
+      } catch (e) {
+      }
+    }
+
+    return obj
   }
 
+  if (Utils.isObject(obj) && obj != null) {
+    if (Utils.isArray(obj)) {
+      for (let i = obj.length; i--;) {
+        obj[i] = wrapper(obj[i])
+      }
+    } else {
+      obj = wrapper(obj)
+    }
+  }
+
+  return obj
 }
 
 export default Utils

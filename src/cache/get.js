@@ -1,40 +1,40 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 import { Parsers } from './parsers'
 
-export function get(key /**, async */) {
-  if (!Utils.isString(key)) {
-    throw new Error('The "key" argument must be String')
+function parseResult(result) {
+  const className = result && result.___class
+
+  if (className) {
+    const Class = Parsers.get(className)
+
+    if (Class) {
+      result = new Class(result)
+    }
   }
 
-  function parseResult(result) {
-    const className = result && result.___class
+  return result
+}
 
-    if (className) {
-      const clazz = Parsers.get(className) // || root[className]
+export function get(key, asyncHandler) {
+  if (!key || !Utils.isString(key)) {
+    throw new Error('Cache Key must be non empty String')
+  }
 
-      if (clazz) {
-        result = new clazz(result)
-      }
-    }
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, parseResult)
+  }
 
+  const result = Request.get({
+    url         : Urls.cacheItem(key),
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
+  })
+
+  if (asyncHandler) {
     return result
   }
 
-  let responder = Utils.extractResponder(arguments), isAsync = false
-
-  if (responder) {
-    isAsync = true
-    responder = Utils.wrapAsync(responder, parseResult, this)
-  }
-
-  const result = Backendless._ajax({
-    method      : 'GET',
-    url         : Urls.cacheItem(key),
-    isAsync     : isAsync,
-    asyncHandler: responder
-  })
-
-  return isAsync ? result : parseResult(result)
+  return parseResult(result)
 }

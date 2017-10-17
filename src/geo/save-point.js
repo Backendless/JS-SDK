@@ -1,51 +1,43 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
-import Async from '../request/async'
+import Request from '../request'
+
 import GeoPoint from './point'
 
-export function savePoint(geopoint /**, async */) {
-  if (null == geopoint.latitude || null == geopoint.longitude) {
+export function savePoint(geoPoint, asyncHandler) {
+  if (!Utils.isNumber(geoPoint.latitude) || !Utils.isNumber(geoPoint.longitude)) {
     throw new Error('Latitude or longitude not a number')
   }
-  geopoint.categories = geopoint.categories || ['Default']
-  geopoint.categories = Utils.isArray(geopoint.categories) ? geopoint.categories : [geopoint.categories]
 
-  const objectId = geopoint.objectId
-  const method = objectId ? 'PATCH' : 'POST'
-  let url = Urls.geoPoints()
+  geoPoint.categories = Utils.castArray(geoPoint.categories || ['Default'])
 
-  if (objectId) {
-    url += '/' + objectId
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, parseResponse)
   }
 
-  let responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-
-  const responderOverride = async => {
-    const success = data => {
-      const geoPoint = new GeoPoint()
-      geoPoint.categories = data.geopoint.categories
-      geoPoint.latitude = data.geopoint.latitude
-      geoPoint.longitude = data.geopoint.longitude
-      geoPoint.metadata = data.geopoint.metadata
-      geoPoint.objectId = data.geopoint.objectId
-
-      async.success(geoPoint)
-    }
-
-    const error = data => async.fault(data)
-
-    return new Async(success, error)
-  }
-
-  responder = responderOverride(responder)
-
-  return Backendless._ajax({
-    method      : method,
-    url         : url,
-    data        : JSON.stringify(geopoint),
-    isAsync     : isAsync,
-    asyncHandler: responder
+  const result = Request.send({
+    method      : geoPoint.objectId ? Request.Methods.PATCH : Request.Methods.POST,
+    url         : geoPoint.objectId ? Urls.geoPoint(geoPoint.objectId) : Urls.geoPoints(),
+    data        : geoPoint,
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
+
+  if (asyncHandler) {
+    return result
+  }
+
+  return parseResponse(result)
+}
+
+function parseResponse(resp) {
+  const geoPoint = new GeoPoint()
+
+  geoPoint.categories = resp.geopoint.categories
+  geoPoint.latitude = resp.geopoint.latitude
+  geoPoint.longitude = resp.geopoint.longitude
+  geoPoint.metadata = resp.geopoint.metadata
+  geoPoint.objectId = resp.geopoint.objectId
+
+  return geoPoint
 }

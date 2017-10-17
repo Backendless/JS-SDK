@@ -5,4 +5,4 @@
 **/webpack.config*.js
 test/tsd.**
 src/backendless.js
-src/backendless.d.ts
+backendless.d.ts

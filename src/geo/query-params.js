@@ -1,5 +1,7 @@
 import FindHelpers from './find-helpers'
 
+//TODO: refactor me
+
 export function toQueryParams(query) {
   const params = []
 

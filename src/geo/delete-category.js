@@ -1,22 +1,18 @@
-import Backendless from '../bundle'
-import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 
-export function deleteCategory(name /**, async */) {
+export function deleteCategory(name, asyncHandler) {
   if (!name) {
     throw new Error('Category name is required.')
   }
 
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
   let result = {}
 
   try {
-    result = Backendless._ajax({
-      method      : 'DELETE',
+    result = Request.delete({
       url         : Urls.geoCategory(name),
-      isAsync     : isAsync,
-      asyncHandler: responder
+      isAsync     : !!asyncHandler,
+      asyncHandler: asyncHandler
     })
   } catch (e) {
     if (e.statusCode === 404) {

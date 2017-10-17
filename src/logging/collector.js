@@ -1,6 +1,6 @@
-import Backendless from '../bundle'
 import Utils from '../utils'
 import Urls from '../urls'
+import Request from '../request'
 import Async from '../request/async'
 
 import Logger from './logger'
@@ -10,14 +10,12 @@ let lastFlushListeners
 const LoggingCollector = {
   loggers      : {},
   pool         : [],
-  messagesCount: 0,
   numOfMessages: 10,
   timeFrequency: 1,
 
   reset() {
     this.loggers = {}
     this.pool = []
-    this.messagesCount = 0
     this.numOfMessages = 10
     this.timeFrequency = 1
   },
@@ -40,16 +38,20 @@ const LoggingCollector = {
     }
 
     this.pool.push(messageObj)
-    this.messagesCount++
+
     this.checkMessagesLen()
+  },
+
+  checkMessagesLen: function() {
+    if (this.pool.length >= this.numOfMessages) {
+      this.sendRequest()
+    }
   },
 
   flush    : Utils.promisified('_flush'),
   flushSync: Utils.synchronized('_flush'),
 
-  _flush: function() {
-    const async = Utils.extractResponder(arguments)
-
+  _flush: function(asyncHandler) {
     if (this.pool.length) {
       if (this.flushInterval) {
         clearTimeout(this.flushInterval)
@@ -67,27 +69,25 @@ const LoggingCollector = {
         }
       }
 
-      if (async) {
+      if (asyncHandler) {
         listeners = lastFlushListeners = lastFlushListeners ? lastFlushListeners.splice(0) : []
-        listeners.push(async)
+        listeners.push(asyncHandler)
       }
 
-      Backendless._ajax({
-        method      : 'PUT',
-        isAsync     : !!async,
-        asyncHandler: async && new Async(cb('success'), cb('fault')),
+      Request.put({
+        isAsync     : !!asyncHandler,
+        asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
         url         : Urls.logging(),
-        data        : JSON.stringify(this.pool)
+        data        : this.pool
       })
 
       this.pool = []
-      this.messagesCount = 0
 
-    } else if (async) {
+    } else if (asyncHandler) {
       if (lastFlushListeners) {
-        lastFlushListeners.push(async)
+        lastFlushListeners.push(asyncHandler)
       } else {
-        setTimeout(async.success, 0)
+        setTimeout(asyncHandler.success, 0)
       }
     }
   },
@@ -101,9 +101,7 @@ const LoggingCollector = {
     this.timeFrequency = timeFrequency
 
     //TODO: check when set new timeFrequency
-    if (this.messagesCount > (this.numOfMessages - 1)) {
-      this.sendRequest()
-    }
+    this.checkMessagesLen()
   }
 }
 

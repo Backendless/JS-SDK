@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import { deprecated } from '../decorators'
 
 import PublishOptionsHeaders from './publish-options-header'
 import PublishOptions from './publish-options'
@@ -40,26 +41,33 @@ const Messaging = {
     return channel
   },
 
-  publish    : Utils.promisified(publish),
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
   publishSync: Utils.synchronized(publish),
+  publish    : Utils.promisified(publish),
 
-  sendEmail    : Utils.promisified(sendEmail),
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
   sendEmailSync: Utils.synchronized(sendEmail),
+  sendEmail    : Utils.promisified(sendEmail),
 
-  cancel    : Utils.promisified(cancel),
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.cancel')
   cancelSync: Utils.synchronized(cancel),
+  cancel    : Utils.promisified(cancel),
 
-  registerDevice    : Utils.promisified(registerDevice),
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.registerDevice')
   registerDeviceSync: Utils.synchronized(registerDevice),
+  registerDevice    : Utils.promisified(registerDevice),
 
-  getRegistrations    : Utils.promisified(getRegistrations),
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.getRegistrations')
   getRegistrationsSync: Utils.synchronized(getRegistrations),
+  getRegistrations    : Utils.promisified(getRegistrations),
 
-  unregisterDevice    : Utils.promisified(unregisterDevice),
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.unregisterDevice')
   unregisterDeviceSync: Utils.synchronized(unregisterDevice),
+  unregisterDevice    : Utils.promisified(unregisterDevice),
 
-  getMessageStatus    : Utils.promisified(getMessageStatus),
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.getMessageStatus')
   getMessageStatusSync: Utils.synchronized(getMessageStatus),
+  getMessageStatus    : Utils.promisified(getMessageStatus),
 
 }
 
