@@ -10,7 +10,8 @@
     "dist",
     "lib",
     "es",
-    "src"
+    "src",
+    "backendless.d.ts"
   ],
   "typings": "backendless.d.ts",
   "scripts": {
