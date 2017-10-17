@@ -1,4 +1,5 @@
 import Async from '../../request/async'
+import Utils from '../../utils'
 
 import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
@@ -8,6 +9,8 @@ export const loginWithGooglePlus = (fieldsMapping, permissions, container, stayL
 }
 
 export const loginWithGooglePlusSdk = (fieldsMapping, stayLoggedIn) => {
+  Utils.checkPromiseSupport()
+
   return new Promise((resolve, reject) => {
     if (!gapi) {
       return reject(new Error('Google Plus SDK not found'))
