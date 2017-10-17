@@ -1,5 +1,6 @@
 import { createClient } from 'backendless-console-sdk'
-import Backendless from '../../../src/backendless'
+// import Backendless from '../../../src/backendless'
+const Backendless = require('../../../lib')
 
 const chr4 = () => Math.random().toString(16).slice(-4)
 const chr8 = () => `${chr4()}${chr4()}`
@@ -73,6 +74,7 @@ const createSandboxFor = each => () => {
 }
 
 export default {
+  Backendless,
   forTest : createSandboxFor(true),
   forSuite: createSandboxFor(false)
 }

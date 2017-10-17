@@ -22,6 +22,7 @@
         $('.thumbnails').on('click', '.thumbnail', onClickFileItem);
         $('#browse-uploaded-link').on('click', refreshItemsList);
         $('#upload-btn').on('click', uploadFile);
+        $('#save-btn').on('click', saveFile);
         $('#delete-btn').on('click', deleteSelectedFiles);
     }
 
@@ -121,6 +122,20 @@
             alert(e.code == 1009 ? 'Please upload a file first' : e.message);
             return [];
         });
+    }
+
+    function saveFile() {
+      var fileName = $('#fileName')[0].value || 'foo.txt';
+      var fileContent = $('#textToSave')[0].value || '';
+
+      Backendless.Files.saveFile(TEST_FOLDER, fileName, new Blob([fileContent]), true).then(
+        function(result) {
+          console.log(result.fileURL);
+          showInfo('Content was successfully saved to file.');
+        }, function(e) {
+          showInfo(e.message);
+        }
+      );
     }
 
     function uploadFile() {

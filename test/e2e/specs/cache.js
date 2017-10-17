@@ -1,7 +1,8 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../src/backendless'
 import { wait } from '../helpers/promise'
+
+const Backendless = sandbox.Backendless
 
 function Foo(opts) {
   Object.assign(this, opts || {})
@@ -24,7 +25,7 @@ describe('Backendless.Cache', function() {
 
   it('put and get', function() {
     return Promise.resolve()
-      .then(() => Backendless.Persistence.of(Foo).save(cacheValues.customType))
+      .then(() => Backendless.Data.of(Foo).save(cacheValues.customType))
       //put all keys to cache
       .then(() => Promise.all(cacheKeys.map(key => Backendless.Cache.put(key, cacheValues[key]))))
       //get and validate each key in cache
@@ -59,7 +60,7 @@ describe('Backendless.Cache', function() {
   })
 
   // TODO: this test gives floating results, need to be discovered
-  xit('ttl', function() {
+  it('ttl', function() {
     const a = 'a'
     const b = 'b'
 

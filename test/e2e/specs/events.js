@@ -1,6 +1,7 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../src/backendless'
+
+const Backendless = sandbox.Backendless
 
 describe('Backendless.Events', function() {
 

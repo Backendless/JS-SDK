@@ -1,0 +1,8 @@
+**/dist/**
+**/lib/**
+**/es/**
+**/node_modules/**
+**/webpack.config*.js
+test/tsd.**
+src/backendless.js
+backendless.d.ts

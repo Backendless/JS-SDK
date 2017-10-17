@@ -1,6 +1,7 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../src/backendless'
+
+const Backendless = sandbox.Backendless
 
 const sortedNames = files => files && files.map(file => file.name).sort() || []
 
@@ -111,7 +112,7 @@ describe('Backendless.Files', function() {
     it('non-existing path', function() {
       return expect(Files.remove('/non/existing/file')).to.eventually
         .be.rejected
-        .and.eventually.have.property("code", 6000)
+        .and.eventually.have.property('code', 6000)
     })
   })
 
@@ -267,7 +268,7 @@ describe('Backendless.Files', function() {
         const fileDir = 'upload-test'
         const filePath = fileDir + '/' + fileName
 
-        return expect(Files.upload(new File([""], fileName), fileDir, true)).to.eventually.have.string(filePath)
+        return expect(Files.upload(new File([''], fileName), fileDir, true)).to.eventually.have.string(filePath)
         //TODO: check file existence, try to re-upload
       }
     })

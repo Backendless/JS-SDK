@@ -1,6 +1,7 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../src/backendless'
+
+const Backendless = sandbox.Backendless
 
 const createPoint = (metadata, categories = [], lat, lon) => ({
   metadata,
@@ -407,8 +408,8 @@ describe('Backendless.Geo', function() {
       }
 
       const fenceAction = {
-        type     : "EVENT",
-        eventname: "colorado"
+        type     : 'EVENT',
+        eventname: 'colorado'
       }
 
       return Promise.resolve()

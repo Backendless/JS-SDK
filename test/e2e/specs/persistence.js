@@ -1,6 +1,7 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
-import Backendless from '../../../src/backendless'
+
+const Backendless = sandbox.Backendless
 
 function Foo() {
 }
@@ -23,11 +24,9 @@ const users = {
   }
 }
 
-describe('Persistence', function() {
+describe('Data', function() {
   let consoleApi
   let appId
-
-  let Persistence
 
   const insertRecord = (tableName, record) =>
     consoleApi.tables.createRecord(appId, { name: tableName }, record)
@@ -51,7 +50,6 @@ describe('Persistence', function() {
   beforeEach(function() {
     consoleApi = this.consoleApi
     appId = this.app.id
-    Persistence = Backendless.Persistence
   })
 
   it('Create new table', function() {
@@ -59,7 +57,7 @@ describe('Persistence', function() {
     entity.firstName = 'First'
     entity.lastName = 'Last'
 
-    return Persistence.of(Foo).save(entity).then(result => {
+    return Backendless.Data.of(Foo).save(entity).then(result => {
       expect(result).to.be.instanceof(Foo)
       expect(result.objectId).to.be.a('string')
       expect(result.firstName).to.be.equal(entity.firstName)
@@ -72,7 +70,7 @@ describe('Persistence', function() {
     entity.firstName = 'Bill'
     entity.lastName = 'Gates'
 
-    const db = Persistence.of(Foo)
+    const db = Backendless.Data.of(Foo)
 
     return db.save(entity)
       .then(() => entity.firstName = 'Ron')
@@ -84,7 +82,7 @@ describe('Persistence', function() {
   })
 
   it('Remove record', function() {
-    const db = Persistence.of('TableToTestDeletion')
+    const db = Backendless.Data.of('TableToTestDeletion')
     let toRemove
 
     return Promise.resolve()
@@ -106,7 +104,7 @@ describe('Persistence', function() {
   })
 
   it('Add record to Users table', function() {
-    const db = Persistence.of(Backendless.User)
+    const db = Backendless.Data.of(Backendless.User)
 
     const user = {
       email   : 'ringo@starr.co',
@@ -126,18 +124,20 @@ describe('Persistence', function() {
   })
 
   it('Possible to get persistence of Users using string signature', function() {
-    const Users = Persistence.of('Users')
+    const db = Backendless.Data.of('Users')
 
     return Promise.resolve()
       .then(insertUsers)
-      .then(() => Users.find())
+      .then(() => db.find())
       .then(users => {
-        users.forEach(object => expect(object).to.be.an.instanceof(Users.constructor))
+        users.forEach(object => {
+          expect(object).to.be.an.instanceof(Backendless.User)
+        })
       })
   })
 
   it('Check instance of objects from Users table', function() {
-    const db = Persistence.of(Backendless.User)
+    const db = Backendless.Data.of(Backendless.User)
 
     return Promise.resolve()
       .then(insertUsers)
@@ -148,7 +148,7 @@ describe('Persistence', function() {
   })
 
   it('Update table record with invalid data type for properties', function() {
-    const db = Persistence.of('Blackstar')
+    const db = Backendless.Data.of('Blackstar')
 
     return Promise.resolve()
       .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
@@ -166,7 +166,7 @@ describe('Persistence', function() {
   })
 
   it('Remove object with wrong type of objectId', function() {
-    const db = Persistence.of('Blackstar')
+    const db = Backendless.Data.of('Blackstar')
     const expectedError = 'Invalid value for the "value" argument. ' +
       'The argument must contain only string or object values'
 
@@ -176,7 +176,7 @@ describe('Persistence', function() {
       .catch(error => expect(error.message).to.be.equal(expectedError))
   })
 
-  it('Save object with Backendless.Persistence.save() notation', function() {
+  it('Save object with Backendless.Data.save() notation', function() {
     const record = {
       name : 'David',
       email: 'david@bowie.co.ua'
@@ -184,7 +184,7 @@ describe('Persistence', function() {
 
     return Promise.resolve()
       .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => Persistence.save('Blackstar', record))
+      .then(() => Backendless.Data.save('Blackstar', record))
       .then(result => {
         expect(result.name).to.be.equal(record.name)
         expect(result.email).to.be.equal(record.email)
@@ -193,7 +193,7 @@ describe('Persistence', function() {
   })
 
   it('Save object with boolean property', function() {
-    const db = Persistence.of('Blackstar')
+    const db = Backendless.Data.of('Blackstar')
     const record = {
       boolCol: true
     }
@@ -208,7 +208,7 @@ describe('Persistence', function() {
   })
 
   it('Save object with int property', function() {
-    const db = Persistence.of('Blackstar')
+    const db = Backendless.Data.of('Blackstar')
     const record = {
       integerCol: 42
     }
@@ -223,7 +223,7 @@ describe('Persistence', function() {
   })
 
   it('Save object with double property', function() {
-    const db = Persistence.of('Blackstar')
+    const db = Backendless.Data.of('Blackstar')
     const record = {
       doubleCol: Math.random() * 10
     }
@@ -238,7 +238,7 @@ describe('Persistence', function() {
   })
 
   it('Save object with String property', function() {
-    const db = Persistence.of('Blackstar')
+    const db = Backendless.Data.of('Blackstar')
     const record = {
       stringCol: 'string value'
     }
@@ -257,7 +257,7 @@ describe('Persistence', function() {
     entity.firstName = 'Bill'
     entity.lastName = 'Gates'
 
-    const db = Persistence.of(Foo)
+    const db = Backendless.Data.of(Foo)
 
     return db.save(entity)
       .then(result => entity = result)
@@ -270,7 +270,7 @@ describe('Persistence', function() {
   })
 
   it('Find Record By Non Existing objectId', function() {
-    const db = Persistence.of('Blackstar')
+    const db = Backendless.Data.of('Blackstar')
 
     return Promise.resolve()
       .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
@@ -281,7 +281,7 @@ describe('Persistence', function() {
   })
 
   it('Find with Where clause', function() {
-    const db = Persistence.of(Backendless.User)
+    const db = Backendless.Data.of(Backendless.User)
     const query = Backendless.DataQueryBuilder.create().setWhereClause('name like \'%Lennon%\'')
 
     return Promise.resolve()
@@ -294,7 +294,7 @@ describe('Persistence', function() {
   })
 
   it('Find with properties', function() {
-    const db = Persistence.of('TableWithPagination')
+    const db = Backendless.Data.of('TableWithPagination')
     const query = Backendless.DataQueryBuilder.create().setProperties(['name'])
 
     return Promise.resolve()
@@ -307,7 +307,7 @@ describe('Persistence', function() {
   })
 
   it('Find with non existing properties', function() {
-    const db = Persistence.of('TableWithPagination')
+    const db = Backendless.Data.of('TableWithPagination')
     const query = Backendless.DataQueryBuilder.create().setProperties(['nonExistingProp']) //.setSortBy('counter').setPageSize(50)
 
     return Promise.resolve()
@@ -319,7 +319,7 @@ describe('Persistence', function() {
   })
 
   it('Find First', function() {
-    const db = Persistence.of('TestFindFirst')
+    const db = Backendless.Data.of('TestFindFirst')
 
     return Promise.resolve()
       .then(() => insertRecord('TestFindFirst', { counter: 0, name: 'First' }))
@@ -332,7 +332,7 @@ describe('Persistence', function() {
   })
 
   it('Find Last', function() {
-    const db = Persistence.of('TestFindLast')
+    const db = Backendless.Data.of('TestFindLast')
 
     return Promise.resolve()
       .then(() => insertRecord('TestFindLast', { counter: 0, name: 'First' }))
@@ -343,6 +343,7 @@ describe('Persistence', function() {
         expect(result.name).to.be.equal('Last')
       })
   })
+
 
   /**********************
    *  BULK OPERATIONS   *
@@ -373,7 +374,7 @@ describe('Persistence', function() {
     let TestTable
 
     beforeEach(() => {
-        TestTable = Persistence.of(TestTableName)
+        TestTable = Backendless.Data.of(TestTableName)
         testDataItems = []
 
         let saveAction = Promise.resolve()
@@ -415,68 +416,8 @@ describe('Persistence', function() {
     })
   })
 
-  /****************
-   *  RELATIONS   *
-   ****************/
-
-  describe('Tables with relations', function() {
-    let parent
-    let child
-    let grandchild
-    let ParentTable
-    let ChildTable
-
-    const save = name => Persistence.of(name).save({})
-    const queryWithRelationDepth = depth => Backendless.DataQueryBuilder.create().setRelationsDepth(depth).build()
-
-    beforeEach(() => {
-        ParentTable = Persistence.of('Parent')
-        ChildTable = Persistence.of('Child')
-
-        return Promise.resolve()
-          .then(() => save('Parent').then(result => parent = result))
-          .then(() => save('Child').then(result => child = result))
-          .then(() => save('GrandChild').then(result => grandchild = result))
-          .then(() => ParentTable.addRelation(parent.objectId, 'child:Child:1', [child]))
-          .then(() => ChildTable.addRelation(child.objectId, 'grandChild:GrandChild:1', [grandchild]))
-      }
-    )
-
-    it('Find with relations depth 0', function() {
-      const query = queryWithRelationDepth(0)
-
-      return Promise.resolve()
-        .then(() => ParentTable.findById(parent.objectId, query))
-        .then(result => {
-          expect(result).to.have.property('child').that.have.to.be.null
-        })
-    })
-
-    it('Find with relations depth 1', function() {
-      const query = queryWithRelationDepth(1)
-
-      return Promise.resolve()
-        .then(() => ParentTable.findById(parent.objectId, query))
-        .then(result => {
-          expect(result).to.have.property('child').that.have.to.be.not.null
-          expect(result.child).to.have.property('grandChild').that.have.to.be.null
-        })
-    })
-
-    it('Find with relations depth 2', function() {
-      const query = queryWithRelationDepth(2)
-
-      return Promise.resolve()
-        .then(() => ParentTable.findById(parent.objectId, query))
-        .then(result => {
-          expect(result).to.have.property('child').that.have.to.be.not.null
-          expect(result.child).to.have.property('grandChild').that.have.to.be.not.null
-        })
-    })
-  })
-
   it('Find first/last on empty table', function() {
-    const db = Persistence.of('EmptyTable')
+    const db = Backendless.Data.of('EmptyTable')
 
     return Promise.resolve()
       .then(() => db.findFirst())
@@ -486,7 +427,7 @@ describe('Persistence', function() {
   })
 
   it('Find with offset greater than the max number of records', function() {
-    const db = Persistence.of('TableWithPagination')
+    const db = Backendless.Data.of('TableWithPagination')
     const query = Backendless.DataQueryBuilder.create().setOffset(500)
 
     return Promise.resolve()
@@ -501,7 +442,7 @@ describe('Persistence', function() {
   it('Retrieves Properties of table', function() {
     return Promise.resolve()
       .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => Persistence.describe('Blackstar'))
+      .then(() => Backendless.Data.describe('Blackstar'))
       .then(schema => {
         schema.forEach(schemaObject => expect(schemaObject).to.have.all.keys([
           'name', 'required', 'type', 'defaultValue', 'relatedTable', 'customRegex', 'autoLoad', 'isPrimaryKey'
@@ -510,13 +451,13 @@ describe('Persistence', function() {
   })
 
   it('Retrieves Properties of non existing table', function() {
-    return expect(Persistence.describe('NonExistingTable'))
+    return expect(Backendless.Data.describe('NonExistingTable'))
       .to.eventually.be.rejected
       .and.eventually.to.have.property('code', 1009)
   })
 
   it('Sort by', function() {
-    const db = Persistence.of('TableWithPagination')
+    const db = Backendless.Data.of('TableWithPagination')
     const query = Backendless.DataQueryBuilder.create().setSortBy('counter').setPageSize(100)
 
     return Promise.resolve()
@@ -531,7 +472,7 @@ describe('Persistence', function() {
   })
 
   it('Retrieve object count', function() {
-    const db = Persistence.of('TableWithPagination')
+    const db = Backendless.Data.of('TableWithPagination')
     const whereClause = Backendless.DataQueryBuilder.create().setWhereClause('counter < 50')
 
     return Promise.resolve()
@@ -543,7 +484,7 @@ describe('Persistence', function() {
   })
 
   it('Retrieving nextPage', function() {
-    const db = Persistence.of('TableWithPagination')
+    const db = Backendless.Data.of('TableWithPagination')
     const query = Backendless.DataQueryBuilder.create().setSortBy('counter')
 
     return Promise.resolve()
@@ -561,159 +502,5 @@ describe('Persistence', function() {
       })
   })
 
-  it('Set relations', function() {
-    const joeThePlumber = {
-      name    : 'Joe',
-      age     : 27,
-      phone   : '1-972-5551212',
-      title   : 'Plumber',
-      ___class: 'Contact'
-    }
 
-    const address = {
-      street  : '123 Main St.',
-      city    : 'Denver',
-      state   : 'Colorado',
-      ___class: 'Address'
-    }
-
-    const contactStore = Persistence.of('Contact')
-    const addressStore = Persistence.of('Address')
-
-    Promise.all([
-      contactStore.save(joeThePlumber),
-      addressStore.save(address)
-    ])
-      .then(([savedContact, savedAddress]) => {
-        return contactStore.setRelation(savedContact, 'address:Address', [savedAddress])
-      })
-      .then(result => {
-        console.log(result)
-      })
-  })
-
-  /****************
-   * PERMISSIONS  *
-   ****************/
-
-  describe('Permissions', function() {
-    sandbox.forSuite()
-
-    const roleName = 'AuthenticatedUser'
-    let Permissions
-    let user
-
-    before(function() {
-      Permissions = Backendless.Data.Permissions
-
-      const db = Backendless.Persistence.of(Backendless.User)
-
-      return Promise.resolve()
-        .then(() => this.consoleApi.tables.createRecord(this.app.id, { name: 'Users' }, users.john))
-        .then(() => db.findFirst())
-        .then(result => user = result)
-    })
-
-    describe('FIND', function() {
-
-      describe('GRANT', function() {
-
-        it('user', function() {
-          return Permissions.FIND.grantUser(user.objectId, user)
-        })
-
-        it('role', function() {
-          return Permissions.FIND.grantRole(roleName, user)
-        })
-
-        it('all users', function() {
-          return Permissions.FIND.grant(user)
-        })
-      })
-
-      describe('DENY', function() {
-
-        it('user', function() {
-          return Permissions.FIND.denyUser(user.objectId, user)
-        })
-
-        it('role', function() {
-          return Permissions.FIND.denyRole(roleName, user)
-        })
-
-        it('all users', function() {
-          return Permissions.FIND.deny(user)
-        })
-      })
-    })
-
-    describe('REMOVE', function() {
-
-      describe('GRANT', function() {
-
-        it('user', function() {
-          return Permissions.REMOVE.grantUser(user.objectId, user)
-        })
-
-        it('role', function() {
-          return Permissions.REMOVE.grantRole(roleName, user)
-        })
-
-        it('all users', function() {
-          return Permissions.REMOVE.grant(user)
-        })
-      })
-
-      describe('DENY', function() {
-
-        it('user', function() {
-          return Permissions.REMOVE.denyUser(user.objectId, user)
-        })
-
-        it('role', function() {
-          return Permissions.REMOVE.denyRole(roleName, user)
-        })
-
-        it('all users', function() {
-          return Permissions.REMOVE.deny(user)
-        })
-      })
-    })
-
-    describe('UPDATE', function() {
-
-      describe('GRANT', function() {
-
-        it('user', function() {
-          return Permissions.UPDATE.grantUser(user.objectId, user)
-        })
-
-        it('role', function() {
-          return Permissions.UPDATE.grantRole(roleName, user)
-        })
-
-        it('all users', function() {
-          return Permissions.UPDATE.grant(user)
-        })
-      })
-
-      describe('DENY', function() {
-
-        it('user', function() {
-          return Permissions.UPDATE.denyUser(user.objectId, user)
-        })
-
-        it('role', function() {
-          return Permissions.UPDATE.denyRole(roleName, user)
-        })
-
-        it('all users', function() {
-          return Permissions.UPDATE.deny(user)
-        })
-      })
-    })
-  })
 })
-
-
-
