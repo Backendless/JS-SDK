@@ -10,12 +10,11 @@
     "dist",
     "lib",
     "es",
-    "src",
-    "backendless.d.ts"
+    "src"
   ],
   "typings": "backendless.d.ts",
   "scripts": {
-    "dev": "watch 'npm run build:commonjs' ./src",
+    "dev": "watch 'npm run build:umd' ./src",
     "clean": "rimraf lib dist es",
     "lint": "eslint src --fix",
     "check": "npm run lint && npm run test",
@@ -29,9 +28,8 @@
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/backendless.js",
     "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/backendless.min.js",
-    "copy": "copyup src/* dist",
     "bannerize": "bannerize ./dist/*.js --banner=./banner.ejs",
-    "prepublish": "npm run clean && npm run copy && npm run build && npm run bannerize"
+    "prepublish": "npm run clean && npm run build && npm run bannerize"
   },
   "repository": {
     "type": "git",
