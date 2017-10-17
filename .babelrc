@@ -4,6 +4,7 @@
     "stage-1"
   ],
   "plugins": [
+    "transform-object-assign",
     "transform-decorators-legacy"
   ]
 }
