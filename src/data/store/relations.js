@@ -66,7 +66,7 @@ function manageRelation(method, className, parent, columnName, children, asyncHa
 }
 
 function buildRelationUrl(className, relation) {
-  let url = Urls.dataTable(className) + Utils.toUri(relation.parentId, relation.columnName)
+  let url = Urls.dataTableObjectRelation(className, relation.parentId, relation.columnName)
 
   if (relation.whereClause) {
     url += '?' + Utils.toQueryParams({ where: relation.whereClause })
@@ -110,7 +110,7 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     query.push('where=' + encodeURIComponent(dataQuery.condition))
   }
 
-  let url = Urls.dataTable(this.className) + Utils.toUri(parentObjectId, relationName)
+  let url = Urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
 
   if (asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, dataQuery.relationModel))

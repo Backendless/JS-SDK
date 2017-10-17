@@ -1,19 +1,15 @@
-import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
 
-export function addCategory(name /**, async */) {
+export function addCategory(name, asyncHandler) {
   if (!name) {
     throw new Error('Category name is required.')
   }
 
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-
   const result = Request.put({
     url         : Urls.geoCategory(name),
-    isAsync     : isAsync,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 
   return (typeof result.result === 'undefined') ? result : result.result

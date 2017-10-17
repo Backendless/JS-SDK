@@ -5,10 +5,20 @@ import Request from '../request'
 import { validateQueryObject } from './query-validator'
 import { toQueryParams } from './query-params'
 
-export function getGeopointCount(fenceName, query /**, async */) {
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-  query = buildCountQueryObject(arguments, isAsync)
+export function getGeopointCount(fenceName, query, asyncHandler) {
+  if (Utils.isObject(fenceName)) {
+    asyncHandler = query
+    query = fenceName
+    fenceName = undefined
+  }
+
+  if (!Utils.isObject(query)) {
+    throw new Error('Geo query must be specified')
+  }
+
+  if (fenceName) {
+    query['geoFence'] = fenceName
+  }
 
   validateQueryObject(query)
 
@@ -16,27 +26,7 @@ export function getGeopointCount(fenceName, query /**, async */) {
 
   return Request.get({
     url         : url,
-    isAsync     : isAsync,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
-}
-
-function buildCountQueryObject(args, isAsync) {
-  args = isAsync ? Array.prototype.slice.call(args, 0, -1) : args
-
-  let query
-  let fenceName
-
-  if (args.length === 1) {
-    query = args[0]
-  }
-
-  if (args.length === 2) {
-    fenceName = args[0]
-    query = args[1]
-
-    query['geoFence'] = fenceName
-  }
-
-  return query
 }

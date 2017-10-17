@@ -70,29 +70,6 @@ const Utils = {
     return result.join('&')
   },
 
-  toUri() {
-    //TODO: refactor it
-    let uri = ''
-    let arg
-
-    for (let i = 0; i < arguments.length; i++) {
-      arg = arguments[i]
-
-      if (!arg) {
-        continue
-      }
-
-      if (Utils.isArray(arg)) {
-        uri += this.toUri.apply(this, arg)
-      } else if (Utils.isString(arg)) {
-        uri += '/'
-        uri += encodeURIComponent(arg)
-      }
-    }
-
-    return uri
-  },
-
   tryParseJSON(s) {
     try {
       return typeof s === 'string' ? JSON.parse(s) : s

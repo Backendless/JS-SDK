@@ -1,14 +1,10 @@
-import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
 
-export function getCategories(/** async */) {
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
-
+export function getCategories(asyncHandler) {
   return Request.get({
     url         : Urls.geoCategories(),
-    isAsync     : isAsync,
-    asyncHandler: responder
+    isAsync     : !!asyncHandler,
+    asyncHandler: asyncHandler
   })
 }
