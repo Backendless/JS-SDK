@@ -1,4 +1,6 @@
+
 import Async from '../../request/async'
+import Utils from '../../utils'
 
 import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
@@ -8,6 +10,8 @@ export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyn
 }
 
 export const loginWithFacebookSdk = (fieldsMapping, stayLoggedIn, options) => {
+  Utils.checkPromiseSupport()
+
   return new Promise((resolve, reject) => {
     if (!FB) {
       return reject(new Error('Facebook SDK not found'))

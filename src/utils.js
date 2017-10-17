@@ -150,6 +150,8 @@ const Utils = {
 
   promisified(method) {
     return function() {
+      Utils.checkPromiseSupport()
+
       const args = [].slice.call(arguments)
       const context = this
       const fn = typeof method === 'function' ? method : context[method]
@@ -169,6 +171,15 @@ const Utils = {
       const fn = typeof method === 'function' ? method : context[method]
 
       return fn.apply(context, arguments)
+    }
+  },
+
+  checkPromiseSupport() {
+    if (typeof Promise === 'undefined') {
+      throw new Error(
+        'This browser doesn\'t support Promise API. Please use polyfill.\n' +
+        'More info is in the Backendless JS-SDK docs: https://backendless.com/docs/js/doc.html#sync-and-async-calls'
+      )
     }
   }
 }
