@@ -69,7 +69,7 @@ const Backendless = {
 
   setupDevice: Device.setup,
 
-  browser    : getUserAgent(),
+  browser: getUserAgent(),
 
   Request,
 
@@ -120,6 +120,10 @@ const Backendless = {
   LocalCache,
   ///--------BACKWARD COMPATIBILITY-------///
   ///-------------------------------------///
+}
+
+if (root) {
+  root.Backendless = Backendless
 }
 
 export default Backendless
