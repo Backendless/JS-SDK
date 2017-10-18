@@ -13,7 +13,6 @@ import {
   reset
 } from './methods'
 
-
 export default class Counter {
   constructor(name) {
     if (!name || !Utils.isString(name)) {
@@ -24,11 +23,12 @@ export default class Counter {
   }
 }
 
-const withCounterName = method => (...args) => method(this.name, ...args)
+const withCounterName = method => function(...args) {
+  return method(this.name, ...args)
+}
 
 //TODO: will be removed when remove sync methods
 const namespaceLabel = 'Backendless.Counter.of(<CounterName>)'
-
 
 Object.setPrototypeOf(Counter.prototype, {
 
