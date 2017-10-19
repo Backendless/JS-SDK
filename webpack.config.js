@@ -22,7 +22,7 @@ const uglify = new webpack.optimize.UglifyJsPlugin({
 })
 
 module.exports = {
-  devtool: isProd ? 'source-map' : false,
+  devtool: 'source-map',
   target : 'node',
 
   module: {
