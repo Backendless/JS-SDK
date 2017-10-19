@@ -1,5 +1,5 @@
-import Urls from '../urls'
-import Request from '../request'
+import Urls from '../../urls'
+import Request from '../../request'
 
 export function getMessageStatus(messageId, asyncHandler) {
   if (!messageId) {

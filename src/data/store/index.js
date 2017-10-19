@@ -2,6 +2,7 @@ import Utils from '../../utils'
 import { deprecated } from '../../decorators'
 import User from '../../users/user'
 
+import RTDataStore from './rt-store'
 import { loadRelations, setRelation, addRelation, deleteRelation } from './relations'
 import { bulkCreate, bulkUpdate, bulkDelete } from './bulk'
 import { find, findById, findFirst, findLast } from './find'
@@ -96,6 +97,26 @@ Object.setPrototypeOf(DataStore.prototype, {
   @deprecated(namespaceLabel, `${namespaceLabel}.bulkDelete`)
   bulkDeleteSync: Utils.synchronized(bulkDelete),
   bulkDelete    : Utils.promisified(bulkDelete),
+
+  //--------------------------------------//
+  //----------------- RT -----------------//
+
+  addCreateListener   : RTDataStore.proxyRTDataStore('addCreateListener'),
+  removeCreateListener: RTDataStore.proxyRTDataStore('removeCreateListener'),
+
+  addUpdateListener   : RTDataStore.proxyRTDataStore('addUpdateListener'),
+  removeUpdateListener: RTDataStore.proxyRTDataStore('removeUpdateListener'),
+
+  addDeleteListener   : RTDataStore.proxyRTDataStore('addDeleteListener'),
+  removeDeleteListener: RTDataStore.proxyRTDataStore('removeDeleteListener'),
+
+  addErrorListener   : RTDataStore.proxyRTDataStore('addErrorListener'),
+  removeErrorListener: RTDataStore.proxyRTDataStore('removeErrorListener'),
+
+  removeAllListeners: RTDataStore.proxyRTDataStore('removeAllListeners'),
+
+  //----------------- RT -----------------//
+  //--------------------------------------//
 
 })
 

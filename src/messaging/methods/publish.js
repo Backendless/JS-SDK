@@ -1,8 +1,8 @@
-import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
-import DeliveryOptions from './delivery-options'
-import PublishOptions from './publish-options'
+import Utils from '../../utils'
+import Urls from '../../urls'
+import Request from '../../request'
+import DeliveryOptions from '../helpers/delivery-options'
+import PublishOptions from '../helpers/publish-options'
 
 export function publish(channelName, message, publishOptions, deliveryTarget/**, async */) {
   const responder = Utils.extractResponder(arguments)

@@ -16,12 +16,7 @@ const Data = {
   LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
 
   of: function(model) {
-    const tableName = Utils.isString(model) ? model : Utils.getClassName(model)
-
-    //TODO: don't cache storage
-    //TODO: always return new instance of Data Store
-    //TODO: caching will be removed when RT is released
-    return StoresCache[tableName] = StoresCache[tableName] || new Store(model)
+    return new Store(model)
   },
 
   reset() {

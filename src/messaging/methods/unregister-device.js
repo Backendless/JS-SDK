@@ -1,6 +1,6 @@
-import Urls from '../urls'
-import Device from '../device'
-import Request from '../request'
+import Urls from '../../urls'
+import Device from '../../device'
+import Request from '../../request'
 
 export function unregisterDevice(asyncHandler) {
   const device = Device.required()

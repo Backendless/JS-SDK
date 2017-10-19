@@ -1,7 +1,7 @@
-import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
-import Bodyparts from './body-parts'
+import Utils from '../../utils'
+import Urls from '../../urls'
+import Request from '../../request'
+import Bodyparts from '../helpers/body-parts'
 
 export function sendEmail(subject, bodyParts, recipients, attachments/**, async */) {
   const responder = Utils.extractResponder(arguments)

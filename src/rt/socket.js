@@ -1,63 +1,37 @@
 import io from 'socket.io-client'
 
-import Backendless from '../bundle'
+import LocalVars from '../local-vars'
 
-const getRTServerHost = () => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve({ host: 'http://localhost:5000', token: 'some-token' })
-    }, 300)
-  })
-}
+let socketPromise = null
+let initializer = null
 
-const logMessage = (type, event, data) => {
-  if (Backendless.debugMode) {
-    console.log(`[${type}] - [event: ${event}] - arguments: ${JSON.stringify(data)} `)
-  }
-}
+export default class RTSocket {
 
-let rtSocketPromise = null
-
-let initializer
-
-export class RTSocket {
-
-  static onInit(_initializer) {
+  static setInitializer(_initializer) {
     initializer = _initializer
   }
 
   static destroy() {
-    if (rtSocketPromise) {
-      rtSocketPromise.then(rtClient => rtClient.socket.close())
-      rtSocketPromise = undefined
+    if (socketPromise) {
+      socketPromise.then(rtSocket => rtSocket.socket.close())
+      socketPromise = null
     }
 
-    initializer = undefined
+    initializer = null
   }
 
-  static proxy(rtClientMethod) {
+  static starterMethod(methodName) {
     return (...args) => {
-      if (!rtSocketPromise) {
-        const { userToken, onInit } = initializer()
-
-        rtSocketPromise = getRTServerHost().then(({ host, token }) => {
-          const rtSocket = new RTSocket(host, token, userToken)
-
-
-          onInit()
-
-          return rtSocket
-        })
+      if (!socketPromise) {
+        socketPromise = launchSocket()
       }
 
-      rtSocketPromise.then(rtSocket => rtSocket[rtClientMethod](...args))
+      socketPromise.then(rtSocket => rtSocket[methodName](...args))
     }
   }
 
   constructor(host, token, userToken) {
-    this.host = host
-    this.token = token
-    this.socket = io(this.host, { path: `/${Backendless.applicationId}/${this.token}`, query: { userToken } })
+    this.socket = io(host, { path: `/${LocalVars.applicationId}/${token}`, query: { userToken } })
 
     this.events = {}
     this.subscribedEvents = {}
@@ -84,12 +58,44 @@ export class RTSocket {
     this.events[event] = callback
       ? this.events[event].filter(f => f !== callback)
       : []
+
+    if (this.subscribedEvents[event] && !this.events[event].length) {
+      this.socket.off(event)
+      this.subscribedEvents[event] = false
+    }
   }
 
-  emit(event, options) {
-    logMessage('TO SERVER', event, options)
+  emit(event, data) {
+    logMessage('TO SERVER', event, data)
 
-    this.socket.emit(event, options)
+    this.socket.emit(event, data)
   }
 
+}
+
+function getSocketServerHost() {
+  //TODO: temporary solution
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve({ host: 'http://localhost:5000', token: 'some-token' })
+    }, 300)
+  })
+}
+
+function launchSocket() {
+  const { userToken, onInit } = initializer()
+
+  return getSocketServerHost().then(({ host, token }) => {
+    const rtSocket = new RTSocket(host, token, userToken)
+
+    onInit()
+
+    return rtSocket
+  })
+}
+
+function logMessage(type, event, data) {
+  if (LocalVars.debugMode) {
+    console.log(`[${type}] - [event: ${event}] - arguments: ${JSON.stringify(data)} `)
+  }
 }

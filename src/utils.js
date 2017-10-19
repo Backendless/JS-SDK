@@ -181,7 +181,20 @@ const Utils = {
         'More info is in the Backendless JS-SDK docs: https://backendless.com/docs/js/doc.html#sync-and-async-calls'
       )
     }
-  }
+  },
+
+  mirrorKeys(obj) {
+    const mirroredObject = {}
+
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        mirroredObject[key] = key
+      }
+    }
+
+    return mirroredObject
+  },
+
 }
 
 function classWrapper(obj) {

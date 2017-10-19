@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import { RTUtils } from './utils'
+import RTUtils from './utils'
 
 const Events = Utils.mirrorKeys({
   MET_REQ: null,
@@ -22,7 +22,7 @@ const method = type => function(data) {
   return this.send(type, data)
 }
 
-export class Methods {
+export default class RTMethods {
 
   constructor(rtClient) {
     this.rtClient = rtClient

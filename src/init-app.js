@@ -2,9 +2,12 @@ import LocalVars from './local-vars'
 import LoggingCollector from './logging/collector'
 import GeoTrackerMonitor from './geo/tracker-monitor'
 import Data from './data'
+import { RTProvider } from './rt'
 import { setLocalCurrentUser } from './users/current-user'
 
 export function initApp(appId, secretKey) {
+  RTProvider.init()
+
   LoggingCollector.reset()
   GeoTrackerMonitor.reset()
 

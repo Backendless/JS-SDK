@@ -1,21 +1,26 @@
 import Utils from '../utils'
 import { deprecated } from '../decorators'
 
-import PublishOptionsHeaders from './publish-options-header'
-import PublishOptions from './publish-options'
-import DeliveryOptions from './delivery-options'
-import Bodyparts from './body-parts'
-import SubscriptionOptions from './subscriptions-options'
 import RSO from './rso'
 import Channel from './channel'
 
-import { publish } from './publish'
-import { sendEmail } from './send-email'
-import { cancel } from './cancel'
-import { registerDevice } from './register-device'
-import { unregisterDevice } from './unregister-device'
-import { getRegistrations } from './get-registration'
-import { getMessageStatus } from './get-message-status'
+import {
+  PublishOptionsHeaders,
+  PublishOptions,
+  DeliveryOptions,
+  Bodyparts,
+  SubscriptionOptions,
+} from './helpers'
+
+import {
+  publish,
+  sendEmail,
+  cancel,
+  registerDevice,
+  unregisterDevice,
+  getRegistrations,
+  getMessageStatus,
+} from './methods'
 
 const Messaging = {
 

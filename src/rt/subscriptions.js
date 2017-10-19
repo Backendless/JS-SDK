@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import { RTUtils } from './utils'
+import RTUtils from './utils'
 
 const Events = Utils.mirrorKeys({
   SUB_ON : null,
@@ -25,11 +25,13 @@ const Types = Utils.mirrorKeys({
   SUBSCRIPTION_SCOPE: null,
 })
 
+const SOCKET_RECONNECT_EVENT = 'reconnect'
+
 const subscription = type => function(data, onData, callbacks) {
   return this.subscribe(type, data, onData, callbacks)
 }
 
-export class Subscriptions {
+export default class RTSubscriptions {
 
   constructor(rtClient) {
     this.rtClient = rtClient
@@ -40,14 +42,16 @@ export class Subscriptions {
   initialize() {
     if (!this.initialized) {
       this.rtClient.on(Events.SUB_RES, data => this.onSubscriptionResponse(data))
-      this.rtClient.onReconnect(() => this.reconnectSubscriptions())
+      this.rtClient.on(SOCKET_RECONNECT_EVENT, () => this.reconnectSubscriptions())
 
       this.initialized = true
     }
   }
 
   reconnectSubscriptions() {
-    Object.keys(this.subscriptions).forEach(subscriptionId => this.onSubscription(subscriptionId))
+    Object
+      .keys(this.subscriptions)
+      .forEach(subscriptionId => this.onSubscription(subscriptionId))
   }
 
   subscribe(name, options, onData, { onError, onStop, onReady } = {}) {

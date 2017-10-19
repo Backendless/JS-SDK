@@ -1,41 +1,39 @@
-import Backendless from '../bundle'
-import Utils from '../utils'
-
-import RTConnector from './rt-connector'
+import Utils from '../../utils'
+import { RTProvider, RTScopeConnector } from '../../rt'
 
 const ListenerTypes = Utils.mirrorKeys({
   MESSAGE: null
 })
 
-export default class Channel extends RTConnector {
+export default class RTChannelConnector extends RTScopeConnector {
 
   get connectSubscriber() {
-    return Backendless.RT.subscriptions.connectToPubSub
+    return RTProvider.subscriptions.connectToPubSub
   }
 
   get usersSubscriber() {
-    return Backendless.RT.subscriptions.onPubSubCommand
+    return RTProvider.subscriptions.onPubSubCommand
   }
 
   get commandSubscriber() {
-    return Backendless.RT.subscriptions.onPubSubUserStatus
+    return RTProvider.subscriptions.onPubSubUserStatus
   }
 
   get commandSender() {
-    return Backendless.RT.methods.sendPubSubCommand
+    return RTProvider.methods.sendPubSubCommand
   }
 
-  @RTConnector.delayedOperation()
+  @RTScopeConnector.delayedOperation()
   addMessageListener(selector, callback) {
     if (typeof selector === 'function') {
       callback = selector
       selector = undefined
     }
 
-    this.addSubscription(ListenerTypes.MESSAGE, Backendless.RT.subscriptions.onPubSubMessage, callback, { selector })
+    this.addSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, callback, { selector })
   }
 
-  @RTConnector.delayedOperation()
+  @RTScopeConnector.delayedOperation()
   removeMessageListener(selector, callback) {
     if (typeof selector === 'function') {
       callback = selector
@@ -59,16 +57,6 @@ export default class Channel extends RTConnector {
     }
 
     this.stopSubscription(ListenerTypes.MESSAGE, { argumentsMatcher })
-  }
-
-  publish(message, publishOptions, deliveryTarget) {
-    publishOptions = { ...publishOptions }
-
-    if (publishOptions.subtopic) {
-      publishOptions.subtopic = this.options.subtopic
-    }
-
-    return Backendless.Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
   }
 
 }
