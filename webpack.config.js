@@ -17,12 +17,13 @@ const uglify = new webpack.optimize.UglifyJsPlugin({
   },
   output    : {
     screw_ie8: false
-  }
+  },
+  sourceMap : true
 })
 
 module.exports = {
-  devtool: 'inline-source-map',
-  target: 'node',
+  devtool: isProd ? 'source-map' : false,
+  target : 'node',
 
   module: {
     rules: [
