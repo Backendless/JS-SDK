@@ -1,4 +1,5 @@
-import { publish } from '../methods/publish'
+import Messaging from '../index'
+import { PublishOptions } from '../helpers'
 
 import ChannelConnector from './connector'
 
@@ -9,13 +10,10 @@ class Channel {
   }
 
   publish(message, publishOptions, deliveryTarget) {
-    publishOptions = { ...publishOptions }
+    publishOptions = publishOptions || new PublishOptions()
+    publishOptions.subtopic = this.options.subtopic
 
-    if (publishOptions.subtopic) {
-      publishOptions.subtopic = this.options.subtopic
-    }
-
-    return publish(this.options.name, message, publishOptions, deliveryTarget)
+    return Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
   }
 
 }

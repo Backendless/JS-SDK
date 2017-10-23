@@ -77,7 +77,7 @@ function getSocketServerHost() {
   //TODO: temporary solution
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve({ host: 'http://localhost:5000', token: 'some-token' })
+      resolve({ host: `http://${window.location.hostname}:5000`, token: 'some-token' })
     }, 300)
   })
 }

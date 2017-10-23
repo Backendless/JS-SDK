@@ -12,15 +12,24 @@ export default class RTChannelConnector extends RTScopeConnector {
   }
 
   get usersSubscriber() {
-    return RTProvider.subscriptions.onPubSubCommand
+    return RTProvider.subscriptions.onPubSubUserStatus
   }
 
   get commandSubscriber() {
-    return RTProvider.subscriptions.onPubSubUserStatus
+    return RTProvider.subscriptions.onPubSubCommand
   }
 
   get commandSender() {
     return RTProvider.methods.sendPubSubCommand
+  }
+
+  getScopeOptions() {
+    const { name, subtopic } = this.initiator.options
+
+    return {
+      channel: name,
+      subtopic
+    }
   }
 
   @RTScopeConnector.delayedOperation()

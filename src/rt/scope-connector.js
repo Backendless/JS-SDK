@@ -63,6 +63,10 @@ export default class RTScopeConnector extends RTListeners {
     return !!this.connection && this.connection.isReady()
   }
 
+  getSubscriptionOptions() {
+    return this.getScopeOptions()
+  }
+
   getScopeOptions() {
     return this.initiator.options
   }

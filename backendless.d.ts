@@ -428,6 +428,29 @@ declare module __Backendless {
         bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise<string>;
         bulkDeleteSync(objectsArray:string|Array<string>|Array<Object>):string;
 
+        addCreateListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
+        addCreateListener(callback:(obj:Object) => void):Backendless.DataStore;
+
+        removeCreateListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
+        removeCreateListener(whereClause:string):Backendless.DataStore;
+
+        addUpdateListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
+        addUpdateListener(callback:(obj:Object) => void):Backendless.DataStore;
+
+        removeUpdateListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
+        removeUpdateListener(whereClause:string):Backendless.DataStore;
+
+        addDeleteListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
+        addDeleteListener(callback:(obj:Object) => void):Backendless.DataStore;
+
+        removeDeleteListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
+        removeDeleteListener(whereClause:string):Backendless.DataStore;
+
+        addErrorListener(callback:(obj:Object) => void):Backendless.DataStore;
+
+        removeErrorListener(callback?:(obj:Object) => void):Backendless.DataStore;
+
+        removeAllListeners():Backendless.DataStore;
     }
 
     /**
@@ -541,8 +564,8 @@ declare module __Backendless {
         restUrl:string;
         channelProperties:Object;
 
-        subscribeSync(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
-        subscribe(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise<Backendless.SubscriptionI>;
+        subscribe(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):ChannelClass;
+        subscribe(channelName:string, subscriptionOptions:Backendless.SubscriptionOptions, subscriptionCallback:(data:Object) => void):ChannelClass;
 
         publishSync(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Object;
         publish(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Promise<Object>;
@@ -928,6 +951,43 @@ declare module __Backendless {
         restUrl:string;
         proxy:Proxy;
         cancelSubscription():void;
+    }
+
+    class ChannelClass {
+
+        publish(message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Promise<Object>;
+
+        connect():ChannelClass
+
+        disconnect():ChannelClass;
+
+        isConnected():boolean;
+
+        addConnectListener(callback:() => void):ChannelClass;
+
+        removeConnectListener(callback?:() => void):ChannelClass;
+
+        addErrorListener(callback:(error:Object) => void):ChannelClass;
+
+        removeErrorListener(callback?:(error:Object) => void):ChannelClass;
+
+        addMessageListener(selector:string, callback:(error:Object) => void):ChannelClass;
+        addMessageListener(callback:(error:Object) => void):ChannelClass;
+
+        removeMessageListener(selector:string, callback?:(error:Object) => void):ChannelClass;
+        removeMessageListener(callback?:(error:Object) => void):ChannelClass;
+
+        addCommandListener(callback:(command:Object) => void):ChannelClass;
+
+        removeCommandListener(callback?:(command:Object) => void):ChannelClass;
+
+        addUserStatusListener(callback:(userStates:Object) => void):ChannelClass;
+
+        removeUserStatusListener(callback?:(userStates:Object) => void):ChannelClass;
+
+        removeAllListeners():ChannelClass;
+
+        send(command:Object):Promise<void>;
     }
 
     interface GeoQueryI {

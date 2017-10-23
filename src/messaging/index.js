@@ -35,9 +35,15 @@ const Messaging = {
   },
 
   subscribe: function(channelName, subscriptionCallback, subscriptionOptions) {
+    if (Utils.isObject(subscriptionCallback)) {
+      const callback = subscriptionOptions
+      subscriptionOptions = subscriptionCallback
+      subscriptionCallback = callback
+    }
+
     const { subtopic, selector } = subscriptionOptions || {}
 
-    const channel = new Channel({ channel: channelName, subtopic })
+    const channel = new Channel({ name: channelName, subtopic })
 
     if (subscriptionCallback) {
       channel.addMessageListener(selector, subscriptionCallback)

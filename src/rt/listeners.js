@@ -16,7 +16,7 @@ export default class RTListeners {
     const subscriptionsStack = this.subscriptions[type] = this.subscriptions[type] || []
 
     const options = {
-      ...this.getScopeOptions(),
+      ...this.getSubscriptionOptions(),
       ...extraOptions
     }
 
@@ -28,7 +28,7 @@ export default class RTListeners {
     subscriptionsStack.push({ callback, extraOptions, subscription })
   }
 
-  getScopeOptions() {
+  getSubscriptionOptions() {
     return {}
   }
 

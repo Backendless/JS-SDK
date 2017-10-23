@@ -21,12 +21,14 @@ const RTProvider = {
     this.methods = new Methods(this)
   },
 
-  socketInitializer: () => ({
-    onInit   : this.onSocketInit,
-    userToken: getCurrentUserToken()
-  }),
+  socketInitializer() {
+    return {
+      onInit   : RTProvider.onSocketInit.bind(RTProvider),
+      userToken: getCurrentUserToken()
+    }
+  },
 
-  onSocketInit: () => {
+  onSocketInit() {
     this.initialized = true
 
     this.delayedMethods.forEach(([method, args]) => this[method](...args))
