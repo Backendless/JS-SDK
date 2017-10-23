@@ -11,7 +11,7 @@ export function getObjectCount(condition, asyncHandler) {
   }
 
   if (condition instanceof DataQueryBuilder) {
-    condition = condition.build().condition
+    condition = condition.build().condition || undefined
   }
 
   return Request.get({

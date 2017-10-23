@@ -29,7 +29,7 @@ const Utils = {
     return Object.prototype.toString.call(obj).slice(8, -1) === 'Date'
   },
 
-  isBrowser: (new Function('try {return this===window;}catch(e){ return false;}'))(),
+  isBrowser: isBrowser(),
 
   castArray(value) {
     if (Utils.isArray(value)) {
@@ -195,6 +195,10 @@ const Utils = {
     return mirroredObject
   },
 
+}
+
+function isBrowser(){
+  return (typeof self === 'object' && self.self === self) && (typeof window === 'object' && window === self)
 }
 
 function classWrapper(obj) {

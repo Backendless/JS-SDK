@@ -13,7 +13,7 @@ export function put(key, value, timeToLive, asyncHandler) {
     timeToLive = undefined
   }
 
-  if (timeToLive && !Utils.isNumber(key)) {
+  if (timeToLive && !Utils.isNumber(timeToLive)) {
     throw new Error('Cache timeToLive must be Number')
   }
 

@@ -55,6 +55,10 @@ const sendRequest = config => {
   } else {
     const contentType = config.data ? 'application/json' : 'application/x-www-form-urlencoded'
 
+    if (contentType === 'application/json' && config.data && typeof config.data !== 'string') {
+      config.data = JSON.stringify(config.data)
+    }
+
     xhr.setRequestHeader('Content-Type', contentType)
   }
 
