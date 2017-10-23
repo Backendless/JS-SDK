@@ -5,6 +5,7 @@
 declare module __Backendless {
     import Backendless = __Backendless;
 
+    var debugMode:boolean;
     var serverURL:string;
     var applicationId:string;
     var secretKey:string;
@@ -19,7 +20,7 @@ declare module __Backendless {
     /**
      * @dictionary
      */
-    var PublishOptionsHeaders:{ [key: string]: string; };
+    var PublishOptionsHeaders:{ [key:string]:string; };
 
 
     /**
@@ -105,7 +106,7 @@ declare module __Backendless {
      * @constructor
      */
     class Async {
-        constructor(onSuccess?:(data?:Object) => void, onError?:((data:Object) => void) | Object, context?:Object);
+        constructor(onSuccess?:(data?:Object) => void, onError?:((data:Object) => void)|Object, context?:Object);
 
         success(data:Object):void;
 
@@ -224,7 +225,7 @@ declare module __Backendless {
      */
     class GeoCluster extends Backendless.GeoPoint {
         totalPoints:number;
-        geoQuery:Backendless.GeoQuery | Backendless.RectangleGeoQueryI | Backendless.CircleGeoQueryI;
+        geoQuery:Backendless.GeoQuery|Backendless.RectangleGeoQueryI|Backendless.CircleGeoQueryI;
     }
 
     /**
@@ -322,7 +323,7 @@ declare module __Backendless {
     class Proxy {
         eventHandlers:Object;
 
-        on(eventName:string, handler:(data:any)=>any):void;
+        on(eventName:string, handler:(data:any) => any):void;
 
         fireEvent(eventName:string, data:any):void;
     }
@@ -830,23 +831,23 @@ declare module __Backendless {
     }
 
     interface PersistencePermissionI {
-        grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-        grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        grantUserSync(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+        grantUser(userId:string, dataItem:ExistDataItemI):Promise<Backendless.ExistDataItemI>;
 
-        grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-        grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        grantRoleSync(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+        grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
 
-        grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-        grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        grantSync(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+        grant(dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
 
-        denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-        denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        denyUserSync(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+        denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
 
-        denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-        denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        denyRoleSync(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+        denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
 
-        denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-        deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        denySync(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
+        deny(dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
     }
 
     interface FilePermissionI {
@@ -927,6 +928,7 @@ declare module __Backendless {
         subscriptionId:string;
         restUrl:string;
         proxy:Proxy;
+
         cancelSubscription():void;
     }
 
