@@ -23,9 +23,16 @@ const uglify = new webpack.optimize.UglifyJsPlugin({
 
 module.exports = {
   devtool: 'source-map',
-  target : 'node',
+
+  target : 'web',
+
+  node: {
+    Buffer: false
+  },
 
   module: {
+    noParse: /backendless-request/,
+
     rules: [
       {
         test   : /\.js$/,
