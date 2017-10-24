@@ -44,9 +44,9 @@ export default class RTScopeConnector extends RTListeners {
   connect() {
     if (!this.isConnected()) {
       this.connection = this.connectSubscriber(this.getScopeOptions(), null, {
-        onError: this.onError,
-        onReady: this.onConnect,
-        onStop : this.onDisconnect
+        onError: error => this.onError(error),
+        onReady: () => this.onConnect(),
+        onStop : () => this.onDisconnect()
       })
     }
   }
@@ -71,7 +71,7 @@ export default class RTScopeConnector extends RTListeners {
     return this.initiator.options
   }
 
-  onConnect = () => {
+  onConnect() {
     this.delayedOperations.forEach(operation => operation())
     this.delayedOperations = []
 
@@ -80,7 +80,7 @@ export default class RTScopeConnector extends RTListeners {
     listenersStack.forEach(callback => callback())
   }
 
-  onDisconnect = () => {
+  onDisconnect() {
     this.connection = null
   }
 

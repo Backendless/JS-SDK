@@ -25,13 +25,13 @@ export default class RemoteSharedObjectConnector extends RTScopeConnector {
     return RTProvider.methods.sendRSOCommand
   }
 
-  onConnect = () => {
+  onConnect(){
     this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvokes, this.onInvoke)
 
     super.onConnect.apply(this, arguments)
   }
 
-  onDisconnect = () => {
+  onDisconnect() {
     this.stopSubscription(ListenerTypes.INVOKE, { callback: this.onInvoke })
 
     super.onDisconnect.apply(this, arguments)

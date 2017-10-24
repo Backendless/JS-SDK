@@ -31,7 +31,10 @@ export default class RTSocket {
   }
 
   constructor(host, token, userToken) {
-    this.socket = io(host, { path: `/${LocalVars.applicationId}/${token}`, query: { userToken } })
+    this.socket = io(`${host}/${LocalVars.applicationId}`, {
+      path: `/${LocalVars.applicationId}`,
+      query: { token, userToken }
+    })
 
     this.events = {}
     this.subscribedEvents = {}
