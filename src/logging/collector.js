@@ -7,17 +7,56 @@ import Logger from './logger'
 
 let lastFlushListeners
 
+function flush(asyncHandler) {
+  if (LoggingCollector.pool.length) {
+    if (LoggingCollector.flushInterval) {
+      clearTimeout(LoggingCollector.flushInterval)
+    }
+
+    let listeners
+
+    const cb = method => function() {
+      listeners.forEach(callbacks => {
+        callbacks[method].apply(null, arguments)
+      })
+
+      if (listeners === lastFlushListeners) {
+        lastFlushListeners = null
+      }
+    }
+
+    if (asyncHandler) {
+      listeners = lastFlushListeners = lastFlushListeners ? lastFlushListeners.splice(0) : []
+      listeners.push(asyncHandler)
+    }
+
+    console.log('LoggingCollector.pool', LoggingCollector.pool)
+
+    Request.put({
+      isAsync     : !!asyncHandler,
+      asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
+      url         : Urls.logging(),
+      data        : LoggingCollector.pool
+    })
+
+    LoggingCollector.pool = []
+
+  } else if (asyncHandler) {
+    if (lastFlushListeners) {
+      lastFlushListeners.push(asyncHandler)
+    } else {
+      setTimeout(asyncHandler.success, 0)
+    }
+  }
+}
+
 const LoggingCollector = {
-  loggers      : {},
-  pool         : [],
-  numOfMessages: 10,
-  timeFrequency: 1,
 
   reset() {
-    this.loggers = {}
-    this.pool = []
-    this.numOfMessages = 10
-    this.timeFrequency = 1
+    LoggingCollector.loggers = {}
+    LoggingCollector.pool = []
+    LoggingCollector.numOfMessages = 10
+    LoggingCollector.timeFrequency = 1
   },
 
   getLogger(loggerName) {
@@ -25,84 +64,45 @@ const LoggingCollector = {
       throw new Error("Invalid 'loggerName' value. LoggerName must be a string value")
     }
 
-    return this.loggers[loggerName] = this.loggers[loggerName] || new Logger(loggerName)
+    return LoggingCollector.loggers[loggerName] = LoggingCollector.loggers[loggerName] || new Logger(loggerName)
   },
 
   push(logger, logLevel, message, exception) {
     const messageObj = {
       logger,
-      logLevel,
       message,
       exception,
+      'log-level': logLevel,
       timestamp: Date.now()
     }
 
-    this.pool.push(messageObj)
+    LoggingCollector.pool.push(messageObj)
 
-    this.checkMessagesLen()
+    LoggingCollector.checkMessagesLen()
   },
 
-  checkMessagesLen: function() {
-    if (this.pool.length >= this.numOfMessages) {
-      this.sendRequest()
+  checkMessagesLen() {
+    if (LoggingCollector.pool.length >= LoggingCollector.numOfMessages) {
+      LoggingCollector.sendRequest()
     }
   },
 
-  flush    : Utils.promisified('_flush'),
-  flushSync: Utils.synchronized('_flush'),
+  flush    : Utils.promisified(flush),
+  flushSync: Utils.synchronized(flush),
 
-  _flush: function(asyncHandler) {
-    if (this.pool.length) {
-      if (this.flushInterval) {
-        clearTimeout(this.flushInterval)
-      }
-
-      let listeners
-
-      const cb = method => function() {
-        listeners.forEach(callbacks => {
-          callbacks[method].apply(null, arguments)
-        })
-
-        if (listeners === lastFlushListeners) {
-          lastFlushListeners = null
-        }
-      }
-
-      if (asyncHandler) {
-        listeners = lastFlushListeners = lastFlushListeners ? lastFlushListeners.splice(0) : []
-        listeners.push(asyncHandler)
-      }
-
-      Request.put({
-        isAsync     : !!asyncHandler,
-        asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
-        url         : Urls.logging(),
-        data        : this.pool
-      })
-
-      this.pool = []
-
-    } else if (asyncHandler) {
-      if (lastFlushListeners) {
-        lastFlushListeners.push(asyncHandler)
-      } else {
-        setTimeout(asyncHandler.success, 0)
-      }
-    }
+  sendRequest() {
+    LoggingCollector.flushInterval = setTimeout(() => LoggingCollector.flush(), LoggingCollector.timeFrequency * 1000)
   },
 
-  sendRequest: function() {
-    this.flushInterval = setTimeout(() => this.flush(), this.timeFrequency * 1000)
-  },
-
-  setLogReportingPolicy: function(numOfMessages, timeFrequency) {
-    this.numOfMessages = numOfMessages
-    this.timeFrequency = timeFrequency
+  setLogReportingPolicy(numOfMessages, timeFrequency) {
+    LoggingCollector.numOfMessages = numOfMessages
+    LoggingCollector.timeFrequency = timeFrequency
 
     //TODO: check when set new timeFrequency
-    this.checkMessagesLen()
+    LoggingCollector.checkMessagesLen()
   }
 }
+
+LoggingCollector.reset()
 
 export default LoggingCollector
