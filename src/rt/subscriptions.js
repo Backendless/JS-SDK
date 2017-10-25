@@ -21,14 +21,12 @@ const Types = Utils.mirrorKeys({
   RSO_COMMANDS: null,
   RSO_INVOKES : null,
   RSO_USERS   : null,
-
-  SUBSCRIPTION_SCOPE: null,
 })
 
 const SOCKET_RECONNECT_EVENT = 'reconnect'
 
-const subscription = type => function(data, onData, callbacks) {
-  return this.subscribe(type, data, onData, callbacks)
+const subscription = type => function(options, onData, callbacks) {
+  return this.subscribe(type, options, onData, callbacks)
 }
 
 export default class RTSubscriptions {
