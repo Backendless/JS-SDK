@@ -4,6 +4,7 @@ export default class DataQuery {
 
     this.properties = args.properties || []
     this.condition = args.condition || null
+    this.havingClause = args.havingClause || null
     this.options = args.options || null
     this.url = args.url || null
   }
