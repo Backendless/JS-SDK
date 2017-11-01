@@ -1,17 +1,15 @@
-import Utils from '../../utils'
 import { RTProvider, RTListeners } from '../../rt'
 
 const RTDataStores = new WeakMap()
-
-const ListenerTypes = Utils.mirrorKeys({
-  CHANGES: null,
-  ERROR  : null,
-})
 
 const ChangesTypes = {
   CREATED: 'created',
   UPDATED: 'updated',
   DELETED: 'deleted',
+
+  BULK_CREATED: 'bulkCreated',
+  BULK_UPDATED: 'bulkUpdated',
+  BULK_DELETED: 'bulkDeleted',
 }
 
 export default class RTDataStore extends RTListeners {
@@ -54,13 +52,37 @@ export default class RTDataStore extends RTListeners {
     this.removeChangesListener(ChangesTypes.DELETED, whereClause, callback)
   }
 
+  addBulkCreateListener(callback) {
+    this.addChangesListener(ChangesTypes.BULK_CREATED, callback)
+  }
+
+  removeBulkCreateListener(callback) {
+    this.removeChangesListener(ChangesTypes.BULK_CREATED, callback)
+  }
+
+  addBulkUpdateListener(callback) {
+    this.addChangesListener(ChangesTypes.BULK_UPDATED, callback)
+  }
+
+  removeBulkUpdateListener(callback) {
+    this.removeChangesListener(ChangesTypes.BULK_UPDATED, callback)
+  }
+
+  addBulkDeleteListener(callback) {
+    this.addChangesListener(ChangesTypes.BULK_DELETED, callback)
+  }
+
+  removeBulkDeleteListener(callback) {
+    this.removeChangesListener(ChangesTypes.BULK_DELETED, callback)
+  }
+
   addChangesListener(event, whereClause, callback) {
     if (typeof whereClause === 'function') {
       callback = whereClause
       whereClause = undefined
     }
 
-    this.addSubscription(ListenerTypes.CHANGES, RTProvider.subscriptions.onObjectsChanges, callback, {
+    this.addSubscription(event, RTProvider.subscriptions.onObjectsChanges, callback, {
       event,
       whereClause
     })
@@ -97,7 +119,7 @@ export default class RTDataStore extends RTListeners {
       return true
     }
 
-    this.stopSubscription(ListenerTypes.CHANGES, { argumentsMatcher })
+    this.stopSubscription(event, { argumentsMatcher })
   }
 }
 

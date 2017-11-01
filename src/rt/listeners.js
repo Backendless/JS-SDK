@@ -1,7 +1,6 @@
 import Utils from '../utils'
 
 const ListenerTypes = Utils.mirrorKeys({
-  CHANGES: null,
   ERROR  : null,
 })
 
