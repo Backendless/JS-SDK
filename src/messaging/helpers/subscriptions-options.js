@@ -1,3 +1,4 @@
+//TODO: should be removed
 export default class SubscriptionOptions {
   constructor(args) {
     args = args || {}

@@ -24,11 +24,10 @@ export default class RTChannelConnector extends RTScopeConnector {
   }
 
   getScopeOptions() {
-    const { name, subtopic } = this.initiator.options
+    const { name } = this.initiator.options
 
     return {
-      channel: name,
-      subtopic
+      channel: name
     }
   }
 
