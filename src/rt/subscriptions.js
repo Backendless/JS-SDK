@@ -52,7 +52,7 @@ export default class RTSubscriptions {
       .forEach(subscriptionId => this.onSubscription(subscriptionId))
   }
 
-  subscribe(name, options, onData, { onError, onStop, onReady } = {}) {
+  subscribe(name, options, { onData, onError, onStop, onReady }) {
     this.initialize()
     //TODO: make sure of unique subscriptionId
     const subscriptionId = RTUtils.generateUID()
@@ -101,7 +101,7 @@ export default class RTSubscriptions {
     }
   }
 
-  onSubscriptionResponse({ id, result, error }) {
+  onSubscriptionResponse({ id, data, error }) {
     const subscription = this.subscriptions[id]
 
     if (subscription) {
@@ -127,7 +127,7 @@ export default class RTSubscriptions {
         }
 
         if (subscription.onData) {
-          subscription.onData(result)
+          subscription.onData(data)
         }
       }
     }

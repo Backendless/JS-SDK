@@ -1,7 +1,7 @@
 import Utils from '../utils'
 
 const ListenerTypes = Utils.mirrorKeys({
-  ERROR  : null,
+  ERROR: null,
 })
 
 export default class RTListeners {
@@ -19,7 +19,8 @@ export default class RTListeners {
       ...extraOptions
     }
 
-    const subscription = subscriberFn(options, callback, {
+    const subscription = subscriberFn(options, {
+      onData : callback,
       onError: this.onError,
       onStop : () => this.subscriptions[type] = this.subscriptions[type].filter(s => s.subscription !== subscription),
     })

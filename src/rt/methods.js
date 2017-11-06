@@ -27,7 +27,7 @@ export default class RTMethods {
   constructor(rtClient) {
     this.rtClient = rtClient
 
-    this.callbacks = {}
+    this.invocations = {}
   }
 
   send(name, options) {
@@ -43,21 +43,21 @@ export default class RTMethods {
     this.rtClient.emit(Events.MET_REQ, methodData)
 
     return new Promise((resolve, reject) => {
-      this.callbacks[methodId] = { resolve, reject }
+      this.invocations[methodId] = { resolve, reject }
     })
   }
 
   onResponse = ({ id, error, result }) => {
-    if (this.callbacks[id]) {
-      const { resolve, reject } = this.callbacks[id]
+    if (this.invocations[id]) {
+      const invocation = this.invocations[id]
 
       if (error) {
-        reject(error)
+        invocation.reject(error)
       } else {
-        resolve(result)
+        invocation.resolve(result)
       }
 
-      delete this.callbacks[id]
+      delete this.invocations[id]
     }
   }
 
