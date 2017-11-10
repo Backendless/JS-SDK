@@ -5,100 +5,100 @@
 declare module __Backendless {
     import Backendless = __Backendless;
 
-    var debugMode:boolean;
-    var serverURL:string;
-    var applicationId:string;
-    var secretKey:string;
-    var appPath:string;
-    var XMLHttpRequest:any;
+    var debugMode: boolean;
+    var serverURL: string;
+    var applicationId: string;
+    var secretKey: string;
+    var appPath: string;
+    var XMLHttpRequest: any;
 
-    var browser:{
-        browser:string;
-        version:string;
+    var browser: {
+        browser: string;
+        version: string;
     };
 
     /**
      * @dictionary
      */
-    var PublishOptionsHeaders:{ [key:string]:string; };
+    var PublishOptionsHeaders: { [key: string]: string; };
 
 
     /**
      * @public
      * @type: Function
      **/
-    function initApp(applicationId:string, jsSecretKey:string):void;
+    function initApp(applicationId: string, jsSecretKey: string): void;
 
     /**
      * @public
      * @type: Function
      **/
-    function setupDevice(deviceProps:Object):void;
+    function setupDevice(deviceProps: Object): void;
 
     /**
      * @namespace Backendless.LocalCache
      **/
-    var LocalCache:Backendless.LocalCacheI;
+    var LocalCache: Backendless.LocalCacheI;
 
     /**
      * @namespace Backendless.Persistence
      **/
-    var Persistence:Backendless.PersistenceClass;
+    var Persistence: Backendless.PersistenceClass;
 
     /**
      * @namespace Backendless.Data
      **/
-    var Data:Backendless.PersistenceClass;
+    var Data: Backendless.PersistenceClass;
 
     /**
      * @namespace Backendless.UserService
      **/
-    var UserService:Backendless.UserServiceClass;
+    var UserService: Backendless.UserServiceClass;
 
     /**
      * @namespace Backendless.Geo
      **/
-    var Geo:Backendless.GeoClass;
+    var Geo: Backendless.GeoClass;
 
     /**
      * @namespace Backendless.Messaging
      **/
-    var Messaging:Backendless.MessagingClass;
+    var Messaging: Backendless.MessagingClass;
 
     /**
      * @namespace Backendless.Files
      **/
-    var Files:Backendless.FilesClass;
+    var Files: Backendless.FilesClass;
 
     /**
      * @namespace Backendless.Commerce
      **/
-    var Commerce:Backendless.CommerceClass;
+    var Commerce: Backendless.CommerceClass;
 
     /**
      * @namespace Backendless.Events
      **/
-    var Events:Backendless.EventsClass;
+    var Events: Backendless.EventsClass;
 
     /**
      * @namespace Backendless.Cache
      **/
-    var Cache:Backendless.CacheClass;
+    var Cache: Backendless.CacheClass;
 
     /**
      * @namespace Backendless.Counters
      **/
-    var Counters:Backendless.CountersClass;
+    var Counters: Backendless.CountersClass;
 
     /**
      * @namespace Backendless.CustomServices
      **/
-    var CustomServices:Backendless.CustomServicesClass;
+    var CustomServices: Backendless.CustomServicesClass;
 
     /**
      * @namespace Backendless.Logging
      **/
-    var Logging:LoggingI;
+    var Logging: LoggingI;
 
     /**
      * @private
@@ -106,11 +106,11 @@ declare module __Backendless {
      * @constructor
      */
     class Async {
-        constructor(onSuccess?:(data?:Object) => void, onError?:((data:Object) => void)|Object, context?:Object);
+        constructor(onSuccess?: (data?: Object) => void, onError?: ((data: Object) => void) | Object, context?: Object);
 
-        success(data:Object):void;
+        success(data: Object): void;
 
-        fault(data:Object):void;
+        fault(data: Object): void;
     }
 
     /**
@@ -119,10 +119,11 @@ declare module __Backendless {
      * @constructor
      */
     class User {
-        ___class:string;
-        username:string;
-        password:string;
-        email:string;
+        ___class: string;
+        objectId?: string;
+        username?: string;
+        password: string;
+        email?: string;
     }
 
     /**
@@ -131,16 +132,20 @@ declare module __Backendless {
      * @constructor
      */
     class DataQuery implements Backendless.DataQueryValueI {
-        properties:string[];
-        condition:string;
-        options:Object;
-        url:string;
+        properties: string[];
+        condition: string;
+        options: Object;
+        url: string;
 
-        addProperty(prop:string):void;
-        setOption(name:string, value:string|Array<string>|number):void;
-        setOptions(options:Object):void;
-        getOption(name:string):string|Array<string>|number;
-        toJSON():Object;
+        addProperty(prop: string): void;
+
+        setOption(name: string, value: string | Array<string> | number): void;
+
+        setOptions(options: Object): void;
+
+        getOption(name: string): string | Array<string> | number;
+
+        toJSON(): Object;
     }
 
     /**
@@ -149,24 +154,39 @@ declare module __Backendless {
      * @constructor
      */
     class DataQueryBuilder {
-        static create():Backendless.DataQueryBuilder;
+        static create(): Backendless.DataQueryBuilder;
 
-        setPageSize(pageSize:number):Backendless.DataQueryBuilder;
-        setOffset(offset:number):Backendless.DataQueryBuilder;
-        prepareNextPage():Backendless.DataQueryBuilder;
-        preparePreviousPage():Backendless.DataQueryBuilder;
-        getProperties():Array<string>;
-        setProperties(properties:string):Backendless.DataQueryBuilder;
-        addProperty(properties:string):Backendless.DataQueryBuilder;
-        getWhereClause():string;
-        setWhereClause(whereClause:string):Backendless.DataQueryBuilder;
-        getSortBy():Array<string>;
-        setSortBy(sortBy:string|Array<string>):Backendless.DataQueryBuilder;
-        getRelated():Array<string>;
-        setRelated(relations:string|Array<string>):Backendless.DataQueryBuilder;
-        getRelationsDepth():number;
-        setRelationsDepth(relationsDepth:number):Backendless.DataQueryBuilder;
-        build():Backendless.DataQueryValueI;
+        setPageSize(pageSize: number): Backendless.DataQueryBuilder;
+
+        setOffset(offset: number): Backendless.DataQueryBuilder;
+
+        prepareNextPage(): Backendless.DataQueryBuilder;
+
+        preparePreviousPage(): Backendless.DataQueryBuilder;
+
+        getProperties(): Array<string>;
+
+        setProperties(properties: string): Backendless.DataQueryBuilder;
+
+        addProperty(properties: string): Backendless.DataQueryBuilder;
+
+        getWhereClause(): string;
+
+        setWhereClause(whereClause: string): Backendless.DataQueryBuilder;
+
+        getSortBy(): Array<string>;
+
+        setSortBy(sortBy: string | Array<string>): Backendless.DataQueryBuilder;
+
+        getRelated(): Array<string>;
+
+        setRelated(relations: string | Array<string>): Backendless.DataQueryBuilder;
+
+        getRelationsDepth(): number;
+
+        setRelationsDepth(relationsDepth: number): Backendless.DataQueryBuilder;
+
+        build(): Backendless.DataQueryValueI;
     }
 
     /**
@@ -175,14 +195,18 @@ declare module __Backendless {
      * @constructor
      */
     class PagingQueryBuilder {
-        offset:number;
-        pageSize:number;
+        offset: number;
+        pageSize: number;
 
-        setPageSize(pageSize:number):PagingQueryBuilder;
-        setOffset(offset:number):PagingQueryBuilder;
-        prepareNextPage():PagingQueryBuilder;
-        preparePreviousPage():PagingQueryBuilder;
-        build():Object;
+        setPageSize(pageSize: number): PagingQueryBuilder;
+
+        setOffset(offset: number): PagingQueryBuilder;
+
+        prepareNextPage(): PagingQueryBuilder;
+
+        preparePreviousPage(): PagingQueryBuilder;
+
+        build(): Object;
     }
 
     /**
@@ -192,15 +216,21 @@ declare module __Backendless {
      */
 
     class LoadRelationsQueryBuilder {
-        static create():Backendless.LoadRelationsQueryBuilder;
-        static of(RelationModel:Object):Backendless.LoadRelationsQueryBuilder;
+        static create(): Backendless.LoadRelationsQueryBuilder;
 
-        setRelationName(relationName:string):Backendless.LoadRelationsQueryBuilder;
-        setPageSize(pageSize:number):Backendless.LoadRelationsQueryBuilder;
-        setOffset(offset:number):Backendless.LoadRelationsQueryBuilder;
-        prepareNextPage():Backendless.LoadRelationsQueryBuilder;
-        preparePreviousPage():Backendless.LoadRelationsQueryBuilder;
-        build():Backendless.DataQueryValueI;
+        static of(RelationModel: Object): Backendless.LoadRelationsQueryBuilder;
+
+        setRelationName(relationName: string): Backendless.LoadRelationsQueryBuilder;
+
+        setPageSize(pageSize: number): Backendless.LoadRelationsQueryBuilder;
+
+        setOffset(offset: number): Backendless.LoadRelationsQueryBuilder;
+
+        prepareNextPage(): Backendless.LoadRelationsQueryBuilder;
+
+        preparePreviousPage(): Backendless.LoadRelationsQueryBuilder;
+
+        build(): Backendless.DataQueryValueI;
     }
 
     /**
@@ -209,12 +239,12 @@ declare module __Backendless {
      * @constructor
      */
     class GeoPoint {
-        ___class:string;
-        objectId:string;
-        latitude:number;
-        longitude:number;
-        categories:string|string[];
-        metadata:Object;
+        ___class: string;
+        objectId: string;
+        latitude: number;
+        longitude: number;
+        categories: string | string[];
+        metadata: Object;
     }
 
     /**
@@ -224,8 +254,8 @@ declare module __Backendless {
      * @constructor
      */
     class GeoCluster extends Backendless.GeoPoint {
-        totalPoints:number;
-        geoQuery:Backendless.GeoQuery|Backendless.RectangleGeoQueryI|Backendless.CircleGeoQueryI;
+        totalPoints: number;
+        geoQuery: Backendless.GeoQuery | Backendless.RectangleGeoQueryI | Backendless.CircleGeoQueryI;
     }
 
     /**
@@ -234,14 +264,14 @@ declare module __Backendless {
      * @constructor
      */
     class GeoQuery implements Backendless.GeoQueryI {
-        categories:string|string[];
-        includeMetadata:boolean;
-        metadata:Object;
-        condition:string;
-        relativeFindMetadata:Object;
-        relativeFindPercentThreshold:number;
-        pageSize:number;
-        offset:number;
+        categories: string | string[];
+        includeMetadata: boolean;
+        metadata: Object;
+        condition: string;
+        relativeFindMetadata: Object;
+        relativeFindPercentThreshold: number;
+        pageSize: number;
+        offset: number;
     }
 
     /**
@@ -250,11 +280,11 @@ declare module __Backendless {
      * @constructor
      */
     class PublishOptions {
-        publisherId:string;
-        headers:Object;
-        subtopic:string;
+        publisherId: string;
+        headers: Object;
+        subtopic: string;
 
-        constructor(args?:Object);
+        constructor(args?: Object);
     }
 
     /**
@@ -263,14 +293,14 @@ declare module __Backendless {
      * @constructor
      */
     class DeliveryOptions {
-        publishPolicy:string;
-        pushBroadcast:number;
-        pushSinglecast:string[];
-        publishAt:number;
-        repeatEvery:number;
-        repeatExpiresAt:number;
+        publishPolicy: string;
+        pushBroadcast: number;
+        pushSinglecast: string[];
+        publishAt: number;
+        repeatEvery: number;
+        repeatExpiresAt: number;
 
-        constructor(args?:Object);
+        constructor(args?: Object);
     }
 
     /**
@@ -279,10 +309,10 @@ declare module __Backendless {
      * @constructor
      */
     class Bodyparts {
-        textmessage:string;
-        htmlmessage:string;
+        textmessage: string;
+        htmlmessage: string;
 
-        constructor(args?:Object);
+        constructor(args?: Object);
     }
 
     /**
@@ -291,11 +321,11 @@ declare module __Backendless {
      * @constructor
      */
     class SubscriptionOptions {
-        subscriberId:string;
-        subtopic:string;
-        selector:string;
+        subscriberId: string;
+        subtopic: string;
+        selector: string;
 
-        constructor(args?:Object);
+        constructor(args?: Object);
     }
 
     /**
@@ -303,17 +333,17 @@ declare module __Backendless {
      * @class Logger
      */
     class Logger {
-        debug(message:string):void;
+        debug(message: string): void;
 
-        info(message:string):void;
+        info(message: string): void;
 
-        warn(message:string):void;
+        warn(message: string): void;
 
-        error(message:string):void;
+        error(message: string): void;
 
-        fatal(message:string):void;
+        fatal(message: string): void;
 
-        trace(message:string):void;
+        trace(message: string): void;
     }
 
     /**
@@ -321,11 +351,11 @@ declare module __Backendless {
      * @class Proxy
      */
     class Proxy {
-        eventHandlers:Object;
+        eventHandlers: Object;
 
-        on(eventName:string, handler:(data:any) => any):void;
+        on(eventName: string, handler: (data: any) => any): void;
 
-        fireEvent(eventName:string, data:any):void;
+        fireEvent(eventName: string, data: any): void;
     }
 
     /**
@@ -333,23 +363,23 @@ declare module __Backendless {
      * @class PollingProxy
      */
     class PollingProxy extends Backendless.Proxy {
-        restUrl:string;
-        timer:number;
-        timeout:number;
-        interval:number;
-        xhr:XMLHttpRequest;
-        needReconnect:boolean;
-        responder:Async;
+        restUrl: string;
+        timer: number;
+        timeout: number;
+        interval: number;
+        xhr: XMLHttpRequest;
+        needReconnect: boolean;
+        responder: Async;
 
-        onMessage(data:any):void;
+        onMessage(data: any): void;
 
-        poll():void;
+        poll(): void;
 
-        close():void;
+        close(): void;
 
-        onTimeout():void;
+        onTimeout(): void;
 
-        onError():void;
+        onError(): void;
     }
 
     /**
@@ -357,14 +387,14 @@ declare module __Backendless {
      * @class SocketProxy
      */
     class SocketProxy extends Backendless.Proxy {
-        reconnectWithPolling:boolean;
-        socket:WebSocket;
+        reconnectWithPolling: boolean;
+        socket: WebSocket;
 
-        onMessage():void;
+        onMessage(): void;
 
-        onSocketClose(data):void;
+        onSocketClose(data): void;
 
-        close():void;
+        close(): void;
     }
 
     /**
@@ -372,62 +402,75 @@ declare module __Backendless {
      * @class DataStore
      */
     class DataStore {
-        model:Function|Object;
-        className:string;
-        restUrl:string;
+        model: Function | Object;
+        className: string;
+        restUrl: string;
 
-        constructor(name:string|Object|Function);
+        constructor(name: string | Object | Function);
 
-        save(obj:Object):Promise<Object>;
-        saveSync(obj:Object):Object;
+        save(obj: Object): Promise<Object>;
 
-        remove(id:Object|string):Promise<Object>;
-        removeSync(obj:Object|string):Object;
+        saveSync(obj: Object): Object;
 
-        find(obj?:Backendless.DataQueryBuilder):Promise<Object>;
-        findSync(obj?:Backendless.DataQueryBuilder):Array<Object>;
+        remove(id: Object | string): Promise<Object>;
 
-        findById(query:Object|string):Promise<Object>;
-        findByIdSync(query:Object|string):Object;
+        removeSync(obj: Object | string): Object;
 
-        findFirst(query?:Object):Promise<Object>;
-        findFirstSync(query?:Object):Object;
+        find(obj?: Backendless.DataQueryBuilder): Promise<Object>;
 
-        findLast(query?:Object):Promise<Object>;
-        findLastSync(query?:Object):Object;
+        findSync(obj?: Backendless.DataQueryBuilder): Array<Object>;
 
-        loadRelations(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Promise<Array<Object>>;
-        loadRelationsSync(parentObjectId:string, query:Backendless.LoadRelationsQueryBuilder):Array<Object>;
+        findById(query: Object | string): Promise<Object>;
 
-        getObjectCount(query?:Backendless.DataQueryBuilder|string):Promise<number>
-        getObjectCountSync(query?:Backendless.DataQueryBuilder|string):number
+        findByIdSync(query: Object | string): Object;
 
-        setRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
-        setRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
-        setRelation(parentObject:Object, columnName:string, whereClause:string):Promise<string>;
-        setRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):string;
-        setRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):string;
-        setRelationSync(parentObject:Object, columnName:string, whereClause:string):string;
+        findFirst(query?: Object): Promise<Object>;
 
-        addRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
-        addRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
-        addRelation(parentObject:Object, columnName:string, whereClause:string):Promise<string>;
-        addRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):string;
-        addRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):string;
-        addRelationSync(parentObject:Object, columnName:string, whereClause:string):string;
+        findFirstSync(query?: Object): Object;
 
-        deleteRelation(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):Promise<string>;
-        deleteRelation(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):Promise<string>;
-        deleteRelation(parentObject:Object, columnName:string, whereClause:string):Promise<string>;
-        deleteRelationSync(parentObject:Object, columnName:string, childObjectsArray:Array<Object>):string;
-        deleteRelationSync(parentObject:Object, columnName:string, childObjectIdArray:Array<string>):string;
-        deleteRelationSync(parentObject:Object, columnName:string, whereClause:string):string;
+        findLast(query?: Object): Promise<Object>;
 
-        bulkUpdate(templateObject:Object, whereClause:string):Promise<string>;
-        bulkUpdateSync(templateObject:Object, whereClause:string):string;
+        findLastSync(query?: Object): Object;
 
-        bulkDelete(objectsArray:string|Array<string>|Array<Object>):Promise<string>;
-        bulkDeleteSync(objectsArray:string|Array<string>|Array<Object>):string;
+        loadRelations(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<Array<Object>>;
+
+        loadRelationsSync(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Array<Object>;
+
+        getObjectCount(query?: Backendless.DataQueryBuilder | string): Promise<number>
+
+        getObjectCountSync(query?: Backendless.DataQueryBuilder | string): number
+
+        setRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
+        setRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
+        setRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+
+        setRelationSync(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): string;
+        setRelationSync(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): string;
+        setRelationSync(parentObject: Object, columnName: string, whereClause: string): string;
+
+        addRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
+        addRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
+        addRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+
+        addRelationSync(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): string;
+        addRelationSync(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): string;
+        addRelationSync(parentObject: Object, columnName: string, whereClause: string): string;
+
+        deleteRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
+        deleteRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
+        deleteRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+
+        deleteRelationSync(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): string;
+        deleteRelationSync(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): string;
+        deleteRelationSync(parentObject: Object, columnName: string, whereClause: string): string;
+
+        bulkUpdate(templateObject: Object, whereClause: string): Promise<string>;
+
+        bulkUpdateSync(templateObject: Object, whereClause: string): string;
+
+        bulkDelete(objectsArray: string | Array<string> | Array<Object>): Promise<string>;
+
+        bulkDeleteSync(objectsArray: string | Array<string> | Array<Object>): string;
 
     }
 
@@ -441,21 +484,25 @@ declare module __Backendless {
         /**
          * @namespace Backendless.Persistence.Permissions
          **/
-        Permissions:PersistencePermissionsClass;
+        Permissions: PersistencePermissionsClass;
 
-        of(model:string|Object|Function):Backendless.DataStore;
+        of(model: string | Object | Function): Backendless.DataStore;
 
-        save(model:Backendless.DataStore|string, data:Object):Promise<Object>;
-        saveSync(model:Backendless.DataStore|string, data:Object):Object;
+        save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
 
-        getView(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Promise<Object>;
-        getViewSync(viewName:string, whereClause?:string, pageSize?:number, offset?:number):Object;
+        saveSync(model: Backendless.DataStore | string, data: Object): Object;
 
-        describe(model:string|Object|Function):Promise<Object>;
-        describeSync(model:string|Object|Function):Object;
+        getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
 
-        callStoredProcedure(spName:string, argumentValues:Object|string):Promise<Object>;
-        callStoredProcedureSync(spName:string, argumentValues:Object|string):Object;
+        getViewSync(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Object;
+
+        describe(model: string | Object | Function): Promise<Object>;
+
+        describeSync(model: string | Object | Function): Object;
+
+        callStoredProcedure(spName: string, argumentValues: Object | string): Promise<Object>;
+
+        callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
     }
 
     /**
@@ -464,9 +511,9 @@ declare module __Backendless {
      * @refers {@link Backendless.Persistence.Permissions}
      */
     class PersistencePermissionsClass {
-        FIND:PersistencePermissionI;
-        REMOVE:PersistencePermissionI;
-        UPDATE:PersistencePermissionI;
+        FIND: PersistencePermissionI;
+        REMOVE: PersistencePermissionI;
+        UPDATE: PersistencePermissionI;
     }
 
     /**
@@ -475,62 +522,78 @@ declare module __Backendless {
      * @refers {@link Backendless.Geo}
      */
     class GeoClass {
-        restUrl:string;
+        restUrl: string;
 
-        UNITS:Object;
-        EARTH_RADIUS:number;
+        UNITS: Object;
+        EARTH_RADIUS: number;
 
-        savePointSync(point:Backendless.GeoPoint):Backendless.GeoPoint;
-        savePoint(point:Backendless.GeoPoint):Promise<Backendless.GeoPoint>;
+        savePointSync(point: Backendless.GeoPoint): Backendless.GeoPoint;
 
-        findSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        find(query:Backendless.GeoQueryI):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
+        savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
 
-        getGeopointCount(fenceName:string, query:Backendless.GeoQueryI):Promise<number>
-        getGeopointCount(query:Backendless.GeoQueryI):Promise<number>
-        getGeopointCountSync(fenceName:string, query:Backendless.GeoQueryI):number
-        getGeopointCountSync(query:Backendless.GeoQueryI):number
+        findSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
-        deletePointSync(point:string|Backendless.GeoPoint):string;
-        deletePoint(point:string|Backendless.GeoPoint):Promise<string>;
+        find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
-        loadMetadataSync(point:Backendless.GeoPoint|Backendless.GeoCluster):Object;
-        loadMetadata(point:Backendless.GeoPoint|Backendless.GeoCluster):Promise<Object>;
+        getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
+        getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
 
-        getClusterPointsSync(cluster:Backendless.GeoCluster):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        getClusterPoints(cluster:Backendless.GeoCluster):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
+        getGeopointCountSync(fenceName: string, query: Backendless.GeoQueryI): number
+        getGeopointCountSync(query: Backendless.GeoQueryI): number
 
-        getFencePointsSync(fenceName:string, query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        getFencePoints(fenceName:string, query:Backendless.GeoQueryI):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
+        deletePointSync(point: string | Backendless.GeoPoint): string;
 
-        relativeFindSync(query:Backendless.GeoQueryI):Array<Backendless.GeoPoint|Backendless.GeoCluster>;
-        relativeFind(query:Backendless.GeoQueryI):Promise<Array<Backendless.GeoPoint|Backendless.GeoCluster>>;
+        deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
 
-        addCategorySync(name:string):Backendless.GeoCategoryI;
-        addCategory(name:string):Promise<Backendless.GeoCategoryI>;
+        loadMetadataSync(point: Backendless.GeoPoint | Backendless.GeoCluster): Object;
 
-        deleteCategorySync(name:string):boolean;
-        deleteCategory(name:string):Promise<boolean>;
+        loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
 
-        getCategoriesSync():Array<Backendless.GeoCategoryI>;
-        getCategories():Promise<Array<Backendless.GeoCategoryI>>;
+        getClusterPointsSync(cluster: Backendless.GeoCluster): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
-        runOnStayActionSync(fenceName:string, point:Backendless.GeoPoint):Object;
-        runOnStayAction(fenceName:string, point:Backendless.GeoPoint):Promise<Object>;
+        getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
-        runOnExitActionSync(fenceName:string, point:Backendless.GeoPoint):Object;
-        runOnExitAction(fenceName:string, point:Backendless.GeoPoint):Promise<Object>;
+        getFencePointsSync(fenceName: string, query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
-        runOnEnterActionSync(fenceName:string, point:Backendless.GeoPoint):Object;
-        runOnEnterAction(fenceName:string, point:Backendless.GeoPoint):Promise<Object>;
+        getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
-        startGeofenceMonitoringWithInAppCallbackSync(fenceName:string, inAppCallback:Backendless.GeofenceMonitoringCallbacksI):void;
-        startGeofenceMonitoringWithInAppCallback(fenceName:string, inAppCallback:Backendless.GeofenceMonitoringCallbacksI):Promise<void>;
+        relativeFindSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
-        startGeofenceMonitoringWithRemoteCallbackSync(fenceName:string, point:Backendless.GeoPoint):void;
-        startGeofenceMonitoringWithRemoteCallback(fenceName:string, point:Backendless.GeoPoint):Promise<void>;
+        relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
-        stopGeofenceMonitoring(fenceName:string):void;
+        addCategorySync(name: string): Backendless.GeoCategoryI;
+
+        addCategory(name: string): Promise<Backendless.GeoCategoryI>;
+
+        deleteCategorySync(name: string): boolean;
+
+        deleteCategory(name: string): Promise<boolean>;
+
+        getCategoriesSync(): Array<Backendless.GeoCategoryI>;
+
+        getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
+
+        runOnStayActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        runOnExitActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        runOnEnterActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        startGeofenceMonitoringWithInAppCallbackSync(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): void;
+
+        startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
+
+        startGeofenceMonitoringWithRemoteCallbackSync(fenceName: string, point: Backendless.GeoPoint): void;
+
+        startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
+
+        stopGeofenceMonitoring(fenceName: string): void;
     }
 
     /**
@@ -539,32 +602,40 @@ declare module __Backendless {
      * @refers {@link Backendless.Messaging}
      */
     class MessagingClass {
-        restUrl:string;
-        channelProperties:Object;
+        restUrl: string;
+        channelProperties: Object;
 
-        subscribeSync(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Backendless.SubscriptionI;
-        subscribe(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):Promise<Backendless.SubscriptionI>;
+        subscribeSync(channelName: string, subscriptionCallback: (data: Object) => void, subscriptionOptions: Backendless.SubscriptionOptions): Backendless.SubscriptionI;
 
-        publishSync(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Object;
-        publish(channelName:string, message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Promise<Object>;
+        subscribe(channelName: string, subscriptionCallback: (data: Object) => void, subscriptionOptions: Backendless.SubscriptionOptions): Promise<Backendless.SubscriptionI>;
 
-        sendEmailSync(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments?:string[]):String;
-        sendEmail(subject:string, bodyParts:Backendless.Bodyparts, recipients:string[], attachments?:string[]):Promise<String>;
+        publishSync(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Object;
 
-        cancelSync(messageId:string):boolean;
-        cancel(messageId:string):Promise<boolean>;
+        publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        registerDeviceSync(deviceToken:string, channels?:string[], expiration?:number|Date):Object;
-        registerDevice(deviceToken:string, channels?:string[], expiration?:number|Date):Promise<Object>;
+        sendEmailSync(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): String;
 
-        getRegistrationsSync():Object;
-        getRegistrations():Promise<Object>;
+        sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
 
-        unregisterDeviceSync():Object;
-        unregisterDevice():Promise<Object>;
+        cancelSync(messageId: string): boolean;
 
-        getMessageStatusSync(messageId:string):boolean;
-        getMessageStatus(messageId:string):Promise<boolean>;
+        cancel(messageId: string): Promise<boolean>;
+
+        registerDeviceSync(deviceToken: string, channels?: string[], expiration?: number | Date): Object;
+
+        registerDevice(deviceToken: string, channels?: string[], expiration?: number | Date): Promise<Object>;
+
+        getRegistrationsSync(): Object;
+
+        getRegistrations(): Promise<Object>;
+
+        unregisterDeviceSync(): Object;
+
+        unregisterDevice(): Promise<Object>;
+
+        getMessageStatusSync(messageId: string): boolean;
+
+        getMessageStatus(messageId: string): Promise<boolean>;
     }
 
     /**
@@ -576,36 +647,45 @@ declare module __Backendless {
         /**
          * @namespace Backendless.Files.Permissions
          **/
-        Permissions:FilePermissions;
+        Permissions: FilePermissions;
 
-        restUrl:string;
+        restUrl: string;
 
-        saveFileSync(path:string, fileName:string, fileContent:Blob, overwrite?:boolean):boolean;
-        saveFile(path:string, fileName:string, fileContent:Blob, overwrite?:boolean):Promise<boolean>;
+        saveFileSync(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): boolean;
 
-        uploadSync(files:File|File[], path:string, overwrite?:boolean):void;
-        upload(files:File|File[], path:string, overwrite?:boolean):Promise<void>;
+        saveFile(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): Promise<boolean>;
 
-        listingSync(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Object;
-        listing(path:string, pattern?:string, recursively?:boolean, pageSize?:number, offset?:number):Promise<Object>;
+        uploadSync(files: File | File[], path: string, overwrite?: boolean): void;
 
-        renameFileSync(oldPathName:string, newName:string):Object;
-        renameFile(oldPathName:string, newName:string):Promise<Object>;
+        upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
 
-        moveFileSync(sourcePath:string, targetPath:string):Object;
-        moveFile(sourcePath:string, targetPath:string):Promise<Object>;
+        listingSync(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Object;
 
-        copyFileSync(sourcePath:string, targetPath:string):Object;
-        copyFile(sourcePath:string, targetPath:string):Promise<Object>;
+        listing(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 
-        removeSync(fileURL:string):void;
-        remove(fileURL:string):Promise<void>;
+        renameFileSync(oldPathName: string, newName: string): Object;
 
-        existsSync(path:string):Object;
-        exists(path:string):Promise<Object>;
+        renameFile(oldPathName: string, newName: string): Promise<Object>;
 
-        removeDirectorySync(path:string):void;
-        removeDirectory(path:string):Promise<void>;
+        moveFileSync(sourcePath: string, targetPath: string): Object;
+
+        moveFile(sourcePath: string, targetPath: string): Promise<Object>;
+
+        copyFileSync(sourcePath: string, targetPath: string): Object;
+
+        copyFile(sourcePath: string, targetPath: string): Promise<Object>;
+
+        removeSync(fileURL: string): void;
+
+        remove(fileURL: string): Promise<void>;
+
+        existsSync(path: string): Object;
+
+        exists(path: string): Promise<Object>;
+
+        removeDirectorySync(path: string): void;
+
+        removeDirectory(path: string): Promise<void>;
     }
 
     /**
@@ -614,9 +694,9 @@ declare module __Backendless {
      * @refers {@link Backendless.Files.Permissions}
      */
     class FilePermissions {
-        READ:FilePermissionI;
-        DELETE:FilePermissionI;
-        WRITE:FilePermissionI;
+        READ: FilePermissionI;
+        DELETE: FilePermissionI;
+        WRITE: FilePermissionI;
     }
 
     /**
@@ -625,16 +705,19 @@ declare module __Backendless {
      * @refers {@link Backendless.Commerce}
      */
     class CommerceClass {
-        restUrl:string;
+        restUrl: string;
 
-        validatePlayPurchaseSync(packageName:string, productId:string, token:string):Object;
-        validatePlayPurchase(packageName:string, productId:string, token:string):Promise<Object>;
+        validatePlayPurchaseSync(packageName: string, productId: string, token: string): Object;
 
-        cancelPlaySubscriptionSync(packageName:string, subscriptionId:string, token:string):Object;
-        cancelPlaySubscription(packageName:string, subscriptionId:string, token:string):Promise<Object>;
+        validatePlayPurchase(packageName: string, productId: string, token: string): Promise<Object>;
 
-        getPlaySubscriptionStatusSync(packageName:string, subscriptionId:string, token:string):Object;
-        getPlaySubscriptionStatus(packageName:string, subscriptionId:string, token:string):Promise<Object>;
+        cancelPlaySubscriptionSync(packageName: string, subscriptionId: string, token: string): Object;
+
+        cancelPlaySubscription(packageName: string, subscriptionId: string, token: string): Promise<Object>;
+
+        getPlaySubscriptionStatusSync(packageName: string, subscriptionId: string, token: string): Object;
+
+        getPlaySubscriptionStatus(packageName: string, subscriptionId: string, token: string): Promise<Object>;
     }
 
     /**
@@ -643,10 +726,11 @@ declare module __Backendless {
      * @refers {@link Backendless.Events}
      */
     class EventsClass {
-        restUrl:string;
+        restUrl: string;
 
-        dispatchSync(eventName:string, eventArgs:Object):Object;
-        dispatch(eventName:string, eventArgs:Object):Promise<Object>;
+        dispatchSync(eventName: string, eventArgs: Object): Object;
+
+        dispatch(eventName: string, eventArgs: Object): Promise<Object>;
     }
 
     /**
@@ -655,23 +739,29 @@ declare module __Backendless {
      * @refers {@link Backendless.Cache}
      */
     class CacheClass {
-        putSync(key:string, value:any, timeToLive?:number):Object;
-        put(key:string, value:any, timeToLive?:number):Promise<Object>;
+        putSync(key: string, value: any, timeToLive?: number): Object;
 
-        expireInSync(key:string, time:number|Date):Object;
-        expireIn(key:string, time:number|Date):Promise<Object>;
+        put(key: string, value: any, timeToLive?: number): Promise<Object>;
 
-        expireAtSync(key:string, time:number|Date):Object;
-        expireAt(key:string, time:number|Date):Promise<Object>;
+        expireInSync(key: string, time: number | Date): Object;
 
-        containsSync(key:string):Object;
-        contains(key:string):Promise<Object>;
+        expireIn(key: string, time: number | Date): Promise<Object>;
 
-        getSync(key:string):Object;
-        get(key:string):Promise<Object>;
+        expireAtSync(key: string, time: number | Date): Object;
 
-        removeSync(key:string):Object;
-        remove(key:string):Promise<Object>;
+        expireAt(key: string, time: number | Date): Promise<Object>;
+
+        containsSync(key: string): Object;
+
+        contains(key: string): Promise<Object>;
+
+        getSync(key: string): Object;
+
+        get(key: string): Promise<Object>;
+
+        removeSync(key: string): Object;
+
+        remove(key: string): Promise<Object>;
     }
 
     /**
@@ -680,34 +770,43 @@ declare module __Backendless {
      */
     class Counter {
 
-        constructor(name:string, restUrl:string);
+        constructor(name: string, restUrl: string);
 
-        getSync():number;
-        get():Promise<number>;
+        getSync(): number;
 
-        getAndIncrementSync():number;
-        getAndIncrement():Promise<number>;
+        get(): Promise<number>;
 
-        incrementAndGetSync():number;
-        incrementAndGet():Promise<number>;
+        getAndIncrementSync(): number;
 
-        getAndDecrementSync():number;
-        getAndDecrement():Promise<number>;
+        getAndIncrement(): Promise<number>;
 
-        decrementAndGetSync():number;
-        decrementAndGet():Promise<number>;
+        incrementAndGetSync(): number;
 
-        addAndGetSync(value:number):number;
-        addAndGet(value:number):Promise<number>;
+        incrementAndGet(): Promise<number>;
 
-        getAndAddSync(value:number):number;
-        getAndAdd(value:number):Promise<number>
+        getAndDecrementSync(): number;
 
-        compareAndSetSync(expected:number, updated:number):number;
-        compareAndSet(expected:number, updated:number):Promise<number>;
+        getAndDecrement(): Promise<number>;
 
-        resetSync():number;
-        reset():Promise<number>;
+        decrementAndGetSync(): number;
+
+        decrementAndGet(): Promise<number>;
+
+        addAndGetSync(value: number): number;
+
+        addAndGet(value: number): Promise<number>;
+
+        getAndAddSync(value: number): number;
+
+        getAndAdd(value: number): Promise<number>
+
+        compareAndSetSync(expected: number, updated: number): number;
+
+        compareAndSet(expected: number, updated: number): Promise<number>;
+
+        resetSync(): number;
+
+        reset(): Promise<number>;
     }
 
 
@@ -717,34 +816,43 @@ declare module __Backendless {
      * @refers {@link Backendless.Counters}
      */
     class CountersClass {
-        of(counterName:string):Counter;
+        of(counterName: string): Counter;
 
-        getSync(counterName:string):number;
-        get(counterName:string):Promise<number>;
+        getSync(counterName: string): number;
 
-        getAndIncrementSync(counterName:string):number;
-        getAndIncrement(counterName:string):Promise<number>;
+        get(counterName: string): Promise<number>;
 
-        incrementAndGetSync(counterName:string):number;
-        incrementAndGet(counterName:string):Promise<number>;
+        getAndIncrementSync(counterName: string): number;
 
-        getAndDecrementSync(counterName:string):number;
-        getAndDecrement(counterName:string):Promise<number>;
+        getAndIncrement(counterName: string): Promise<number>;
 
-        decrementAndGetSync(counterName:string):number;
-        decrementAndGet(counterName:string):Promise<number>;
+        incrementAndGetSync(counterName: string): number;
 
-        addAndGetSync(counterName:string, value:number):number;
-        addAndGet(counterName:string, value:number):Promise<number>;
+        incrementAndGet(counterName: string): Promise<number>;
 
-        getAndAddSync(counterName:string, value:number):number;
-        getAndAdd(counterName:string, value:number):Promise<number>
+        getAndDecrementSync(counterName: string): number;
 
-        compareAndSetSync(counterName:string, expected:number, updated:number):number;
-        compareAndSet(counterName:string, expected:number, updated:number):Promise<number>;
+        getAndDecrement(counterName: string): Promise<number>;
 
-        resetSync(counterName:string):number;
-        reset(counterName:string):Promise<number>;
+        decrementAndGetSync(counterName: string): number;
+
+        decrementAndGet(counterName: string): Promise<number>;
+
+        addAndGetSync(counterName: string, value: number): number;
+
+        addAndGet(counterName: string, value: number): Promise<number>;
+
+        getAndAddSync(counterName: string, value: number): number;
+
+        getAndAdd(counterName: string, value: number): Promise<number>
+
+        compareAndSetSync(counterName: string, expected: number, updated: number): number;
+
+        compareAndSet(counterName: string, expected: number, updated: number): Promise<number>;
+
+        resetSync(counterName: string): number;
+
+        reset(counterName: string): Promise<number>;
     }
 
     /**
@@ -753,8 +861,9 @@ declare module __Backendless {
      * @refers {@link Backendless.CustomServices}
      */
     class CustomServicesClass {
-        invokeSync(serviceName:string, method:string, parameters:Object):any;
-        invoke(serviceName:string, method:string, parameters:Object):Promise<any>;
+        invokeSync(serviceName: string, method: string, parameters: Object): any;
+
+        invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
     }
 
     /**
@@ -763,195 +872,229 @@ declare module __Backendless {
      * @refers {@link Backendless.UserService}
      */
     class UserServiceClass {
-        restUrl:string;
+        restUrl: string;
 
-        registerSync(user:Backendless.User):Backendless.User;
-        register(user:Backendless.User):Promise<Backendless.User>;
+        registerSync(user: Backendless.User): Backendless.User;
+        registerSync<T>(user: T): T;
 
-        getUserRolesSync():Backendless.User;
-        getUserRoles():Promise<Backendless.User>;
+        register(user: Backendless.User): Promise<Backendless.User>;
+        register<T>(user: T): Promise<T>;
 
-        describeUserClassSync():Backendless.User ;
-        describeUserClass():Promise<Backendless.User>;
+        getUserRolesSync(): string[];
 
-        restorePasswordSync(email:string):Backendless.User;
-        restorePassword(email:string):Promise<Backendless.User>;
+        getUserRoles(): Promise<string[]>;
 
-        assignRoleSync(identity:string, roleName:string):Backendless.User;
-        assignRole(identity:string, roleName:string):Promise<Backendless.User>;
+        describeUserClassSync(): Object[] ;
 
-        unassignRoleSync(identity:string, roleName:string):Backendless.User;
-        unassignRole(identity:string, roleName:string):Promise<Backendless.User>;
+        describeUserClass(): Promise<Object[]>;
 
-        loginSync(userName:string, password:string, stayLoggedIn?:boolean):Backendless.User;
-        login(userName:string, password:string, stayLoggedIn?:boolean):Promise<Backendless.User>;
+        restorePasswordSync(email: string): void;
 
-        loggedInUser():boolean;
+        restorePassword(email: string): Promise<void>;
 
-        logoutSync():void;
-        logout():Promise<void>;
+        assignRoleSync(identity: string, roleName: string): void;
 
-        getCurrentUserSync():Backendless.User;
-        getCurrentUser():Promise<Backendless.User>;
+        assignRole(identity: string, roleName: string): Promise<void>;
 
-        updateSync(user:Backendless.User):Backendless.User;
-        update(user:Backendless.User):Promise<Backendless.User>;
+        unassignRoleSync(identity: string, roleName: string): void;
 
-        loginWithFacebookSync(fields?:Object, permissions?:Object, stayLoggedIn?:boolean):void;
-        loginWithFacebook(fields?:Object, permissions?:Object, stayLoggedIn?:boolean):Promise<void>;
+        unassignRole(identity: string, roleName: string): Promise<void>;
 
-        loginWithGooglePlusSync(fields?:Object, permissions?:Object, container?:HTMLElement, stayLoggedIn?:boolean):void;
-        loginWithGooglePlus(fields?:Object, permissions?:Object, container?:HTMLElement, stayLoggedIn?:boolean):Promise<void>;
+        loginSync(userName: string, password: string, stayLoggedIn?: boolean): Backendless.User;
+        loginSync<T>(userName: string, password: string, stayLoggedIn?: boolean): T;
 
-        loginWithTwitterSync(fields?:Object, stayLoggedIn?:boolean):void;
-        loginWithTwitter(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
+        login(idenity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
+        login<T>(idenity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
 
-        loginWithFacebookSdk(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
+        loggedInUser(): boolean;
 
-        loginWithGooglePlusSdk(fields?:Object, stayLoggedIn?:boolean):Promise<void>;
+        logoutSync(): void;
 
-        isValidLoginSync():boolean;
-        isValidLogin():Promise<boolean>;
+        logout(): Promise<void>;
 
-        resendEmailConfirmationSync(email:string):void;
-        resendEmailConfirmation(email:string):Promise<void>;
+        getCurrentUserSync(): Backendless.User;
+        getCurrentUserSync<T>(): T;
+
+        getCurrentUser(): Promise<Backendless.User>;
+        getCurrentUser<T>(): Promise<T>;
+
+        updateSync(user: Backendless.User): Backendless.User;
+        updateSync<T>(user: T): T;
+
+        update(user: Backendless.User): Promise<Backendless.User>;
+        update<T>(user: T): Promise<T>;
+
+        loginWithFacebookSync(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): void;
+
+        loginWithFacebook(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): Promise<void>;
+
+        loginWithGooglePlusSync(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): void;
+
+        loginWithGooglePlus(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): Promise<void>;
+
+        loginWithTwitterSync(fields?: Object, stayLoggedIn?: boolean): void;
+
+        loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
+
+        loginWithFacebookSdk(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
+
+        loginWithGooglePlusSdk(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
+
+        isValidLoginSync(): boolean;
+
+        isValidLogin(): Promise<boolean>;
+
+        resendEmailConfirmationSync(email: string): void;
+
+        resendEmailConfirmation(email: string): Promise<void>;
     }
 
     interface LoggingI {
-        restUrl:string;
-        loggers:Object;
-        logInfo:Object[];
-        messagesCount:number;
-        numOfMessages:number;
-        timeFrequency:number;
+        restUrl: string;
+        loggers: Object;
+        logInfo: Object[];
+        messagesCount: number;
+        numOfMessages: number;
+        timeFrequency: number;
 
-        setLogReportingPolicy(numOfMessages:number, timeFrequencySec:number):void;
+        setLogReportingPolicy(numOfMessages: number, timeFrequencySec: number): void;
 
-        getLogger(name):Backendless.Logger;
+        getLogger(name): Backendless.Logger;
     }
 
     interface PersistencePermissionI {
-        grantUserSync(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-        grantUser(userId:string, dataItem:ExistDataItemI):Promise<Backendless.ExistDataItemI>;
+        grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
-        grantRoleSync(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-        grantRole(roleName:string, dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
+        grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
 
-        grantSync(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-        grant(dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
+        grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
-        denyUserSync(userId:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-        denyUser(userId:string, dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
+        grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
 
-        denyRoleSync(roleName:string, dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-        denyRole(roleName:string, dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
+        grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
-        denySync(dataItem:Backendless.ExistDataItemI):Backendless.ExistDataItemI;
-        deny(dataItem:Backendless.ExistDataItemI):Promise<Backendless.ExistDataItemI>;
+        grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+        denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+        denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+        deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
     }
 
     interface FilePermissionI {
-        grantUserSync(userId:string, url:string):boolean;
-        grantUser(userId:string, url:string):Promise<boolean>;
+        grantUserSync(userId: string, url: string): boolean;
 
-        grantRoleSync(roleName:string, url:string):boolean;
-        grantRole(roleName:string, url:string):Promise<boolean>;
+        grantUser(userId: string, url: string): Promise<boolean>;
 
-        denyUserSync(userId:string, url:string):boolean;
-        denyUser(userId:string, url:string):Promise<boolean>;
+        grantRoleSync(roleName: string, url: string): boolean;
 
-        denyRoleSync(roleName:string, url:string):boolean;
-        denyRole(roleName:string, url:string):Promise<boolean>;
+        grantRole(roleName: string, url: string): Promise<boolean>;
+
+        denyUserSync(userId: string, url: string): boolean;
+
+        denyUser(userId: string, url: string): Promise<boolean>;
+
+        denyRoleSync(roleName: string, url: string): boolean;
+
+        denyRole(roleName: string, url: string): Promise<boolean>;
     }
 
     interface DataQueryValueI {
-        properties?:string[];
-        condition?:string;
-        options?:Object;
-        url?:string;
+        properties?: string[];
+        condition?: string;
+        options?: Object;
+        url?: string;
     }
 
     interface LocalCacheI {
-        enabled:boolean;
+        enabled: boolean;
 
-        exists(key:string):boolean;
+        exists(key: string): boolean;
 
-        set(key:string):boolean;
-        set<T>(key:string, val:T):T;
+        set(key: string): boolean;
 
-        remove(key:string):boolean;
+        set<T>(key: string, val: T): T;
 
-        get(key:string):any;
+        remove(key: string): boolean;
 
-        getAll():Object;
+        get(key: string): any;
 
-        getCachePolicy(key:string):Object;
+        getAll(): Object;
 
-        serialize(value:any):string;
+        getCachePolicy(key: string): Object;
 
-        deserialize(value:string):any;
+        serialize(value: any): string;
 
-        clear(key:string):void;
+        deserialize(value: string): any;
 
-        flushExpired():void;
+        clear(): void;
+
+        flushExpired(): void;
     }
 
     interface GeoCategoryI {
-        objectId:string;
-        size:number;
-        name:string;
+        objectId: string;
+        size: number;
+        name: string;
     }
 
     interface GeofenceMonitoringCallbackI {
-        (geoFenceName:string, geoFenceId:string, latitude:number, longitude:number):void;
+        (geoFenceName: string, geoFenceId: string, latitude: number, longitude: number): void;
     }
 
     interface GeofenceMonitoringCallbacksI {
-        onenter?:Backendless.GeofenceMonitoringCallbackI;
-        onstay?:Backendless.GeofenceMonitoringCallbackI;
-        onexit?:Backendless.GeofenceMonitoringCallbackI;
+        onenter?: Backendless.GeofenceMonitoringCallbackI;
+        onstay?: Backendless.GeofenceMonitoringCallbackI;
+        onexit?: Backendless.GeofenceMonitoringCallbackI;
     }
 
     interface DataItemI {
-        ___class:string;
-        objectId?:string;
+        ___class: string;
+        objectId?: string;
     }
 
     interface ExistDataItemI extends Backendless.DataItemI {
-        objectId:string;
+        objectId: string;
     }
 
     interface SubscriptionI {
-        channelName:string;
-        options:Object;
-        channelProperties:string;
-        subscriptionId:string;
-        restUrl:string;
-        proxy:Proxy;
+        channelName: string;
+        options: Object;
+        channelProperties: string;
+        subscriptionId: string;
+        restUrl: string;
+        proxy: Proxy;
 
-        cancelSubscription():void;
+        cancelSubscription(): void;
     }
 
     interface GeoQueryI {
-        categories?:string|string[];
-        includeMetadata?:boolean;
-        metadata?:Object;
-        condition?:string;
-        relativeFindMetadata?:Object;
-        relativeFindPercentThreshold?:number;
-        pageSize?:number;
-        offset?:number;
+        categories?: string | string[];
+        includeMetadata?: boolean;
+        metadata?: Object;
+        condition?: string;
+        relativeFindMetadata?: Object;
+        relativeFindPercentThreshold?: number;
+        pageSize?: number;
+        offset?: number;
     }
 
     interface RectangleGeoQueryI extends Backendless.GeoQueryI {
-        searchRectangle:number[];
+        searchRectangle: number[];
     }
 
     interface CircleGeoQueryI extends Backendless.GeoQueryI {
-        latitude:number;
-        longitude:number;
-        radius:number;
-        units:string;
+        latitude: number;
+        longitude: number;
+        radius: number;
+        units: string;
     }
 }
 
@@ -960,5 +1103,5 @@ import Backendless = __Backendless;
 declare module 'backendless' {
     import Backendless = __Backendless;
 
-    export = Backendless;
+    export default Backendless;
 }
