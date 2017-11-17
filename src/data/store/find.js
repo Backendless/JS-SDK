@@ -28,6 +28,10 @@ export function findUtil(className, Model, dataQuery, asyncHandler) {
     query.push('where=' + encodeURIComponent(dataQuery.condition))
   }
 
+  if (dataQuery.havingClause) {
+    query.push('having=' + encodeURIComponent(dataQuery.havingClause))
+  }
+
   if (dataQuery.properties && dataQuery.properties.length) {
     query.push('props=' + Utils.encodeArrayToUriComponent(dataQuery.properties))
   }

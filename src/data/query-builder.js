@@ -63,12 +63,32 @@ export default class DataQueryBuilder {
     return this
   }
 
+  getHavingClause() {
+    return this._query.havingClause
+  }
+
+  setHavingClause(havingClause) {
+    this._query.havingClause = havingClause
+
+    return this
+  }
+
   getSortBy() {
     return this._query.getOption('sortBy')
   }
 
   setSortBy(sortBy) {
     this._query.setOption('sortBy', Utils.castArray(sortBy))
+
+    return this
+  }
+
+  getGroupBy() {
+    return this._query.getOption('groupBy')
+  }
+
+  setGroupBy(groupBy) {
+    this._query.setOption('groupBy', Utils.castArray(groupBy))
 
     return this
   }
