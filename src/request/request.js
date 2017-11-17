@@ -9,6 +9,7 @@ export const sendRequest = config => {
   //--TODO remove this checking when we get rid of all sync methods
   if (config.isAsync === false || !config.asyncHandler) {
     if (LocalVars.XMLHttpRequest) {
+      // eslint-disable-next-line no-console
       console.warn(
         'The sync methods of the Backendless API are deprecated and will be removed in the nearest future.\n' +
         'Please, use async methods instead.'

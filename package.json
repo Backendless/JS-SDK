@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "4.1.5",
+  "version": "4.1.8",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -85,6 +85,6 @@
     "webpack": "^3.8.1"
   },
   "dependencies": {
-    "backendless-request": "^0.0.10"
+    "backendless-request": "^0.0.11"
   }
 }
