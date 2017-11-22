@@ -27,7 +27,7 @@ function lockPrivateProps(instance) {
   })
 }
 
-Object.setPrototypeOf(RemoteSharedObject.prototype, {
+Object.assign(RemoteSharedObject.prototype, {
 
   connect    : RemoteSharedObjectConnector.proxyRTMethod('connect'),
   disconnect : RemoteSharedObjectConnector.proxyRTMethod('disconnect'),

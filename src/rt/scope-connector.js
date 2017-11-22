@@ -43,7 +43,7 @@ export default class RTScopeConnector extends RTListeners {
 
   connect() {
     if (!this.isConnected()) {
-      this.connection = this.connectSubscriber(this.getScopeOptions(), null, {
+      this.connection = this.connectSubscriber(this.getScopeOptions(), {
         onError: error => this.onError(error),
         onReady: () => this.onConnect(),
         onStop : () => this.onDisconnect()

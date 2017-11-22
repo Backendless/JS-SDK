@@ -14,7 +14,7 @@ class Channel {
 
 }
 
-Object.setPrototypeOf(Channel.prototype, {
+Object.assign(Channel.prototype, {
 
   connect    : ChannelConnector.proxyRTMethod('connect'),
   disconnect : ChannelConnector.proxyRTMethod('disconnect'),
