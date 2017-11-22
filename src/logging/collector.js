@@ -30,8 +30,6 @@ function flush(asyncHandler) {
       listeners.push(asyncHandler)
     }
 
-    console.log('LoggingCollector.pool', LoggingCollector.pool)
-
     Request.put({
       isAsync     : !!asyncHandler,
       asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
