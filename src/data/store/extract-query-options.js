@@ -1,6 +1,5 @@
 import Utils from '../../utils'
 
-
 //TODO: refactor me
 //TODO: does make sense to move this logic into QueryBuilder?
 
@@ -31,10 +30,8 @@ export function extractQueryOptions(options) {
     }
   }
 
-  if (options.relationsDepth) {
-    if (Utils.isNumber(options.relationsDepth)) {
-      params.push('relationsDepth=' + Math.floor(options.relationsDepth))
-    }
+  if (Utils.isNumber(options.relationsDepth)) {
+    params.push('relationsDepth=' + options.relationsDepth)
   }
 
   if (options.relations) {
