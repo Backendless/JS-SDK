@@ -30,6 +30,14 @@ export function extractQueryOptions(options) {
     }
   }
 
+  if (options.groupBy) {
+    if (Utils.isString(options.groupBy)) {
+      params.push('groupBy=' + encodeURIComponent(options.groupBy))
+    } else if (Utils.isArray(options.groupBy)) {
+      params.push('groupBy=' + Utils.encodeArrayToUriComponent(options.groupBy))
+    }
+  }
+
   if (Utils.isNumber(options.relationsDepth)) {
     params.push('relationsDepth=' + options.relationsDepth)
   }
