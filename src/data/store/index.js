@@ -1,6 +1,6 @@
 import Utils from '../../utils'
 import { deprecated } from '../../decorators'
-import User from '../../users/user'
+import { resolveModelClassFromString } from '../utils'
 
 import RTDataStore from './rt-store'
 import { loadRelations, setRelation, addRelation, deleteRelation } from './relations'
@@ -10,12 +10,6 @@ import { save } from './save'
 import { remove } from './remove'
 import { getObjectCount } from './count'
 
-const createModelClassFromString = (/** className */) => {
-  //TODO:fix me
-  return function() {
-  }
-}
-
 //TODO: will be removed when remove sync methods
 const namespaceLabel = 'Backendless.Data.of(<ClassName>)'
 
@@ -24,9 +18,7 @@ class DataStore {
   constructor(model) {
     if (Utils.isString(model)) {
       this.className = model
-      this.model = model === User.className
-        ? User
-        : createModelClassFromString(model)
+      this.model = resolveModelClassFromString(this.className)
 
     } else {
       this.className = Utils.getClassName(model)

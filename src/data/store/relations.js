@@ -110,6 +110,10 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     query.push('where=' + encodeURIComponent(dataQuery.condition))
   }
 
+  if (dataQuery.havingClause) {
+    query.push('having=' + encodeURIComponent(dataQuery.havingClause))
+  }
+
   let url = Urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
 
   if (asyncHandler) {

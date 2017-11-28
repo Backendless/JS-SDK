@@ -1,55 +1,79 @@
 import Utils from '../../utils'
+import { resolveModelClassFromString } from '../utils'
 
-//TODO: refactor me
+function isObject(item) {
+  return typeof item === 'object' && item !== null
+}
 
-function formCircDeps(obj) {
+function parseCircularDependencies(obj) {
   const result = new obj.constructor()
-  const circDepsIDs = {}
-  const iteratedObjects = []
+  const subIds = {}
+  const postAssign = []
+  const iteratedItems = []
 
-  const _formCircDepsHelper = (obj, res) => {
-    if (iteratedObjects.indexOf(obj) === -1) {
-      iteratedObjects.push(obj)
+  function ensureCircularDep(source, target, prop) {
+    if (subIds[source[prop].__originSubID]) {
+      target[prop] = subIds[source[prop].__originSubID]
+    } else {
+      postAssign.push([target, prop, source[prop].__originSubID])
+    }
+  }
 
-      if (obj.hasOwnProperty('__subID')) {
-        circDepsIDs[obj['__subID']] = res
-        delete obj['__subID']
-      }
+  function processModel(source, target, prop) {
+    const Model = resolveModelClassFromString(source[prop].___class) || source[prop].constructor
 
-      for (const prop in obj) {
-        if (obj.hasOwnProperty(prop)) {
-          if (typeof obj[prop] === 'object' && obj[prop] != null) {
-            if (obj[prop].hasOwnProperty('__originSubID')) {
-              res[prop] = circDepsIDs[obj[prop]['__originSubID']]
+    target[prop] = new Model()
+
+    if (source[prop].__subID) {
+      subIds[source[prop].__subID] = target[prop]
+      delete source[prop].__subID
+    }
+  }
+
+  function buildCircularDeps(source, target) {
+    if (iteratedItems.indexOf(source) === -1) {
+      iteratedItems.push(source)
+
+      for (const prop in source) {
+        if (source.hasOwnProperty(prop)) {
+          if (Array.isArray(source[prop])) {
+            buildCircularDeps(source[prop], target[prop] = [])
+
+          } else if (isObject(source[prop])) {
+            if (source[prop].__originSubID) {
+              ensureCircularDep(source, target, prop)
+
             } else {
-              res[prop] = new (obj[prop].constructor)()
-              _formCircDepsHelper(obj[prop], res[prop])
+              processModel(source, target, prop)
+
+              buildCircularDeps(source[prop], target[prop])
             }
+
           } else {
-            res[prop] = obj[prop]
+            target[prop] = source[prop]
           }
         }
       }
     }
   }
 
-  _formCircDepsHelper(obj, result)
+  buildCircularDeps(obj, result)
+
+  postAssign.forEach(([target, prop, __originSubID]) => target[prop] = subIds[__originSubID])
 
   return result
 }
 
 export function parseFindResponse(response, Model) {
-  Model = Utils.isFunction(Model) ? Model : undefined
-
   const sanitizeResponseItem = resp => {
-    const item = Model ? new Model() : {}
+    Model = Utils.isFunction(Model) ? Model : resolveModelClassFromString(resp.___class)
 
-    return Utils.deepExtend(item, resp.fields || resp)
+    return Utils.deepExtend(new Model(), resp.fields || resp)
   }
 
   const result = Utils.isArray(response)
     ? response.map(sanitizeResponseItem)
     : sanitizeResponseItem(response)
 
-  return formCircDeps(result)
+  return parseCircularDependencies(result)
 }

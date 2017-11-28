@@ -95,7 +95,7 @@ describe('Data', function() {
       })
       .then(() => db.findById(toRemove.objectId))
       .catch(error => {
-        expect(error.message).to.be.equal(`Entity with name ${toRemove.objectId} cannot be found`)
+        expect(error.message).to.be.equal(`Entity with ID ${toRemove.objectId} not found`)
       })
       .then(() => db.find())
       .then(result => {
@@ -276,7 +276,7 @@ describe('Data', function() {
       .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
       .then(() => db.findById('NonExistingObjectId'))
       .catch(error => {
-        expect(error.message).to.be.equal('Entity with name NonExistingObjectId cannot be found')
+        expect(error.message).to.be.equal('Entity with ID NonExistingObjectId not found')
       })
   })
 
