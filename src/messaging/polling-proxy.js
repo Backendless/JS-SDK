@@ -11,28 +11,19 @@ export default class PollingProxy extends Proxy {
     this.timer = 0
     this.timeout = 0
     this.interval = 1000
-    this.xhr = null
-    this.needReconnect = true
+    this.stopped = false
     this.responder = new Async(this.onMessage, this.onError, this)
+
     this.poll()
   }
 
-  onMessage(data) {
+  poll() {
+    clearTimeout(this.timer)
     clearTimeout(this.timeout)
 
-    this.timer = setTimeout(() => {
-      this.poll()
-    }, this.interval)
+    this.timeout = setTimeout(() => this.onTimeout(), 30 * 1000)
 
-    this.fireEvent('messageReceived', data)
-  }
-
-  poll() {
-    this.timeout = setTimeout(() => {
-      this.onTimeout()
-    }, 30 * 1000)
-
-    this.xhr = Request.get({
+    Request.get({
       url         : this.restUrl,
       isAsync     : true,
       asyncHandler: this.responder
@@ -43,27 +34,32 @@ export default class PollingProxy extends Proxy {
     clearTimeout(this.timer)
     clearTimeout(this.timeout)
 
-    this.needReconnect = false
-
-    if (this.xhr) {
-      this.xhr.abort()
-    }
+    this.stopped = true
   }
 
   onTimeout() {
-    this.xhr && this.xhr.abort()
+    clearTimeout(this.timeout)
+
+    this.poll()
+  }
+
+  onMessage(data) {
+    clearTimeout(this.timer)
+    clearTimeout(this.timeout)
+
+    if (!this.stopped) {
+      this.timer = setTimeout(() => this.poll(), this.interval)
+
+      this.fireEvent('messageReceived', data)
+    }
   }
 
   onError() {
     clearTimeout(this.timer)
     clearTimeout(this.timeout)
 
-    if (this.needReconnect) {
-      this.xhr = null
-
-      this.timer = setTimeout(() => {
-        this.poll()
-      }, this.interval)
+    if (!this.stopped) {
+      this.timer = setTimeout(() => this.poll(), this.interval)
     }
   }
 }
