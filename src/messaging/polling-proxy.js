@@ -7,7 +7,6 @@ export default class PollingProxy extends Proxy {
   constructor(url) {
     super()
 
-    this.eventHandlers = {}
     this.restUrl = url
     this.timer = 0
     this.timeout = 0

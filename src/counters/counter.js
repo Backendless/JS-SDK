@@ -30,7 +30,7 @@ const withCounterName = method => function(...args) {
 //TODO: will be removed when remove sync methods
 const namespaceLabel = 'Backendless.Counter.of(<CounterName>)'
 
-Object.setPrototypeOf(Counter.prototype, {
+Object.assign(Counter.prototype, {
 
   @deprecated(namespaceLabel, `${namespaceLabel}.incrementAndGet`)
   incrementAndGetSync: Utils.synchronized(withCounterName(incrementAndGet)),

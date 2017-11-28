@@ -5,7 +5,6 @@
   ],
   "plugins": [
     "transform-object-assign",
-    "transform-decorators-legacy",
-    "transform-object-set-prototype-of-to-assign"
+    "transform-decorators-legacy"
   ]
 }

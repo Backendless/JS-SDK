@@ -43,7 +43,7 @@ class DataPermission {
 //TODO: will be removed when remove sync methods
 const namespaceLabel = 'Backendless.Data.Permissions.{FIND|REMOVE|UPDATE}'
 
-Object.setPrototypeOf(DataPermission.prototype, {
+Object.assign(DataPermission.prototype, {
 
   @deprecated(namespaceLabel, `${namespaceLabel}.grantUser`)
   grantUserSync: Utils.synchronized(grantUser),

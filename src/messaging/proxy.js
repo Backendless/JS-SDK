@@ -1,5 +1,9 @@
 export default class Proxy {
 
+  constructor() {
+    this.eventHandlers = {}
+  }
+
   on(eventName, handler) {
     if (!eventName) {
       throw new Error('Event name not specified')

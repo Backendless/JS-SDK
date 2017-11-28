@@ -31,7 +31,7 @@ class DataStore {
 
 }
 
-Object.setPrototypeOf(DataStore.prototype, {
+Object.assign(DataStore.prototype, {
 
   @deprecated(namespaceLabel, `${namespaceLabel}.save`)
   saveSync: Utils.synchronized(save),
