@@ -314,7 +314,7 @@ describe('Data', function() {
       .then(createBigTable)
       .then(() => db.find(query))
       .catch(error => {
-        expect(error.message).to.be.equal('Unable to retrieve data. Query contains invalid object properties.')
+        expect(error.message).to.be.equal('Column \'nonExistingProp\' does not exist in table \'TableWithPagination\'')
       })
   })
 

@@ -50,7 +50,7 @@ describe('Data - Relations', function() {
     return Promise.resolve()
       .then(() => ParentTable.findById(parent.objectId, query))
       .then(result => {
-        expect(result).to.have.property('child').that.have.to.be.null
+        expect(result).to.not.have.property('child')
       })
   })
 
@@ -61,7 +61,7 @@ describe('Data - Relations', function() {
       .then(() => ParentTable.findById(parent.objectId, query))
       .then(result => {
         expect(result).to.have.property('child').that.have.to.be.not.null
-        expect(result.child).to.have.property('grandChild').that.have.to.be.null
+        expect(result.child).to.not.have.property('grandChild')
       })
   })
 
@@ -102,9 +102,6 @@ describe('Data - Relations', function() {
       .then(([savedContact, savedAddress]) => {
         return createRelationColumn('Contact', 'address_Address', 'Address', 'ONE_TO_ONE')
           .then(() => contactStore.setRelation(savedContact, 'address_Address', [savedAddress]))
-      })
-      .then(result => {
-        console.log(result)
       })
   })
 
