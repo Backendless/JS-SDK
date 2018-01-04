@@ -20,7 +20,7 @@ function parseCircularDependencies(obj) {
   }
 
   function processModel(source, target, prop) {
-    const Model = resolveModelClassFromString(source[prop].___class) || source[prop].constructor
+    const Model = source[prop].constructor
 
     target[prop] = new Model()
 

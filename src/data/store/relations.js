@@ -69,7 +69,7 @@ function buildRelationUrl(className, relation) {
   let url = Urls.dataTableObjectRelation(className, relation.parentId, relation.columnName)
 
   if (relation.whereClause) {
-    url += '?' + Utils.toQueryParams({ where: relation.whereClause })
+    url += '?' + Utils.toQueryParams({ whereClause: relation.whereClause })
   }
 
   return url
