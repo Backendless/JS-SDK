@@ -2,15 +2,9 @@ import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
 
-import User from './user'
-
 import { parseResponse, wrapAsync } from './utils'
 
 export function register(user /** async */) {
-  if (!(user instanceof User)) {
-    throw new Error('Only Backendless.User accepted')
-  }
-
   const responder = Utils.extractResponder(arguments)
 
   const isAsync = !!responder
