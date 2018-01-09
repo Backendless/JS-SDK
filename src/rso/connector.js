@@ -1,5 +1,5 @@
-import Utils from '../../utils'
-import { RTProvider, RTScopeConnector } from '../../rt'
+import Utils from '../utils'
+import { RTProvider, RTScopeConnector } from '../rt'
 
 const ListenerTypes = Utils.mirrorKeys({
   CHANGES: null,
@@ -26,7 +26,7 @@ export default class RemoteSharedObjectConnector extends RTScopeConnector {
   }
 
   onConnect(){
-    this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvokes, this.onInvoke)
+    this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvoke, this.onInvoke)
 
     super.onConnect.apply(this, arguments)
   }

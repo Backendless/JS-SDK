@@ -13,7 +13,8 @@ import Data from './data'
 import Messaging from './messaging'
 import Device from './device'
 import Files from './files'
-import RTClient  from './rt'
+import RTClient from './rt'
+import SharedObject from './rso'
 import LocalCache from './local-cache'
 import LocalVars from './local-vars'
 
@@ -98,7 +99,7 @@ const Backendless = {
   Messaging     : Messaging,
   Files         : Files,
   RTClient      : RTClient,
-
+  SharedObject  : SharedObject,
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
 

@@ -2,6 +2,10 @@ import RemoteSharedObjectConnector from './connector'
 
 export default class RemoteSharedObject {
 
+  static connect(name) {
+    return new this({ name })
+  }
+
   constructor(options) {
     this.options = options
 

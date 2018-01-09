@@ -1,7 +1,6 @@
 import Utils from '../utils'
 import { deprecated } from '../decorators'
 
-import RSO from './rso'
 import Channel from './channel'
 
 import {
@@ -29,10 +28,6 @@ const Messaging = {
   DeliveryOptions      : DeliveryOptions,
   SubscriptionOptions  : SubscriptionOptions,
   PublishOptionsHeaders: PublishOptionsHeaders,
-
-  rso(name) {
-    return new RSO({ name })
-  },
 
   subscribe: function(channelName, subscriptionCallback, subscriptionOptions) {
     if (Utils.isObject(subscriptionCallback)) {

@@ -19,7 +19,7 @@ const Types = Utils.mirrorKeys({
   RSO_CHANGES : null,
   RSO_CLEARED : null,
   RSO_COMMANDS: null,
-  RSO_INVOKES : null,
+  RSO_INVOKE  : null,
   RSO_USERS   : null,
 })
 
@@ -164,7 +164,7 @@ export default class RTSubscriptions {
   onRSOChanges = subscription(Types.RSO_CHANGES).bind(this)
   onRSOClear = subscription(Types.RSO_CLEARED).bind(this)
   onRSOCommand = subscription(Types.RSO_COMMANDS).bind(this)
-  onRSOInvokes = subscription(Types.RSO_INVOKES).bind(this)
+  onRSOInvoke = subscription(Types.RSO_INVOKE).bind(this)
   onRSOUserStatus = subscription(Types.RSO_USERS).bind(this)
 
   //----------- RSO SUBSCRIPTIONS ---------//
