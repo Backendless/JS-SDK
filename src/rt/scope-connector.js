@@ -94,7 +94,7 @@ export default class RTScopeConnector extends RTListeners {
     this.addSimpleListener(ListenerTypes.CONNECT, callback)
   }
 
-  removeConnectListener(callback) {
+  removeConnectListeners(callback) {
     this.removeSimpleListener(ListenerTypes.CONNECT, callback)
   }
 
@@ -104,7 +104,7 @@ export default class RTScopeConnector extends RTListeners {
   }
 
   @delayedOperation()
-  removeCommandListener(callback) {
+  removeCommandListeners(callback) {
     this.stopSubscription(ListenerTypes.COMMAND, { callback })
   }
 
@@ -114,7 +114,7 @@ export default class RTScopeConnector extends RTListeners {
   }
 
   @delayedOperation()
-  removeUserStatusListener(callback) {
+  removeUserStatusListeners(callback) {
     this.stopSubscription(ListenerTypes.USER_STATUS, { callback })
   }
 

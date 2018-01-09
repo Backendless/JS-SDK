@@ -20,20 +20,20 @@ Object.assign(Channel.prototype, {
   disconnect : ChannelConnector.proxyRTMethod('disconnect'),
   isConnected: ChannelConnector.proxyRTMethod('isConnected'),
 
-  addConnectListener   : ChannelConnector.proxyRTMethod('addConnectListener'),
-  removeConnectListener: ChannelConnector.proxyRTMethod('removeConnectListener'),
+  addConnectListener    : ChannelConnector.proxyRTMethod('addConnectListener'),
+  removeConnectListeners: ChannelConnector.proxyRTMethod('removeConnectListeners'),
 
-  addErrorListener   : ChannelConnector.proxyRTMethod('addErrorListener'),
-  removeErrorListener: ChannelConnector.proxyRTMethod('removeErrorListener'),
+  addErrorListener    : ChannelConnector.proxyRTMethod('addErrorListener'),
+  removeErrorListeners: ChannelConnector.proxyRTMethod('removeErrorListeners'),
 
-  addMessageListener   : ChannelConnector.proxyRTMethod('addMessageListener'),
-  removeMessageListener: ChannelConnector.proxyRTMethod('removeMessageListener'),
+  addMessageListener    : ChannelConnector.proxyRTMethod('addMessageListener'),
+  removeMessageListeners: ChannelConnector.proxyRTMethod('removeMessageListeners'),
 
-  addCommandListener   : ChannelConnector.proxyRTMethod('addCommandListener'),
-  removeCommandListener: ChannelConnector.proxyRTMethod('removeCommandListener'),
+  addCommandListener    : ChannelConnector.proxyRTMethod('addCommandListener'),
+  removeCommandListeners: ChannelConnector.proxyRTMethod('removeCommandListeners'),
 
-  addUserStatusListener   : ChannelConnector.proxyRTMethod('addUserStatusListener'),
-  removeUserStatusListener: ChannelConnector.proxyRTMethod('removeUserStatusListener'),
+  addUserStatusListener    : ChannelConnector.proxyRTMethod('addUserStatusListener'),
+  removeUserStatusListeners: ChannelConnector.proxyRTMethod('removeUserStatusListeners'),
 
   removeAllListeners: ChannelConnector.proxyRTMethod('removeAllListeners'),
 

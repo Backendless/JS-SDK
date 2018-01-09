@@ -42,7 +42,7 @@ export default class RTChannelConnector extends RTScopeConnector {
   }
 
   @RTScopeConnector.delayedOperation()
-  removeMessageListener(selector, callback) {
+  removeMessageListeners(selector, callback) {
     if (typeof selector === 'function') {
       callback = selector
       selector = undefined

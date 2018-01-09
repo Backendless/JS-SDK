@@ -93,17 +93,17 @@ Object.assign(DataStore.prototype, {
   //--------------------------------------//
   //----------------- RT -----------------//
 
-  addCreateListener   : RTDataStore.proxyRTDataStore('addCreateListener'),
-  removeCreateListener: RTDataStore.proxyRTDataStore('removeCreateListener'),
+  addCreateListener    : RTDataStore.proxyRTDataStore('addCreateListener'),
+  removeCreateListeners: RTDataStore.proxyRTDataStore('removeCreateListeners'),
 
-  addUpdateListener   : RTDataStore.proxyRTDataStore('addUpdateListener'),
-  removeUpdateListener: RTDataStore.proxyRTDataStore('removeUpdateListener'),
+  addUpdateListener    : RTDataStore.proxyRTDataStore('addUpdateListener'),
+  removeUpdateListeners: RTDataStore.proxyRTDataStore('removeUpdateListeners'),
 
-  addDeleteListener   : RTDataStore.proxyRTDataStore('addDeleteListener'),
-  removeDeleteListener: RTDataStore.proxyRTDataStore('removeDeleteListener'),
+  addDeleteListener    : RTDataStore.proxyRTDataStore('addDeleteListener'),
+  removeDeleteListeners: RTDataStore.proxyRTDataStore('removeDeleteListeners'),
 
-  addErrorListener   : RTDataStore.proxyRTDataStore('addErrorListener'),
-  removeErrorListener: RTDataStore.proxyRTDataStore('removeErrorListener'),
+  addErrorListener    : RTDataStore.proxyRTDataStore('addErrorListener'),
+  removeErrorListeners: RTDataStore.proxyRTDataStore('removeErrorListeners'),
 
   removeAllListeners: RTDataStore.proxyRTDataStore('removeAllListeners'),
 

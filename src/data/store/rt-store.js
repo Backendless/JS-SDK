@@ -32,48 +32,48 @@ export default class RTDataStore extends RTListeners {
     this.addChangesListener(ChangesTypes.CREATED, whereClause, callback)
   }
 
-  removeCreateListener(whereClause, callback) {
-    this.removeChangesListener(ChangesTypes.CREATED, whereClause, callback)
+  removeCreateListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.CREATED, whereClause, callback)
   }
 
   addUpdateListener(whereClause, callback) {
     this.addChangesListener(ChangesTypes.UPDATED, whereClause, callback)
   }
 
-  removeUpdateListener(whereClause, callback) {
-    this.removeChangesListener(ChangesTypes.UPDATED, whereClause, callback)
+  removeUpdateListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.UPDATED, whereClause, callback)
   }
 
   addDeleteListener(whereClause, callback) {
     this.addChangesListener(ChangesTypes.DELETED, whereClause, callback)
   }
 
-  removeDeleteListener(whereClause, callback) {
-    this.removeChangesListener(ChangesTypes.DELETED, whereClause, callback)
+  removeDeleteListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.DELETED, whereClause, callback)
   }
 
   addBulkCreateListener(callback) {
     this.addChangesListener(ChangesTypes.BULK_CREATED, callback)
   }
 
-  removeBulkCreateListener(callback) {
-    this.removeChangesListener(ChangesTypes.BULK_CREATED, callback)
+  removeBulkCreateListeners(callback) {
+    this.removeChangesListeners(ChangesTypes.BULK_CREATED, callback)
   }
 
   addBulkUpdateListener(callback) {
     this.addChangesListener(ChangesTypes.BULK_UPDATED, callback)
   }
 
-  removeBulkUpdateListener(callback) {
-    this.removeChangesListener(ChangesTypes.BULK_UPDATED, callback)
+  removeBulkUpdateListeners(callback) {
+    this.removeChangesListeners(ChangesTypes.BULK_UPDATED, callback)
   }
 
   addBulkDeleteListener(callback) {
     this.addChangesListener(ChangesTypes.BULK_DELETED, callback)
   }
 
-  removeBulkDeleteListener(callback) {
-    this.removeChangesListener(ChangesTypes.BULK_DELETED, callback)
+  removeBulkDeleteListeners(callback) {
+    this.removeChangesListeners(ChangesTypes.BULK_DELETED, callback)
   }
 
   addChangesListener(event, whereClause, callback) {
@@ -88,7 +88,7 @@ export default class RTDataStore extends RTListeners {
     })
   }
 
-  removeChangesListener(event, whereClause, callback) {
+  removeChangesListeners(event, whereClause, callback) {
     if (typeof whereClause === 'function') {
       callback = whereClause
       whereClause = undefined

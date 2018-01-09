@@ -33,23 +33,23 @@ Object.assign(RemoteSharedObject.prototype, {
   disconnect : RemoteSharedObjectConnector.proxyRTMethod('disconnect'),
   isConnected: RemoteSharedObjectConnector.proxyRTMethod('isConnected'),
 
-  addConnectListener   : RemoteSharedObjectConnector.proxyRTMethod('addConnectListener'),
-  removeConnectListener: RemoteSharedObjectConnector.proxyRTMethod('removeConnectListener'),
+  addConnectListener    : RemoteSharedObjectConnector.proxyRTMethod('addConnectListener'),
+  removeConnectListeners: RemoteSharedObjectConnector.proxyRTMethod('removeConnectListeners'),
 
-  addErrorListener   : RemoteSharedObjectConnector.proxyRTMethod('addErrorListener'),
-  removeErrorListener: RemoteSharedObjectConnector.proxyRTMethod('removeErrorListener'),
+  addErrorListener    : RemoteSharedObjectConnector.proxyRTMethod('addErrorListener'),
+  removeErrorListeners: RemoteSharedObjectConnector.proxyRTMethod('removeErrorListeners'),
 
-  addCommandListener   : RemoteSharedObjectConnector.proxyRTMethod('addCommandListener'),
-  removeCommandListener: RemoteSharedObjectConnector.proxyRTMethod('removeCommandListener'),
+  addCommandListener    : RemoteSharedObjectConnector.proxyRTMethod('addCommandListener'),
+  removeCommandListeners: RemoteSharedObjectConnector.proxyRTMethod('removeCommandListeners'),
 
-  addUserStatusListener   : RemoteSharedObjectConnector.proxyRTMethod('addUserStatusListener'),
-  removeUserStatusListener: RemoteSharedObjectConnector.proxyRTMethod('removeUserStatusListener'),
+  addUserStatusListener    : RemoteSharedObjectConnector.proxyRTMethod('addUserStatusListener'),
+  removeUserStatusListeners: RemoteSharedObjectConnector.proxyRTMethod('removeUserStatusListeners'),
 
-  addChangesListener   : RemoteSharedObjectConnector.proxyRTMethod('addChangesListener'),
-  removeChangesListener: RemoteSharedObjectConnector.proxyRTMethod('removeChangesListener'),
+  addChangesListener    : RemoteSharedObjectConnector.proxyRTMethod('addChangesListener'),
+  removeChangesListeners: RemoteSharedObjectConnector.proxyRTMethod('removeChangesListeners'),
 
-  addClearListener   : RemoteSharedObjectConnector.proxyRTMethod('addClearListener'),
-  removeClearListener: RemoteSharedObjectConnector.proxyRTMethod('removeClearListener'),
+  addClearListener    : RemoteSharedObjectConnector.proxyRTMethod('addClearListener'),
+  removeClearListeners: RemoteSharedObjectConnector.proxyRTMethod('removeClearListeners'),
 
   removeAllListeners: RemoteSharedObjectConnector.proxyRTMethod('removeAllListeners'),
 

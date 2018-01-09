@@ -49,7 +49,7 @@ export default class RemoteSharedObjectConnector extends RTScopeConnector {
   }
 
   @RTScopeConnector.delayedOperation()
-  removeChangesListener(callback) {
+  removeChangesListeners(callback) {
     this.stopSubscription(ListenerTypes.CHANGES, { callback })
   }
 
@@ -59,7 +59,7 @@ export default class RemoteSharedObjectConnector extends RTScopeConnector {
   }
 
   @RTScopeConnector.delayedOperation()
-  removeClearListener(callback) {
+  removeClearListeners(callback) {
     this.stopSubscription(ListenerTypes.CLEARED, { callback })
   }
 

@@ -75,7 +75,7 @@ export default class RTListeners {
     this.addSimpleListener(ListenerTypes.ERROR, callback)
   }
 
-  removeErrorListener(callback) {
+  removeErrorListeners(callback) {
     this.removeSimpleListener(ListenerTypes.ERROR, callback)
   }
 
