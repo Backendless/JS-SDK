@@ -24,23 +24,34 @@ const method = type => function(data) {
 
 export default class RTMethods {
 
-  constructor(rtClient) {
-    this.rtClient = rtClient
+  constructor(rtProvider) {
+    this.rtProvider = rtProvider
 
     this.invocations = {}
   }
 
-  send(name, options) {
+  initialize() {
     if (!this.initialized) {
-      this.rtClient.on(Events.MET_RES, this.onResponse)
+      this.rtProvider.on(Events.MET_RES, this.onResponse)
 
       this.initialized = true
     }
+  }
+
+  reconnect() {
+    if (this.initialized) {
+      this.initialized = false
+      this.initialize()
+    }
+  }
+
+  send(name, options) {
+    this.initialize()
 
     const methodId = RTUtils.generateUID()
     const methodData = { id: methodId, name, options }
 
-    this.rtClient.emit(Events.MET_REQ, methodData)
+    this.rtProvider.emit(Events.MET_REQ, methodData)
 
     return new Promise((resolve, reject) => {
       this.invocations[methodId] = { resolve, reject }

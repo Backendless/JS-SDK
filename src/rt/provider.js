@@ -1,53 +1,90 @@
 import { getCurrentUserToken } from '../users/current-user'
 
+import { NativeSocketEvents } from './constants'
 import Subscriptions from './subscriptions'
 import Methods from './methods'
 import Socket from './socket'
 
+const provideConnectionOnMethod = method => (...args) => {
+  RTProvider
+    .provideConnection()
+    .then(rtSocket => rtSocket[method](...args))
+}
+
 const RTProvider = {
 
-  on  : Socket.starterMethod('on'),
-  off : Socket.starterMethod('off'),
-  emit: Socket.starterMethod('emit'),
+  on  : provideConnectionOnMethod('on'),
+  off : provideConnectionOnMethod('off'),
+  emit: provideConnectionOnMethod('emit'),
 
   init() {
-    Socket.destroy()
-    Socket.setInitializer(this.socketInitializer)
+    this.destroyConnection()
 
-    this.initialized = false
-    this.delayedMethods = []
+    this.nativeEvents = {}
 
     this.subscriptions = new Subscriptions(this)
     this.methods = new Methods(this)
-  },
 
-  socketInitializer() {
-    return {
-      onInit   : RTProvider.onSocketInit.bind(RTProvider),
-      userToken: getCurrentUserToken()
-    }
-  },
-
-  onSocketInit() {
-    this.initialized = true
-
-    this.delayedMethods.forEach(([method, args]) => this[method](...args))
-    this.delayedMethods = []
+    this.addNativeEventListener(NativeSocketEvents.DISCONNECT, this.onDisconnect.bind(this))
   },
 
   updateUserToken() {
-    if (this.initialized) {
+    if (this.socketPromise) {
       this.methods.updateUserToken({ userToken: getCurrentUserToken() })
     }
   },
 
-  runDelayedMethod(method, ...args) {
-    if (this.initialized) {
-      this[method](...args)
+  addNativeEventListener(event, callback) {
+    this.nativeEvents[event] = this.nativeEvents[event] || []
+    this.nativeEvents[event].push(callback)
 
-    } else {
-      this.delayedMethods.push([method, args])
+    if (this.socketPromise) {
+      this.on(event, callback)
     }
+  },
+
+  removeNativeEventListener(event, callback) {
+    if (this.nativeEvents[event]) {
+      this.nativeEvents[event] = this.nativeEvents[event].filter(cb => cb !== callback)
+
+      if (!this.nativeEvents[event].length) {
+        delete this.nativeEvents[event]
+      }
+
+      if (this.socketPromise) {
+        this.off(event, callback)
+      }
+    }
+  },
+
+  provideConnection() {
+    if (this.socketPromise) {
+      return this.socketPromise
+    }
+
+    return this.socketPromise = Socket.connect(this.nativeEvents)
+  },
+
+  destroyConnection() {
+    if (this.socketPromise) {
+      this.socketPromise.then(rtSocket => rtSocket.close())
+
+      delete this.socketPromise
+    }
+  },
+
+  reconnect() {
+    this.destroyConnection()
+
+    this.provideConnection()
+      .then(() => {
+        this.subscriptions.reconnect()
+        this.methods.reconnect()
+      })
+  },
+
+  onDisconnect() {
+    this.reconnect()
   },
 }
 

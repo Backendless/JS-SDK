@@ -23,26 +23,31 @@ const Types = Utils.mirrorKeys({
   RSO_USERS   : null,
 })
 
-const SOCKET_RECONNECT_EVENT = 'reconnect'
-
 const subscription = type => function(options, callbacks) {
   return this.subscribe(type, options, callbacks)
 }
 
 export default class RTSubscriptions {
 
-  constructor(rtClient) {
-    this.rtClient = rtClient
+  constructor(rtProvider) {
+    this.rtProvider = rtProvider
 
     this.subscriptions = {}
   }
 
   initialize() {
     if (!this.initialized) {
-      this.rtClient.on(Events.SUB_RES, data => this.onSubscriptionResponse(data))
-      this.rtClient.on(SOCKET_RECONNECT_EVENT, () => this.reconnectSubscriptions())
+      this.rtProvider.on(Events.SUB_RES, data => this.onSubscriptionResponse(data))
 
       this.initialized = true
+    }
+  }
+
+  reconnect() {
+    if (this.initialized) {
+      this.initialized = false
+      this.initialize()
+      this.reconnectSubscriptions()
     }
   }
 
@@ -54,7 +59,7 @@ export default class RTSubscriptions {
 
   subscribe(name, options, { onData, onError, onStop, onReady }) {
     this.initialize()
-    //TODO: make sure of unique subscriptionId
+
     const subscriptionId = RTUtils.generateUID()
 
     this.subscriptions[subscriptionId] = {
@@ -84,14 +89,14 @@ export default class RTSubscriptions {
   onSubscription(subscriptionId) {
     const subscription = this.subscriptions[subscriptionId]
 
-    this.rtClient.emit(Events.SUB_ON, subscription.data)
+    this.rtProvider.emit(Events.SUB_ON, subscription.data)
   }
 
   offSubscription(subscriptionId) {
     const subscription = this.subscriptions[subscriptionId]
 
     if (subscription) {
-      this.rtClient.emit(Events.SUB_OFF, { id: subscriptionId })
+      this.rtProvider.emit(Events.SUB_OFF, { id: subscriptionId })
 
       if (subscription.onStop) {
         subscription.onStop()

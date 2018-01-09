@@ -6,6 +6,10 @@ import { RTProvider } from './rt'
 import { setLocalCurrentUser } from './users/current-user'
 
 export function initApp(appId, secretKey) {
+  LocalVars.applicationId = appId
+  LocalVars.secretKey = secretKey
+  LocalVars.appPath = [LocalVars.serverURL, appId, secretKey].join('/')
+
   RTProvider.init()
 
   LoggingCollector.reset()
@@ -15,8 +19,4 @@ export function initApp(appId, secretKey) {
   Data.reset()
 
   setLocalCurrentUser()
-
-  LocalVars.applicationId = appId
-  LocalVars.secretKey = secretKey
-  LocalVars.appPath = [LocalVars.serverURL, appId, secretKey].join('/')
 }

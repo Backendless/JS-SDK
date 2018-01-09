@@ -5,6 +5,9 @@ import LocalVars from './local-vars'
 const Urls = {
   root: () => LocalVars.appPath,
 
+  rt      : () => `${Urls.root()}/rt`,
+  rtLookup: () => `${Urls.rt()}/lookup`,
+
   blServices     : () => `${Urls.root()}/services`,
   blServiceMethod: (name, method) => `${Urls.blServices()}/${name}/${method}`,
 
