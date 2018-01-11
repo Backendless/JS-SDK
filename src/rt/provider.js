@@ -5,7 +5,13 @@ import Subscriptions from './subscriptions'
 import Methods from './methods'
 import Socket from './socket'
 
+const INITIAL_RECONNECTION_TIMEOUT = 200
+const MAX_RECONNECTION_TIMEOUT = 60 * 60 * 1000 // a hour
+
+const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
+
 const provideConnectionOnMethod = method => (...args) => {
+
   RTProvider
     .provideConnection()
     .then(rtSocket => rtSocket[method](...args))
@@ -20,12 +26,12 @@ const RTProvider = {
   init() {
     this.destroyConnection()
 
+    this.connectAttempt = 0
+
     this.nativeEvents = {}
 
     this.subscriptions = new Subscriptions(this)
     this.methods = new Methods(this)
-
-    this.addNativeEventListener(NativeSocketEvents.DISCONNECT, this.onDisconnect.bind(this))
   },
 
   updateUserToken() {
@@ -37,10 +43,6 @@ const RTProvider = {
   addNativeEventListener(event, callback) {
     this.nativeEvents[event] = this.nativeEvents[event] || []
     this.nativeEvents[event].push(callback)
-
-    if (this.socketPromise) {
-      this.on(event, callback)
-    }
   },
 
   removeNativeEventListener(event, callback) {
@@ -50,10 +52,12 @@ const RTProvider = {
       if (!this.nativeEvents[event].length) {
         delete this.nativeEvents[event]
       }
+    }
+  },
 
-      if (this.socketPromise) {
-        this.off(event, callback)
-      }
+  runNativeEventListeners(event, ...args) {
+    if (this.nativeEvents[event]) {
+      this.nativeEvents[event].forEach(callback => callback(...args))
     }
   },
 
@@ -62,7 +66,39 @@ const RTProvider = {
       return this.socketPromise
     }
 
-    return this.socketPromise = Socket.connect(this.nativeEvents)
+    this.socketPromise = this.tryToConnect()
+
+    this.socketPromise
+      .then(() => {
+        this.subscriptions.reconnect()
+        this.methods.reconnect()
+      })
+
+    return this.socketPromise
+  },
+
+  tryToConnect() {
+    this.connectAttempt = this.connectAttempt + 1
+
+    return Socket.connect(this.onDisconnect.bind(this))
+      .then(rtSocket => {
+        this.onConnect()
+
+        return rtSocket
+      })
+      .catch(error => {
+        const factor = INITIAL_RECONNECTION_TIMEOUT * Math.pow(2, this.connectAttempt)
+        const timeout = Math.min(factor, MAX_RECONNECTION_TIMEOUT)
+
+        this.onConnectError(error)
+
+        // wait for 400|800|1600|...|MAX_RECONNECTION_TIMEOUT milliseconds
+        return wait(timeout).then(() => {
+          this.onConnectAttempt(this.connectAttempt - 1, timeout)
+
+          return this.tryToConnect()
+        })
+      })
   },
 
   destroyConnection() {
@@ -73,19 +109,27 @@ const RTProvider = {
     }
   },
 
-  reconnect() {
+  onDisconnect(reason) {
     this.destroyConnection()
-
     this.provideConnection()
-      .then(() => {
-        this.subscriptions.reconnect()
-        this.methods.reconnect()
-      })
+
+    this.runNativeEventListeners(NativeSocketEvents.DISCONNECT, reason)
   },
 
-  onDisconnect() {
-    this.reconnect()
+  onConnect() {
+    this.connectAttempt = 0
+
+    this.runNativeEventListeners(NativeSocketEvents.CONNECT)
   },
+
+  onConnectError(error) {
+    this.runNativeEventListeners(NativeSocketEvents.CONNECT_ERROR, error)
+  },
+
+  onConnectAttempt(attempt, timeout) {
+    this.runNativeEventListeners(NativeSocketEvents.RECONNECT_ATTEMPT, attempt, timeout)
+  },
+
 }
 
 export default RTProvider

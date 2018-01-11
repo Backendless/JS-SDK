@@ -16,8 +16,8 @@ const RTClient = {
   addDisconnectEventListener   : subscribeNativeEvent(NativeSocketEvents.DISCONNECT),
   removeDisconnectEventListener: unsubscribeNativeEvent(NativeSocketEvents.DISCONNECT),
 
-  addErrorEventListener   : subscribeNativeEvent(NativeSocketEvents.ERROR),
-  removeErrorEventListener: unsubscribeNativeEvent(NativeSocketEvents.ERROR),
+  addReconnectAttemptEventListener   : subscribeNativeEvent(NativeSocketEvents.RECONNECT_ATTEMPT),
+  removeReconnectAttemptEventListener: unsubscribeNativeEvent(NativeSocketEvents.RECONNECT_ATTEMPT),
 }
 
 export default RTClient

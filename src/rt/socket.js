@@ -7,58 +7,52 @@ import { getCurrentUserToken } from '../users/current-user'
 
 import { NativeSocketEvents } from './constants'
 
-const INITIAL_RECONNECTION_TIMEOUT = 200
-const MAX_RECONNECTION_TIMEOUT = 5 * 1000
-
-const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
-
-function tryToConnect(nativeEvents, attempt = 1) {
-  return Request.get({ url: Urls.rtLookup(), asyncHandler: {} })
-    .catch(error => {
-      if (nativeEvents[NativeSocketEvents.CONNECT_ERROR]) {
-        nativeEvents[NativeSocketEvents.CONNECT_ERROR].forEach(callback => callback(error))
-      }
-
-      throw error
-    })
-    .then(rtServerHost => {
-      const rtSocket = new RTSocket(rtServerHost, nativeEvents)
-
-      return new Promise((resolve, reject) => {
-        rtSocket.on(NativeSocketEvents.CONNECT, () => resolve(rtSocket))
-        rtSocket.on(NativeSocketEvents.CONNECT_ERROR, reject)
-        rtSocket.on(NativeSocketEvents.CONNECT_TIMEOUT, reject)
-      })
-    })
-    .catch(() => {
-      const factor = INITIAL_RECONNECTION_TIMEOUT * Math.pow(2, attempt)
-      const timeout = Math.min(factor, MAX_RECONNECTION_TIMEOUT)
-
-      // wait for 400|800|1600|...|MAX_RECONNECTION_TIMEOUT milliseconds
-      return wait(timeout).then(() => tryToConnect(nativeEvents, attempt + 1))
-    })
-}
-
 export default class RTSocket {
 
-  static connect(nativeEvents) {
-    return tryToConnect(nativeEvents)
+  static connect(onDisconnect) {
+    return Request.get({ url: Urls.rtLookup(), asyncHandler: {} })
+      .then(rtServerHost => {
+        return new Promise((resolve, reject) => {
+          const rtSocket = new RTSocket(rtServerHost)
+
+          rtSocket.on(NativeSocketEvents.CONNECT, onConnect)
+          rtSocket.on(NativeSocketEvents.CONNECT_ERROR, onError)
+          rtSocket.on(NativeSocketEvents.CONNECT_TIMEOUT, onError)
+          rtSocket.on(NativeSocketEvents.ERROR, onError)
+
+          rtSocket.connect()
+
+          function onConnect() {
+            resolve(rtSocket)
+          }
+
+          function onError(error) {
+            rtSocket.close()
+
+            reject(error)
+          }
+        })
+      })
+      .then(rtSocket => {
+        rtSocket.on(NativeSocketEvents.DISCONNECT, onDisconnect)
+
+        return rtSocket
+      })
   }
 
-  constructor(host, nativeEvents) {
+  constructor(host) {
     this.events = {}
 
     this.ioSocket = io(`${host}/${LocalVars.applicationId}`, {
+      autoConnect : false,
       reconnection: false,
       path        : `/${LocalVars.applicationId}`,
       query       : { apiKey: LocalVars.secretKey, userToken: getCurrentUserToken() }
     })
+  }
 
-    if (nativeEvents) {
-      Object.keys(nativeEvents).forEach(event => {
-        nativeEvents[event].forEach(callback => this.on(event, callback))
-      })
-    }
+  connect() {
+    this.ioSocket.connect()
   }
 
   close() {
