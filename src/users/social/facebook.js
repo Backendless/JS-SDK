@@ -16,15 +16,20 @@ export const loginWithFacebookSdk = (fieldsMapping, stayLoggedIn, options) => {
       return reject(new Error('Facebook SDK not found'))
     }
 
-    const asyncHandler = new Async(resolve, reject)
+    function loginRequest(response) {
+      const requestData = {
+        ...response,
+        accessToken: response.authResponse.accessToken
+      }
+
+      sendSocialLoginRequest(requestData, 'facebook', fieldsMapping, stayLoggedIn, new Async(resolve, reject))
+    }
 
     FB.getLoginStatus(response => {
       if (response.status === 'connected') {
-        sendSocialLoginRequest(response, 'facebook', fieldsMapping, stayLoggedIn, asyncHandler)
+        loginRequest(response)
       } else {
-        FB.login(response => {
-          sendSocialLoginRequest(response, 'facebook', fieldsMapping, stayLoggedIn, asyncHandler)
-        }, options)
+        FB.login(response => loginRequest(response), options)
       }
     })
   })

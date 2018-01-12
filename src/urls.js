@@ -87,7 +87,7 @@ const Urls = {
   userResendConfirmation: email => `${Urls.users()}/resendconfirmation/${email}`,
   userSocial            : () => `${Urls.users()}/social`,
   userSocialOAuth       : socialType => `${Urls.userSocial()}/oauth/${socialType.toLowerCase()}/request_url`,
-  userSocialLogin       : socialType => `${Urls.userSocial()}/${socialType.toLowerCase()}/login/${LocalVars.applicationId}`,
+  userSocialLogin       : socialType => `${Urls.userSocial()}/${socialType.toLowerCase()}/sdk/login`,
 }
 
 export default Urls
