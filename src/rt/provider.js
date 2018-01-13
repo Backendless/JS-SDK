@@ -26,7 +26,9 @@ const RTProvider = {
   init() {
     this.destroyConnection()
 
+    this.connected = false
     this.connectAttempt = 0
+    this.requireRestorePrevConnection = false
 
     this.nativeEvents = {}
 
@@ -66,15 +68,7 @@ const RTProvider = {
       return this.socketPromise
     }
 
-    this.socketPromise = this.tryToConnect()
-
-    this.socketPromise
-      .then(() => {
-        this.subscriptions.reconnect()
-        this.methods.reconnect()
-      })
-
-    return this.socketPromise
+    return this.socketPromise = this.tryToConnect()
   },
 
   tryToConnect() {
@@ -110,6 +104,8 @@ const RTProvider = {
   },
 
   onDisconnect(reason) {
+    this.connected = false
+
     this.destroyConnection()
     this.provideConnection()
 
@@ -117,7 +113,14 @@ const RTProvider = {
   },
 
   onConnect() {
+    if (this.requireRestorePrevConnection) {
+      this.subscriptions.reconnect()
+      this.methods.reconnect()
+    }
+
+    this.connected = true
     this.connectAttempt = 0
+    this.requireRestorePrevConnection = true
 
     this.runNativeEventListeners(NativeSocketEvents.CONNECT)
   },
