@@ -7,7 +7,7 @@ const Events = Utils.mirrorKeys({
 })
 
 const Types = Utils.mirrorKeys({
-  SET_USER: null,
+  SET_USER_TOKEN: null,
 
   RSO_GET    : null,
   RSO_SET    : null,
@@ -75,7 +75,7 @@ export default class RTMethods {
   //---------------------------------//
   //----------- AUTH METHODS --------//
 
-  updateUserToken = method(Types.SET_USER).bind(this)
+  setUserToken = method(Types.SET_USER_TOKEN).bind(this)
 
   //----------- AUTH METHODS --------//
   //---------------------------------//

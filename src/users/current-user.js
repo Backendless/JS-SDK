@@ -14,7 +14,7 @@ let currentUser = null
 export function setLocalCurrentUser(user) {
   currentUser = user || null
 
-  RTProvider.updateUserToken()
+  RTProvider.setUserToken()
 }
 
 export function getLocalCurrentUser() {

@@ -36,9 +36,9 @@ const RTProvider = {
     this.methods = new Methods(this)
   },
 
-  updateUserToken() {
+  setUserToken() {
     if (this.socketPromise) {
-      this.methods.updateUserToken({ userToken: getCurrentUserToken() })
+      this.methods.setUserToken({ userToken: getCurrentUserToken() })
     }
   },
 
