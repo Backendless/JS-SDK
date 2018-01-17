@@ -40,8 +40,8 @@ const FindHelpers = {
   },
 
   pageSize: function(arg) {
-    if (arg < 1 || arg > 100) {
-      throw new Error('PageSize can not be less then 1 or greater than 100')
+    if (arg < 1) {
+      throw new Error('PageSize can not be less then 1')
     }
 
     return 'pagesize=' + arg
