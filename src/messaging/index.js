@@ -9,6 +9,8 @@ import SubscriptionOptions from './subscriptions-options'
 
 import { subscribe } from './subscribe'
 import { publish } from './publish'
+import { push } from './push'
+import { pushWithTemplate } from './push-with-template'
 import { sendEmail } from './send-email'
 import { cancel } from './cancel'
 import { registerDevice } from './register-device'
@@ -31,6 +33,14 @@ const Messaging = {
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
   publishSync: Utils.synchronized(publish),
   publish    : Utils.promisified(publish),
+
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.push')
+  pushSync: Utils.synchronized(push),
+  push    : Utils.promisified(push),
+
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.pushWithTemplate')
+  pushWithTemplateSync: Utils.synchronized(pushWithTemplate),
+  pushWithTemplate    : Utils.promisified(pushWithTemplate),
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
   sendEmailSync: Utils.synchronized(sendEmail),
