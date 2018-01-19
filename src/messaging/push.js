@@ -7,7 +7,7 @@ export function push(data) {
   const isAsync = !!responder
 
   if (!data || !Utils.isObject(data)) {
-    throw new Error('Push Data must object!')
+    throw new Error('Push Data must be object!')
   }
 
   return Request.post({

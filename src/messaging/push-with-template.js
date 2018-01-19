@@ -7,7 +7,7 @@ export function pushWithTemplate(templateName) {
   const isAsync = !!responder
 
   if (!templateName || !Utils.isString(templateName)) {
-    throw new Error('Push Template Name must string!')
+    throw new Error('Push Template Name must be non empty string!')
   }
 
   return Request.post({
