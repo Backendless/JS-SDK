@@ -7,8 +7,8 @@ export function extractQueryOptions(options) {
   const params = []
 
   if (typeof options.pageSize !== 'undefined') {
-    if (options.pageSize < 1 || options.pageSize > 100) {
-      throw new Error('PageSize can not be less then 1 or greater than 100')
+    if (options.pageSize < 1) {
+      throw new Error('PageSize can not be less then 1')
     }
 
     params.push('pageSize=' + encodeURIComponent(options.pageSize))
