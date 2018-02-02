@@ -8,28 +8,35 @@ export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyn
   return loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
 }
 
-export const loginWithFacebookSdk = (fieldsMapping, stayLoggedIn, options) => {
+export const loginWithFacebookSdk = (accessToken, fieldsMapping, stayLoggedIn, options) => {
   Utils.checkPromiseSupport()
 
+  if (typeof accessToken !== 'string') {
+    options = stayLoggedIn
+    stayLoggedIn = fieldsMapping
+    fieldsMapping = accessToken
+    accessToken = null
+  }
+
   return new Promise((resolve, reject) => {
+    function loginRequest() {
+      sendSocialLoginRequest(accessToken, 'facebook', fieldsMapping, stayLoggedIn, new Async(resolve, reject))
+    }
+
+    if (accessToken || !fieldsMapping) {
+      return loginRequest()
+    }
+
     if (!FB) {
       return reject(new Error('Facebook SDK not found'))
     }
 
-    function loginRequest(response) {
-      const requestData = {
-        ...response,
-        accessToken: response.authResponse.accessToken
-      }
-
-      sendSocialLoginRequest(requestData, 'facebook', fieldsMapping, stayLoggedIn, new Async(resolve, reject))
-    }
-
     FB.getLoginStatus(response => {
       if (response.status === 'connected') {
-        loginRequest(response)
+        loginRequest(accessToken = response.authResponse.accessToken)
+
       } else {
-        FB.login(response => loginRequest(response), options)
+        FB.login(response => loginRequest(accessToken = response.authResponse.accessToken), options)
       }
     })
   })
