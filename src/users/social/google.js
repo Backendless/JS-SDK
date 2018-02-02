@@ -21,9 +21,8 @@ export const loginWithGooglePlusSdk = (fieldsMapping, stayLoggedIn) => {
     gapi.auth.authorize({
       client_id: fieldsMapping.client_id,
       scope    : 'https://www.googleapis.com/auth/plus.login'
-    }, response => {
-      delete response['g-oauth-window']
-      sendSocialLoginRequest(response, 'googleplus', fieldsMapping, stayLoggedIn, asyncHandler)
+    }, ({ access_token }) => {
+      sendSocialLoginRequest({ accessToken: access_token }, 'googleplus', fieldsMapping, stayLoggedIn, asyncHandler)
     })
   })
 }
