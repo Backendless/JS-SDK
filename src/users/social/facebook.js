@@ -5,6 +5,11 @@ import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
 
 export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyncHandler) => {
+  console.warn(
+    'Method "loginWithFacebook" is deprecated. and will be removed in the nearest release.\n' +
+    'Use method "loginWithFacebookSdk" instead.'
+  )
+
   return loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
 }
 
@@ -26,6 +31,8 @@ export const loginWithFacebookSdk = (accessToken, fieldsMapping, stayLoggedIn, o
     if (accessToken || !fieldsMapping) {
       return loginRequest()
     }
+
+    console.warn('You must pass "accessToken" as the first argument into "loginWithFacebook(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method')
 
     if (!FB) {
       return reject(new Error('Facebook SDK not found'))
