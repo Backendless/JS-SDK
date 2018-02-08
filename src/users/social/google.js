@@ -40,6 +40,12 @@ export const loginWithGooglePlusSdk = (accessToken, fieldsMapping, stayLoggedIn)
     gapi.auth.authorize({
       client_id: fieldsMapping.client_id,
       scope    : 'https://www.googleapis.com/auth/plus.login'
-    }, ({ access_token }) => loginRequest(accessToken = access_token))
+    }, ({ access_token, error }) => {
+      if (error) {
+        reject(error)
+      } else {
+        loginRequest(accessToken = access_token)
+      }
+    })
   })
 }
