@@ -4,12 +4,11 @@ import Request from '../../request'
 import LocalCache from '../../local-cache'
 import { getLocalCurrentUser, setLocalCurrentUser } from '../current-user'
 
-
 import { parseResponse, getUserFromResponse } from '../utils'
 
-export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stayLoggedIn, asyncHandler) => {
-  if (fieldsMapping) {
-    response['fieldsMapping'] = fieldsMapping
+export const sendSocialLoginRequest = (accessToken, socialType, fieldsMapping, stayLoggedIn, asyncHandler) => {
+  if (!accessToken) {
+    return asyncHandler.fault('"accessToken" is missing.')
   }
 
   const interimCallback = new Async(function(r) {
@@ -24,6 +23,9 @@ export const sendSocialLoginRequest = (response, socialType, fieldsMapping, stay
     url         : Urls.userSocialLogin(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,
-    data        : response
+    data        : {
+      accessToken,
+      fieldsMapping
+    }
   })
 }
