@@ -946,21 +946,29 @@ declare module __Backendless {
         update(user: Backendless.User): Promise<Backendless.User>;
         update<T>(user: T): Promise<T>;
 
+        /**@deprecated */
         loginWithFacebookSync(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): void;
 
+        /**@deprecated */
         loginWithFacebook(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): Promise<void>;
 
+        /**@deprecated */
         loginWithGooglePlusSync(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): void;
 
+        /**@deprecated */
         loginWithGooglePlus(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): Promise<void>;
 
         loginWithTwitterSync(fields?: Object, stayLoggedIn?: boolean): void;
 
         loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
 
+        /**@deprecated */
         loginWithFacebookSdk(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
+        loginWithFacebookSdk(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<void>;
 
+        /**@deprecated */
         loginWithGooglePlusSdk(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
+        loginWithGooglePlusSdk(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<void>;
 
         isValidLoginSync(): boolean;
 

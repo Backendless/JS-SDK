@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "4.3.2-rt.1",
+  "version": "4.3.3",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -83,7 +83,6 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
-    "backendless-request": "~0.0.11",
-    "socket.io-client": "^2.0.3"
+    "backendless-request": "~0.0.11"
   }
 }

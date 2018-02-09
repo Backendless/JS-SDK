@@ -335,13 +335,17 @@ function testUserService() {
     promiseVoid = Backendless.UserService.loginWithTwitter({}, true);
     promiseVoid = Backendless.UserService.loginWithTwitter(null, true);
 
-    promiseVoid = Backendless.UserService.loginWithFacebookSdk();
     promiseVoid = Backendless.UserService.loginWithFacebookSdk({});
     promiseVoid = Backendless.UserService.loginWithFacebookSdk({}, true);
 
-    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk();
+    promiseVoid = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
+    promiseVoid = Backendless.UserService.loginWithFacebookSdk('accessToken', {},true);
+
     promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({});
     promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({}, true);
+
+    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
+    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {},true);
 
     bol = Backendless.UserService.isValidLoginSync();
     promiseObject = Backendless.UserService.isValidLogin();
