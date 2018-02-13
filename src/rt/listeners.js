@@ -1,9 +1,3 @@
-import Utils from '../utils'
-
-const ListenerTypes = Utils.mirrorKeys({
-  ERROR: null,
-})
-
 export default class RTListeners {
 
   constructor() {
@@ -11,7 +5,7 @@ export default class RTListeners {
     this.simpleListeners = {}
   }
 
-  addSubscription(type, subscriberFn, callback, extraOptions) {
+  addSubscription(type, subscriberFn, callback, onError, extraOptions) {
     const subscriptionsStack = this.subscriptions[type] = this.subscriptions[type] || []
 
     const options = {
@@ -21,7 +15,7 @@ export default class RTListeners {
 
     const subscription = subscriberFn(options, {
       onData : callback,
-      onError: this.onError,
+      onError: onError,
       onStop : () => this.subscriptions[type] = this.subscriptions[type].filter(s => s.subscription !== subscription),
     })
 
@@ -65,18 +59,10 @@ export default class RTListeners {
     }
   }
 
-  onError = error => {
-    const listenersStack = this.simpleListeners[ListenerTypes.ERROR] || []
-
-    listenersStack.forEach(callback => callback(error))
-  }
-
-  addErrorListener(callback) {
-    this.addSimpleListener(ListenerTypes.ERROR, callback)
-  }
-
-  removeErrorListeners(callback) {
-    this.removeSimpleListener(ListenerTypes.ERROR, callback)
+  runSimpleListeners(type, ...args) {
+    if (this.simpleListeners[type]) {
+      this.simpleListeners[type].forEach(callback => callback(...args))
+    }
   }
 
   removeAllListeners() {

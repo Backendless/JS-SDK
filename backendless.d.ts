@@ -399,6 +399,33 @@ declare module __Backendless {
 
     /**
      * @private
+     * @class RTDataStore
+     */
+    class RTDataStore {
+
+        addCreateListener(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
+        addCreateListener(callback:(obj:Object) => void):Backendless.RTDataStore;
+
+        removeCreateListeners(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
+        removeCreateListeners(whereClause:string):Backendless.RTDataStore;
+
+        addUpdateListener(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
+        addUpdateListener(callback:(obj:Object) => void):Backendless.RTDataStore;
+
+        removeUpdateListeners(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
+        removeUpdateListeners(whereClause:string):Backendless.RTDataStore;
+
+        addDeleteListener(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
+        addDeleteListener(callback:(obj:Object) => void):Backendless.RTDataStore;
+
+        removeDeleteListeners(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
+        removeDeleteListeners(whereClause:string):Backendless.RTDataStore;
+
+        removeAllListeners():Backendless.RTDataStore;
+    }
+
+    /**
+     * @private
      * @class DataStore
      */
     class DataStore {
@@ -472,29 +499,7 @@ declare module __Backendless {
 
         bulkDeleteSync(objectsArray: string | Array<string> | Array<Object>): string;
 
-        addCreateListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
-        addCreateListener(callback:(obj:Object) => void):Backendless.DataStore;
-
-        removeCreateListeners(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
-        removeCreateListeners(whereClause:string):Backendless.DataStore;
-
-        addUpdateListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
-        addUpdateListener(callback:(obj:Object) => void):Backendless.DataStore;
-
-        removeUpdateListeners(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
-        removeUpdateListeners(whereClause:string):Backendless.DataStore;
-
-        addDeleteListener(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
-        addDeleteListener(callback:(obj:Object) => void):Backendless.DataStore;
-
-        removeDeleteListeners(whereClause:string, callback:(obj:Object) => void):Backendless.DataStore;
-        removeDeleteListeners(whereClause:string):Backendless.DataStore;
-
-        addErrorListener(callback:(obj:Object) => void):Backendless.DataStore;
-
-        removeErrorListeners(callback?:(obj:Object) => void):Backendless.DataStore;
-
-        removeAllListeners():Backendless.DataStore;
+        rt(): RTDataStore;
     }
 
     /**
@@ -1115,22 +1120,19 @@ declare module __Backendless {
 
         isConnected():boolean;
 
-        addConnectListener(callback:() => void):ChannelClass;
+        addConnectListener(callback:() => void, onError?:(error:Object) => void):ChannelClass;
         removeConnectListeners(callback?:() => void):ChannelClass;
 
-        addErrorListener(callback:(error:Object) => void):ChannelClass;
-        removeErrorListeners(callback?:(error:Object) => void):ChannelClass;
+        addMessageListener(selector:string, callback:(message:Object) => void, onError?:(error:Object) => void):ChannelClass;
+        addMessageListener(callback:(message:Object) => void, onError?:(error:Object) => void):ChannelClass;
 
-        addMessageListener(selector:string, callback:(error:Object) => void):ChannelClass;
-        addMessageListener(callback:(error:Object) => void):ChannelClass;
+        removeMessageListeners(selector:string, callback?:(message:Object) => void):ChannelClass;
+        removeMessageListeners(callback?:(message:Object) => void):ChannelClass;
 
-        removeMessageListeners(selector:string, callback?:(error:Object) => void):ChannelClass;
-        removeMessageListeners(callback?:(error:Object) => void):ChannelClass;
-
-        addCommandListener(callback:(command:Object) => void):ChannelClass;
+        addCommandListener(callback:(command:Object) => void, onError?:(error:Object) => void):ChannelClass;
         removeCommandListeners(callback?:(command:Object) => void):ChannelClass;
 
-        addUserStatusListener(callback:(userStates:Object) => void):ChannelClass;
+        addUserStatusListener(callback:(userStates:Object) => void, onError?:(error:Object) => void):ChannelClass;
         removeUserStatusListeners(callback?:(userStates:Object) => void):ChannelClass;
 
         removeAllListeners():ChannelClass;

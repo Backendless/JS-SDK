@@ -24,61 +24,62 @@ export default class RTDataStore extends RTListeners {
     }
   }
 
-  addCreateListener(whereClause, callback) {
-    this.addChangesListener(ChangesTypes.CREATED, whereClause, callback)
+  addCreateListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.CREATED, whereClause, callback, onError)
   }
 
-  removeCreateListeners(whereClause, callback) {
-    this.removeChangesListeners(ChangesTypes.CREATED, whereClause, callback)
+  removeCreateListeners(whereClause, callback, onError) {
+    this.removeChangesListeners(ChangesTypes.CREATED, whereClause, callback, onError)
   }
 
-  addUpdateListener(whereClause, callback) {
-    this.addChangesListener(ChangesTypes.UPDATED, whereClause, callback)
+  addUpdateListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.UPDATED, whereClause, callback, onError)
   }
 
-  removeUpdateListeners(whereClause, callback) {
-    this.removeChangesListeners(ChangesTypes.UPDATED, whereClause, callback)
+  removeUpdateListeners(whereClause, callback, onError) {
+    this.removeChangesListeners(ChangesTypes.UPDATED, whereClause, callback, onError)
   }
 
-  addDeleteListener(whereClause, callback) {
-    this.addChangesListener(ChangesTypes.DELETED, whereClause, callback)
+  addDeleteListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.DELETED, whereClause, callback, onError)
   }
 
-  removeDeleteListeners(whereClause, callback) {
-    this.removeChangesListeners(ChangesTypes.DELETED, whereClause, callback)
+  removeDeleteListeners(whereClause, callback, onError) {
+    this.removeChangesListeners(ChangesTypes.DELETED, whereClause, callback, onError)
   }
 
-  addBulkCreateListener(callback) {
-    this.addChangesListener(ChangesTypes.BULK_CREATED, callback)
+  addBulkCreateListener(callback, onError) {
+    this.addChangesListener(ChangesTypes.BULK_CREATED, callback, onError)
   }
 
-  removeBulkCreateListeners(callback) {
-    this.removeChangesListeners(ChangesTypes.BULK_CREATED, callback)
+  removeBulkCreateListeners(callback, onError) {
+    this.removeChangesListeners(ChangesTypes.BULK_CREATED, callback, onError)
   }
 
-  addBulkUpdateListener(callback) {
-    this.addChangesListener(ChangesTypes.BULK_UPDATED, callback)
+  addBulkUpdateListener(callback, onError) {
+    this.addChangesListener(ChangesTypes.BULK_UPDATED, callback, onError)
   }
 
-  removeBulkUpdateListeners(callback) {
-    this.removeChangesListeners(ChangesTypes.BULK_UPDATED, callback)
+  removeBulkUpdateListeners(callback, onError) {
+    this.removeChangesListeners(ChangesTypes.BULK_UPDATED, callback, onError)
   }
 
-  addBulkDeleteListener(callback) {
-    this.addChangesListener(ChangesTypes.BULK_DELETED, callback)
+  addBulkDeleteListener(callback, onError) {
+    this.addChangesListener(ChangesTypes.BULK_DELETED, callback, onError)
   }
 
-  removeBulkDeleteListeners(callback) {
-    this.removeChangesListeners(ChangesTypes.BULK_DELETED, callback)
+  removeBulkDeleteListeners(callback, onError) {
+    this.removeChangesListeners(ChangesTypes.BULK_DELETED, callback, onError)
   }
 
-  addChangesListener(event, whereClause, callback) {
+  addChangesListener(event, whereClause, callback, onError) {
     if (typeof whereClause === 'function') {
+      onError = callback
       callback = whereClause
       whereClause = undefined
     }
 
-    this.addSubscription(event, RTProvider.subscriptions.onObjectsChanges, callback, {
+    this.addSubscription(event, RTProvider.subscriptions.onObjectsChanges, callback, onError, {
       event,
       whereClause
     })

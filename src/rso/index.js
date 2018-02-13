@@ -40,9 +40,9 @@ export default class RemoteSharedObject extends RTScopeConnector {
   }
 
   onConnect() {
-    this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvoke, this.onInvoke)
-
     super.onConnect.apply(this, arguments)
+
+    this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvoke, this.onInvoke)
   }
 
   onDisconnect() {
@@ -52,14 +52,14 @@ export default class RemoteSharedObject extends RTScopeConnector {
   }
 
   onInvoke = ({ method, args }) => {
-    if (typeof this.invocationTarget[method] === 'function') {
-      this.invocationTarget[method](...args)
-    }
+    checkInvocationTargetMethod(this.invocationTarget, method)
+
+    this.invocationTarget[method](...args)
   }
 
   @RTScopeConnector.delayedOperation()
-  addChangesListener(callback) {
-    this.addSubscription(ListenerTypes.CHANGES, RTProvider.subscriptions.onRSOChanges, callback)
+  addChangesListener(callback, onError) {
+    this.addSubscription(ListenerTypes.CHANGES, RTProvider.subscriptions.onRSOChanges, callback, onError)
   }
 
   @RTScopeConnector.delayedOperation()
@@ -68,8 +68,8 @@ export default class RemoteSharedObject extends RTScopeConnector {
   }
 
   @RTScopeConnector.delayedOperation()
-  addClearListener(callback) {
-    this.addSubscription(ListenerTypes.CLEARED, RTProvider.subscriptions.onRSOClear, callback)
+  addClearListener(callback, onError) {
+    this.addSubscription(ListenerTypes.CLEARED, RTProvider.subscriptions.onRSOClear, callback, onError)
   }
 
   @RTScopeConnector.delayedOperation()
@@ -101,15 +101,17 @@ export default class RemoteSharedObject extends RTScopeConnector {
   invokeOn(method, targets, ...args) {
     return Promise
       .resolve()
-      .then(() => {
-        if (!this.invocationTarget) {
-          throw new Error('"invocationTarget" is not specified')
-        }
-
-        if (typeof this.invocationTarget[method] !== 'function') {
-          throw new Error(`Method "${method}" of invocationTarget is not function`)
-        }
-      })
+      .then(() => checkInvocationTargetMethod(this.invocationTarget, method))
       .then(() => RTProvider.methods.invokeRSOMethod({ ...this.getScopeOptions(), method, targets, args }))
+  }
+}
+
+function checkInvocationTargetMethod(invocationTarget, method) {
+  if (!invocationTarget) {
+    throw new Error('"invocationTarget" is not specified')
+  }
+
+  if (typeof invocationTarget[method] !== 'function') {
+    throw new Error(`Method "${method}" of invocationTarget is not function`)
   }
 }

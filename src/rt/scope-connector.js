@@ -4,6 +4,7 @@ import RTListeners from './listeners'
 
 const ListenerTypes = Utils.mirrorKeys({
   CONNECT    : null,
+  ERROR      : null,
   COMMAND    : null,
   USER_STATUS: null,
 })
@@ -72,9 +73,11 @@ export default class RTScopeConnector extends RTListeners {
     this.delayedOperations.forEach(operation => operation())
     this.delayedOperations = []
 
-    const listenersStack = this.simpleListeners[ListenerTypes.CONNECT] || []
+    this.runSimpleListeners(ListenerTypes.CONNECT)
+  }
 
-    listenersStack.forEach(callback => callback())
+  onError(error){
+    this.runSimpleListeners(ListenerTypes.ERROR, error)
   }
 
   onDisconnect() {
@@ -87,17 +90,25 @@ export default class RTScopeConnector extends RTListeners {
     super.removeAllListeners()
   }
 
-  addConnectListener(callback) {
+  addConnectListener(callback, onError) {
     this.addSimpleListener(ListenerTypes.CONNECT, callback)
+
+    if (onError) {
+      this.addSimpleListener(ListenerTypes.ERROR, onError)
+    }
   }
 
-  removeConnectListeners(callback) {
+  removeConnectListeners(callback, onError) {
     this.removeSimpleListener(ListenerTypes.CONNECT, callback)
+
+    if (onError) {
+      this.removeSimpleListener(ListenerTypes.ERROR, onError)
+    }
   }
 
   @delayedOperation()
-  addCommandListener(callback) {
-    this.addSubscription(ListenerTypes.COMMAND, this.commandSubscriber, callback)
+  addCommandListener(callback, onError) {
+    this.addSubscription(ListenerTypes.COMMAND, this.commandSubscriber, callback, onError)
   }
 
   @delayedOperation()
@@ -106,8 +117,8 @@ export default class RTScopeConnector extends RTListeners {
   }
 
   @delayedOperation()
-  addUserStatusListener(callback) {
-    this.addSubscription(ListenerTypes.USER_STATUS, this.usersSubscriber, callback)
+  addUserStatusListener(callback, onError) {
+    this.addSubscription(ListenerTypes.USER_STATUS, this.usersSubscriber, callback, onError)
   }
 
   @delayedOperation()

@@ -38,13 +38,16 @@ export default class Channel extends RTScopeConnector {
   }
 
   @RTScopeConnector.delayedOperation()
-  addMessageListener(selector, callback) {
+  addMessageListener(selector, callback, onError) {
     if (typeof selector === 'function') {
+      onError = callback
       callback = selector
       selector = undefined
     }
 
-    this.addSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, callback, { selector })
+    this.addSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, callback, onError, {
+      selector
+    })
   }
 
   @RTScopeConnector.delayedOperation()
