@@ -1,44 +1,75 @@
+import Utils from '../../utils'
+import { RTProvider, RTScopeConnector } from '../../rt'
+
 import Messaging from '../index'
 
-import ChannelConnector from './connector'
+const ListenerTypes = Utils.mirrorKeys({
+  MESSAGE: null
+})
 
-class Channel {
+export default class Channel extends RTScopeConnector {
 
-  constructor(options) {
-    this.options = options
+  get connectSubscriber() {
+    return RTProvider.subscriptions.connectToPubSub
+  }
+
+  get usersSubscriber() {
+    return RTProvider.subscriptions.onPubSubUserStatus
+  }
+
+  get commandSubscriber() {
+    return RTProvider.subscriptions.onPubSubCommand
+  }
+
+  get commandSender() {
+    return RTProvider.methods.sendPubSubCommand
+  }
+
+  getScopeOptions() {
+    const { name } = this.options
+
+    return {
+      channel: name
+    }
   }
 
   publish(message, publishOptions, deliveryTarget) {
     return Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
   }
 
+  @RTScopeConnector.delayedOperation()
+  addMessageListener(selector, callback) {
+    if (typeof selector === 'function') {
+      callback = selector
+      selector = undefined
+    }
+
+    this.addSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, callback, { selector })
+  }
+
+  @RTScopeConnector.delayedOperation()
+  removeMessageListeners(selector, callback) {
+    if (typeof selector === 'function') {
+      callback = selector
+      selector = undefined
+    }
+
+    const argumentsMatcher = subscription => {
+      if (selector && callback) {
+        return subscription.extraOptions.selector === selector && subscription.callback === callback
+      }
+
+      if (selector) {
+        return subscription.extraOptions.selector === selector
+      }
+
+      if (callback) {
+        return !subscription.extraOptions.selector && subscription.callback === callback
+      }
+
+      return true
+    }
+
+    this.stopSubscription(ListenerTypes.MESSAGE, { argumentsMatcher })
+  }
 }
-
-Object.assign(Channel.prototype, {
-
-  connect    : ChannelConnector.proxyRTMethod('connect'),
-  disconnect : ChannelConnector.proxyRTMethod('disconnect'),
-  isConnected: ChannelConnector.proxyRTMethod('isConnected'),
-
-  addConnectListener    : ChannelConnector.proxyRTMethod('addConnectListener'),
-  removeConnectListeners: ChannelConnector.proxyRTMethod('removeConnectListeners'),
-
-  addErrorListener    : ChannelConnector.proxyRTMethod('addErrorListener'),
-  removeErrorListeners: ChannelConnector.proxyRTMethod('removeErrorListeners'),
-
-  addMessageListener    : ChannelConnector.proxyRTMethod('addMessageListener'),
-  removeMessageListeners: ChannelConnector.proxyRTMethod('removeMessageListeners'),
-
-  addCommandListener    : ChannelConnector.proxyRTMethod('addCommandListener'),
-  removeCommandListeners: ChannelConnector.proxyRTMethod('removeCommandListeners'),
-
-  addUserStatusListener    : ChannelConnector.proxyRTMethod('addUserStatusListener'),
-  removeUserStatusListeners: ChannelConnector.proxyRTMethod('removeUserStatusListeners'),
-
-  removeAllListeners: ChannelConnector.proxyRTMethod('removeAllListeners'),
-
-  send: ChannelConnector.proxyRTMethod('send', true),
-
-})
-
-export default Channel

@@ -31,10 +31,10 @@ export default class RTScopeConnector extends RTListeners {
     return null
   }
 
-  constructor(initiator) {
+  constructor(options) {
     super()
 
-    this.initiator = initiator
+    this.options = options
 
     this.delayedOperations = []
 
@@ -68,7 +68,7 @@ export default class RTScopeConnector extends RTListeners {
   }
 
   getScopeOptions() {
-    return this.initiator.options
+    return this.options
   }
 
   onConnect() {
