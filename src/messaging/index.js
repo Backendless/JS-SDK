@@ -34,13 +34,9 @@ const Messaging = {
   publishSync: Utils.synchronized(publish),
   publish    : Utils.promisified(publish),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.push')
-  pushSync: Utils.synchronized(push),
-  push    : Utils.promisified(push),
+  push: Utils.promisified(push),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.pushWithTemplate')
-  pushWithTemplateSync: Utils.synchronized(pushWithTemplate),
-  pushWithTemplate    : Utils.promisified(pushWithTemplate),
+  pushWithTemplate: Utils.promisified(pushWithTemplate),
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
   sendEmailSync: Utils.synchronized(sendEmail),
