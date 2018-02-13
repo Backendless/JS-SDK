@@ -2,8 +2,6 @@ import Utils from '../utils'
 
 import RTListeners from './listeners'
 
-const Storage = new WeakMap()
-
 const ListenerTypes = Utils.mirrorKeys({
   CONNECT    : null,
   COMMAND    : null,
@@ -13,7 +11,6 @@ const ListenerTypes = Utils.mirrorKeys({
 export default class RTScopeConnector extends RTListeners {
 
   static delayedOperation = delayedOperation
-  static proxyRTMethod = proxyRTMethod
 
   get connectSubscriber() {
     return null
@@ -144,27 +141,5 @@ function delayedOperation(usePromise) {
     }
 
     return descriptor
-  }
-}
-
-function proxyRTMethod(method, returnResult) {
-  const RTScope = this
-
-  return function() {
-    const initiator = this
-
-    if (!Storage.has(initiator)) {
-      Storage.set(initiator, new RTScope(initiator))
-    }
-
-    const rtScope = Storage.get(initiator)
-
-    const result = rtScope[method](...arguments)
-
-    if (returnResult) {
-      return result
-    }
-
-    return initiator
   }
 }
