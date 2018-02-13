@@ -1,8 +1,8 @@
 import Utils from '../../utils'
 import { deprecated } from '../../decorators'
 import { resolveModelClassFromString } from '../utils'
+import RTDataStore from '../rt-store'
 
-import RTDataStore from './rt-store'
 import { loadRelations, setRelation, addRelation, deleteRelation } from './relations'
 import { bulkCreate, bulkUpdate, bulkDelete } from './bulk'
 import { find, findById, findFirst, findLast } from './find'
@@ -30,6 +30,9 @@ class DataStore {
     }
   }
 
+  rt() {
+    return this.rtDataStore = this.rtDataStore || new RTDataStore(this)
+  }
 }
 
 Object.assign(DataStore.prototype, {
@@ -89,26 +92,6 @@ Object.assign(DataStore.prototype, {
   @deprecated(namespaceLabel, `${namespaceLabel}.bulkDelete`)
   bulkDeleteSync: Utils.synchronized(bulkDelete),
   bulkDelete    : Utils.promisified(bulkDelete),
-
-  //--------------------------------------//
-  //----------------- RT -----------------//
-
-  addCreateListener    : RTDataStore.proxyRTDataStore('addCreateListener'),
-  removeCreateListeners: RTDataStore.proxyRTDataStore('removeCreateListeners'),
-
-  addUpdateListener    : RTDataStore.proxyRTDataStore('addUpdateListener'),
-  removeUpdateListeners: RTDataStore.proxyRTDataStore('removeUpdateListeners'),
-
-  addDeleteListener    : RTDataStore.proxyRTDataStore('addDeleteListener'),
-  removeDeleteListeners: RTDataStore.proxyRTDataStore('removeDeleteListeners'),
-
-  addErrorListener    : RTDataStore.proxyRTDataStore('addErrorListener'),
-  removeErrorListeners: RTDataStore.proxyRTDataStore('removeErrorListeners'),
-
-  removeAllListeners: RTDataStore.proxyRTDataStore('removeAllListeners'),
-
-  //----------------- RT -----------------//
-  //--------------------------------------//
 
 })
 

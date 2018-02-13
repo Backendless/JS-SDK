@@ -1,30 +1,26 @@
 import { RTProvider, RTListeners } from '../../rt'
 
-const RTDataStores = new WeakMap()
-
 const ChangesTypes = {
   CREATED: 'created',
   UPDATED: 'updated',
   DELETED: 'deleted',
 
-  BULK_CREATED: 'bulkCreated',
-  BULK_UPDATED: 'bulkUpdated',
-  BULK_DELETED: 'bulkDeleted',
+  BULK_CREATED: 'bulk-created',
+  BULK_UPDATED: 'bulk-updated',
+  BULK_DELETED: 'bulk-deleted',
 }
 
 export default class RTDataStore extends RTListeners {
 
-  static proxyRTDataStore = proxyRTDataStore
-
-  constructor(className) {
+  constructor(dataStore) {
     super()
 
-    this.className = className
+    this.dataStore = dataStore
   }
 
   getSubscriptionOptions() {
     return {
-      tableName: this.className
+      tableName: this.dataStore.className
     }
   }
 
@@ -120,21 +116,5 @@ export default class RTDataStore extends RTListeners {
     }
 
     this.stopSubscription(event, { argumentsMatcher })
-  }
-}
-
-function proxyRTDataStore(method) {
-  return function() {
-    const dataStore = this
-
-    if (!RTDataStores.has(dataStore)) {
-      RTDataStores.set(dataStore, new RTDataStore(dataStore.className))
-    }
-
-    const rtDataStore = RTDataStores.get(dataStore)
-
-    rtDataStore[method](...arguments)
-
-    return dataStore
   }
 }

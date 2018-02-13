@@ -166,7 +166,7 @@ const Utils = {
   synchronized(method) {
     return function() {
       // eslint-disable-next-line no-console
-      console.warn('Using of sync methods is an outdated approach. Please, use async methods.')
+      console.warn('Using of sync methods is an outdated approach. Please use async methods.')
 
       const context = this
       const fn = typeof method === 'function' ? method : context[method]

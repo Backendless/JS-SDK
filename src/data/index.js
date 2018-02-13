@@ -8,8 +8,6 @@ import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import { describe } from './describe'
 
-const StoresCache = {}
-
 const Data = {
   Permissions              : Permissions,
   QueryBuilder             : QueryBuilder,
@@ -17,13 +15,6 @@ const Data = {
 
   of: function(model) {
     return new Store(model)
-  },
-
-  reset() {
-    //TODO: temporary solution, will be removed when RT is released
-    Object.keys(tableName => {
-      delete StoresCache[tableName]
-    })
   },
 
   @deprecated('Backendless.Data', 'Backendless.Data.describe')

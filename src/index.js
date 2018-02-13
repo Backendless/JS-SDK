@@ -100,6 +100,13 @@ const Backendless = {
   Files         : Files,
   RTClient      : RTClient,
   SharedObject  : SharedObject,
+
+  // TODO: it's not confirmed signatures
+  RT: {
+    Data: {
+      of: className => Data.of(className).rt()
+    }
+  },
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
 
