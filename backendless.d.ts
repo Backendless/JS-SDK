@@ -418,9 +418,8 @@ declare module __Backendless {
     }
 
     interface RTBulkChangesSubscriptionResult {
-        code?: number;
-        message?: string;
-        details?: object;
+        whereClause?: string;
+        count?: number;
     }
 
     /**
