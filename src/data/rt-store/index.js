@@ -1,5 +1,7 @@
 import { RTProvider, RTListeners } from '../../rt'
 
+import { parseFindResponse } from '../store/parse'
+
 const ChangesTypes = {
   CREATED: 'created',
   UPDATED: 'updated',
@@ -9,6 +11,12 @@ const ChangesTypes = {
   BULK_UPDATED: 'bulk-updated',
   BULK_DELETED: 'bulk-deleted',
 }
+
+const SingleChangesTypes = [
+  ChangesTypes.CREATED,
+  ChangesTypes.UPDATED,
+  ChangesTypes.DELETED,
+]
 
 export default class EventHandler extends RTListeners {
 
@@ -103,9 +111,18 @@ export default class EventHandler extends RTListeners {
       whereClause = undefined
     }
 
-    this.addSubscription(event, RTProvider.subscriptions.onObjectsChanges, callback, onError, {
-      event,
-      whereClause
+    if (typeof callback !== 'function') {
+      throw new Error('"callback" must be function.')
+    }
+
+    this.addSubscription(event, RTProvider.subscriptions.onObjectsChanges, {
+      callback,
+      onError,
+      parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance : undefined,
+      extraOptions: {
+        event,
+        whereClause
+      }
     })
   }
 
@@ -134,5 +151,10 @@ export default class EventHandler extends RTListeners {
     }
 
     this.stopSubscription(event, { argumentsMatcher })
+  }
+
+  parseObjectToInstance = object => {
+    //TODO: "parseFindResponse" method must be moved to dataStore
+    return parseFindResponse(object, this.dataStore.model)
   }
 }

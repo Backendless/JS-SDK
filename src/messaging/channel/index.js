@@ -45,8 +45,12 @@ export default class Channel extends RTScopeConnector {
       selector = undefined
     }
 
-    this.addSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, callback, onError, {
-      selector
+    this.addSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, {
+      callback,
+      onError,
+      extraOptions: {
+        selector
+      }
     })
   }
 

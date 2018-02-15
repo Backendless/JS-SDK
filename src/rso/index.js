@@ -42,7 +42,9 @@ export default class RemoteSharedObject extends RTScopeConnector {
   onConnect() {
     super.onConnect.apply(this, arguments)
 
-    this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvoke, this.onInvoke)
+    this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvoke, {
+      callback: this.onInvoke
+    })
   }
 
   onDisconnect() {
@@ -59,7 +61,10 @@ export default class RemoteSharedObject extends RTScopeConnector {
 
   @RTScopeConnector.delayedOperation()
   addChangesListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CHANGES, RTProvider.subscriptions.onRSOChanges, callback, onError)
+    this.addSubscription(ListenerTypes.CHANGES, RTProvider.subscriptions.onRSOChanges, {
+      callback,
+      onError
+    })
   }
 
   @RTScopeConnector.delayedOperation()
@@ -69,7 +74,10 @@ export default class RemoteSharedObject extends RTScopeConnector {
 
   @RTScopeConnector.delayedOperation()
   addClearListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CLEARED, RTProvider.subscriptions.onRSOClear, callback, onError)
+    this.addSubscription(ListenerTypes.CLEARED, RTProvider.subscriptions.onRSOClear, {
+      callback,
+      onError
+    })
   }
 
   @RTScopeConnector.delayedOperation()

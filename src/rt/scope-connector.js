@@ -76,7 +76,7 @@ export default class RTScopeConnector extends RTListeners {
     this.runSimpleListeners(ListenerTypes.CONNECT)
   }
 
-  onError(error){
+  onError(error) {
     this.runSimpleListeners(ListenerTypes.ERROR, error)
   }
 
@@ -108,7 +108,10 @@ export default class RTScopeConnector extends RTListeners {
 
   @delayedOperation()
   addCommandListener(callback, onError) {
-    this.addSubscription(ListenerTypes.COMMAND, this.commandSubscriber, callback, onError)
+    this.addSubscription(ListenerTypes.COMMAND, this.commandSubscriber, {
+      callback,
+      onError
+    })
   }
 
   @delayedOperation()
@@ -118,7 +121,10 @@ export default class RTScopeConnector extends RTListeners {
 
   @delayedOperation()
   addUserStatusListener(callback, onError) {
-    this.addSubscription(ListenerTypes.USER_STATUS, this.usersSubscriber, callback, onError)
+    this.addSubscription(ListenerTypes.USER_STATUS, this.usersSubscriber, {
+      callback,
+      onError
+    })
   }
 
   @delayedOperation()

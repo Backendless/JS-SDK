@@ -57,7 +57,7 @@ export default class RTSubscriptions {
       .forEach(subscriptionId => this.onSubscription(subscriptionId))
   }
 
-  subscribe(name, options, { onData, onError, onStop, onReady }) {
+  subscribe(name, options, { parser, onData, onError, onStop, onReady }) {
     this.initialize()
 
     const subscriptionId = RTUtils.generateUID()
@@ -65,6 +65,7 @@ export default class RTSubscriptions {
     this.subscriptions[subscriptionId] = {
       data : { id: subscriptionId, name, options },
       ready: false,
+      parser,
       onData,
       onError,
       onStop,
@@ -132,6 +133,10 @@ export default class RTSubscriptions {
         }
 
         if (subscription.onData) {
+          if (typeof subscription.parser === 'function') {
+            data = subscription.parser(data)
+          }
+
           subscription.onData(data)
         }
       }
