@@ -1,7 +1,7 @@
 import LocalVars from './local-vars'
 import LoggingCollector from './logging/collector'
 import GeoTrackerMonitor from './geo/tracker-monitor'
-import { RTProvider } from './rt'
+import { initRTClient } from './rt'
 import { setLocalCurrentUser } from './users/current-user'
 
 export function initApp(appId, secretKey) {
@@ -9,7 +9,7 @@ export function initApp(appId, secretKey) {
   LocalVars.secretKey = secretKey
   LocalVars.appPath = [LocalVars.serverURL, appId, secretKey].join('/')
 
-  RTProvider.init()
+  initRTClient()
 
   LoggingCollector.reset()
   GeoTrackerMonitor.reset()

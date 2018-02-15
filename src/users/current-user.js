@@ -5,7 +5,7 @@ import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
 import LocalCache from '../local-cache'
-import { RTProvider } from '../rt'
+import { updateRTUserTokenIfNeeded } from '../rt'
 
 import { getUserFromResponse } from './utils'
 
@@ -14,7 +14,7 @@ let currentUser = null
 export function setLocalCurrentUser(user) {
   currentUser = user || null
 
-  RTProvider.setUserToken()
+  updateRTUserTokenIfNeeded()
 }
 
 export function getLocalCurrentUser() {

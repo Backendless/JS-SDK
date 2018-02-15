@@ -47,11 +47,5 @@ module.exports = {
     libraryTarget: 'umd'
   },
 
-  resolve: {
-    alias: {
-      'socket.io-client': 'socket.io-client/dist/socket.io'
-    }
-  },
-
   plugins: isProd ? [uglify] : []
 }

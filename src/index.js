@@ -13,7 +13,7 @@ import Data from './data'
 import Messaging from './messaging'
 import Device from './device'
 import Files from './files'
-import RTClient from './rt'
+import RT, { setRTDebugMode } from './rt'
 import SharedObject from './rso'
 import LocalCache from './local-cache'
 import LocalVars from './local-vars'
@@ -35,6 +35,8 @@ const Backendless = {
 
   set debugMode(debugMode) {
     LocalVars.debugMode = !!debugMode
+
+    setRTDebugMode(LocalVars.debugMode)
   },
 
   get serverURL() {
@@ -98,7 +100,7 @@ const Backendless = {
   Data          : Data,
   Messaging     : Messaging,
   Files         : Files,
-  RT            : RTClient,
+  RT            : RT,
   SharedObject  : SharedObject,
 
   ///-------------- SERVICES -------------///
