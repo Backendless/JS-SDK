@@ -83,6 +83,7 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
-    "backendless-request": "~0.0.11"
+    "backendless-request": "~0.0.11",
+    "socket.io-client": "^2.0.3"
   }
 }

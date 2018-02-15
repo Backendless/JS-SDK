@@ -100,6 +100,20 @@ declare module __Backendless {
      **/
     var Logging: LoggingI;
 
+    var RT: {
+        addConnectEventListener(callback: () => void): void;
+        removeConnectEventListener(callback: () => void): void;
+
+        addConnectErrorEventListener(callback: (error: string) => void): void;
+        removeConnectErrorEventListener(callback: (error: string) => void): void;
+
+        addDisconnectEventListener(callback: () => void): void;
+        removeDisconnectEventListener(callback: () => void): void;
+
+        addReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
+        removeReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
+    }
+
     /**
      * @private
      * @class Async
@@ -397,31 +411,84 @@ declare module __Backendless {
         close(): void;
     }
 
+    interface RTSubscriptionError {
+        code?: number;
+        message?: string;
+        details?: object;
+    }
+
+    interface RTBulkChangesSubscriptionResult {
+        code?: number;
+        message?: string;
+        details?: object;
+    }
+
     /**
      * @private
-     * @class RTDataStore
+     * @class EventHandler
      */
-    class RTDataStore {
+    class EventHandler {
+        addCreateListener<T=object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addCreateListener<T=object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addCreateListener<T=object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addCreateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        addCreateListener(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
-        addCreateListener(callback:(obj:Object) => void):Backendless.RTDataStore;
+        removeCreateListeners(whereClause: string): Backendless.EventHandler;
+        removeCreateListeners(): Backendless.EventHandler;
 
-        removeCreateListeners(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
-        removeCreateListeners(whereClause:string):Backendless.RTDataStore;
+        removeCreateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        addUpdateListener(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
-        addUpdateListener(callback:(obj:Object) => void):Backendless.RTDataStore;
+        addUpdateListener<T=object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpdateListener<T=object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addUpdateListener<T=object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpdateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        removeUpdateListeners(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
-        removeUpdateListeners(whereClause:string):Backendless.RTDataStore;
+        removeUpdateListeners(whereClause: string): Backendless.EventHandler;
+        removeUpdateListeners(): Backendless.EventHandler;
 
-        addDeleteListener(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
-        addDeleteListener(callback:(obj:Object) => void):Backendless.RTDataStore;
+        removeUpdateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        removeDeleteListeners(whereClause:string, callback:(obj:Object) => void, onError?:(error:Object) => void):Backendless.RTDataStore;
-        removeDeleteListeners(whereClause:string):Backendless.RTDataStore;
+        addDeleteListener<T=object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteListener<T=object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addDeleteListener<T=object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        removeAllListeners():Backendless.RTDataStore;
+        removeDeleteListeners(whereClause: string): Backendless.EventHandler;
+        removeDeleteListeners(): Backendless.EventHandler;
+
+        removeDeleteListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
+
+        // addBulkCreateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        // addBulkCreateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+        // addBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        // addBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+        //
+        // removeBulkCreateListeners(whereClause: string): Backendless.EventHandler;
+        // removeBulkCreateListeners(): Backendless.EventHandler;
+        //
+        // removeBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+
+        addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+        addBulkUpdateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkUpdateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+
+        removeBulkUpdateListeners(whereClause: string): Backendless.EventHandler;
+        removeBulkUpdateListeners(): Backendless.EventHandler;
+
+        removeBulkUpdateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+
+        addBulkDeleteListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkDeleteListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+        addBulkDeleteListener(callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkDeleteListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+
+        removeBulkDeleteListeners(whereClause: string): Backendless.EventHandler;
+        removeBulkDeleteListeners(): Backendless.EventHandler;
+
+        removeBulkDeleteListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+
+        removeAllListeners(): Backendless.EventHandler;
     }
 
     /**
@@ -499,7 +566,7 @@ declare module __Backendless {
 
         bulkDeleteSync(objectsArray: string | Array<string> | Array<Object>): string;
 
-        rt(): RTDataStore;
+        rt(): EventHandler;
     }
 
     /**
@@ -633,8 +700,8 @@ declare module __Backendless {
         restUrl: string;
         channelProperties: Object;
 
-        subscribe(channelName:string, subscriptionCallback:(data:Object) => void, subscriptionOptions:Backendless.SubscriptionOptions):ChannelClass;
-        subscribe(channelName:string, subscriptionOptions:Backendless.SubscriptionOptions,subscriptionCallback:(data:Object) => void):ChannelClass;
+        subscribe(channelName: string, subscriptionCallback: (data: Object) => void, subscriptionOptions: Backendless.SubscriptionOptions): ChannelClass;
+        subscribe(channelName: string, subscriptionOptions: Backendless.SubscriptionOptions, subscriptionCallback: (data: Object) => void): ChannelClass;
 
         publishSync(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Object;
 
@@ -1112,32 +1179,35 @@ declare module __Backendless {
 
     class ChannelClass {
 
-        publish(message:string|Object, publishOptions?:Backendless.PublishOptions, deliveryOptions?:Backendless.DeliveryOptions):Promise<Object>;
+        publish(message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        connect():ChannelClass
+        connect(): ChannelClass
 
-        disconnect():ChannelClass;
+        disconnect(): ChannelClass;
 
-        isConnected():boolean;
+        isConnected(): boolean;
 
-        addConnectListener(callback:() => void, onError?:(error:Object) => void):ChannelClass;
-        removeConnectListeners(callback?:() => void):ChannelClass;
+        addConnectListener(callback: () => void, onError?: (error: Object) => void): ChannelClass;
 
-        addMessageListener(selector:string, callback:(message:Object) => void, onError?:(error:Object) => void):ChannelClass;
-        addMessageListener(callback:(message:Object) => void, onError?:(error:Object) => void):ChannelClass;
+        removeConnectListeners(callback?: () => void): ChannelClass;
 
-        removeMessageListeners(selector:string, callback?:(message:Object) => void):ChannelClass;
-        removeMessageListeners(callback?:(message:Object) => void):ChannelClass;
+        addMessageListener(selector: string, callback: (message: Object) => void, onError?: (error: Object) => void): ChannelClass;
+        addMessageListener(callback: (message: Object) => void, onError?: (error: Object) => void): ChannelClass;
 
-        addCommandListener(callback:(command:Object) => void, onError?:(error:Object) => void):ChannelClass;
-        removeCommandListeners(callback?:(command:Object) => void):ChannelClass;
+        removeMessageListeners(selector: string, callback?: (message: Object) => void): ChannelClass;
+        removeMessageListeners(callback?: (message: Object) => void): ChannelClass;
 
-        addUserStatusListener(callback:(userStates:Object) => void, onError?:(error:Object) => void):ChannelClass;
-        removeUserStatusListeners(callback?:(userStates:Object) => void):ChannelClass;
+        addCommandListener(callback: (command: Object) => void, onError?: (error: Object) => void): ChannelClass;
 
-        removeAllListeners():ChannelClass;
+        removeCommandListeners(callback?: (command: Object) => void): ChannelClass;
 
-        send(command:Object):Promise<void>;
+        addUserStatusListener(callback: (userStates: Object) => void, onError?: (error: Object) => void): ChannelClass;
+
+        removeUserStatusListeners(callback?: (userStates: Object) => void): ChannelClass;
+
+        removeAllListeners(): ChannelClass;
+
+        send(command: Object): Promise<void>;
     }
 
     interface GeoQueryI {

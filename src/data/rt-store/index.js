@@ -10,7 +10,7 @@ const ChangesTypes = {
   BULK_DELETED: 'bulk-deleted',
 }
 
-export default class RTDataStore extends RTListeners {
+export default class EventHandler extends RTListeners {
 
   constructor(dataStore) {
     super()
@@ -28,48 +28,72 @@ export default class RTDataStore extends RTListeners {
     this.addChangesListener(ChangesTypes.CREATED, whereClause, callback, onError)
   }
 
-  removeCreateListeners(whereClause, callback, onError) {
-    this.removeChangesListeners(ChangesTypes.CREATED, whereClause, callback, onError)
+  removeCreateListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.CREATED, whereClause, callback)
+  }
+
+  removeCreateListener(callback) {
+    this.removeCreateListeners(undefined, callback)
   }
 
   addUpdateListener(whereClause, callback, onError) {
     this.addChangesListener(ChangesTypes.UPDATED, whereClause, callback, onError)
   }
 
-  removeUpdateListeners(whereClause, callback, onError) {
-    this.removeChangesListeners(ChangesTypes.UPDATED, whereClause, callback, onError)
+  removeUpdateListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.UPDATED, whereClause, callback)
+  }
+
+  removeUpdateListener(callback) {
+    this.removeUpdateListeners(undefined, callback)
   }
 
   addDeleteListener(whereClause, callback, onError) {
     this.addChangesListener(ChangesTypes.DELETED, whereClause, callback, onError)
   }
 
-  removeDeleteListeners(whereClause, callback, onError) {
-    this.removeChangesListeners(ChangesTypes.DELETED, whereClause, callback, onError)
+  removeDeleteListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.DELETED, whereClause, callback)
   }
 
-  addBulkCreateListener(callback, onError) {
-    this.addChangesListener(ChangesTypes.BULK_CREATED, callback, onError)
+  removeDeleteListener(callback) {
+    this.removeDeleteListeners(undefined, callback)
   }
 
-  removeBulkCreateListeners(callback, onError) {
-    this.removeChangesListeners(ChangesTypes.BULK_CREATED, callback, onError)
+  // addBulkCreateListener(whereClause, callback, onError) {
+  //   this.addChangesListener(ChangesTypes.BULK_CREATED, whereClause, callback, onError)
+  // }
+  //
+  // removeBulkCreateListeners(whereClause, callback) {
+  //   this.removeChangesListeners(ChangesTypes.BULK_CREATED, whereClause, callback)
+  // }
+  //
+  // removeBulkCreateListener(callback) {
+  //   this.removeBulkCreateListeners(undefined callback)
+  // }
+
+  addBulkUpdateListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.BULK_UPDATED, whereClause, callback, onError)
   }
 
-  addBulkUpdateListener(callback, onError) {
-    this.addChangesListener(ChangesTypes.BULK_UPDATED, callback, onError)
+  removeBulkUpdateListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.BULK_UPDATED, whereClause, callback)
   }
 
-  removeBulkUpdateListeners(callback, onError) {
-    this.removeChangesListeners(ChangesTypes.BULK_UPDATED, callback, onError)
+  removeBulkUpdateListener(callback) {
+    this.removeBulkUpdateListeners(undefined, callback)
   }
 
-  addBulkDeleteListener(callback, onError) {
-    this.addChangesListener(ChangesTypes.BULK_DELETED, callback, onError)
+  addBulkDeleteListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.BULK_DELETED, whereClause, callback, onError)
   }
 
-  removeBulkDeleteListeners(callback, onError) {
-    this.removeChangesListeners(ChangesTypes.BULK_DELETED, callback, onError)
+  removeBulkDeleteListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.BULK_DELETED, whereClause, callback)
+  }
+
+  removeBulkDeleteListener(callback) {
+    this.removeBulkDeleteListeners(undefined, callback)
   }
 
   addChangesListener(event, whereClause, callback, onError) {
@@ -98,19 +122,12 @@ export default class RTDataStore extends RTListeners {
         return false
       }
 
-      const isWhereClauseEqual = extraOptions.whereClause === whereClause
-      const isCallbackEqual = subscription.callback === callback
-
-      if (whereClause && callback) {
-        return isWhereClauseEqual && isCallbackEqual
-      }
-
       if (whereClause) {
-        return isWhereClauseEqual
+        return extraOptions.whereClause === whereClause
       }
 
       if (callback) {
-        return !extraOptions.whereClause && isCallbackEqual
+        return subscription.callback === callback
       }
 
       return true
