@@ -42,7 +42,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
   onConnect() {
     super.onConnect.apply(this, arguments)
 
-    this.addSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvoke, {
+    this.addScopeSubscription(ListenerTypes.INVOKE, RTProvider.subscriptions.onRSOInvoke, {
       callback: this.onInvoke
     })
   }
@@ -59,53 +59,53 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.invocationTarget[method](...args)
   }
 
-  @RTScopeConnector.delayedOperation()
+  @RTScopeConnector.connectionRequired()
   addChangesListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CHANGES, RTProvider.subscriptions.onRSOChanges, {
+    this.addScopeSubscription(ListenerTypes.CHANGES, RTProvider.subscriptions.onRSOChanges, {
       callback,
       onError
     })
   }
 
-  @RTScopeConnector.delayedOperation()
+  @RTScopeConnector.connectionRequired()
   removeChangesListeners(callback) {
     this.stopSubscription(ListenerTypes.CHANGES, { callback })
   }
 
-  @RTScopeConnector.delayedOperation()
+  @RTScopeConnector.connectionRequired()
   addClearListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CLEARED, RTProvider.subscriptions.onRSOClear, {
+    this.addScopeSubscription(ListenerTypes.CLEARED, RTProvider.subscriptions.onRSOClear, {
       callback,
       onError
     })
   }
 
-  @RTScopeConnector.delayedOperation()
+  @RTScopeConnector.connectionRequired()
   removeClearListeners(callback) {
     this.stopSubscription(ListenerTypes.CLEARED, { callback })
   }
 
-  @RTScopeConnector.delayedOperation(true)
+  @RTScopeConnector.connectionRequired(true)
   get(key) {
     return RTProvider.methods.getRSO({ ...this.getScopeOptions(), key })
   }
 
-  @RTScopeConnector.delayedOperation(true)
+  @RTScopeConnector.connectionRequired(true)
   set(key, data) {
     return RTProvider.methods.setRSO({ ...this.getScopeOptions(), key, data })
   }
 
-  @RTScopeConnector.delayedOperation(true)
+  @RTScopeConnector.connectionRequired(true)
   clear() {
     return RTProvider.methods.clearRSO(this.getScopeOptions())
   }
 
-  @RTScopeConnector.delayedOperation(true)
+  @RTScopeConnector.connectionRequired(true)
   invoke(method, ...args) {
     return this.invokeOn(method, undefined, ...args)
   }
 
-  @RTScopeConnector.delayedOperation(true)
+  @RTScopeConnector.connectionRequired(true)
   invokeOn(method, targets, ...args) {
     return Promise
       .resolve()

@@ -37,7 +37,7 @@ export default class Channel extends RTScopeConnector {
     return Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
   }
 
-  @RTScopeConnector.delayedOperation()
+  @RTScopeConnector.connectionRequired()
   addMessageListener(selector, callback, onError) {
     if (typeof selector === 'function') {
       onError = callback
@@ -45,7 +45,7 @@ export default class Channel extends RTScopeConnector {
       selector = undefined
     }
 
-    this.addSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, {
+    this.addScopeSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, {
       callback,
       onError,
       extraOptions: {
@@ -54,7 +54,7 @@ export default class Channel extends RTScopeConnector {
     })
   }
 
-  @RTScopeConnector.delayedOperation()
+  @RTScopeConnector.connectionRequired()
   removeMessageListeners(selector, callback) {
     if (typeof selector === 'function') {
       callback = selector
