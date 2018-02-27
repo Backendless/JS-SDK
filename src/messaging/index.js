@@ -14,6 +14,8 @@ import {
 import {
   publish,
   sendEmail,
+  push,
+  pushWithTemplate,
   cancel,
   registerDevice,
   unregisterDevice,
@@ -51,6 +53,10 @@ const Messaging = {
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
   publishSync: Utils.synchronized(publish),
   publish    : Utils.promisified(publish),
+
+  push: Utils.promisified(push),
+
+  pushWithTemplate: Utils.promisified(pushWithTemplate),
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
   sendEmailSync: Utils.synchronized(sendEmail),

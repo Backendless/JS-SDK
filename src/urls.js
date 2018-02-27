@@ -39,6 +39,8 @@ const Urls = {
   dataObjectPermission   : (tableName, permissionType, objectId) => `${Urls.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`,
 
   messaging                  : () => `${Urls.root()}/messaging`,
+  messagingPush              : () => `${Urls.messaging()}/push`,
+  messagingPushWithTemplate  : templateName => `${Urls.messagingPush()}/${templateName}`,
   messagingEmail             : () => `${Urls.messaging()}/email`,
   messagingChannel           : channel => `${Urls.messaging()}/${channel}`,
   messagingMessage           : messageId => `${Urls.messaging()}/${messageId}`,
