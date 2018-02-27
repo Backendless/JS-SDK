@@ -1,4 +1,4 @@
-import { RTProvider, RTListeners } from '../../rt'
+import { RTClient, RTListeners } from '../../rt'
 
 import { parseFindResponse } from '../store/parse'
 
@@ -115,7 +115,7 @@ export default class EventHandler extends RTListeners {
       throw new Error('"callback" must be function.')
     }
 
-    this.addSubscription(event, RTProvider.subscriptions.onObjectsChanges, {
+    this.addSubscription(event, RTClient.subscriptions.onObjectsChanges, {
       callback,
       onError,
       parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance : undefined,

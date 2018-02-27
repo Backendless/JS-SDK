@@ -1,5 +1,5 @@
 import Utils from '../../utils'
-import { RTProvider, RTScopeConnector } from '../../rt'
+import { RTClient, RTScopeConnector } from '../../rt'
 
 import Messaging from '../index'
 
@@ -10,19 +10,19 @@ const ListenerTypes = Utils.mirrorKeys({
 export default class Channel extends RTScopeConnector {
 
   get connectSubscriber() {
-    return RTProvider.subscriptions.connectToPubSub
+    return RTClient.subscriptions.connectToPubSub
   }
 
   get usersSubscriber() {
-    return RTProvider.subscriptions.onPubSubUserStatus
+    return RTClient.subscriptions.onPubSubUserStatus
   }
 
   get commandSubscriber() {
-    return RTProvider.subscriptions.onPubSubCommand
+    return RTClient.subscriptions.onPubSubCommand
   }
 
   get commandSender() {
-    return RTProvider.methods.sendPubSubCommand
+    return RTClient.methods.sendPubSubCommand
   }
 
   getScopeOptions() {
@@ -45,7 +45,7 @@ export default class Channel extends RTScopeConnector {
       selector = undefined
     }
 
-    this.addScopeSubscription(ListenerTypes.MESSAGE, RTProvider.subscriptions.onPubSubMessage, {
+    this.addScopeSubscription(ListenerTypes.MESSAGE, RTClient.subscriptions.onPubSubMessage, {
       callback,
       onError,
       extraOptions: {

@@ -3,14 +3,34 @@ import BackendlessRTClient from 'backendless-rt-client'
 import { getCurrentUserToken } from './users/current-user'
 import LocalVars from './local-vars'
 
-export const RTProvider = BackendlessRTClient.Provider
+let rtClient = null
+
 export const RTListeners = BackendlessRTClient.Listeners
 export const RTScopeConnector = BackendlessRTClient.ScopeConnector
 
-export const setRTDebugMode = debugMode => BackendlessRTClient.Config.set({ debugMode })
+export const RTClient = {
+
+  get subscriptions() {
+    return rtClient.subscriptions
+  },
+
+  get methods() {
+    return rtClient.methods
+  }
+}
+
+export const setRTDebugMode = debugMode => {
+  if (rtClient) {
+    BackendlessRTClient.setConfig({ debugMode })
+  }
+}
 
 export const initRTClient = () => {
-  BackendlessRTClient.Provider.init({
+  if (rtClient) {
+    rtClient.terminate()
+  }
+
+  rtClient = new BackendlessRTClient({
     appId     : LocalVars.applicationId,
     lookupPath: `${LocalVars.appPath}/rt/lookup`,
     debugMode : LocalVars.debugMode,
@@ -24,23 +44,29 @@ export const initRTClient = () => {
 }
 
 export const updateRTUserTokenIfNeeded = () => {
-  if (BackendlessRTClient.Provider.socketPromise) {
-    BackendlessRTClient.Provider.methods.setUserToken({ userToken: getCurrentUserToken() })
+  if (rtClient.session) {
+    rtClient.methods.setUserToken({ userToken: getCurrentUserToken() })
+  }
+}
+
+const addRTClientListener = method => (...args) => {
+  if (rtClient) {
+    rtClient[method](...args)
   }
 }
 
 const RT = {
-  addConnectEventListener   : BackendlessRTClient.Provider.addConnectEventListener,
-  removeConnectEventListener: BackendlessRTClient.Provider.removeConnectEventListener,
+  addConnectEventListener   : addRTClientListener('addConnectEventListener'),
+  removeConnectEventListener: addRTClientListener('removeConnectEventListener'),
 
-  addConnectErrorEventListener   : BackendlessRTClient.Provider.addConnectErrorEventListener,
-  removeConnectErrorEventListener: BackendlessRTClient.Provider.removeConnectErrorEventListener,
+  addConnectErrorEventListener   : addRTClientListener('addConnectErrorEventListener'),
+  removeConnectErrorEventListener: addRTClientListener('removeConnectErrorEventListener'),
 
-  addDisconnectEventListener   : BackendlessRTClient.Provider.addDisconnectEventListener,
-  removeDisconnectEventListener: BackendlessRTClient.Provider.removeDisconnectEventListener,
+  addDisconnectEventListener   : addRTClientListener('addDisconnectEventListener'),
+  removeDisconnectEventListener: addRTClientListener('removeDisconnectEventListener'),
 
-  addReconnectAttemptEventListener   : BackendlessRTClient.Provider.addReconnectAttemptEventListener,
-  removeReconnectAttemptEventListener: BackendlessRTClient.Provider.removeReconnectAttemptEventListener,
+  addReconnectAttemptEventListener   : addRTClientListener('addReconnectAttemptEventListener'),
+  removeReconnectAttemptEventListener: addRTClientListener('removeReconnectAttemptEventListener'),
 }
 
 export default RT
