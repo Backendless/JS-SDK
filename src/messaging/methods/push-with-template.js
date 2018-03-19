@@ -1,6 +1,6 @@
-import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
+import Utils from '../../utils'
+import Urls from '../../urls'
+import Request from '../../request'
 
 export function pushWithTemplate(templateName) {
   const responder = Utils.extractResponder(arguments)
