@@ -29,7 +29,7 @@ export function registerDevice(deviceToken, channels, expiration, asyncHandler) 
       : expiration
   }
 
-  Request.post({
+  return Request.post({
     url         : Urls.messagingRegistrations(),
     data        : data,
     isAsync     : !!asyncHandler,
