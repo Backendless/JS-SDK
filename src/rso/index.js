@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import { RTClient, RTScopeConnector } from '../rt'
+import { RTClient, RTScopeConnector, checkUsesInBusinessLogic, disallowInBusinessLogic } from '../rt'
 
 const ListenerTypes = Utils.mirrorKeys({
   CHANGES: null,
@@ -36,15 +36,29 @@ export default class RemoteSharedObject extends RTScopeConnector {
   }
 
   setInvocationTarget(invocationTarget) {
+    checkUsesInBusinessLogic('SharedObject.setInvocationTarget')
+
     this.invocationTarget = invocationTarget
   }
 
   onConnect() {
     super.onConnect.apply(this, arguments)
 
-    this.addScopeSubscription(ListenerTypes.INVOKE, RTClient.subscriptions.onRSOInvoke, {
-      callback: this.onInvoke
-    })
+    let isAllowToSubscribeOnRemoteInvoke = false
+
+    try {
+      checkUsesInBusinessLogic('Remote Invoke')
+
+      isAllowToSubscribeOnRemoteInvoke = true
+    } catch (e) {
+      // Remote Invoke is not supported in Business Logic
+    }
+
+    if (isAllowToSubscribeOnRemoteInvoke) {
+      this.addScopeSubscription(ListenerTypes.INVOKE, RTClient.subscriptions.onRSOInvoke, {
+        callback: this.onInvoke
+      })
+    }
   }
 
   onDisconnect() {
@@ -59,6 +73,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.invocationTarget[method](...args)
   }
 
+  @disallowInBusinessLogic('SharedObject.addChangesListener')
   @RTScopeConnector.connectionRequired()
   addChangesListener(callback, onError) {
     this.addScopeSubscription(ListenerTypes.CHANGES, RTClient.subscriptions.onRSOChanges, {
@@ -72,6 +87,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.stopSubscription(ListenerTypes.CHANGES, { callback })
   }
 
+  @disallowInBusinessLogic('SharedObject.addClearListener')
   @RTScopeConnector.connectionRequired()
   addClearListener(callback, onError) {
     this.addScopeSubscription(ListenerTypes.CLEARED, RTClient.subscriptions.onRSOClear, {
@@ -83,6 +99,16 @@ export default class RemoteSharedObject extends RTScopeConnector {
   @RTScopeConnector.connectionRequired()
   removeClearListeners(callback) {
     this.stopSubscription(ListenerTypes.CLEARED, { callback })
+  }
+
+  @disallowInBusinessLogic('SharedObject.addCommandListener')
+  addCommandListener() {
+    return super.addCommandListener.apply(this, arguments)
+  }
+
+  @disallowInBusinessLogic('SharedObject.addUserStatusListener')
+  addUserStatusListener() {
+    return super.addUserStatusListener.apply(this, arguments)
   }
 
   @RTScopeConnector.connectionRequired(true)

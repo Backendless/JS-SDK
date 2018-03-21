@@ -19,6 +19,24 @@ export const RTClient = {
   }
 }
 
+export const checkUsesInBusinessLogic = target => {
+  if (LocalVars.ServerCode) {
+    throw new Error(`"${target}" is not supported inside Business Logic.`)
+  }
+}
+
+export const disallowInBusinessLogic = target => (object, method, description) => {
+  const native = description.value
+
+  description.value = function() {
+    checkUsesInBusinessLogic(target)
+
+    return native.apply(this, arguments)
+  }
+
+  return description
+}
+
 export const setRTDebugMode = debugMode => {
   if (rtClient) {
     BackendlessRTClient.setConfig({ debugMode })

@@ -5,6 +5,7 @@ const LocalVars = {
   applicationId : null,
   secretKey     : null,
   appPath       : null,
+  ServerCode    : null
 }
 
 export default LocalVars

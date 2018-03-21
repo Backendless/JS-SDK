@@ -67,6 +67,14 @@ const Backendless = {
     return LocalVars.appPath
   },
 
+  get ServerCode() {
+    return LocalVars.ServerCode
+  },
+
+  set ServerCode(ServerCode) {
+    LocalVars.ServerCode = ServerCode
+  },
+
   initApp,
 
   getCurrentUserToken,

@@ -1,5 +1,5 @@
 import Utils from '../../utils'
-import { RTClient, RTScopeConnector } from '../../rt'
+import { RTClient, RTScopeConnector, disallowInBusinessLogic } from '../../rt'
 
 import Messaging from '../index'
 
@@ -37,6 +37,7 @@ export default class Channel extends RTScopeConnector {
     return Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
   }
 
+  @disallowInBusinessLogic('MessagingChannel.addMessageListener')
   @RTScopeConnector.connectionRequired()
   addMessageListener(selector, callback, onError) {
     if (typeof selector === 'function') {
@@ -78,5 +79,15 @@ export default class Channel extends RTScopeConnector {
     }
 
     this.stopSubscription(ListenerTypes.MESSAGE, { argumentsMatcher })
+  }
+
+  @disallowInBusinessLogic('MessagingChannel.addCommandListener')
+  addCommandListener() {
+    return super.addCommandListener.apply(this, arguments)
+  }
+
+  @disallowInBusinessLogic('MessagingChannel.addUserStatusListener')
+  addUserStatusListener() {
+    return super.addUserStatusListener.apply(this, arguments)
   }
 }

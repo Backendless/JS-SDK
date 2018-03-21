@@ -1,4 +1,4 @@
-import { RTClient, RTListeners } from '../../rt'
+import { RTClient, RTListeners, checkUsesInBusinessLogic } from '../../rt'
 
 import { parseFindResponse } from '../store/parse'
 
@@ -105,6 +105,8 @@ export default class EventHandler extends RTListeners {
   }
 
   addChangesListener(event, whereClause, callback, onError) {
+    checkUsesInBusinessLogic('Subscribe on Data changes')
+
     if (typeof whereClause === 'function') {
       onError = callback
       callback = whereClause
