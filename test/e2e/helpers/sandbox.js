@@ -53,7 +53,7 @@ const createSandboxFor = each => () => {
   const afterHook = each ? afterEach : after
 
   beforeHook(function() {
-    this.timeout(20000)
+    this.timeout(120000)
     this.consoleApi = createClient(consoleServerURL)
 
     return createSandbox(this.consoleApi).then(sandbox => {
