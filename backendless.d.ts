@@ -466,7 +466,7 @@ declare module __Backendless {
 
         bulkCreate(objects: Array<Object>): Promise<void>;
 
-        bulkUCreateSync(objects: Array<Object>): void;
+        bulkCreateSync(objects: Array<Object>): void;
 
         bulkUpdate(whereClause: string, changes: Object): Promise<string>;
 
