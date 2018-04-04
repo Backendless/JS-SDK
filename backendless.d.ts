@@ -557,13 +557,17 @@ declare module __Backendless {
         deleteRelationSync(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): string;
         deleteRelationSync(parentObject: Object, columnName: string, whereClause: string): string;
 
-        bulkUpdate(templateObject: Object, whereClause: string): Promise<string>;
+        bulkCreate(objects: Array<Object>): Promise<void>;
 
-        bulkUpdateSync(templateObject: Object, whereClause: string): string;
+        bulkCreateSync(objects: Array<Object>): void;
 
-        bulkDelete(objectsArray: string | Array<string> | Array<Object>): Promise<string>;
+        bulkUpdate(whereClause: string, changes: Object): Promise<string>;
 
-        bulkDeleteSync(objectsArray: string | Array<string> | Array<Object>): string;
+        bulkUpdateSync(whereClause: string, changes: Object): string;
+
+        bulkDelete(where: string | Array<string> | Array<{ objectId: string }>): Promise<string>;
+
+        bulkDeleteSync(where: string | Array<string> | Array<{ objectId: string }>): string;
 
         rt(): EventHandler;
     }
