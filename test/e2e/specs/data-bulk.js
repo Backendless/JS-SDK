@@ -40,7 +40,11 @@ describe('Data - Bulk Operations', function() {
       it('passed non empty objects in array', function() {
         return TestTable.bulkCreate(TEST_DATA)
           .then(result => {
-            expect(result).to.be.equal('')
+            expect(result).to.be.an('array')
+
+            TEST_DATA.forEach((item, index) => {
+              expect(result[index]).to.be.an('string')
+            })
           })
           .then(() => TestTable.find())
           .then(result => {
@@ -51,7 +55,12 @@ describe('Data - Bulk Operations', function() {
       it('passed a few empty objects in array', function() {
         return TestTable.bulkCreate([TEST_DATA[1], {}, TEST_DATA[2], {}])
           .then(result => {
-            expect(result).to.be.equal('')
+            expect(result).to.be.an('array')
+
+            expect(result[0]).to.be.an('string')
+            expect(result[1]).to.be.an('string')
+            expect(result[2]).to.be.an('string')
+            expect(result[3]).to.be.an('string')
           })
           .then(() => TestTable.find())
           .then(result => {
@@ -118,7 +127,7 @@ describe('Data - Bulk Operations', function() {
 
   })
 
-  describe('Delete Operation', function() {
+  xdescribe('Delete Operation', function() {
     beforeEach(() => {
       testDataItems = []
 
@@ -227,7 +236,7 @@ describe('Data - Bulk Operations', function() {
     })
   })
 
-  describe('Update Operation', function() {
+  xdescribe('Update Operation', function() {
     beforeEach(() => {
       testDataItems = []
 

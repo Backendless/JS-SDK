@@ -187,6 +187,32 @@ function testData() {
     promiseObject = Backendless.Data.describe({});
 }
 
+function testBulkOperations() {
+    let dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+
+    let resultPromiseListOfString: Promise<Array<string>>;
+    let resultListOfString: Array<string>;
+
+    let resultPromiseString: Promise<string>;
+    let resultString: string;
+
+    resultPromiseListOfString = dataStore.bulkCreate([{}, {}, {}]);
+    resultListOfString = dataStore.bulkCreateSync([{}, {}, {}]);
+
+    resultPromiseString = dataStore.bulkUpdate('where clause string', {foo: 'bar'});
+    resultString = dataStore.bulkUpdateSync('where clause string', {foo: 'bar'});
+
+    resultPromiseString = dataStore.bulkDelete('where clause string');
+    resultPromiseString = dataStore.bulkDelete(['objectId1', 'objectId2', 'objectId3']);
+    resultPromiseString = dataStore.bulkDelete([{objectId: 'objectId1'}]);
+    resultPromiseString = dataStore.bulkDelete([{objectId: 'objectId1', foo: 'bar'}]);
+
+    resultString = dataStore.bulkDeleteSync('where clause string');
+    resultString = dataStore.bulkDeleteSync(['objectId1', 'objectId2', 'objectId3']);
+    resultString = dataStore.bulkDeleteSync([{objectId: 'objectId1'}]);
+    resultString = dataStore.bulkDeleteSync([{objectId: 'objectId1', foo: 'bar'}]);
+}
+
 function testDataPermissions() {
     const userId: string = 'userId';
     const roleName: string = 'myRole';
@@ -339,13 +365,13 @@ function testUserService() {
     promiseVoid = Backendless.UserService.loginWithFacebookSdk({}, true);
 
     promiseVoid = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
-    promiseVoid = Backendless.UserService.loginWithFacebookSdk('accessToken', {},true);
+    promiseVoid = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, true);
 
     promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({});
     promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({}, true);
 
     promiseVoid = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
-    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {},true);
+    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, true);
 
     bol = Backendless.UserService.isValidLoginSync();
     promiseObject = Backendless.UserService.isValidLogin();
