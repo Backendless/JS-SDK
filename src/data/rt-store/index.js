@@ -68,17 +68,17 @@ export default class EventHandler extends RTListeners {
     this.removeDeleteListeners(undefined, callback)
   }
 
-  // addBulkCreateListener(whereClause, callback, onError) {
-  //   this.addChangesListener(ChangesTypes.BULK_CREATED, whereClause, callback, onError)
-  // }
-  //
-  // removeBulkCreateListeners(whereClause, callback) {
-  //   this.removeChangesListeners(ChangesTypes.BULK_CREATED, whereClause, callback)
-  // }
-  //
-  // removeBulkCreateListener(callback) {
-  //   this.removeBulkCreateListeners(undefined callback)
-  // }
+  addBulkCreateListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.BULK_CREATED, whereClause, callback, onError)
+  }
+
+  removeBulkCreateListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.BULK_CREATED, whereClause, callback)
+  }
+
+  removeBulkCreateListener(callback) {
+    this.removeBulkCreateListeners(undefined, callback)
+  }
 
   addBulkUpdateListener(whereClause, callback, onError) {
     this.addChangesListener(ChangesTypes.BULK_UPDATED, whereClause, callback, onError)
