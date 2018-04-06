@@ -85,6 +85,8 @@ const RT = {
 
   addReconnectAttemptEventListener   : addRTClientListener('addReconnectAttemptEventListener'),
   removeReconnectAttemptEventListener: addRTClientListener('removeReconnectAttemptEventListener'),
+
+  removeConnectionListeners: addRTClientListener('removeConnectionListeners'),
 }
 
 export default RT

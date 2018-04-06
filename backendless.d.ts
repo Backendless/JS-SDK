@@ -112,6 +112,8 @@ declare module __Backendless {
 
         addReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
         removeReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
+
+        removeConnectionListeners(): void;
     }
 
     /**
@@ -565,9 +567,9 @@ declare module __Backendless {
 
         bulkUpdateSync(whereClause: string, changes: Object): string;
 
-        bulkDelete(where: string | Array<string> | Array<{objectId: string, [key: string]: any}>): Promise<string>;
+        bulkDelete(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): Promise<string>;
 
-        bulkDeleteSync(where: string | Array<string> | Array<{objectId: string, [key: string]: any}>): string;
+        bulkDeleteSync(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): string;
 
         rt(): EventHandler;
     }

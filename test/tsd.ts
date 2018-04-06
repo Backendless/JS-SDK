@@ -853,6 +853,8 @@ function RTClient() {
     Backendless.RT.removeReconnectAttemptEventListener((attempt: number, timeout: number) => undefined)
     Backendless.RT.removeReconnectAttemptEventListener((attempt: number) => undefined)
     Backendless.RT.removeReconnectAttemptEventListener(() => undefined)
+
+    Backendless.RT.removeConnectionListeners()
 }
 
 function RTData() {
