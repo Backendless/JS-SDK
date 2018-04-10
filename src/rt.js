@@ -21,7 +21,8 @@ export const RTClient = {
 
 export const checkUsesInBusinessLogic = target => {
   if (LocalVars.ServerCode) {
-    throw new Error(`"${target}" is not supported inside Business Logic.`)
+    // temporarily disable this limitation
+    // throw new Error(`"${target}" is not supported inside Business Logic.`)
   }
 }
 
