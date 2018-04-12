@@ -66,6 +66,13 @@ describe('Backendless.Users', function() {
       })
     })
 
+    it('getCurrentUser should not return registered user', function() {
+      const user = randUser()
+
+      return Backendless.UserService.register(user)
+        .then(() => expect(Backendless.UserService.getCurrentUser()).to.eventually.be.null)
+    })
+
     it('non User typed object', function() {
       return expect(Backendless.UserService.register({ ...randUser() }))
         .to.eventually.be.rejectedWith(Error, 'Only Backendless.User accepted')
