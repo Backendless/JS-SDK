@@ -40,7 +40,7 @@ export const disallowInBusinessLogic = target => (object, method, description) =
 
 export const setRTDebugMode = debugMode => {
   if (rtClient) {
-    BackendlessRTClient.setConfig({ debugMode })
+    rtClient.setConfig({ debugMode })
   }
 }
 
