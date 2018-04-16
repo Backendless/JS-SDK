@@ -1,23 +1,34 @@
 import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
+import Async from '../request/async'
 
-import { parseResponse, wrapAsync } from './utils'
+import User from './user'
 
 export function update(user /** async */) {
-  let responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
+  const responder = Utils.extractResponder(arguments)
 
-  if (responder) {
-    responder = wrapAsync(responder)
-  }
+  const isAsync = !!responder
 
   const result = Request.put({
     url         : Urls.userObject(user.objectId),
     isAsync     : isAsync,
-    asyncHandler: responder,
+    asyncHandler: responder && wrapAsync(responder),
     data        : user
   })
 
   return isAsync ? result : parseResponse(result)
+}
+
+function parseResponse(data) {
+  return Utils.deepExtend(new User(), data)
+}
+
+function wrapAsync(asyncHandler){
+  //TODO: will be removed after remove all the "{methodName}Sync" methods
+
+  const onSuccess = data => asyncHandler.success(parseResponse(data))
+  const onError = error => asyncHandler.fault(error)
+
+  return new Async(onSuccess, onError)
 }

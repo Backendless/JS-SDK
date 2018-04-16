@@ -68,14 +68,18 @@ describe('Backendless.Users', function() {
 
     it('getCurrentUser should not return registered user', function() {
       const user = randUser()
+      let currentUser = null
 
-      return Backendless.UserService.register(user)
-        .then(() => expect(Backendless.UserService.getCurrentUser()).to.eventually.be.null)
+      return Backendless.UserService.getCurrentUser()
+        .then(u => currentUser = u)
+        .then(() => Backendless.UserService.register(user))
+        .then(u => expect(u).to.be.not.eql(currentUser))
     })
 
-    it('non User typed object', function() {
+    it('can be passed non User typed object', function() {
       return expect(Backendless.UserService.register({ ...randUser() }))
-        .to.eventually.be.rejectedWith(Error, 'Only Backendless.User accepted')
+        .to.eventually.be.fulfilled
+        .and.eventually.have.property('objectId')
     })
 
     it('missing identity property', function() {
@@ -293,7 +297,8 @@ describe('Backendless.Users', function() {
     })
 
     afterEach(function() {
-      return setDynamicSchema(true)
+      return Backendless.UserService.logout()
+        .then(() => setDynamicSchema(true))
     })
 
     it('non dynamic prop', function() {
@@ -329,6 +334,29 @@ describe('Backendless.Users', function() {
         }
       )
     })
+
+    it('updating an another user should not override currentUser', function() {
+      return Backendless.UserService.register(randUser())
+        .then(anotherUser => {
+          return Backendless.UserService.getCurrentUser()
+            .then(currentUser => expect(currentUser.objectId).to.equal(user.objectId))
+            .then(() => {
+              anotherUser.name = 'Bob'
+
+              return Backendless.UserService.update(anotherUser)
+                .then(u => {
+                  anotherUser = u
+
+                  expect(anotherUser.name).to.equal('Bob')
+                })
+                .then(() => Backendless.UserService.getCurrentUser())
+                .then(currentUser => {
+                  expect(currentUser.objectId).to.equal(user.objectId)
+                  expect(anotherUser.objectId).to.not.equal(user.objectId)
+                })
+            })
+        })
+    })
   })
 
   it('restore password', function() {
@@ -363,6 +391,10 @@ describe('Backendless.Users', function() {
 
     before(function() {
       return loginRandomUser().then(result => user = result)
+    })
+
+    after(function() {
+      return Backendless.UserService.logout()
     })
 
     describe('using js sdk api key', function() {
