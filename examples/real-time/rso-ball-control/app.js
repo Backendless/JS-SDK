@@ -1,11 +1,11 @@
 (function() {
-  const API_HOST = 'http://localhost:9000';
-  const APP_ID = '5DA8D5FB-F416-EA0C-FFDF-B04370AD2000';
-  const API_KEY = 'B0CDFBDC-EB4F-F7FA-FF9E-185807C36A00';
+  const API_HOST = 'http://api.backendless.com';
+  const APP_ID = 'A81AB58A-FC85-EF00-FFE4-1A1C0FEADB00';
+  const API_KEY = 'ADA9D269-A164-316C-FFB7-BEE08BD61B00';
 
   const BALL_NAME = 'BallObject'
-  const BALL_RATIO = 0.25; // 20% of width or height
-  const BALL_POSITION_KEY = 'position'
+  const BALL_RATIO = 0.25; // 25% of width or height
+  const BALL_POSITION_KEY = 'LocationCoeficients'
 
   if (!APP_ID || !API_KEY) {
     alert(
@@ -48,7 +48,7 @@
         .then(position => {
           position = position || {}
 
-          this.moveBallTo(position.x || 0.5, position.y || 0.5);
+          this.moveBallTo(position.coefX || 0.5, position.coefY || 0.5);
 
           if (!this.court.$workspace.has(this.$el).length) {
             this.court.$workspace.append(this.$el);
@@ -111,8 +111,8 @@
 
     onBallMove(position) {
       this.court.rso.set(BALL_POSITION_KEY, {
-        x: this.positionToRatio(position.left, this.maxXPosition),
-        y: this.positionToRatio(position.top, this.maxYPosition),
+        coefX: this.positionToRatio(position.left, this.maxXPosition),
+        coefY: this.positionToRatio(position.top, this.maxYPosition),
       })
     }
 
@@ -165,7 +165,7 @@
 
       this.rso.addChangesListener(({ key, data }) => {
         if (key === BALL_POSITION_KEY) {
-          this.ball.moveBallTo(data.x, data.y);
+          this.ball.moveBallTo(data.coefX, data.coefY);
         }
       })
     }

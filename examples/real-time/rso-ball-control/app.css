@@ -41,5 +41,5 @@ main.container {
 }
 
 #ball:not(.moving) {
-    transition: left 0.3s linear, top 0.3s linear;
+    transition: left 0.3s linear, top 0.1s linear;
 }
