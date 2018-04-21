@@ -54,7 +54,8 @@ export default class RemoteSharedObject extends RTScopeConnector {
       // Remote Invoke is not supported in Business Logic
     }
 
-    if (isAllowToSubscribeOnRemoteInvoke) {
+    if (isAllowToSubscribeOnRemoteInvoke && !this.subscribedOnInvoke) {
+      this.subscribedOnInvoke = true
       this.addScopeSubscription(ListenerTypes.INVOKE, RTClient.subscriptions.onRSOInvoke, {
         callback: this.onInvoke
       })
@@ -62,6 +63,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
   }
 
   onDisconnect() {
+    this.subscribedOnInvoke = false
     this.stopSubscription(ListenerTypes.INVOKE, { callback: this.onInvoke })
 
     super.onDisconnect.apply(this, arguments)
