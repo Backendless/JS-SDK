@@ -129,6 +129,7 @@
     constructor(selector, ballName) {
       this.rso = Backendless.SharedObject.connect(ballName);
       this.rso.addConnectListener(() => this.onConnect());
+      this.rso.addChangesListener(data => this.onRSOChange(data))
 
       this.connected = false;
       this.connecting = true;
@@ -162,12 +163,12 @@
       this.updateConnectBtn();
 
       this.ball.activate();
+    }
 
-      this.rso.addChangesListener(({ key, data }) => {
-        if (key === BALL_POSITION_KEY) {
-          this.ball.moveBallTo(data.coefX, data.coefY);
-        }
-      })
+    onRSOChange({ key, data }){
+      if (key === BALL_POSITION_KEY) {
+        this.ball.moveBallTo(data.coefX, data.coefY);
+      }
     }
 
     toggleConnection() {
@@ -176,6 +177,7 @@
 
         this.rso.connect()
         this.rso.addConnectListener(() => this.onConnect());
+        this.rso.addChangesListener(data => this.onRSOChange(data))
 
       } else {
         this.rso.disconnect();
