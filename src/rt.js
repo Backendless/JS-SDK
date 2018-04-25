@@ -1,9 +1,11 @@
 import BackendlessRTClient from 'backendless-rt-client'
 
-import { getCurrentUserToken } from './users/current-user'
+import Utils from './utils'
 import LocalVars from './local-vars'
+import { getCurrentUserToken } from './users/current-user'
 
 let rtClient = null
+const rtClientId = Utils.uuid()
 
 export const RTListeners = BackendlessRTClient.Listeners
 export const RTScopeConnector = BackendlessRTClient.ScopeConnector
@@ -56,7 +58,8 @@ export const initRTClient = () => {
     connectQuery() {
       return {
         apiKey   : LocalVars.secretKey,
-        userToken: getCurrentUserToken()
+        userToken: getCurrentUserToken(),
+        clientId : rtClientId,
       }
     }
   })

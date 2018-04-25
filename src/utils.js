@@ -196,9 +196,17 @@ const Utils = {
     return mirroredObject
   },
 
+  uuid() {
+    const chr4 = () => Math.random().toString(16).slice(-4).toUpperCase()
+    const chr8 = () => `${chr4()}${chr4()}`
+    const chr12 = () => `${chr4()}${chr4()}${chr4()}`
+
+    return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
+  },
+
 }
 
-function isBrowser(){
+function isBrowser() {
   return (typeof self === 'object' && self.self === self) && (typeof window === 'object' && window === self)
 }
 
