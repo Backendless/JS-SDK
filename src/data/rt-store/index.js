@@ -41,6 +41,10 @@ export default class EventHandler extends RTListeners {
   }
 
   removeCreateListener(callback) {
+    if (!callback) {
+      throw new Error('Listener Function must be passed.')
+    }
+
     this.removeCreateListeners(undefined, callback)
   }
 
@@ -53,6 +57,10 @@ export default class EventHandler extends RTListeners {
   }
 
   removeUpdateListener(callback) {
+    if (!callback) {
+      throw new Error('Listener Function must be passed.')
+    }
+
     this.removeUpdateListeners(undefined, callback)
   }
 
@@ -65,6 +73,10 @@ export default class EventHandler extends RTListeners {
   }
 
   removeDeleteListener(callback) {
+    if (!callback) {
+      throw new Error('Listener Function must be passed.')
+    }
+
     this.removeDeleteListeners(undefined, callback)
   }
 
@@ -77,6 +89,10 @@ export default class EventHandler extends RTListeners {
   }
 
   removeBulkCreateListener(callback) {
+    if (!callback) {
+      throw new Error('Listener Function must be passed.')
+    }
+
     this.removeBulkCreateListeners(undefined, callback)
   }
 
@@ -89,6 +105,10 @@ export default class EventHandler extends RTListeners {
   }
 
   removeBulkUpdateListener(callback) {
+    if (!callback) {
+      throw new Error('Listener Function must be passed.')
+    }
+
     this.removeBulkUpdateListeners(undefined, callback)
   }
 
@@ -101,6 +121,10 @@ export default class EventHandler extends RTListeners {
   }
 
   removeBulkDeleteListener(callback) {
+    if (!callback) {
+      throw new Error('Listener Function must be passed.')
+    }
+
     this.removeBulkDeleteListeners(undefined, callback)
   }
 
