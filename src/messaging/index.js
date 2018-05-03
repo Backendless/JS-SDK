@@ -40,7 +40,7 @@ const Messaging = {
       throw new Error('"channelName" can not contains slash chars')
     }
 
-    return new Channel({ name: channelName })
+    return new Channel({ name: channelName.trim() })
   },
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
