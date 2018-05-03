@@ -31,23 +31,16 @@ const Messaging = {
   SubscriptionOptions  : SubscriptionOptions,
   PublishOptionsHeaders: PublishOptionsHeaders,
 
-  subscribe: function(channelName, subscriptionCallback, subscriptionOptions) {
-    if (Utils.isObject(subscriptionCallback)) {
-      const callback = subscriptionOptions
-
-      subscriptionOptions = subscriptionCallback
-      subscriptionCallback = callback
+  subscribe: function(channelName) {
+    if (!channelName || typeof channelName !== 'string') {
+      throw new Error('"channelName" must be non empty string')
     }
 
-    const channel = new Channel({ name: channelName })
-
-    if (subscriptionCallback) {
-      const { selector } = subscriptionOptions || {}
-
-      channel.addMessageListener(selector, subscriptionCallback)
+    if (channelName.indexOf('/') >= 0) {
+      throw new Error('"channelName" can not contains slash chars')
     }
 
-    return channel
+    return new Channel({ name: channelName })
   },
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')

@@ -706,8 +706,7 @@ declare module __Backendless {
         restUrl: string;
         channelProperties: Object;
 
-        subscribe(channelName: string, subscriptionCallback: (data: Object) => void, subscriptionOptions: Backendless.SubscriptionOptions): ChannelClass;
-        subscribe(channelName: string, subscriptionOptions: Backendless.SubscriptionOptions, subscriptionCallback: (data: Object) => void): ChannelClass;
+        subscribe(channelName: string): ChannelClass;
 
         publishSync(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Object;
 

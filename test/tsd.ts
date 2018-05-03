@@ -526,13 +526,14 @@ function testMessaging() {
     const publishOptions: Backendless.PublishOptions = new Backendless.PublishOptions();
     const deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
     let subscription: Backendless.SubscriptionI;
+    let channel: Backendless.ChannelClass;
     const subscriptionOptions: Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
     const subscriptionCallback = function (data: Object): void {
         const messagesArray: Array<String> = data["messages"];
     };
 
     // subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
-    // promiseObject = Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions);
+    channel = Backendless.Messaging.subscribe(channelName);
 
     resultObj = Backendless.Messaging.publishSync(channelName, message, publishOptions, deliveryOptions);
     promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
