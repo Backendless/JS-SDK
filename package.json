@@ -84,6 +84,6 @@
   },
   "dependencies": {
     "backendless-request": "~0.0.11",
-    "backendless-rt-client": "0.0.13"
+    "backendless-rt-client": "0.0.14"
   }
 }

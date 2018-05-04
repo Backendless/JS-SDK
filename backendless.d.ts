@@ -1186,11 +1186,11 @@ declare module __Backendless {
 
         publish(message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        connect(): ChannelClass
+        join(): void
 
-        disconnect(): ChannelClass;
+        leave(): void;
 
-        isConnected(): boolean;
+        isJoined(): boolean;
 
         addConnectListener(callback: () => void, onError?: (error: Object) => void): ChannelClass;
 
@@ -1199,20 +1199,28 @@ declare module __Backendless {
         addMessageListener(selector: string, callback: (message: Object) => void, onError?: (error: Object) => void): ChannelClass;
         addMessageListener(callback: (message: Object) => void, onError?: (error: Object) => void): ChannelClass;
 
-        removeMessageListeners(selector: string, callback?: (message: Object) => void): ChannelClass;
-        removeMessageListeners(callback?: (message: Object) => void): ChannelClass;
+        removeMessageListener(callback: (message: Object) => void): ChannelClass;
+        removeMessageListener(selector: string, callback: (message: Object) => void): ChannelClass;
+
+        removeMessageListeners(selector: string): ChannelClass;
+
+        removeAllMessageListeners(): ChannelClass;
 
         addCommandListener(callback: (command: Object) => void, onError?: (error: Object) => void): ChannelClass;
 
-        removeCommandListeners(callback?: (command: Object) => void): ChannelClass;
+        removeCommandListener(callback: (command: Object) => void): ChannelClass;
+
+        removeCommandListeners(): ChannelClass;
 
         addUserStatusListener(callback: (userStates: Object) => void, onError?: (error: Object) => void): ChannelClass;
 
-        removeUserStatusListeners(callback?: (userStates: Object) => void): ChannelClass;
+        removeUserStatusListener(callback: (userStates: Object) => void): ChannelClass;
+
+        removeUserStatusListeners(): ChannelClass;
 
         removeAllListeners(): ChannelClass;
 
-        send(command: Object): Promise<void>;
+        send(type: string, command: Object): Promise<void>;
     }
 
     interface GeoQueryI {

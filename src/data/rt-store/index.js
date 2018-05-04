@@ -145,7 +145,7 @@ export default class EventHandler extends RTListeners {
       callback,
       onError,
       parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance : undefined,
-      extraOptions: {
+      params: {
         event,
         whereClause
       }
@@ -158,15 +158,15 @@ export default class EventHandler extends RTListeners {
       whereClause = undefined
     }
 
-    const argumentsMatcher = subscription => {
-      const extraOptions = subscription.extraOptions
+    const matcher = subscription => {
+      const params = subscription.params
 
-      if (extraOptions.event !== event) {
+      if (params.event !== event) {
         return false
       }
 
       if (whereClause) {
-        return extraOptions.whereClause === whereClause
+        return params.whereClause === whereClause
       }
 
       if (callback) {
@@ -176,7 +176,7 @@ export default class EventHandler extends RTListeners {
       return true
     }
 
-    this.stopSubscription(event, { argumentsMatcher })
+    this.stopSubscription(event, { matcher })
   }
 
   parseObjectToInstance = object => {

@@ -972,3 +972,40 @@ function RTData() {
         .removeAllListeners()
         .addDeleteListener('whereClause', (obj: Object) => undefined)
 }
+
+function RTChannel() {
+    const channel: Backendless.ChannelClass = Backendless.Messaging.subscribe('channelName')
+
+    let voidResult: void;
+    let boolResult: boolean;
+
+    voidResult = channel.join()
+    voidResult = channel.leave()
+    boolResult = channel.isJoined()
+
+    channel
+        .addConnectListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addConnectListener(() => undefined)
+        .removeConnectListeners(() => undefined)
+        .removeConnectListeners()
+        .addMessageListener('selector', () => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addMessageListener('selector', () => undefined)
+        .addMessageListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addMessageListener(() => undefined)
+        .removeMessageListener('selector', () => undefined)
+        .removeMessageListener(() => undefined)
+        .removeMessageListeners('selector')
+        .removeAllMessageListeners()
+        .addCommandListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCommandListener(() => undefined)
+        .removeCommandListener(() => undefined)
+        .removeCommandListeners()
+        .addUserStatusListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUserStatusListener(() => undefined)
+        .removeUserStatusListener(() => undefined)
+        .removeUserStatusListeners()
+        .removeAllListeners()
+
+    const promiseSend: Promise<void> = channel.send('MY_COMMAND', {foo: 'string', bar: []})
+
+}

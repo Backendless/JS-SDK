@@ -41,9 +41,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.invocationTarget = invocationTarget
   }
 
-  onConnect() {
-    super.onConnect.apply(this, arguments)
-
+  subscribeOnRemoteInvokes() {
     let isAllowToSubscribeOnRemoteInvoke = false
 
     try {
@@ -54,16 +52,23 @@ export default class RemoteSharedObject extends RTScopeConnector {
       // Remote Invoke is not supported in Business Logic
     }
 
-    if (isAllowToSubscribeOnRemoteInvoke && !this.subscribedOnInvoke) {
-      this.subscribedOnInvoke = true
-      this.addScopeSubscription(ListenerTypes.INVOKE, RTClient.subscriptions.onRSOInvoke, {
+    if (isAllowToSubscribeOnRemoteInvoke && !this.subscribedOnRemoteInvokes) {
+      this.subscribedOnRemoteInvokes = true
+
+      this.addSubscription(ListenerTypes.INVOKE, RTClient.subscriptions.onRSOInvoke, {
         callback: this.onInvoke
       })
     }
   }
 
+  onConnect() {
+    super.onConnect.apply(this, arguments)
+
+    this.subscribeOnRemoteInvokes()
+  }
+
   onDisconnect() {
-    this.subscribedOnInvoke = false
+    this.subscribedOnRemoteInvokes = false
     this.stopSubscription(ListenerTypes.INVOKE, { callback: this.onInvoke })
 
     super.onDisconnect.apply(this, arguments)
@@ -78,7 +83,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
   @disallowInBusinessLogic('SharedObject.addChangesListener')
   @RTScopeConnector.connectionRequired()
   addChangesListener(callback, onError) {
-    this.addScopeSubscription(ListenerTypes.CHANGES, RTClient.subscriptions.onRSOChanges, {
+    this.addSubscription(ListenerTypes.CHANGES, RTClient.subscriptions.onRSOChanges, {
       callback,
       onError
     })
@@ -92,7 +97,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
   @disallowInBusinessLogic('SharedObject.addClearListener')
   @RTScopeConnector.connectionRequired()
   addClearListener(callback, onError) {
-    this.addScopeSubscription(ListenerTypes.CLEARED, RTClient.subscriptions.onRSOClear, {
+    this.addSubscription(ListenerTypes.CLEARED, RTClient.subscriptions.onRSOClear, {
       callback,
       onError
     })

@@ -46,39 +46,31 @@ export default class Channel extends RTScopeConnector {
       selector = undefined
     }
 
-    this.addScopeSubscription(ListenerTypes.MESSAGE, RTClient.subscriptions.onPubSubMessage, {
+    this.addSubscription(ListenerTypes.MESSAGE, RTClient.subscriptions.onPubSubMessage, {
       callback,
       onError,
-      extraOptions: {
+      params: {
         selector
       }
     })
   }
 
-  @RTScopeConnector.connectionRequired()
-  removeMessageListeners(selector, callback) {
-    if (typeof selector === 'function') {
-      callback = selector
-      selector = undefined
+  removeMessageListener(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('"callback" must be function')
     }
 
-    const argumentsMatcher = subscription => {
-      if (selector && callback) {
-        return subscription.extraOptions.selector === selector && subscription.callback === callback
-      }
+    this.stopSubscription(ListenerTypes.MESSAGE, { callback })
+  }
 
-      if (selector) {
-        return subscription.extraOptions.selector === selector
-      }
+  removeMessageListeners(selector) {
+    const matcher = subscription => subscription.params.selector === selector
 
-      if (callback) {
-        return !subscription.extraOptions.selector && subscription.callback === callback
-      }
+    this.stopSubscription(ListenerTypes.MESSAGE, { matcher })
+  }
 
-      return true
-    }
-
-    this.stopSubscription(ListenerTypes.MESSAGE, { argumentsMatcher })
+  removeAllMessageListeners() {
+    this.stopSubscription(ListenerTypes.MESSAGE, {})
   }
 
   @disallowInBusinessLogic('MessagingChannel.addCommandListener')
@@ -89,5 +81,17 @@ export default class Channel extends RTScopeConnector {
   @disallowInBusinessLogic('MessagingChannel.addUserStatusListener')
   addUserStatusListener() {
     return super.addUserStatusListener.apply(this, arguments)
+  }
+
+  join() {
+    super.connect()
+  }
+
+  leave() {
+    super.disconnect()
+  }
+
+  isJoined() {
+    super.isConnected()
   }
 }
