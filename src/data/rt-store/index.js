@@ -84,8 +84,8 @@ export default class EventHandler extends RTListeners {
     this.addChangesListener(ChangesTypes.BULK_CREATED, whereClause, callback, onError)
   }
 
-  removeBulkCreateListeners(whereClause, callback) {
-    this.removeChangesListeners(ChangesTypes.BULK_CREATED, whereClause, callback)
+  removeBulkCreateListeners() {
+    this.removeChangesListeners(ChangesTypes.BULK_CREATED)
   }
 
   removeBulkCreateListener(callback) {
@@ -93,7 +93,7 @@ export default class EventHandler extends RTListeners {
       throw new Error('Listener Function must be passed.')
     }
 
-    this.removeBulkCreateListeners(undefined, callback)
+    this.removeChangesListeners(ChangesTypes.BULK_CREATED, undefined, callback)
   }
 
   addBulkUpdateListener(whereClause, callback, onError) {

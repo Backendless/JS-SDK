@@ -936,15 +936,12 @@ function RTData() {
         .removeDeleteListener<Person>((obj: Person) => undefined)
 
     eventHandler
-        .addBulkCreateListener('whereClause', (obj: Backendless.RTBulkChangesSubscriptionResult) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addBulkCreateListener('whereClause', (obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
-        .addBulkCreateListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addBulkCreateListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+        .addBulkCreateListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkCreateListener((list: string[]) => undefined)
 
     eventHandler
-        .removeBulkCreateListeners('whereClause')
+        .removeBulkCreateListener((list: string[]) => undefined)
         .removeBulkCreateListeners()
-        .removeBulkCreateListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
 
     eventHandler
         .addBulkUpdateListener('whereClause', (obj: Backendless.RTBulkChangesSubscriptionResult) => undefined, (error: Backendless.RTSubscriptionError) => undefined)

@@ -464,12 +464,10 @@ declare module __Backendless {
 
         removeDeleteListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        addBulkCreateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addBulkCreateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
-        addBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+        addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
 
-        removeBulkCreateListeners(whereClause: string): Backendless.EventHandler;
+        removeBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
         removeBulkCreateListeners(): Backendless.EventHandler;
 
         removeBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
