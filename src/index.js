@@ -128,10 +128,13 @@ const Backendless = {
   Bodyparts                : Messaging.Bodyparts,
   PublishOptions           : Messaging.PublishOptions,
   DeliveryOptions          : Messaging.DeliveryOptions,
-  SubscriptionOptions      : Messaging.SubscriptionOptions,
   PublishOptionsHeaders    : Messaging.PublishOptionsHeaders,
 
   LocalCache,
+
+  /** @deprecated */
+  SubscriptionOptions      : Messaging.SubscriptionOptions,
+
   ///--------BACKWARD COMPATIBILITY-------///
   ///-------------------------------------///
 }

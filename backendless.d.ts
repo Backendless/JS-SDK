@@ -298,6 +298,10 @@ declare module __Backendless {
     class PublishOptions {
         publisherId: string;
         headers: Object;
+
+        /**
+         * @deprecated
+         * */
         subtopic: string;
 
         constructor(args?: Object);
@@ -333,6 +337,7 @@ declare module __Backendless {
 
     /**
      * @public
+     * @deprecated
      * @class Backendless.SubscriptionOptions
      * @constructor
      */

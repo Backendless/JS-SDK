@@ -28,8 +28,10 @@ const Messaging = {
   Bodyparts            : Bodyparts,
   PublishOptions       : PublishOptions,
   DeliveryOptions      : DeliveryOptions,
-  SubscriptionOptions  : SubscriptionOptions,
   PublishOptionsHeaders: PublishOptionsHeaders,
+
+  /** @deprecated */
+  SubscriptionOptions  : SubscriptionOptions,
 
   subscribe: function(channelName) {
     if (!channelName || typeof channelName !== 'string') {
