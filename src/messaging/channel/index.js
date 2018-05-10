@@ -55,15 +55,38 @@ export default class Channel extends RTScopeConnector {
     })
   }
 
-  removeMessageListener(callback) {
+  removeMessageListener(selector, callback) {
+    if (typeof selector === 'function') {
+      callback = selector
+      selector = undefined
+    }
+
+    if (selector && typeof selector !== 'string') {
+      throw new Error('"selector" must be string')
+    }
+
     if (typeof callback !== 'function') {
       throw new Error('"callback" must be function')
     }
 
-    this.stopSubscription(ListenerTypes.MESSAGE, { callback })
+    const matcher = subscription => {
+      const params = subscription.params
+
+      if (selector) {
+        return params.selector === selector && params.callback === callback
+      }
+
+      return subscription.callback === callback
+    }
+
+    this.stopSubscription(ListenerTypes.MESSAGE, { matcher })
   }
 
   removeMessageListeners(selector) {
+    if (typeof selector !== 'string') {
+      throw new Error('"selector" must be string')
+    }
+
     const matcher = subscription => subscription.params.selector === selector
 
     this.stopSubscription(ListenerTypes.MESSAGE, { matcher })
