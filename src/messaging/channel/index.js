@@ -92,6 +92,6 @@ export default class Channel extends RTScopeConnector {
   }
 
   isJoined() {
-    super.isConnected()
+    return super.isConnected()
   }
 }
