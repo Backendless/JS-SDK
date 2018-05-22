@@ -71,26 +71,29 @@ export const updateRTUserTokenIfNeeded = () => {
   }
 }
 
-const addRTClientListener = method => (...args) => {
+const ensureRTClient = method => (...args) => {
   if (rtClient) {
     rtClient[method](...args)
   }
 }
 
 const RT = {
-  addConnectEventListener   : addRTClientListener('addConnectEventListener'),
-  removeConnectEventListener: addRTClientListener('removeConnectEventListener'),
+  connect   : ensureRTClient('connect'),
+  disconnect: ensureRTClient('disconnect'),
 
-  addConnectErrorEventListener   : addRTClientListener('addConnectErrorEventListener'),
-  removeConnectErrorEventListener: addRTClientListener('removeConnectErrorEventListener'),
+  addConnectEventListener   : ensureRTClient('addConnectEventListener'),
+  removeConnectEventListener: ensureRTClient('removeConnectEventListener'),
 
-  addDisconnectEventListener   : addRTClientListener('addDisconnectEventListener'),
-  removeDisconnectEventListener: addRTClientListener('removeDisconnectEventListener'),
+  addConnectErrorEventListener   : ensureRTClient('addConnectErrorEventListener'),
+  removeConnectErrorEventListener: ensureRTClient('removeConnectErrorEventListener'),
 
-  addReconnectAttemptEventListener   : addRTClientListener('addReconnectAttemptEventListener'),
-  removeReconnectAttemptEventListener: addRTClientListener('removeReconnectAttemptEventListener'),
+  addDisconnectEventListener   : ensureRTClient('addDisconnectEventListener'),
+  removeDisconnectEventListener: ensureRTClient('removeDisconnectEventListener'),
 
-  removeConnectionListeners: addRTClientListener('removeConnectionListeners'),
+  addReconnectAttemptEventListener   : ensureRTClient('addReconnectAttemptEventListener'),
+  removeReconnectAttemptEventListener: ensureRTClient('removeReconnectAttemptEventListener'),
+
+  removeConnectionListeners: ensureRTClient('removeConnectionListeners'),
 }
 
 export default RT
