@@ -75,14 +75,23 @@ function testDataStoreClass() {
     const loadRelationsQueryBuilder: Backendless.LoadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder.create();
     const parentTableName: string = 'Test';
 
+    class Person {
+        name: string;
+    }
+
+    const person = new Person()
+
     let resultObj: Object;
     let resultNum: number;
+    let promisePerson: Promise<Person>;
+    let promisePersons: Promise<Person[]>;
     let promiseObject: Promise<Object>;
     let promiseNum: Promise<number>;
 
 
     resultObj = dataStore.saveSync(item);
     promiseObject = dataStore.save(item);
+    promisePerson = dataStore.save<Person>(person);
 
     resultObj = dataStore.removeSync('str');
     resultObj = dataStore.removeSync(item);
@@ -93,15 +102,19 @@ function testDataStoreClass() {
     resultObj = dataStore.findSync();
     promiseObject = dataStore.find(dataQueryBuilder);
     promiseObject = dataStore.find();
+    promisePersons = dataStore.find<Person>();
 
     resultObj = dataStore.findByIdSync('myId');
     promiseObject = dataStore.findById('myId');
+    promisePerson = dataStore.findById<Person>('myId');
 
     resultObj = dataStore.findFirstSync();
     promiseObject = dataStore.findFirst();
+    promisePerson = dataStore.findFirst<Person>();
 
     resultObj = dataStore.findLastSync();
     promiseObject = dataStore.findLast();
+    promisePerson = dataStore.findLast<Person>();
 
     dataStore.loadRelationsSync(parentTableName, loadRelationsQueryBuilder);
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);

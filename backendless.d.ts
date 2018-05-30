@@ -409,6 +409,7 @@ declare module __Backendless {
         constructor(name: string | Object | Function);
 
         save(obj: Object): Promise<Object>;
+        save<T>(obj: T): Promise<T>;
 
         saveSync(obj: Object): Object;
 
@@ -416,23 +417,28 @@ declare module __Backendless {
 
         removeSync(obj: Object | string): Object;
 
-        find(obj?: Backendless.DataQueryBuilder): Promise<Object>;
+        find(obj?: Backendless.DataQueryBuilder): Promise<Object[]>;
+        find<T>(obj?: Backendless.DataQueryBuilder): Promise<T[]>;
 
         findSync(obj?: Backendless.DataQueryBuilder): Array<Object>;
 
         findById(query: Object | string): Promise<Object>;
+        findById<T>(query: Object | string): Promise<T>;
 
         findByIdSync(query: Object | string): Object;
 
         findFirst(query?: Object): Promise<Object>;
+        findFirst<T>(query?: Object): Promise<T>;
 
         findFirstSync(query?: Object): Object;
 
         findLast(query?: Object): Promise<Object>;
+        findLast<T>(query?: Object): Promise<T>;
 
         findLastSync(query?: Object): Object;
 
         loadRelations(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<Array<Object>>;
+        loadRelations<T>(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<T[]>;
 
         loadRelationsSync(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Array<Object>;
 
