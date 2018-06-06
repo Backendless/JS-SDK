@@ -1,0 +1,45 @@
+html,
+body,
+#root {
+    height: 100%;
+}
+
+main.container {
+    margin-bottom: 40px;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.court {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.controls {
+    padding: 5px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.workspace {
+    flex: 1;
+    background: #f3f3f3;
+    border: 1px solid #eaeaea;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.ball-name {
+    color: #636363;
+}
+
+#ball {
+    cursor: pointer;
+}
+
+#ball:not(.moving) {
+    transition: left 0.3s linear, top 0.1s linear;
+}

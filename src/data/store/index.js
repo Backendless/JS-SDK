@@ -1,6 +1,7 @@
 import Utils from '../../utils'
 import { deprecated } from '../../decorators'
 import { resolveModelClassFromString } from '../utils'
+import EventHandler from '../rt-store'
 
 import { loadRelations, setRelation, addRelation, deleteRelation } from './relations'
 import { bulkCreate, bulkUpdate, bulkDelete } from './bulk'
@@ -29,6 +30,9 @@ class DataStore {
     }
   }
 
+  rt() {
+    return this.eventHandler = this.eventHandler || new EventHandler(this)
+  }
 }
 
 Object.assign(DataStore.prototype, {

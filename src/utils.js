@@ -166,7 +166,7 @@ const Utils = {
   synchronized(method) {
     return function() {
       // eslint-disable-next-line no-console
-      console.warn('Using of sync methods is an outdated approach. Please, use async methods.')
+      console.warn('Using of sync methods is an outdated approach. Please use async methods.')
 
       const context = this
       const fn = typeof method === 'function' ? method : context[method]
@@ -182,10 +182,31 @@ const Utils = {
         'More info is in the Backendless JS-SDK docs: https://backendless.com/docs/js/doc.html#sync-and-async-calls'
       )
     }
-  }
+  },
+
+  mirrorKeys(obj) {
+    const mirroredObject = {}
+
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        mirroredObject[key] = key
+      }
+    }
+
+    return mirroredObject
+  },
+
+  uuid() {
+    const chr4 = () => Math.random().toString(16).slice(-4).toUpperCase()
+    const chr8 = () => `${chr4()}${chr4()}`
+    const chr12 = () => `${chr4()}${chr4()}${chr4()}`
+
+    return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
+  },
+
 }
 
-function isBrowser(){
+function isBrowser() {
   return (typeof self === 'object' && self.self === self) && (typeof window === 'object' && window === self)
 }
 

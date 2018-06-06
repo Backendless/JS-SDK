@@ -8,27 +8,13 @@ import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import { describe } from './describe'
 
-const StoresCache = {}
-
 const Data = {
   Permissions              : Permissions,
   QueryBuilder             : QueryBuilder,
   LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
 
   of: function(model) {
-    const tableName = Utils.isString(model) ? model : Utils.getClassName(model)
-
-    //TODO: don't cache storage
-    //TODO: always return new instance of Data Store
-    //TODO: caching will be removed when RT is released
-    return StoresCache[tableName] = StoresCache[tableName] || new Store(model)
-  },
-
-  reset() {
-    //TODO: temporary solution, will be removed when RT is released
-    Object.keys(tableName => {
-      delete StoresCache[tableName]
-    })
+    return new Store(model)
   },
 
   @deprecated('Backendless.Data', 'Backendless.Data.describe')

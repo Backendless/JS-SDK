@@ -13,6 +13,8 @@ import Data from './data'
 import Messaging from './messaging'
 import Device from './device'
 import Files from './files'
+import RT, { setRTDebugMode } from './rt'
+import SharedObject from './rso'
 import LocalCache from './local-cache'
 import LocalVars from './local-vars'
 
@@ -33,6 +35,8 @@ const Backendless = {
 
   set debugMode(debugMode) {
     LocalVars.debugMode = !!debugMode
+
+    setRTDebugMode(LocalVars.debugMode)
   },
 
   get serverURL() {
@@ -61,6 +65,14 @@ const Backendless = {
 
   get appPath() {
     return LocalVars.appPath
+  },
+
+  get ServerCode() {
+    return LocalVars.ServerCode
+  },
+
+  set ServerCode(ServerCode) {
+    LocalVars.ServerCode = ServerCode
   },
 
   initApp,
@@ -96,6 +108,8 @@ const Backendless = {
   Data          : Data,
   Messaging     : Messaging,
   Files         : Files,
+  RT            : RT,
+  SharedObject  : SharedObject,
 
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
@@ -114,10 +128,13 @@ const Backendless = {
   Bodyparts                : Messaging.Bodyparts,
   PublishOptions           : Messaging.PublishOptions,
   DeliveryOptions          : Messaging.DeliveryOptions,
-  SubscriptionOptions      : Messaging.SubscriptionOptions,
   PublishOptionsHeaders    : Messaging.PublishOptionsHeaders,
 
   LocalCache,
+
+  /** @deprecated */
+  SubscriptionOptions      : Messaging.SubscriptionOptions,
+
   ///--------BACKWARD COMPATIBILITY-------///
   ///-------------------------------------///
 }

@@ -1,6 +1,6 @@
-import Urls from '../urls'
-import Request from '../request'
-import Async from '../request/async'
+import Urls from '../../urls'
+import Request from '../../request'
+import Async from '../../request/async'
 
 export function cancel(messageId, asyncHandler) {
   return Request.delete({

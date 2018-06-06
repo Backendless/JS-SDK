@@ -539,13 +539,14 @@ function testMessaging() {
     const publishOptions: Backendless.PublishOptions = new Backendless.PublishOptions();
     const deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
     let subscription: Backendless.SubscriptionI;
+    let channel: Backendless.ChannelClass;
     const subscriptionOptions: Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
     const subscriptionCallback = function (data: Object): void {
         const messagesArray: Array<String> = data["messages"];
     };
 
-    subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
-    promiseObject = Backendless.Messaging.subscribe(channelName, subscriptionCallback, subscriptionOptions);
+    // subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
+    channel = Backendless.Messaging.subscribe(channelName);
 
     resultObj = Backendless.Messaging.publishSync(channelName, message, publishOptions, deliveryOptions);
     promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
@@ -844,4 +845,177 @@ function testLogging() {
     logger.error(message);
     logger.fatal(message);
     logger.trace(message);
+}
+
+////// ------ RT ------- ///////
+
+function RTClient() {
+    Backendless.RT.addConnectEventListener(() => undefined)
+    Backendless.RT.removeConnectEventListener(() => undefined)
+
+    Backendless.RT.addConnectErrorEventListener((error: string) => undefined)
+    Backendless.RT.addConnectErrorEventListener(() => undefined)
+    Backendless.RT.removeConnectErrorEventListener((error: string) => undefined)
+    Backendless.RT.removeConnectErrorEventListener(() => undefined)
+
+    Backendless.RT.addDisconnectEventListener(() => undefined)
+    Backendless.RT.removeDisconnectEventListener(() => undefined)
+
+    Backendless.RT.addReconnectAttemptEventListener((attempt: number, timeout: number) => undefined)
+    Backendless.RT.addReconnectAttemptEventListener((attempt: number) => undefined)
+    Backendless.RT.addReconnectAttemptEventListener(() => undefined)
+    Backendless.RT.removeReconnectAttemptEventListener((attempt: number, timeout: number) => undefined)
+    Backendless.RT.removeReconnectAttemptEventListener((attempt: number) => undefined)
+    Backendless.RT.removeReconnectAttemptEventListener(() => undefined)
+
+    Backendless.RT.removeConnectionListeners()
+}
+
+function RTData() {
+    const eventHandler: Backendless.EventHandler = Backendless.Data.of('Person').rt()
+
+    class Person {
+        foo?: string = 'bar'
+    }
+
+    eventHandler
+        .addCreateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener('whereClause', (obj: Object) => undefined)
+        .addCreateListener((obj: Object) => undefined)
+        .addCreateListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener('whereClause', (obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener('whereClause', (obj: { bar: string }) => undefined)
+        .addCreateListener((obj: { bar: string }) => undefined)
+        .addCreateListener((obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener<Person>('whereClause', (obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener<Person>('whereClause', (obj: Person) => undefined)
+        .addCreateListener<Person>((obj: Person) => undefined)
+        .addCreateListener<Person>((obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener<Person>('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener<Person>('whereClause', (obj: { foo: string }) => undefined)
+        .addCreateListener<Person>((obj: { foo: string }) => undefined)
+        .addCreateListener<Person>((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+
+    eventHandler
+        .removeCreateListeners('whereClause')
+        .removeCreateListeners()
+        .removeCreateListener<Person>((obj: Person) => undefined)
+        .removeCreateListener<Person>((obj: { foo: string }) => undefined)
+
+    eventHandler
+        .addUpdateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener('whereClause', (obj: Object) => undefined)
+        .addUpdateListener((obj: Object) => undefined)
+        .addUpdateListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener('whereClause', (obj: { foo: string }) => undefined)
+        .addUpdateListener((obj: { foo: string }) => undefined)
+        .addUpdateListener((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener<Person>('whereClause', (obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener<Person>('whereClause', (obj: Person) => undefined)
+        .addUpdateListener<Person>((obj: Person) => undefined)
+        .addUpdateListener<Person>((obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener<Person>('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener<Person>('whereClause', (obj: { foo: string }) => undefined)
+        .addUpdateListener<Person>((obj: { foo: string }) => undefined)
+        .addUpdateListener<Person>((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+
+    eventHandler
+        .removeUpdateListeners('whereClause')
+        .removeUpdateListeners()
+        .removeUpdateListener<Person>((obj: Person) => undefined)
+
+    eventHandler
+        .addDeleteListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener('whereClause', (obj: Object) => undefined)
+        .addDeleteListener((obj: Object) => undefined)
+        .addDeleteListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener('whereClause', (obj: { foo: string }) => undefined)
+        .addDeleteListener((obj: { foo: string }) => undefined)
+        .addDeleteListener((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener<Person>('whereClause', (obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener<Person>('whereClause', (obj: Person) => undefined)
+        .addDeleteListener<Person>((obj: Person) => undefined)
+        .addDeleteListener<Person>((obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener<Person>('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener<Person>('whereClause', (obj: { foo: string }) => undefined)
+        .addDeleteListener<Person>((obj: { foo: string }) => undefined)
+        .addDeleteListener<Person>((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+
+    eventHandler
+        .removeDeleteListeners('whereClause')
+        .removeDeleteListeners()
+        .removeDeleteListener<Person>((obj: Person) => undefined)
+
+    eventHandler
+        .addBulkCreateListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkCreateListener((list: string[]) => undefined)
+
+    eventHandler
+        .removeBulkCreateListener((list: string[]) => undefined)
+        .removeBulkCreateListeners()
+
+    eventHandler
+        .addBulkUpdateListener('whereClause', (obj: Backendless.RTBulkChangesSubscriptionResult) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkUpdateListener('whereClause', (obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+        .addBulkUpdateListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkUpdateListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+
+    eventHandler
+        .removeBulkUpdateListeners('whereClause')
+        .removeBulkUpdateListeners()
+        .removeBulkUpdateListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+
+    eventHandler
+        .addBulkDeleteListener('whereClause', (obj: Backendless.RTBulkChangesSubscriptionResult) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkDeleteListener('whereClause', (obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+        .addBulkDeleteListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkDeleteListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+
+    eventHandler
+        .removeBulkDeleteListeners('whereClause')
+        .removeBulkDeleteListeners()
+        .removeBulkDeleteListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+
+    eventHandler
+        .removeAllListeners()
+        .addDeleteListener('whereClause', (obj: Object) => undefined)
+}
+
+function RTChannel() {
+    const channel: Backendless.ChannelClass = Backendless.Messaging.subscribe('channelName')
+
+    let voidResult: void;
+    let boolResult: boolean;
+
+    voidResult = channel.join()
+    voidResult = channel.leave()
+    boolResult = channel.isJoined()
+
+    channel
+        .addConnectListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addConnectListener(() => undefined)
+        .removeConnectListeners(() => undefined)
+        .removeConnectListeners()
+        .addMessageListener('selector', () => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addMessageListener('selector', () => undefined)
+        .addMessageListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addMessageListener(() => undefined)
+        .removeMessageListener('selector', () => undefined)
+        .removeMessageListener(() => undefined)
+        .removeMessageListeners('selector')
+        .removeAllMessageListeners()
+        .addCommandListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCommandListener(() => undefined)
+        .removeCommandListener(() => undefined)
+        .removeCommandListeners()
+        .addUserStatusListener(() => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUserStatusListener(() => undefined)
+        .removeUserStatusListener(() => undefined)
+        .removeUserStatusListeners()
+        .removeAllListeners()
+
+    const promiseSend: Promise<void> = channel.send('MY_COMMAND', {foo: 'string', bar: []})
+
 }

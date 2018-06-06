@@ -43,7 +43,6 @@ const Urls = {
   messagingPushWithTemplate  : templateName => `${Urls.messagingPush()}/${templateName}`,
   messagingEmail             : () => `${Urls.messaging()}/email`,
   messagingChannel           : channel => `${Urls.messaging()}/${channel}`,
-  messagingChannelProps      : channel => `${Urls.messagingChannel(channel)}/properties`,
   messagingMessage           : messageId => `${Urls.messaging()}/${messageId}`,
   messagingRegistrations     : () => `${Urls.messaging()}/registrations`,
   messagingRegistrationDevice: deviceId => `${Urls.messagingRegistrations()}/${deviceId}`,

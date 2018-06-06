@@ -1,34 +1,49 @@
 import Utils from '../utils'
 import { deprecated } from '../decorators'
 
-import PublishOptionsHeaders from './publish-options-header'
-import PublishOptions from './publish-options'
-import DeliveryOptions from './delivery-options'
-import Bodyparts from './body-parts'
-import SubscriptionOptions from './subscriptions-options'
+import Channel from './channel'
 
-import { subscribe } from './subscribe'
-import { publish } from './publish'
-import { push } from './push'
-import { pushWithTemplate } from './push-with-template'
-import { sendEmail } from './send-email'
-import { cancel } from './cancel'
-import { registerDevice } from './register-device'
-import { unregisterDevice } from './unregister-device'
-import { getRegistrations } from './get-registration'
-import { getMessageStatus } from './get-message-status'
+import {
+  PublishOptionsHeaders,
+  PublishOptions,
+  DeliveryOptions,
+  Bodyparts,
+  SubscriptionOptions,
+} from './helpers'
+
+import {
+  publish,
+  sendEmail,
+  push,
+  pushWithTemplate,
+  cancel,
+  registerDevice,
+  unregisterDevice,
+  getRegistrations,
+  getMessageStatus,
+} from './methods'
 
 const Messaging = {
 
   Bodyparts            : Bodyparts,
   PublishOptions       : PublishOptions,
   DeliveryOptions      : DeliveryOptions,
-  SubscriptionOptions  : SubscriptionOptions,
   PublishOptionsHeaders: PublishOptionsHeaders,
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.subscribe')
-  subscribeSync: Utils.synchronized(subscribe),
-  subscribe    : Utils.promisified(subscribe),
+  /** @deprecated */
+  SubscriptionOptions  : SubscriptionOptions,
+
+  subscribe: function(channelName) {
+    if (!channelName || typeof channelName !== 'string') {
+      throw new Error('"channelName" must be non empty string')
+    }
+
+    if (channelName.indexOf('/') >= 0) {
+      throw new Error('"channelName" can not contains slash chars')
+    }
+
+    return new Channel({ name: channelName.trim() })
+  },
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
   publishSync: Utils.synchronized(publish),

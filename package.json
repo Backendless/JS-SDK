@@ -83,6 +83,7 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
-    "backendless-request": "~0.0.11"
+    "backendless-request": "~0.0.11",
+    "backendless-rt-client": "0.0.15"
   }
 }

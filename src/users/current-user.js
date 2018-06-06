@@ -5,16 +5,19 @@ import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
 import LocalCache from '../local-cache'
+import { updateRTUserTokenIfNeeded } from '../rt'
 
 import { getUserFromResponse } from './utils'
 
 let currentUser = null
 
-export function setLocalCurrentUser(user){
+export function setLocalCurrentUser(user) {
   currentUser = user || null
+
+  updateRTUserTokenIfNeeded()
 }
 
-export function getLocalCurrentUser(){
+export function getLocalCurrentUser() {
   return currentUser
 }
 
