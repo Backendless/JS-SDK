@@ -71,7 +71,7 @@ const LoggingCollector = {
       message,
       exception,
       'log-level': logLevel,
-      timestamp: Date.now()
+      timestamp  : Date.now()
     }
 
     LoggingCollector.pool.push(messageObj)
@@ -89,7 +89,9 @@ const LoggingCollector = {
   flushSync: Utils.synchronized(flush),
 
   sendRequest() {
-    LoggingCollector.flushInterval = setTimeout(() => LoggingCollector.flush(), LoggingCollector.timeFrequency * 1000)
+    if (!LoggingCollector.flushInterval) {
+      LoggingCollector.flushInterval = setTimeout(() => LoggingCollector.flush(), LoggingCollector.timeFrequency * 1000)
+    }
   },
 
   setLogReportingPolicy(numOfMessages, timeFrequency) {
