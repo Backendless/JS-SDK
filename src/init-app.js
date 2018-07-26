@@ -1,10 +1,10 @@
-import LocalVars from './local-vars'
-import LoggingCollector from './logging/collector'
-import GeoTrackerMonitor from './geo/tracker-monitor'
-import { initRTClient } from './rt'
-import { setLocalCurrentUser } from './users/current-user'
-
 export function initApp(appId, secretKey) {
+  const { default: LocalVars } = require('./local-vars')
+  const { default: LoggingCollector } = require('./logging/collector')
+  const { default: GeoTracker } = require('./geo/tracker-monitor/tracker')
+  const { initRTClient } = require('./rt')
+  const { setLocalCurrentUser } = require('./users/current-user')
+
   LocalVars.applicationId = appId
   LocalVars.secretKey = secretKey
   LocalVars.appPath = [LocalVars.serverURL, appId, secretKey].join('/')
@@ -12,7 +12,7 @@ export function initApp(appId, secretKey) {
   initRTClient()
 
   LoggingCollector.reset()
-  GeoTrackerMonitor.reset()
+  GeoTracker.reset()
 
   setLocalCurrentUser()
 }

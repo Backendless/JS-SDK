@@ -22,9 +22,9 @@ describe('initApp', function() {
 
     const appPath = Backendless.appPath
 
-    expect(() => Backendless.applicationId = 'applicationId').to.throwError // eslint-disable-line
-    expect(() => Backendless.secretKey = 'secretKey').to.throwError // eslint-disable-line
-    expect(() => Backendless.appPath = 'appPath').to.throwError // eslint-disable-lin
+    expect(() => Backendless.applicationId = 'applicationId').to.throw() // eslint-disable-line
+    expect(() => Backendless.secretKey = 'secretKey').to.throw() // eslint-disable-line
+    expect(() => Backendless.appPath = 'appPath').to.throw() // eslint-disable-line
 
     expect(Backendless.applicationId).to.be.equal(APP_ID)
     expect(Backendless.secretKey).to.be.equal(SECRET_KEY)

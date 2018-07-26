@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import User from './user'
-import Data from '../data'
 import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
@@ -40,6 +38,9 @@ export const getCurrentUser = asyncHandler => {
   const currentUserId = stayLoggedIn && LocalCache.get('current-user-id')
 
   if (currentUserId) {
+    const { default: Data } = require('../data')
+    const { default: User } = require('./user')
+
     return Data.of(User).findById(currentUserId, asyncHandler)
   }
 
@@ -47,7 +48,7 @@ export const getCurrentUser = asyncHandler => {
 }
 
 export function isValidLogin(/** async */) {
-  const userToken = LocalCache.get('user-token')
+  const userToken = getCurrentUserToken()
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 

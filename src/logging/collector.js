@@ -3,8 +3,6 @@ import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
 
-import Logger from './logger'
-
 let lastFlushListeners
 
 function flush(asyncHandler) {
@@ -58,6 +56,8 @@ const LoggingCollector = {
   },
 
   getLogger(loggerName) {
+    const { default: Logger } = require('./logger')
+
     if (!Utils.isString(loggerName)) {
       throw new Error("Invalid 'loggerName' value. LoggerName must be a string value")
     }
