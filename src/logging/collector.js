@@ -3,8 +3,6 @@ import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
 
-import Logger from './logger'
-
 let lastFlushListeners
 
 function flush(asyncHandler) {
@@ -58,6 +56,8 @@ const LoggingCollector = {
   },
 
   getLogger(loggerName) {
+    const { default: Logger } = require('./logger')
+
     if (!Utils.isString(loggerName)) {
       throw new Error("Invalid 'loggerName' value. LoggerName must be a string value")
     }
@@ -71,7 +71,7 @@ const LoggingCollector = {
       message,
       exception,
       'log-level': logLevel,
-      timestamp: Date.now()
+      timestamp  : Date.now()
     }
 
     LoggingCollector.pool.push(messageObj)
@@ -89,7 +89,9 @@ const LoggingCollector = {
   flushSync: Utils.synchronized(flush),
 
   sendRequest() {
-    LoggingCollector.flushInterval = setTimeout(() => LoggingCollector.flush(), LoggingCollector.timeFrequency * 1000)
+    if (!LoggingCollector.flushInterval) {
+      LoggingCollector.flushInterval = setTimeout(() => LoggingCollector.flush(), LoggingCollector.timeFrequency * 1000)
+    }
   },
 
   setLogReportingPolicy(numOfMessages, timeFrequency) {

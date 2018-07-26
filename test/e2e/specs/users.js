@@ -136,11 +136,15 @@ describe('Backendless.Users', function() {
       it('impossible when disabled', function() {
         const user = Object.assign(randUser(), { foo2: 'fooValue', bar2: 'barValue' })
 
-        return setDynamicSchema(false).then(() =>
-          expect(Backendless.UserService.register(user))
-            .to.eventually.be.rejected
-            .and.eventually.have.property('code', 1169)
-        )
+        return setDynamicSchema(false)
+          .then(() => Backendless.UserService.register(user))
+          .then(newUser => {
+            expect(newUser).to.have.property('objectId')
+            expect(newUser).to.have.property('email', user.email)
+
+            expect(newUser).to.not.have.property('foo2')
+            expect(newUser).to.not.have.property('bar2')
+          })
       })
 
       after(() => setDynamicSchema(true))
@@ -209,13 +213,14 @@ describe('Backendless.Users', function() {
 
     describe('when multiple logins', function() {
       describe('disabled (default rule)', function() {
-        it('second login should logout previously logged in user', function() {
+        xit('second login should logout previously logged in user', function() {
           const Backendless1 = BackendlessCopy()
           const Backendless2 = BackendlessCopy()
 
           return Promise.resolve()
             .then(() => Backendless1.UserService.login(user.email, user.password, true))
             .then(() => Backendless2.UserService.login(user.email, user.password, true))
+
             .then(() => expect(Backendless1.UserService.isValidLogin()).to.eventually.be.false)
             .then(() => expect(Backendless2.UserService.isValidLogin()).to.eventually.be.true)
         })
@@ -313,11 +318,15 @@ describe('Backendless.Users', function() {
     })
 
     it('dynamic prop when feature is disabled', function() {
-      return setDynamicSchema(false).then(() =>
-        expect(Backendless.UserService.update({ objectId: user.objectId, data2: 'custom data' }))
-          .to.eventually.be.rejected
-          .and.eventually.have.property('code', 1169)
-      )
+      return setDynamicSchema(false)
+        .then(() => Backendless.UserService.update({ objectId: user.objectId, data2: 'custom data' }))
+        .then(updatedUser => {
+
+          expect(updatedUser).to.have.property('objectId', user.objectId)
+          expect(updatedUser).to.have.property('email', user.email)
+
+          expect(updatedUser).to.not.have.property('data2')
+        })
     })
 
     it('neighbor', function() {

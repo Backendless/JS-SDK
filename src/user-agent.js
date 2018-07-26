@@ -1,6 +1,6 @@
-import Utils from './utils'
-
 export function getUserAgent() {
+  const { default: Utils } = require('./utils')
+
   let ua = 'NodeJS'
 
   if (Utils.isBrowser) {

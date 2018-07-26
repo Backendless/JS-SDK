@@ -1,26 +1,6 @@
 import Request from 'backendless-request'
 
-import Logging from './logging'
-import Counters from './counters'
-import Cache from './cache'
-import Commerce from './commerce'
-import Users from './users'
-import User from './users/user'
-import CustomServices from './bl/custom-services'
-import Events from './bl/events'
-import Geo from './geo'
-import Data from './data'
-import Messaging from './messaging'
-import Device from './device'
-import Files from './files'
-import RT, { setRTDebugMode } from './rt'
-import SharedObject from './rso'
-import LocalCache from './local-cache'
 import LocalVars from './local-vars'
-
-import { initApp } from './init-app'
-import { getUserAgent } from './user-agent'
-import { getCurrentUserToken } from './users/current-user'
 
 const root = (typeof self === 'object' && self.self === self && self) ||
   (typeof global === 'object' && global.global === global && global)
@@ -36,7 +16,7 @@ const Backendless = {
   set debugMode(debugMode) {
     LocalVars.debugMode = !!debugMode
 
-    setRTDebugMode(LocalVars.debugMode)
+    require('./rt').setRTDebugMode(LocalVars.debugMode)
   },
 
   get serverURL() {
@@ -59,12 +39,33 @@ const Backendless = {
     return LocalVars.applicationId
   },
 
+  set applicationId(appId) {
+    throw new Error(
+      `Setting '${appId}' value to Backendless.applicationId directly is not possible, ` +
+      `instead you must use Backendless.initApp('${appId}', API_KEY)`
+    )
+  },
+
   get secretKey() {
     return LocalVars.secretKey
   },
 
+  set secretKey(apiKey) {
+    throw new Error(
+      `Setting '${apiKey}' value to Backendless.secretKey directly is not possible, ` +
+      `instead you must use Backendless.initApp(APP_ID, '${apiKey}')`
+    )
+  },
+
   get appPath() {
     return LocalVars.appPath
+  },
+
+  set appPath(appPath) {
+    throw new Error(
+      `Setting '${appPath}' value to Backendless.appPath directly is not possible, ` +
+      'instead you must use Backendless.initApp(APP_ID, API_KEY) for setup the value'
+    )
   },
 
   get ServerCode() {
@@ -75,13 +76,23 @@ const Backendless = {
     LocalVars.ServerCode = ServerCode
   },
 
-  initApp,
+  initApp(...args) {
+    require('./init-app').initApp(...args)
+  },
 
-  getCurrentUserToken,
+  getCurrentUserToken() {
+    return require('./users/current-user').getCurrentUserToken()
+  },
 
-  setupDevice: Device.setup,
+  setupDevice(...args) {
+    const { default: Device } = require('./device')
 
-  browser: getUserAgent(),
+    Device.setup(...args)
+  },
+
+  get browser() {
+    return require('./user-agent').getUserAgent()
+  },
 
   Request,
 
@@ -96,20 +107,61 @@ const Backendless = {
   ///-------------------------------------///
   ///-------------- SERVICES -------------///
 
-  Logging       : Logging,
-  Counters      : Counters,
-  Cache         : Cache,
-  Commerce      : Commerce,
-  Users         : Users,
-  User          : User,
-  CustomServices: CustomServices,
-  Events        : Events,
-  Geo           : Geo,
-  Data          : Data,
-  Messaging     : Messaging,
-  Files         : Files,
-  RT            : RT,
-  SharedObject  : SharedObject,
+  get Logging() {
+    return require('./logging').default
+  },
+
+  get Counters() {
+    return require('./counters').default
+  },
+
+  get Cache() {
+    return require('./cache').default
+  },
+
+  get Commerce() {
+    return require('./commerce').default
+  },
+
+  get Users() {
+    return require('./users').default
+  },
+
+  get User() {
+    return require('./users/user').default
+  },
+
+  get CustomServices() {
+    return require('./bl/custom-services').default
+  },
+
+  get Events() {
+    return require('./bl/events').default
+  },
+
+  get Geo() {
+    return require('./geo').default
+  },
+
+  get Data() {
+    return require('./data').default
+  },
+
+  get Messaging() {
+    return require('./messaging').default
+  },
+
+  get Files() {
+    return require('./files').default
+  },
+
+  get RT() {
+    return require('./rt').default
+  },
+
+  get SharedObject() {
+    return require('./rso').default
+  },
 
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
@@ -118,22 +170,59 @@ const Backendless = {
   ///--------BACKWARD COMPATIBILITY-------///
 
   //TODO: do we need to remove it?
-  UserService              : Users,
-  GeoQuery                 : Geo.Query,
-  GeoPoint                 : Geo.Point,
-  GeoCluster               : Geo.Cluster,
-  Persistence              : Data,
-  DataQueryBuilder         : Data.QueryBuilder,
-  LoadRelationsQueryBuilder: Data.LoadRelationsQueryBuilder,
-  Bodyparts                : Messaging.Bodyparts,
-  PublishOptions           : Messaging.PublishOptions,
-  DeliveryOptions          : Messaging.DeliveryOptions,
-  PublishOptionsHeaders    : Messaging.PublishOptionsHeaders,
 
-  LocalCache,
+  get UserService() {
+    return Backendless.Users
+  },
+
+  get GeoQuery() {
+    return Backendless.Geo.Query
+  },
+
+  get GeoPoint() {
+    return Backendless.Geo.Point
+  },
+
+  get GeoCluster() {
+    return Backendless.Geo.Cluster
+  },
+
+  get Persistence() {
+    return Backendless.Data
+  },
+
+  get DataQueryBuilder() {
+    return Backendless.Data.QueryBuilder
+  },
+
+  get LoadRelationsQueryBuilder() {
+    return Backendless.Data.LoadRelationsQueryBuilder
+  },
+
+  get Bodyparts() {
+    return Backendless.Messaging.Bodyparts
+  },
+
+  get PublishOptions() {
+    return Backendless.Messaging.PublishOptions
+  },
+
+  get DeliveryOptions() {
+    return Backendless.Messaging.DeliveryOptions
+  },
+
+  get PublishOptionsHeaders() {
+    return Backendless.Messaging.PublishOptionsHeaders
+  },
+
+  get LocalCache() {
+    return require('./local-cache').default
+  },
 
   /** @deprecated */
-  SubscriptionOptions      : Messaging.SubscriptionOptions,
+  get SubscriptionOptions() {
+    return Backendless.Messaging.SubscriptionOptions
+  },
 
   ///--------BACKWARD COMPATIBILITY-------///
   ///-------------------------------------///
