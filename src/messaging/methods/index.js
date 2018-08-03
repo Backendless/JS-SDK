@@ -1,6 +1,5 @@
 export * from './publish'
 export * from './send-email'
-export * from './push'
 export * from './push-with-template'
 export * from './cancel'
 export * from './register-device'
