@@ -783,17 +783,17 @@ declare module __Backendless {
 
         copyFile(sourcePath: string, targetPath: string): Promise<Object>;
 
-        removeSync(fileURL: string): void;
+        removeSync(fileURL: string): number;
 
-        remove(fileURL: string): Promise<void>;
+        remove(fileURL: string): Promise<number>;
 
         existsSync(path: string): Object;
 
         exists(path: string): Promise<Object>;
 
-        removeDirectorySync(path: string): void;
+        removeDirectorySync(path: string): number;
 
-        removeDirectory(path: string): Promise<void>;
+        removeDirectory(path: string): Promise<number>;
     }
 
     /**

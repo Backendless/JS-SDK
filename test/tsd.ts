@@ -592,8 +592,10 @@ function testFilesService() {
     let resultStr: string;
     let resultBool: boolean;
     let resultObj: Object;
+    let resultNumber: number;
     let promiseObject: Promise<Object>;
     let promiseVoid: Promise<void>;
+    let promiseNumber: Promise<number>;
 
     resultStr = Backendless.Files.restUrl;
 
@@ -634,14 +636,14 @@ function testFilesService() {
     resultObj = Backendless.Files.copyFileSync(sourcePath, targetPath);
     promiseObject = Backendless.Files.copyFile(sourcePath, targetPath);
 
-    Backendless.Files.removeSync(fileURL);
-    promiseVoid = Backendless.Files.remove(fileURL);
+    resultNumber = Backendless.Files.removeSync(fileURL);
+    promiseNumber = Backendless.Files.remove(fileURL);
 
     resultObj = Backendless.Files.existsSync(path);
     promiseObject = Backendless.Files.exists(path);
 
-    Backendless.Files.removeDirectorySync(path);
-    promiseVoid = Backendless.Files.removeDirectory(path);
+    resultNumber = Backendless.Files.removeDirectorySync(path);
+    promiseNumber = Backendless.Files.removeDirectory(path);
 
     resultObj = Backendless.Files.Permissions.READ.grantUserSync(userid, url);
     resultObj = Backendless.Files.Permissions.READ.grantRoleSync(roleName, url);

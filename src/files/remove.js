@@ -9,7 +9,7 @@ export function remove(path, asyncHandler) {
     throw new Error('File "path" must not be empty and must be String')
   }
 
-  Request.delete({
+  return Request.delete({
     url         : isRemoteUrl(path) ? path : Urls.filePath(path),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
