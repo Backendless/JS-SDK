@@ -182,7 +182,7 @@ declare module __Backendless {
 
         getProperties(): Array<string>;
 
-        setProperties(properties: string): Backendless.DataQueryBuilder;
+        setProperties(properties: string | Array<string>): Backendless.DataQueryBuilder;
 
         addProperty(properties: string): Backendless.DataQueryBuilder;
 
