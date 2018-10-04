@@ -299,6 +299,12 @@ function testUserService() {
     let promiseListOfString: Promise<Object>;
     let promiseListOfObject: Promise<Object>;
     let promiseVoid: Promise<void>;
+    let promiseBLUser: Promise<Backendless.User>;
+
+    class CustomUser {
+    }
+
+    let promiseCustomUser: Promise<CustomUser>;
 
     const restUrl: string = Backendless.UserService.restUrl;
     const loggedInUser: boolean = Backendless.UserService.loggedInUser();
@@ -374,17 +380,25 @@ function testUserService() {
     promiseVoid = Backendless.UserService.loginWithTwitter({}, true);
     promiseVoid = Backendless.UserService.loginWithTwitter(null, true);
 
-    promiseVoid = Backendless.UserService.loginWithFacebookSdk({});
-    promiseVoid = Backendless.UserService.loginWithFacebookSdk({}, true);
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk({});
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk({}, true);
 
-    promiseVoid = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
-    promiseVoid = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {});
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {}, true);
+    promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {});
+    promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {}, true);
 
-    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({});
-    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk({}, true);
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk({});
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk({}, true);
 
-    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
-    promiseVoid = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {});
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {}, true);
+    promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {});
+    promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, true);
 
     bol = Backendless.UserService.isValidLoginSync();
     promiseObject = Backendless.UserService.isValidLogin();

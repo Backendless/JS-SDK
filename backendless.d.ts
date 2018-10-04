@@ -468,6 +468,7 @@ declare module __Backendless {
         addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
 
         removeBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
+
         removeBulkCreateListeners(): Backendless.EventHandler;
 
         removeBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
@@ -1049,12 +1050,12 @@ declare module __Backendless {
         loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
 
         /**@deprecated */
-        loginWithFacebookSdk(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
-        loginWithFacebookSdk(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<void>;
+        loginWithFacebookSdk<T=Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        loginWithFacebookSdk<T=Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
 
         /**@deprecated */
-        loginWithGooglePlusSdk(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
-        loginWithGooglePlusSdk(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<void>;
+        loginWithGooglePlusSdk<T=Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        loginWithGooglePlusSdk<T=Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
 
         isValidLoginSync(): boolean;
 
