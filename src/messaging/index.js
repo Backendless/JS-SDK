@@ -20,6 +20,7 @@ import {
   unregisterDevice,
   getRegistrations,
   getMessageStatus,
+  getPushTemplates,
 } from './methods'
 
 const Messaging = {
@@ -30,7 +31,7 @@ const Messaging = {
   PublishOptionsHeaders: PublishOptionsHeaders,
 
   /** @deprecated */
-  SubscriptionOptions  : SubscriptionOptions,
+  SubscriptionOptions: SubscriptionOptions,
 
   subscribe: function(channelName) {
     if (!channelName || typeof channelName !== 'string') {
@@ -73,6 +74,8 @@ const Messaging = {
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.getMessageStatus')
   getMessageStatusSync: Utils.synchronized(getMessageStatus),
   getMessageStatus    : Utils.promisified(getMessageStatus),
+
+  getPushTemplates: Utils.promisified(getPushTemplates),
 
 }
 

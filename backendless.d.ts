@@ -745,6 +745,8 @@ declare module __Backendless {
         getMessageStatusSync(messageId: string): boolean;
 
         getMessageStatus(messageId: string): Promise<boolean>;
+
+        getPushTemplates(): Promise<Object>;
     }
 
     /**

@@ -40,6 +40,7 @@ const Urls = {
 
   messaging                  : () => `${Urls.root()}/messaging`,
   messagingPush              : () => `${Urls.messaging()}/push`,
+  messagingPushTemplates     : () => `${Urls.messaging()}/pushtemplates`,
   messagingPushWithTemplate  : templateName => `${Urls.messagingPush()}/${templateName}`,
   messagingEmail             : () => `${Urls.messaging()}/email`,
   messagingChannel           : channel => `${Urls.messaging()}/${channel}`,

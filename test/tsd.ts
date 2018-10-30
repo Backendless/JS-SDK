@@ -580,6 +580,8 @@ function testMessaging() {
     resultObj = Backendless.Messaging.unregisterDeviceSync();
     promiseObject = Backendless.Messaging.unregisterDevice();
 
+    promiseObject = Backendless.Messaging.getPushTemplates();
+
 }
 
 function testFilesService() {
