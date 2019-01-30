@@ -31,6 +31,7 @@ const Urls = {
 
   data                   : () => `${Urls.root()}/data`,
   dataTable              : tableName => `${Urls.data()}/${tableName}`,
+  dataTableFind          : tableName => `${Urls.dataTable(tableName)}/find`,
   dataTableObject        : (tableName, objectId) => `${Urls.dataTable(tableName)}/${objectId}`,
   dataTableObjectRelation: (tableName, objectId, columnName) => `${Urls.dataTableObject(tableName, objectId)}/${columnName}`,
   dataTableCount         : tableName => `${Urls.dataTable(tableName)}/count`,
