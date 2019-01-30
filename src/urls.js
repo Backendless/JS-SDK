@@ -37,6 +37,7 @@ const Urls = {
   dataTableCount         : tableName => `${Urls.dataTable(tableName)}/count`,
   dataTableProps         : tableName => `${Urls.dataTable(tableName)}/properties`,
   dataBulkTable          : tableName => `${Urls.data()}/bulk/${tableName}`,
+  dataBulkTableDelete    : tableName => `${Urls.dataBulkTable(tableName)}/delete`,
   dataObjectPermission   : (tableName, permissionType, objectId) => `${Urls.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`,
 
   messaging                  : () => `${Urls.root()}/messaging`,

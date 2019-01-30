@@ -53,13 +53,15 @@ export function bulkDelete(where, asyncHandler) {
     )
   }
 
-  where = Utils.isString(where) ? where : objectsToWhereClause(where)
+  const queryData = {
+    where: Utils.isString(where) ? where : objectsToWhereClause(where)
+  }
 
-  return Request.delete({
-    url         : Urls.dataBulkTable(this.className),
-    query       : { where },
+  return Request.post({
+    url         : Urls.dataBulkTableDelete(this.className),
     isAsync     : !!asyncHandler,
-    asyncHandler: asyncHandler
+    asyncHandler: asyncHandler,
+    data        : queryData
   })
 }
 
