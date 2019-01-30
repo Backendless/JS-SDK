@@ -118,4 +118,58 @@ export default class DataQueryBuilder {
 
     return this._query
   }
+
+  toJSON() {
+    const source = {
+      pageSize      : this._paging.pageSize,
+      offset        : this._paging.offset,
+      props         : this._query.properties,
+      where         : this._query.condition,
+      having        : this._query.havingClause,
+      sortBy        : this._query.options.sortBy,
+      groupBy       : this._query.options.groupBy,
+      loadRelations : this._query.options.relations,
+      relationsDepth: this._query.options.relationsDepth,
+    }
+
+    const target = {}
+
+    if (source.pageSize > 0) {
+      target.pageSize = source.pageSize
+    }
+
+    if (source.offset > 0) {
+      target.offset = source.offset
+    }
+
+    if (Array.isArray(source.props) && source.props.length) {
+      target.props = source.props
+    }
+
+    if (source.where) {
+      target.where = source.where
+    }
+
+    if (source.having) {
+      target.having = source.having
+    }
+
+    if (source.sortBy) {
+      target.sortBy = source.sortBy
+    }
+
+    if (source.groupBy) {
+      target.groupBy = source.groupBy
+    }
+
+    if (Array.isArray(source.loadRelations) && source.loadRelations.length) {
+      target.loadRelations = source.loadRelations
+    }
+
+    if (source.relationsDepth > 0) {
+      target.relationsDepth = source.relationsDepth
+    }
+
+    return target
+  }
 }
