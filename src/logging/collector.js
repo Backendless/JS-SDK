@@ -9,6 +9,7 @@ function flush(asyncHandler) {
   if (LoggingCollector.pool.length) {
     if (LoggingCollector.flushInterval) {
       clearTimeout(LoggingCollector.flushInterval)
+      delete LoggingCollector.flushInterval
     }
 
     let listeners
