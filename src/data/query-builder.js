@@ -126,10 +126,10 @@ export default class DataQueryBuilder {
       props         : this._query.properties,
       where         : this._query.condition,
       having        : this._query.havingClause,
-      sortBy        : this._query.options.sortBy,
-      groupBy       : this._query.options.groupBy,
-      loadRelations : this._query.options.relations,
-      relationsDepth: this._query.options.relationsDepth,
+      sortBy        : this._query.options && this._query.options.sortBy,
+      groupBy       : this._query.options && this._query.options.groupBy,
+      loadRelations : this._query.options && this._query.options.relations,
+      relationsDepth: this._query.options && this._query.options.relationsDepth,
     }
 
     const target = {}
