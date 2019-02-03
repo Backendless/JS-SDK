@@ -162,8 +162,8 @@ export default class DataQueryBuilder {
       target.groupBy = source.groupBy
     }
 
-    if (Array.isArray(source.loadRelations) && source.loadRelations.length) {
-      target.loadRelations = source.loadRelations
+    if (Array.isArray(source.loadRelations)) {
+      target.loadRelations = source.loadRelations.length ? source.loadRelations : '*'
     }
 
     if (source.relationsDepth > 0) {
