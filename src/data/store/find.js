@@ -71,7 +71,25 @@ export function find(dataQuery, asyncHandler) {
 
   dataQuery = (dataQuery instanceof QueryBuilder)
     ? dataQuery.toJSON()
-    : (dataQuery || {})
+    : dataQuery
+
+  dataQuery = Object.assign({}, dataQuery)
+
+  if (Array.isArray(dataQuery.props)) {
+    dataQuery.props = dataQuery.props.join(',')
+  }
+
+  if (Array.isArray(dataQuery.sortBy)) {
+    dataQuery.sortBy = dataQuery.sortBy.join(',')
+  }
+
+  if (Array.isArray(dataQuery.groupBy)) {
+    dataQuery.groupBy = dataQuery.groupBy.join(',')
+  }
+
+  if (Array.isArray(dataQuery.loadRelations)) {
+    dataQuery.loadRelations = dataQuery.loadRelations.join(',')
+  }
 
   const result = Request.post({
     url         : Urls.dataTableFind(this.className),
