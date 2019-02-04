@@ -8,6 +8,7 @@ import QueryBuilder from '../query-builder'
 import { parseFindResponse } from './parse'
 import { extractQueryOptions } from './extract-query-options'
 
+
 //TODO: refactor me
 
 export function findUtil(className, Model, dataQuery, asyncHandler) {
@@ -59,51 +60,21 @@ export function findUtil(className, Model, dataQuery, asyncHandler) {
   return parseFindResponse(result, Model)
 }
 
-export function find(dataQuery, asyncHandler) {
-  if (dataQuery instanceof Async) {
-    asyncHandler = dataQuery
-    dataQuery = undefined
+export function find(queryBuilder, asyncHandler) {
+  //TODO: add an ability to get object as QueryBuilder
+
+  if (queryBuilder instanceof Async) {
+    asyncHandler = queryBuilder
+    queryBuilder = undefined
   }
 
-  if (asyncHandler) {
-    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, this.model))
+  if (queryBuilder && !(queryBuilder instanceof QueryBuilder)) {
+    throw new Error('The first argument should be instance of Backendless.DataQueryBuilder')
   }
 
-  dataQuery = (dataQuery instanceof QueryBuilder)
-    ? dataQuery.toJSON()
-    : dataQuery
+  const dataQuery = queryBuilder ? queryBuilder.build() : {}
 
-  dataQuery = Object.assign({}, dataQuery)
-
-  if (Array.isArray(dataQuery.props)) {
-    dataQuery.props = dataQuery.props.join(',')
-  }
-
-  if (Array.isArray(dataQuery.sortBy)) {
-    dataQuery.sortBy = dataQuery.sortBy.join(',')
-  }
-
-  if (Array.isArray(dataQuery.groupBy)) {
-    dataQuery.groupBy = dataQuery.groupBy.join(',')
-  }
-
-  if (Array.isArray(dataQuery.loadRelations)) {
-    dataQuery.loadRelations = dataQuery.loadRelations.join(',')
-  }
-
-  const result = Request.post({
-    url         : Urls.dataTableFind(this.className),
-    isAsync     : !!asyncHandler,
-    asyncHandler: asyncHandler,
-    cachePolicy : dataQuery.cachePolicy,
-    data        : dataQuery,
-  })
-
-  if (asyncHandler) {
-    return result
-  }
-
-  return parseFindResponse(result, this.model)
+  return findUtil(this.className, this.model, dataQuery, asyncHandler)
 }
 
 export function findById() {
