@@ -198,6 +198,8 @@ declare module __Backendless {
 
         setRelated(relations: string | Array<string>): Backendless.DataQueryBuilder;
 
+        addRelated(relations: string | Array<string>): Backendless.DataQueryBuilder;
+
         getRelationsDepth(): number;
 
         setRelationsDepth(relationsDepth: number): Backendless.DataQueryBuilder;

@@ -103,6 +103,14 @@ export default class DataQueryBuilder {
     return this
   }
 
+  addRelated(relations) {
+    const option = this._query.getOption('relations') || []
+
+    this._query.setOption('relations', option.concat(relations))
+
+    return this
+  }
+
   getRelationsDepth() {
     return this._query.getOption('relationsDepth')
   }
