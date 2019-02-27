@@ -369,57 +369,6 @@ declare module __Backendless {
         trace(message: string): void;
     }
 
-    /**
-     * @private
-     * @class Proxy
-     */
-    class Proxy {
-        eventHandlers: Object;
-
-        on(eventName: string, handler: (data: any) => any): void;
-
-        fireEvent(eventName: string, data: any): void;
-    }
-
-    /**
-     * @private
-     * @class PollingProxy
-     */
-    class PollingProxy extends Backendless.Proxy {
-        restUrl: string;
-        timer: number;
-        timeout: number;
-        interval: number;
-        xhr: XMLHttpRequest;
-        needReconnect: boolean;
-        responder: Async;
-
-        onMessage(data: any): void;
-
-        poll(): void;
-
-        close(): void;
-
-        onTimeout(): void;
-
-        onError(): void;
-    }
-
-    /**
-     * @private
-     * @class SocketProxy
-     */
-    class SocketProxy extends Backendless.Proxy {
-        reconnectWithPolling: boolean;
-        socket: WebSocket;
-
-        onMessage(): void;
-
-        onSocketClose(data): void;
-
-        close(): void;
-    }
-
     interface RTSubscriptionError {
         code?: number;
         message?: string;
@@ -1080,7 +1029,7 @@ declare module __Backendless {
 
         setLogReportingPolicy(numOfMessages: number, timeFrequencySec: number): void;
 
-        getLogger(name): Backendless.Logger;
+        getLogger(name: string): Backendless.Logger;
     }
 
     interface PersistencePermissionI {
@@ -1183,17 +1132,6 @@ declare module __Backendless {
 
     interface ExistDataItemI extends Backendless.DataItemI {
         objectId: string;
-    }
-
-    interface SubscriptionI {
-        channelName: string;
-        options: Object;
-        channelProperties: string;
-        subscriptionId: string;
-        restUrl: string;
-        proxy: Proxy;
-
-        cancelSubscription(): void;
     }
 
     class ChannelClass {
