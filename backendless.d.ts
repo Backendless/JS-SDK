@@ -792,7 +792,10 @@ declare module __Backendless {
 
         dispatchSync(eventName: string, eventArgs: Object): Object;
 
+        dispatch(eventName: string): Promise<Object>;
         dispatch(eventName: string, eventArgs: Object): Promise<Object>;
+        dispatch(eventName: string, eventArgs: Object, executionType: string): Promise<Object>;
+        dispatch(eventName: string, executionType: string): Promise<Object>;
     }
 
     /**

@@ -3,9 +3,20 @@ import Request from '../request'
 import Async from '../request/async'
 import Urls from '../urls'
 
-export function dispatchEvent(eventName, eventArgs, asyncHandler) {
+export function dispatchEvent(eventName, eventArgs, executionType, asyncHandler) {
   if (!eventName || !Utils.isString(eventName)) {
     throw new Error('Event Name must be provided and must be not an empty STRING!')
+  }
+
+  if (typeof eventArgs === 'string') {
+    asyncHandler = executionType
+    executionType = eventArgs
+    eventArgs = undefined
+  }
+
+  if (executionType instanceof Async) {
+    asyncHandler = executionType
+    executionType = undefined
   }
 
   if (eventArgs instanceof Async) {
@@ -21,10 +32,17 @@ export function dispatchEvent(eventName, eventArgs, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
+  const headers = {}
+
+  if (executionType) {
+    headers['bl-execution-type'] = executionType
+  }
+
   return Request.post({
     url         : Urls.blEvent(eventName),
     data        : eventArgs,
     isAsync     : !!asyncHandler,
+    headers     : headers,
     asyncHandler: asyncHandler
   })
 }
