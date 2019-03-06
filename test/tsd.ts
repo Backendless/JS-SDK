@@ -552,14 +552,13 @@ function testMessaging() {
     const expiration: number | Date = 123;
     const publishOptions: Backendless.PublishOptions = new Backendless.PublishOptions();
     const deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
-    let subscription: Backendless.SubscriptionI;
+
     let channel: Backendless.ChannelClass;
     const subscriptionOptions: Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
     const subscriptionCallback = function (data: Object): void {
         const messagesArray: Array<String> = data["messages"];
     };
 
-    // subscription = Backendless.Messaging.subscribeSync(channelName, subscriptionCallback, subscriptionOptions);
     channel = Backendless.Messaging.subscribe(channelName);
 
     resultObj = Backendless.Messaging.publishSync(channelName, message, publishOptions, deliveryOptions);
@@ -726,6 +725,10 @@ function testEvents() {
 
     resultObj = Backendless.Events.dispatchSync(eventName, eventArgs);
     promiseObject = Backendless.Events.dispatch(eventName, eventArgs);
+    promiseObject = Backendless.Events.dispatch(eventName, eventArgs, Backendless.BL.ExecutionTypes.SYNC);
+    promiseObject = Backendless.Events.dispatch(eventName, eventArgs, Backendless.BL.ExecutionTypes.ASYNC);
+    promiseObject = Backendless.Events.dispatch(eventName, eventArgs, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
+    promiseObject = Backendless.Events.dispatch(eventName, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
 }
 
 function testCache() {
@@ -832,12 +835,19 @@ function testCounters() {
 
 function testCustomServices() {
     const serviceName: string = 'str';
-    const serviceVersion: string = 'str';
     const method: string = 'str';
     const parameters: Object = {};
+    let resultObj: any
+    let promiseAny: Promise<any>
 
-    const resultObj: any = Backendless.CustomServices.invokeSync(serviceName, method, parameters);
-    const promiseAny: Promise<any> = Backendless.CustomServices.invoke(serviceName, method, parameters);
+    resultObj = Backendless.CustomServices.invokeSync(serviceName, method, parameters);
+
+    promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
+    promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
+    promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.SYNC);
+    promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC);
+    promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
+    promiseAny = Backendless.CustomServices.invoke(serviceName, method, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
 }
 
 function testLogging() {

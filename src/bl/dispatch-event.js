@@ -3,6 +3,8 @@ import Request from '../request'
 import Async from '../request/async'
 import Urls from '../urls'
 
+import { EXECUTION_TYPE_HEADER } from './constants'
+
 export function dispatchEvent(eventName, eventArgs, executionType, asyncHandler) {
   if (!eventName || !Utils.isString(eventName)) {
     throw new Error('Event Name must be provided and must be not an empty STRING!')
@@ -35,7 +37,7 @@ export function dispatchEvent(eventName, eventArgs, executionType, asyncHandler)
   const headers = {}
 
   if (executionType) {
-    headers['bl-execution-type'] = executionType
+    headers[EXECUTION_TYPE_HEADER] = executionType
   }
 
   return Request.post({

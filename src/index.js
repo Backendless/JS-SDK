@@ -131,12 +131,16 @@ const Backendless = {
     return require('./users/user').default
   },
 
+  get BL() {
+    return require('./bl').default
+  },
+
   get CustomServices() {
-    return require('./bl/custom-services').default
+    return Backendless.BL.CustomServices
   },
 
   get Events() {
-    return require('./bl/events').default
+    return Backendless.BL.Events
   },
 
   get Geo() {

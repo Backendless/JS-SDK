@@ -81,6 +81,11 @@ declare module __Backendless {
     var Events: Backendless.EventsClass;
 
     /**
+     * @namespace Backendless.BL
+     **/
+    var BL: Backendless.BLClass;
+
+    /**
      * @namespace Backendless.Cache
      **/
     var Cache: Backendless.CacheClass;
@@ -800,6 +805,22 @@ declare module __Backendless {
 
     /**
      * @private
+     * @class BL
+     * @refers {@link Backendless.BL}
+     */
+    class BLClass {
+        ExecutionTypes: {
+            SYNC: string,
+            ASYNC: string,
+            ASYNC_LOW_PRIORITY: string,
+        }
+
+        CustomServices: CustomServicesClass
+        Events: EventsClass
+    }
+
+    /**
+     * @private
      * @class Cache
      * @refers {@link Backendless.Cache}
      */
@@ -929,6 +950,8 @@ declare module __Backendless {
         invokeSync(serviceName: string, method: string, parameters: Object): any;
 
         invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
+        invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
+        invoke(serviceName: string, method: string, executionType: string): Promise<any>;
     }
 
     /**
