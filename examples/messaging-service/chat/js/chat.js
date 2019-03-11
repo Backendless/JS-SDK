@@ -12,6 +12,8 @@ Backendless.initApp(APPLICATION_ID, SECRET_KEY);
 var $name_field;
 var $messages_history_field;
 var $message_field;
+var messages = [];
+var channel;
 
 $(function() {
   $name_field = $('#name-field');
@@ -32,8 +34,11 @@ function subscribe() {
     return;
   }
 
-  var subscriptionOptions = new SubscriptionOptions();
-  Backendless.Messaging.subscribe(CHANNEL, onMessage, subscriptionOptions).then(onSubscribed, onFault);
+  channel = Backendless.Messaging.subscribe(CHANNEL);
+
+  channel.addMessageListener(onMessage);
+
+  onSubscribed();
 }
 
 function publish() {
@@ -41,11 +46,7 @@ function publish() {
     return;
   }
 
-  var publishOptions = new PublishOptions();
-  var deliveryTarget = new DeliveryOptions();
-
-  publishOptions.publisherId = $name_field.val();
-  Backendless.Messaging.publish(CHANNEL, $message_field.val(), publishOptions, deliveryTarget);
+  channel.publish($message_field.val()).catch(onFault)
 
   $message_field.val(null);
 }
@@ -56,18 +57,10 @@ function onSubscribed() {
   });
 }
 
-function protectXSS(val) {
-  return val.replace(/(<|>)/g, function(match) {
-    return match == '<' ? '&lt;' : '&gt;';
-  });
-}
-
 function onMessage(result) {
-  $.each(result.messages, function() {
-    this.data = protectXSS(this.data);
-    this.publisherId = protectXSS(this.publisherId);
-    $messages_history_field.html(this.publisherId + ": " + this.data + "<br/>" + $messages_history_field.html());
-  });
+  messages.push(result.message);
+
+  $messages_history_field.html(result.message + "<br/>" + $messages_history_field.html());
 }
 
 function onFault(fault) {
