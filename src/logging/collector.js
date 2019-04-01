@@ -3,68 +3,41 @@ import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
 
-let lastFlushListeners
+class LoggingCollector {
+  /**
+   * @param {Backendless} backendless
+   */
+  constructor(backendless) {
+    this.backendless = backendless
 
-function flush(asyncHandler) {
-  if (LoggingCollector.pool.length) {
-    if (LoggingCollector.flushInterval) {
-      clearTimeout(LoggingCollector.flushInterval)
-      delete LoggingCollector.flushInterval
-    }
+    this.url = Urls(backendless).logging()
 
-    let listeners
+    this.flush = Utils.promisified(this.flush)
+    this.flushSync = Utils.synchronized(this.flush)
 
-    const cb = method => function() {
-      listeners.forEach(callbacks => {
-        callbacks[method].apply(null, arguments)
-      })
-
-      if (listeners === lastFlushListeners) {
-        lastFlushListeners = null
-      }
-    }
-
-    if (asyncHandler) {
-      listeners = lastFlushListeners = lastFlushListeners ? lastFlushListeners.splice(0) : []
-      listeners.push(asyncHandler)
-    }
-
-    Request.put({
-      isAsync     : !!asyncHandler,
-      asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
-      url         : Urls.logging(),
-      data        : LoggingCollector.pool
-    })
-
-    LoggingCollector.pool = []
-
-  } else if (asyncHandler) {
-    if (lastFlushListeners) {
-      lastFlushListeners.push(asyncHandler)
-    } else {
-      setTimeout(asyncHandler.success, 0)
-    }
+    this.reset()
   }
-}
-
-const LoggingCollector = {
 
   reset() {
-    LoggingCollector.loggers = {}
-    LoggingCollector.pool = []
-    LoggingCollector.numOfMessages = 10
-    LoggingCollector.timeFrequency = 1
-  },
+    this.lastFlushListeners = []
+    this.loggers = {}
+    this.pool = []
+    this.numOfMessages = 10
+    this.timeFrequency = 1
+  }
 
   getLogger(loggerName) {
-    const { default: Logger } = require('./logger')
-
     if (!Utils.isString(loggerName)) {
       throw new Error("Invalid 'loggerName' value. LoggerName must be a string value")
     }
 
-    return LoggingCollector.loggers[loggerName] = LoggingCollector.loggers[loggerName] || new Logger(loggerName)
-  },
+    const { default: Logger } = require('./logger')
+    const logger = this.loggers[loggerName] || new Logger(loggerName, this)
+
+    this.loggers[loggerName] = logger
+
+    return logger
+  }
 
   push(logger, logLevel, message, exception) {
     const messageObj = {
@@ -75,35 +48,75 @@ const LoggingCollector = {
       timestamp  : Date.now()
     }
 
-    LoggingCollector.pool.push(messageObj)
+    this.pool.push(messageObj)
 
-    LoggingCollector.checkMessagesLen()
-  },
+    this.checkMessagesLen()
+  }
 
   checkMessagesLen() {
-    if (LoggingCollector.pool.length >= LoggingCollector.numOfMessages) {
-      LoggingCollector.sendRequest()
+    if (this.pool.length >= this.numOfMessages) {
+      this.sendRequest()
     }
-  },
-
-  flush    : Utils.promisified(flush),
-  flushSync: Utils.synchronized(flush),
+  }
 
   sendRequest() {
-    if (!LoggingCollector.flushInterval) {
-      LoggingCollector.flushInterval = setTimeout(() => LoggingCollector.flush(), LoggingCollector.timeFrequency * 1000)
+    if (!this.flushInterval) {
+      this.flushInterval = setTimeout(
+        () => this.flush(),
+        this.timeFrequency * 1000
+      )
     }
-  },
+  }
 
   setLogReportingPolicy(numOfMessages, timeFrequency) {
-    LoggingCollector.numOfMessages = numOfMessages
-    LoggingCollector.timeFrequency = timeFrequency
+    this.numOfMessages = numOfMessages
+    this.timeFrequency = timeFrequency
 
     //TODO: check when set new timeFrequency
-    LoggingCollector.checkMessagesLen()
+    this.checkMessagesLen()
+  }
+
+  flush(asyncHandler) {
+    if (this.pool.length) {
+      if (this.flushInterval) {
+        clearTimeout(this.flushInterval)
+        delete this.flushInterval
+      }
+
+      let listeners
+
+      const cb = method => function() {
+        listeners.forEach(callbacks => {
+          callbacks[method].apply(null, arguments)
+        })
+
+        if (listeners === this.lastFlushListeners) {
+          this.lastFlushListeners = null
+        }
+      }
+
+      if (asyncHandler) {
+        listeners = this.lastFlushListeners = this.lastFlushListeners ? this.lastFlushListeners.splice(0) : []
+        listeners.push(asyncHandler)
+      }
+
+      Request.put({
+        isAsync     : !!asyncHandler,
+        asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
+        url         : this.url,
+        data        : this.pool
+      })
+
+      this.pool = []
+
+    } else if (asyncHandler) {
+      if (this.lastFlushListeners) {
+        this.lastFlushListeners.push(asyncHandler)
+      } else {
+        setTimeout(asyncHandler.success, 0)
+      }
+    }
   }
 }
-
-LoggingCollector.reset()
 
 export default LoggingCollector
