@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 import FilesUtils from './utils'
 
@@ -18,8 +16,8 @@ export function renameFile(oldPathName, newName, asyncHandler) {
     newName    : newName
   }
 
-  return Request.put({
-    url         : Urls.fileRename(),
+  return this.backendless.request.put({
+    url         : this.backendless.urls.fileRename(),
     data        : parameters,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

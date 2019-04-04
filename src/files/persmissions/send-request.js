@@ -1,6 +1,3 @@
-import Urls from '../../urls'
-import Request from '../../request'
-
 export function sendRequest(permission, type, path, options, asyncHandler) {
   const { userId, roleName } = options
 
@@ -14,8 +11,8 @@ export function sendRequest(permission, type, path, options, asyncHandler) {
     data.role = roleName
   }
 
-  return Request.put({
-    url         : Urls.filePermission(type, path),
+  return this.backendless.request.put({
+    url         : this.backendless.urls.filePermission(type, path),
     data        : data,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

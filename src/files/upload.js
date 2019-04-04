@@ -32,7 +32,7 @@ export function upload(file, path, overwrite, asyncHandler) {
     overwrite = undefined
   }
 
-  return sendFile({
+  return sendFile.call(this, {
     overwrite   : overwrite,
     path        : path,
     fileName    : fileName,

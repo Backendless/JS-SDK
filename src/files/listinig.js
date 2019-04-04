@@ -1,7 +1,5 @@
 import Utils from '../utils'
-import Urls from '../urls'
 import Async from '../request/async'
-import Request from '../request'
 
 export function listing(path, pattern, recursively, pagesize, offset, asyncHandler) {
   if (offset instanceof Async) {
@@ -45,8 +43,8 @@ export function listing(path, pattern, recursively, pagesize, offset, asyncHandl
     query.offset = offset
   }
 
-  return Request.get({
-    url         : Urls.filePath(path),
+  return this.backendless.request.get({
+    url         : this.backendless.urls.filePath(path),
     query       : query,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

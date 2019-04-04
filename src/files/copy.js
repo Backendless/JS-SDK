@@ -1,6 +1,3 @@
-import Urls from '../urls'
-import Request from '../request'
-
 import FilesUtils from './utils'
 
 export function copyFile(sourcePath, targetPath, asyncHandler) {
@@ -9,8 +6,8 @@ export function copyFile(sourcePath, targetPath, asyncHandler) {
     targetPath: FilesUtils.ensureSlashInPath(targetPath)
   }
 
-  return Request.put({
-    url         : Urls.fileCopy(),
+  return this.backendless.request.put({
+    url         : this.backendless.urls.fileCopy(),
     data        : parameters,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

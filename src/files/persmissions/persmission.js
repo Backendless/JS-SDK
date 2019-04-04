@@ -9,27 +9,27 @@ const PermissionTypes = {
 }
 
 function grantUser(userId, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId }, asyncHandler)
+  return sendRequest.call(this, this.permission, PermissionTypes.GRANT, url, { userId }, asyncHandler)
 }
 
 function grantRole(roleName, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName }, asyncHandler)
+  return sendRequest.call(this, this.permission, PermissionTypes.GRANT, url, { roleName }, asyncHandler)
 }
 
 function grant(url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
+  return sendRequest.call(this, this.permission, PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
 }
 
 function denyUser(userId, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId }, asyncHandler)
+  return sendRequest.call(this, this.permission, PermissionTypes.DENY, url, { userId }, asyncHandler)
 }
 
 function denyRole(roleName, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { roleName }, asyncHandler)
+  return sendRequest.call(this, this.permission, PermissionTypes.DENY, url, { roleName }, asyncHandler)
 }
 
 function deny(url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId: '*' }, asyncHandler)
+  return sendRequest.call(this, this.permission, PermissionTypes.DENY, url, { userId: '*' }, asyncHandler)
 }
 
 
@@ -38,8 +38,9 @@ const namespaceLabel = 'Backendless.Files.Permissions.{READ|DELETE|WRITE}'
 
 export default class FilePermission {
 
-  constructor(permission) {
+  constructor(permission, backendless) {
     this.permission = permission
+    this.backendless = backendless
   }
 
   @deprecated(namespaceLabel, `${namespaceLabel}.grantUser`)

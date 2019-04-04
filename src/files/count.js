@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
 
 export function getFileCount(path, pattern, recursive, countDirectories, asyncHandler) {
@@ -36,8 +34,8 @@ export function getFileCount(path, pattern, recursive, countDirectories, asyncHa
     throw new Error('Files "path" must not be empty and must be String')
   }
 
-  return Request.get({
-    url         : Urls.filePath(path),
+  return this.backendless.request.get({
+    url         : this.backendless.urls.filePath(path),
     query       : query,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

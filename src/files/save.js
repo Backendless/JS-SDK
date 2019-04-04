@@ -66,7 +66,7 @@ export function saveFile(path, fileName, fileContent, overwrite, asyncHandler) {
     throw new Error('File Content size must be less than ' + MAX_CONTENT_SIZE + ' bytes')
   }
 
-  return sendFile({
+  return sendFile.call(this, {
     overwrite   : overwrite,
     path        : path,
     fileName    : fileName,

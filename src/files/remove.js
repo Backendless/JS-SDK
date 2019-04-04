@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 const isRemoteUrl = url => url.startsWith('http://') || url.startsWith('https://')
 
@@ -9,8 +7,8 @@ export function remove(path, asyncHandler) {
     throw new Error('File "path" must not be empty and must be String')
   }
 
-  return Request.delete({
-    url         : isRemoteUrl(path) ? path : Urls.filePath(path),
+  return this.backendless.request.delete({
+    url         : isRemoteUrl(path) ? path : this.backendless.urls.filePath(path),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })
