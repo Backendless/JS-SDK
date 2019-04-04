@@ -230,12 +230,16 @@ class Backendless {
     return require('./users/user').default
   }
 
+  get BL() {
+    return require('./bl').default
+  }
+
   get CustomServices() {
-    return this.__getService('CustomServices', './bl/custom-services')
+    return Backendless.BL.CustomServices
   }
 
   get Events() {
-    return this.__getService('Events', './bl/events')
+    return Backendless.BL.Events
   }
 
   get Geo() {
