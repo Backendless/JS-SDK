@@ -1,21 +1,21 @@
 import Request from 'backendless-request'
 
-import LocalVars from '../local-vars'
-import { getCurrentUserToken } from '../users/current-user'
-
 import { ajaxForBrowser } from './request-for-browser'
 
 export const sendRequest = config => {
+  const XMLHttpRequest = this.backendless.XMLHttpRequest
+  const userToken = this.backendless.getCurrentUserToken()
+
   //--TODO remove this checking when we get rid of all sync methods
   if (config.isAsync === false || !config.asyncHandler) {
-    if (LocalVars.XMLHttpRequest) {
+    if (XMLHttpRequest) {
       // eslint-disable-next-line no-console
       console.warn(
         'The sync methods of the Backendless API are deprecated and will be removed in the nearest future.\n' +
         'Please, use async methods instead.'
       )
 
-      return ajaxForBrowser(config)
+      return ajaxForBrowser(XMLHttpRequest, config, userToken)
     }
 
     throw new Error(
@@ -25,7 +25,7 @@ export const sendRequest = config => {
   }
   //---------------------------------------------------------------
 
-  Request.XMLHttpRequest = LocalVars.XMLHttpRequest
+  Request.XMLHttpRequest = XMLHttpRequest
 
   const url = config.url
   const method = (config.method || 'GET').toLowerCase()
@@ -36,8 +36,6 @@ export const sendRequest = config => {
   const onSuccess = config.asyncHandler.success || function(result) {
     return result
   }
-
-  const userToken = getCurrentUserToken()
 
   if (userToken) {
     headers['user-token'] = userToken

@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import LocalVars from '../local-vars'
-import { getCurrentUserToken } from '../users/current-user'
 
 const parseResponse = xhr => {
   let result = true
@@ -27,14 +25,12 @@ const badResponse = xhr => {
   return result
 }
 
-const sendRequest = config => {
-  const xhr = new LocalVars.XMLHttpRequest()
+const sendRequest = (XMLHttpRequest, config, userToken) => {
+  const xhr = new XMLHttpRequest()
   const query = Utils.toQueryParams(config.query)
   const url = config.url + (query ? '?' + query : '')
 
   xhr.open(config.method, url, false)
-
-  const userToken = getCurrentUserToken()
 
   if (userToken) {
     xhr.setRequestHeader('user-token', userToken)
@@ -71,12 +67,14 @@ const sendRequest = config => {
   throw badResponse(xhr)
 }
 
-export function ajaxForBrowser(config) {
+export function ajaxForBrowser(XMLHttpRequest, config, userToken) {
   config.method = config.method || 'GET'
-  config.isAsync = (typeof config.isAsync === 'boolean') ? config.isAsync : false
+  config.isAsync = (typeof config.isAsync === 'boolean')
+    ? config.isAsync
+    : false
 
   try {
-    return sendRequest(config)
+    return sendRequest(XMLHttpRequest, config, userToken)
   } catch (error) {
     throw error
   }

@@ -8,14 +8,30 @@ const Methods = {
   PATCH : 'PATCH',
 }
 
-const Request = {
-  Methods,
+export default class Request {
+  constructor(backendless) {
+    this.backendless = backendless
 
-  send  : sendRequest,
-  get   : config => sendRequest({ ...config, method: Methods.GET }),
-  post  : config => sendRequest({ ...config, method: Methods.POST }),
-  put   : config => sendRequest({ ...config, method: Methods.PUT }),
-  delete: config => sendRequest({ ...config, method: Methods.DELETE }),
+    this.Methods = Methods
+  }
+
+  send(...args) {
+    return sendRequest.call(this, ...args)
+  }
+
+  get(config) {
+    return this.send({ ...config, method: Methods.GET })
+  }
+
+  post(config) {
+    return this.send({ ...config, method: Methods.POST })
+  }
+
+  put(config) {
+    return this.send({ ...config, method: Methods.PUT })
+  }
+
+  delete(config) {
+    return this.send({ ...config, method: Methods.DELETE })
+  }
 }
-
-export default Request
