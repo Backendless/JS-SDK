@@ -23,17 +23,21 @@ import {
   getPushTemplates,
 } from './methods'
 
-const Messaging = {
+class Messaging {
+  constructor(backendless) {
+    this.backendless = backendless
 
-  Bodyparts            : Bodyparts,
-  PublishOptions       : PublishOptions,
-  DeliveryOptions      : DeliveryOptions,
-  PublishOptionsHeaders: PublishOptionsHeaders,
+    this.Bodyparts = Bodyparts
+    this.PublishOptions = PublishOptions
+    this.DeliveryOptions = DeliveryOptions
+    this.PublishOptionsHeaders = PublishOptionsHeaders
 
-  /** @deprecated */
-  SubscriptionOptions: SubscriptionOptions,
+    /** @deprecated */
+    this.SubscriptionOptions = SubscriptionOptions
 
-  subscribe: function(channelName) {
+  }
+
+  subscribe(channelName) {
     if (!channelName || typeof channelName !== 'string') {
       throw new Error('"channelName" must be non empty string')
     }
@@ -43,8 +47,10 @@ const Messaging = {
     }
 
     return new Channel({ name: channelName.trim() }, this.backendless)
-  },
+  }
+}
 
+Object.assign(Messaging.prototype, {
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
   publishSync: Utils.synchronized(publish),
   publish    : Utils.promisified(publish),
@@ -77,6 +83,6 @@ const Messaging = {
 
   getPushTemplates: Utils.promisified(getPushTemplates),
 
-}
+})
 
 export default Messaging

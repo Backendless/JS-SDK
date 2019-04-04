@@ -1,9 +1,6 @@
-import Urls from '../../urls'
-import Request from '../../request'
-
 export function getPushTemplates(asyncHandler) {
-  return Request.get({
-    url         : Urls.messagingPushTemplates(),
+  return this.backendless.request.get({
+    url         : this.backendless.urls.messagingPushTemplates(),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

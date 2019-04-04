@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request'
 import Bodyparts from '../helpers/body-parts'
 
 export function sendEmail(subject, bodyParts, recipients, attachments/**, async */) {
@@ -38,8 +36,8 @@ export function sendEmail(subject, bodyParts, recipients, attachments/**, async 
     return res.status
   }
 
-  return Request.post({
-    url         : Urls.messagingEmail(),
+  return this.backendless.request.post({
+    url         : this.backendless.urls.messagingEmail(),
     isAsync     : isAsync,
     asyncHandler: Utils.wrapAsync(responder, responseMessageStatus),
     data        : data
