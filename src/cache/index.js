@@ -9,8 +9,18 @@ import { expireIn } from './expire-in'
 import { expireAt } from './expire-at'
 import { Parsers } from './parsers'
 
-const Cache = {
+class Cache {
+  constructor(backendless) {
+    this.backendless = backendless
+  }
 
+  //TODO: do we need it?
+  setObjectFactory(objectName, factoryMethod) {
+    Parsers.set(objectName, factoryMethod)
+  }
+}
+
+Object.assign(Cache.prototype, {
   @deprecated('Backendless.Cache', 'Backendless.Cache.put')
   putSync: Utils.synchronized(put),
   put    : Utils.promisified(put),
@@ -34,11 +44,6 @@ const Cache = {
   @deprecated('Backendless.Cache', 'Backendless.Cache.expireAt')
   expireAtSync: Utils.synchronized(expireAt),
   expireAt    : Utils.promisified(expireAt),
-
-  //TODO: do we need it?
-  setObjectFactory(objectName, factoryMethod) {
-    Parsers.set(objectName, factoryMethod)
-  }
-}
+})
 
 export default Cache

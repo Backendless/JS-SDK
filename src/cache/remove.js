@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 export function remove(key, asyncHandler) {
   if (!key || !Utils.isString(key)) {
@@ -11,8 +9,8 @@ export function remove(key, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.delete({
-    url         : Urls.cacheItem(key),
+  return this.backendless.request.delete({
+    url         : this.backendless.urls.cacheItem(key),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

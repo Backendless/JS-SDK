@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 export function expireAt(key, timestamp, asyncHandler) {
   if (!key || !Utils.isString(key)) {
@@ -17,8 +15,8 @@ export function expireAt(key, timestamp, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.put({
-    url         : Urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
+  return this.backendless.request.put({
+    url         : this.backendless.urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
     data        : {},
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

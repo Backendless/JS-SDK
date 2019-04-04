@@ -1,7 +1,5 @@
 import Utils from '../utils'
-import Urls from '../urls'
 import Async from '../request/async'
-import Request from '../request'
 
 export function put(key, value, timeToLive, asyncHandler) {
   if (!key || !Utils.isString(key)) {
@@ -25,8 +23,8 @@ export function put(key, value, timeToLive, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.put({
-    url         : Urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+  return this.backendless.request.put({
+    url         : this.backendless.urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
     headers     : { 'Content-Type': 'application/json' },
     data        : JSON.stringify(value),
     isAsync     : !!asyncHandler,
