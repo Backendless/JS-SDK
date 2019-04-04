@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 import { validateStringArgument } from './validate-string-argument'
 
@@ -13,8 +11,8 @@ export function cancelPlaySubscription(packageName, subscriptionId, token, async
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.post({
-    url         : Urls.commerceSubCancel(packageName, subscriptionId, token),
+  return this.backendless.request.post({
+    url         : this.backendless.urls.commerceSubCancel(packageName, subscriptionId, token),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 import { validateStringArgument } from './validate-string-argument'
 
@@ -13,8 +11,8 @@ export function validatePlayPurchase(packageName, productId, token, asyncHandler
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.get({
-    url         : Urls.commerceValidate(packageName, productId, token),
+  return this.backendless.request.get({
+    url         : this.backendless.urls.commerceValidate(packageName, productId, token),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

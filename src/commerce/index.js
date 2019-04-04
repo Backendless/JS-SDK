@@ -5,8 +5,13 @@ import { validatePlayPurchase } from './validate-play-purchase'
 import { cancelPlaySubscription } from './cancel-play-subscription'
 import { getPlaySubscriptionStatus } from './get-play-subscription-status'
 
-const Commerce = {
+class Commerce {
+  constructor(backendless) {
+    this.backendless = backendless
+  }
+}
 
+Object.assign(Commerce.prototype, {
   @deprecated('Backendless.Commerce', 'Backendless.Commerce.validatePlayPurchase')
   validatePlayPurchaseSync: Utils.synchronized(validatePlayPurchase),
   validatePlayPurchase    : Utils.promisified(validatePlayPurchase),
@@ -19,7 +24,7 @@ const Commerce = {
   getPlaySubscriptionStatusSync: Utils.synchronized(getPlaySubscriptionStatus),
   getPlaySubscriptionStatus    : Utils.promisified(getPlaySubscriptionStatus),
 
-}
+})
 
 export default Commerce
 
