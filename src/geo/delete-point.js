@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import Request from '../request'
 
 export function deletePoint(point, asyncHandler) {
   if (!point || Utils.isFunction(point)) {
@@ -11,8 +10,8 @@ export function deletePoint(point, asyncHandler) {
   let result = {}
 
   try {
-    result = Request.delete({
-      url         : this.urls.geoPoint(pointId),
+    result = this.backendless.request.delete({
+      url         : this.backendless.urls.geoPoint(pointId),
       isAsync     : !!asyncHandler,
       asyncHandler: asyncHandler
     })

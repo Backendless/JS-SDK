@@ -1,12 +1,10 @@
-import Request from '../request'
-
 export function addCategory(name, asyncHandler) {
   if (!name) {
     throw new Error('Category name is required.')
   }
 
-  const result = Request.put({
-    url         : this.urls.geoCategory(name),
+  const result = this.backendless.request.put({
+    url         : this.backendless.urls.geoCategory(name),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

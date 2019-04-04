@@ -1,5 +1,3 @@
-import Request from '../request'
-
 export function deleteCategory(name, asyncHandler) {
   if (!name) {
     throw new Error('Category name is required.')
@@ -8,8 +6,8 @@ export function deleteCategory(name, asyncHandler) {
   let result = {}
 
   try {
-    result = Request.delete({
-      url         : this.urls.geoCategory(name),
+    result = this.backendless.request.delete({
+      url         : this.backendless.urls.geoCategory(name),
       isAsync     : !!asyncHandler,
       asyncHandler: asyncHandler
     })

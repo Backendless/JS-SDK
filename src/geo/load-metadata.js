@@ -1,5 +1,3 @@
-import Request from '../request'
-
 import GeoCluster from './cluster'
 import GeoPoint from './point'
 import GeoQuery from './query'
@@ -38,7 +36,7 @@ export function loadMetadata(geoObject, asyncHandler) {
 
   }
 
-  return Request.get({
+  return this.backendless.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

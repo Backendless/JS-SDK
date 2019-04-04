@@ -1,4 +1,3 @@
-import Request from '../request'
 import Async from '../request/async'
 
 import GeoCluster from './cluster'
@@ -18,7 +17,7 @@ export function getClusterPoints(geoObject, asyncHandler) {
     )
   }
 
-  let url = this.urls.geoClusterPoints(geoObject.objectId) + '?'
+  let url = this.backendless.urls.geoClusterPoints(geoObject.objectId) + '?'
 
   const geoQuery = geoObject.geoQuery
 
@@ -45,7 +44,7 @@ export function getClusterPoints(geoObject, asyncHandler) {
 
   asyncHandler = responderOverride(asyncHandler)
 
-  return Request.get({
+  return this.backendless.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

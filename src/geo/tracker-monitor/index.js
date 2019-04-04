@@ -68,4 +68,10 @@ export default class GeoTrackerMonitor {
   stopGeofenceMonitoring(...args) {
     return stopMonitoring.call(this, ...args)
   }
+
+  getFences(geoFence) {
+    return this.backendless.request.get({
+      url: this.backendless.urls.geoFences(geoFence)
+    })
+  }
 }

@@ -5,7 +5,7 @@ export function loadFencePoints(geoFenceName, query, asyncHandler) {
   query = query || new GeoQuery()
 
   query.geoFence = geoFenceName
-  query.url = this.urls.geo()
+  query.url = this.backendless.urls.geo()
 
-  return loadItems(query, asyncHandler)
+  return loadItems.call(this, query, asyncHandler)
 }

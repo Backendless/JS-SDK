@@ -1,8 +1,6 @@
-import Request from '../request'
-
 export function getCategories(asyncHandler) {
-  return Request.get({
-    url         : this.urls.geoCategories(),
+  return this.backendless.request.get({
+    url         : this.backendless.urls.geoCategories(),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

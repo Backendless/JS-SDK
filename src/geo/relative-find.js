@@ -10,7 +10,7 @@ export function relativeFind(query, asyncHandler) {
     )
   }
 
-  query.url = this.urls.geoRelative()
+  query.url = this.backendless.urls.geoRelative()
 
-  return loadItems(query, asyncHandler)
+  return loadItems.call(this, query, asyncHandler)
 }

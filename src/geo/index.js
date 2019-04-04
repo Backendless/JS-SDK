@@ -3,8 +3,6 @@ import GeoUtils from './utils'
 
 import { deprecated } from '../decorators'
 
-import Urls from '../urls'
-
 import { EARTH_RADIUS, UNITS } from './constants'
 
 import GeoTrackerMonitor from './tracker-monitor'
@@ -27,7 +25,6 @@ import { loadFencePoints } from './load-fence-points'
 export default class Geo {
   constructor(backendless) {
     this.backendless = backendless
-    this.urls = Urls(backendless)
     this.trackerMonitor = new GeoTrackerMonitor(backendless)
 
     this.EARTH_RADIUS = EARTH_RADIUS
