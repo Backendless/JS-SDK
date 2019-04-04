@@ -1,4 +1,3 @@
-import Urls from '../urls'
 import Request from '../request'
 
 export function addCategory(name, asyncHandler) {
@@ -7,7 +6,7 @@ export function addCategory(name, asyncHandler) {
   }
 
   const result = Request.put({
-    url         : Urls.geoCategory(name),
+    url         : this.urls.geoCategory(name),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -1,5 +1,3 @@
-import Urls from '../urls'
-
 import { loadItems } from './load-items'
 
 //TODO: refactor me
@@ -12,8 +10,7 @@ export function relativeFind(query, asyncHandler) {
     )
   }
 
-  query.url = Urls.geoRelative()
+  query.url = this.urls.geoRelative()
 
   return loadItems(query, asyncHandler)
 }
-

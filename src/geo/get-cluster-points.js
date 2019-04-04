@@ -1,4 +1,3 @@
-import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
 
@@ -19,7 +18,7 @@ export function getClusterPoints(geoObject, asyncHandler) {
     )
   }
 
-  let url = Urls.geoClusterPoints(geoObject.objectId) + '?'
+  let url = this.urls.geoClusterPoints(geoObject.objectId) + '?'
 
   const geoQuery = geoObject.geoQuery
 

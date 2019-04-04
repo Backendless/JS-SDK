@@ -1,4 +1,3 @@
-import Urls from '../urls'
 import Request from '../request'
 
 export function deleteCategory(name, asyncHandler) {
@@ -10,7 +9,7 @@ export function deleteCategory(name, asyncHandler) {
 
   try {
     result = Request.delete({
-      url         : Urls.geoCategory(name),
+      url         : this.urls.geoCategory(name),
       isAsync     : !!asyncHandler,
       asyncHandler: asyncHandler
     })

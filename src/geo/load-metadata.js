@@ -1,4 +1,3 @@
-import Urls from '../urls'
 import Request from '../request'
 
 import GeoCluster from './cluster'
@@ -17,7 +16,7 @@ export function loadMetadata(geoObject, asyncHandler) {
     throw new Error('Method argument must be a valid instance of GeoPoint or GeoCluster persisted on the server')
   }
 
-  let url = Urls.geoPointMetaData(geoObject.objectId)
+  let url = this.urls.geoPointMetaData(geoObject.objectId)
 
   if (isCluster) {
     const geoQuery = geoObject.geoQuery

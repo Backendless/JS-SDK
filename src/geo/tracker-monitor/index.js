@@ -2,31 +2,70 @@ import Utils from '../../utils'
 
 import GeoTracker from './tracker'
 import GeoFenceActions from './fence-actions'
-import { startMonitoring } from './start-monitoring'
-import { stopMonitoring } from './stop-monitoring'
 
-const GeoTrackerMonitor = {
+import startMonitoring from './start-monitoring'
+import stopMonitoring from './stop-monitoring'
+
+export default class GeoTrackerMonitor {
+  constructor(backendless) {
+    this.backendless = backendless
+    this.geoFenceActions = new GeoFenceActions(backendless)
+    this.reset()
+  }
 
   reset() {
-    GeoTracker.reset()
-  },
+    delete this.geoTracker
 
-  runOnEnterAction    : Utils.promisified(GeoFenceActions.enter),
-  runOnEnterActionSync: Utils.synchronized(GeoFenceActions.enter),
+    this.geoTracker = new GeoTracker()
+  }
 
-  runOnStayAction    : Utils.promisified(GeoFenceActions.stay),
-  runOnStayActionSync: Utils.synchronized(GeoFenceActions.stay),
+  runOnEnterAction(...args) {
+    return Utils.promisified(this.geoFenceActions.enter)
+      .call(this.geoFenceActions, ...args)
+  }
 
-  runOnExitAction    : Utils.promisified(GeoFenceActions.exist),
-  runOnExitActionSync: Utils.synchronized(GeoFenceActions.exist),
+  runOnEnterActionSync(...args) {
+    return Utils.synchronized(this.geoFenceActions.enter)
+      .call(this.geoFenceActions, ...args)
+  }
 
-  startGeofenceMonitoringWithInAppCallback    : Utils.promisified(startMonitoring),
-  startGeofenceMonitoringWithInAppCallbackSync: Utils.synchronized(startMonitoring),
+  runOnStayAction(...args) {
+    return Utils.promisified(this.geoFenceActions.stay)
+      .call(this.geoFenceActions, ...args)
+  }
 
-  startGeofenceMonitoringWithRemoteCallback    : Utils.promisified(startMonitoring),
-  startGeofenceMonitoringWithRemoteCallbackSync: Utils.synchronized(startMonitoring),
+  runOnStayActionSync(...args) {
+    return Utils.synchronized(this.geoFenceActions.stay)
+      .call(this.geoFenceActions, ...args)
+  }
 
-  stopGeofenceMonitoring: stopMonitoring,
+  runOnExitAction(...args) {
+    return Utils.promisified(this.geoFenceActions.exit)
+      .call(this.geoFenceActions, ...args)
+  }
+
+  runOnExitActionSync(...args) {
+    return Utils.synchronized(this.geoFenceActions.exit)
+      .call(this.geoFenceActions, ...args)
+  }
+
+  startGeofenceMonitoringWithInAppCallback(...args) {
+    return Utils.promisified(startMonitoring).call(this, ...args)
+  }
+
+  startGeofenceMonitoringWithInAppCallbackSync(...args) {
+    return Utils.synchronized(startMonitoring).call(this, ...args)
+  }
+
+  startGeofenceMonitoringWithRemoteCallback(...args) {
+    return Utils.promisified(startMonitoring).call(this, ...args)
+  }
+
+  startGeofenceMonitoringWithRemoteCallbackSync(...args) {
+    return Utils.synchronized(startMonitoring).call(this, ...args)
+  }
+
+  stopGeofenceMonitoring(...args) {
+    return stopMonitoring.call(this, ...args)
+  }
 }
-
-export default GeoTrackerMonitor
