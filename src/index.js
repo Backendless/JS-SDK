@@ -2,7 +2,7 @@ import Request from 'backendless-request'
 
 import APIRequest from './request'
 import Utils from './utils'
-import Urls from './urls';
+import Urls from './urls'
 
 const DEFAULT_PROPS = {
   appId         : null,
