@@ -1,4 +1,5 @@
 import Utils from '../../utils'
+import Urls from '../../urls'
 import { deprecated } from '../../decorators'
 
 import { sendRequest } from './send-request'
@@ -9,33 +10,34 @@ const PermissionTypes = {
 }
 
 function grantUser(userId, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, object, { userId }, asyncHandler)
+  return this.sendRequest(PermissionTypes.GRANT, object, { userId }, asyncHandler)
 }
 
 function grantRole(roleName, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, object, { roleName }, asyncHandler)
+  return this.sendRequest(PermissionTypes.GRANT, object, { roleName }, asyncHandler)
 }
 
 function grant(object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, object, { userId: '*' }, asyncHandler)
+  return this.sendRequest(PermissionTypes.GRANT, object, { userId: '*' }, asyncHandler)
 }
 
 function denyUser(userId, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, object, { userId }, asyncHandler)
+  return this.sendRequest(PermissionTypes.DENY, object, { userId }, asyncHandler)
 }
 
 function denyRole(roleName, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, object, { roleName }, asyncHandler)
+  return this.sendRequest(PermissionTypes.DENY, object, { roleName }, asyncHandler)
 }
 
 function deny(object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, object, { userId: '*' }, asyncHandler)
+  return this.sendRequest(PermissionTypes.DENY, object, { userId: '*' }, asyncHandler)
 }
 
 class DataPermission {
 
-  constructor(permission) {
+  constructor(permission, backendless) {
     this.permission = permission
+    this.backendless = backendless
   }
 
 }
@@ -69,6 +71,7 @@ Object.assign(DataPermission.prototype, {
   denySync: Utils.synchronized(deny),
   deny    : Utils.promisified(deny),
 
+  sendRequest: sendRequest
 })
 
 export default DataPermission

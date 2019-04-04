@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request'
 
 import { parseFindResponse } from './parse'
 
@@ -9,8 +7,8 @@ export function remove(object, asyncHandler) {
     throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values')
   }
 
-  const result = Request.delete({
-    url         : Urls.dataTableObject(this.className, object.objectId || object),
+  const result = this.backendless.request.delete({
+    url         : this.backendless.urls.dataTableObject(this.className, object.objectId || object),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import Urls from '../urls'
 import { deprecated } from '../decorators'
 
 import Permissions from './permissions'
@@ -8,29 +9,37 @@ import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import { describe } from './describe'
 
-const Data = {
-  Permissions              : Permissions,
-  QueryBuilder             : QueryBuilder,
-  LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
+export default class Data {
+  constructor(backendless) {
+    this.backendless = backendless
 
-  of: function(model) {
-    return new Store(model)
-  },
-
-  @deprecated('Backendless.Data', 'Backendless.Data.describe')
-  describeSync: Utils.synchronized(describe),
-  describe    : Utils.promisified(describe),
-
-  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  save(className, obj){
-    return this.of(className).save(obj)
-  },
-
-  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  saveSync(className, obj, asyncHandler){
-    return this.of(className).saveSync(obj, asyncHandler)
+    this.Permissions = new Permissions(backendless)
+    this.QueryBuilder = QueryBuilder
+    this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
   }
 
+  of(model) {
+    return new Store(model, this.backendless)
+  }
+
+  @deprecated('Backendless.Data', 'Backendless.Data.describe')
+  describeSync(...args) {
+    return Utils.synchronized(describe).call(this, ...args)
+  }
+
+  describe(...args) {
+    return Utils.promisified(describe).call(this, ...args)
+  }
+
+  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
+  save(className, obj) {
+    return this.of(className).save(obj)
+  }
+
+  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
+  saveSync(className, obj, asyncHandler) {
+    return this.of(className).saveSync(obj, asyncHandler)
+  }
 }
 
 export default Data

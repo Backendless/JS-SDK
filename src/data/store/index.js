@@ -1,4 +1,5 @@
 import Utils from '../../utils'
+
 import { deprecated } from '../../decorators'
 import { resolveModelClassFromString } from '../utils'
 import EventHandler from '../rt-store'
