@@ -1,18 +1,9 @@
-import Urls from '../../urls'
-import Request from '../../request'
-
 import GeoPoint from '../point'
 import GeoUtils from '../utils'
 
 const INTERVAL = 5000
 
 //TODO: refactor me
-
-function getFences(geoFence) {
-  return Request.get({
-    url: Urls.geoFences(geoFence)
-  })
-}
 
 function isDefiniteRect(nwPoint, sePoint) {
   return nwPoint != null && sePoint != null
@@ -142,14 +133,13 @@ function checkPosition(tracker, fenceActions, geofenceName, coords, geoPoint, Ge
 export default function startMonitoring(geofenceName, secondParam, asyncHandler) {
   const tracker = this.geoTracker
   const fenceActions = this.fenceActions
+  const fences = this.getFences(geofenceName)
 
   let isGeoPoint = false
 
   if (secondParam instanceof GeoPoint) {
     isGeoPoint = true
   }
-
-  const fences = getFences(geofenceName)
 
   for (let ii = 0; ii < fences.length; ii++) {
     if (!_containsByPropName(tracker._trackedFences, fences[ii], 'geofenceName')) {
