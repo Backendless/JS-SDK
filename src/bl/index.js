@@ -1,28 +1,17 @@
-import Utils from '../utils'
-import { deprecated } from '../decorators'
-
 import { ExecutionTypes } from './constants'
-import { dispatchEvent } from './dispatch-event'
-import { invokeServiceMethod } from './invoke-service-method'
 
-const BL = {
-  ExecutionTypes,
+import CustomServices from './custom-services'
+import Events from './events'
 
-  CustomServices: {
+class BL {
+  constructor(backendless) {
+    this.backendless = backendless
 
-    @deprecated('Backendless.CustomServices', 'Backendless.CustomServices.invoke')
-    invokeSync: Utils.synchronized(invokeServiceMethod),
-    invoke    : Utils.promisified(invokeServiceMethod),
+    this.ExecutionTypes = ExecutionTypes
 
-  },
-
-  Events: {
-
-    @deprecated('Backendless.Events', 'Backendless.Events.dispatch')
-    dispatchSync: Utils.synchronized(dispatchEvent),
-    dispatch    : Utils.promisified(dispatchEvent),
-
-  },
+    this.CustomServices = new CustomServices(backendless)
+    this.Events = new Events(backendless)
+  }
 }
 
 export default BL

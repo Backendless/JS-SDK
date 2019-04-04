@@ -231,15 +231,15 @@ class Backendless {
   }
 
   get BL() {
-    return require('./bl').default
+    return this.__getService('BL', './bl')
   }
 
   get CustomServices() {
-    return Backendless.BL.CustomServices
+    return this.BL.CustomServices
   }
 
   get Events() {
-    return Backendless.BL.Events
+    return this.BL.Events
   }
 
   get Geo() {
