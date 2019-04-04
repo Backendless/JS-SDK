@@ -1,13 +1,18 @@
 import Request from 'backendless-request'
+
+import APIRequest from './request'
 import Utils from './utils'
+import Urls from './urls';
 
 const DEFAULT_PROPS = {
-  applicationId : null,
-  secretKey     : null,
+  appId         : null,
+  apiKey        : null,
   serverURL     : 'https://api.backendless.com',
   debugMode     : true,
   ServerCode    : null,
-  XMLHttpRequest: typeof XMLHttpRequest !== 'undefined' ? XMLHttpRequest : undefined,
+  XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
+    ? XMLHttpRequest
+    : undefined,
 }
 
 const root = (
@@ -21,15 +26,15 @@ const previousBackendless = root && root.Backendless
 // two args - applicationId {String} and secretKey {String}
 // or one argument - whole set of options {Object}
 const parseArgs = (...args) => {
-  const [applicationId, secretKey] = args
+  const [appId, apiKey] = args
 
-  if (Utils.isObject(applicationId)) {
-    return applicationId
+  if (Utils.isObject(appId)) {
+    return appId
   }
 
   return {
-    applicationId,
-    secretKey
+    appId,
+    apiKey
   }
 }
 
@@ -38,6 +43,9 @@ class Backendless {
     this.initProps(props)
 
     this.Request = Request
+
+    this.request = new APIRequest(this)
+    this.urls = Urls(this)
   }
 
   /**
@@ -46,7 +54,7 @@ class Backendless {
   initProps(props) {
     for (const key in DEFAULT_PROPS) {
       if (DEFAULT_PROPS.hasOwnProperty(key) && props.hasOwnProperty(key)) {
-        const privateKey = `__${ key }`
+        const privateKey = `__${key}`
 
         this[privateKey] = props[key]
       }
@@ -67,9 +75,9 @@ class Backendless {
 
     app.initProps(restProps)
 
-    app.RT.init()
+    app.resetRT()
     app.Logging.reset()
-    app.Geo.Tracker.reset()
+    app.Geo.resetGeofenceMonitoring()
     app.Users.setLocalCurrentUser()
 
     // const { default: LoggingCollector } = require('./logging/collector')
@@ -80,11 +88,23 @@ class Backendless {
     return app
   }
 
+  __getService(name, path) {
+    const privateName = `__${name}`
+
+    if (!this[privateName]) {
+      const Service = require(path).default
+
+      this[privateName] = new Service(this)
+    }
+
+    return this[privateName]
+  }
+
   ///--------SETTERS/GETTERS-------///
 
   ///--------applicationId-------///
   get applicationId() {
-    return this.__applicationId
+    return this.__appId
   }
 
   set applicationId(appId) {
@@ -96,7 +116,7 @@ class Backendless {
 
   ///--------secretKey-------///
   get secretKey() {
-    return this.__secretKey
+    return this.__apiKey
   }
 
   set secretKey(apiKey) {
@@ -133,9 +153,12 @@ class Backendless {
   }
 
   set debugMode(debugMode) {
-    this.__debugMode = !!debugMode
+    debugMode = !!debugMode
 
-    require('./rt').setRTDebugMode(this.__debugMode)
+    if (this.__debugMode !== debugMode) {
+      this.__debugMode = debugMode
+      this.RT.setDebugMode(debugMode)
+    }
   }
 
   ///--------XMLHttpRequestMode-------///
@@ -184,29 +207,23 @@ class Backendless {
   ///-------------- SERVICES -------------///
 
   get Logging() {
-    if (!this.__Logging) {
-      const Logging = new require('./logging').default
-
-      this.__Logging = new Logging(this)
-    }
-
-    return this.__Logging
+    return this.__getService('Logging', './logging')
   }
 
   get Counters() {
-    return require('./counters').default
+    return this.__getService('Counters', './counters')
   }
 
   get Cache() {
-    return require('./cache').default
+    return this.__getService('Cache', './cache')
   }
 
   get Commerce() {
-    return require('./commerce').default
+    return this.__getService('Commerce', './commerce')
   }
 
   get Users() {
-    return require('./users').default
+    return this.__getService('Users', './users')
   }
 
   get User() {
@@ -214,35 +231,42 @@ class Backendless {
   }
 
   get CustomServices() {
-    return require('./bl/custom-services').default
+    return this.__getService('CustomServices', './bl/custom-services')
   }
 
   get Events() {
-    return require('./bl/events').default
+    return this.__getService('Events', './bl/events')
   }
 
   get Geo() {
-    return require('./geo').default
+    return this.__getService('Geo', './geo')
   }
 
   get Data() {
-    return require('./data').default
+    return this.__getService('Data', './data')
   }
 
   get Messaging() {
-    return require('./messaging').default
+    return this.__getService('Messaging', './messaging')
   }
 
   get Files() {
-    return require('./files').default
+    return this.__getService('Files', './files')
   }
 
   get RT() {
-    return require('./rt').default
+    return this.__getService('RT', './rt')
+  }
+
+  resetRT() {
+    if (this.__RT) {
+      this.__RT.terminate()
+      delete this.__RT
+    }
   }
 
   get SharedObject() {
-    return require('./rso').default
+    return require('./rso').default //TODO back compatibility problems
   }
 
   ///-------------- SERVICES -------------///
