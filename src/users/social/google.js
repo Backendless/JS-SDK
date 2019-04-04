@@ -10,10 +10,12 @@ export const loginWithGooglePlus = (fieldsMapping, permissions, container, stayL
     'Use method "loginWithGooglePlusSdk" instead.'
   )
 
-  return loginSocial('GooglePlus', fieldsMapping, permissions, container, stayLoggedIn, asyncHandler)
+  return loginSocial.call(this, 'GooglePlus', fieldsMapping, permissions, container, stayLoggedIn, asyncHandler)
 }
 
 export const loginWithGooglePlusSdk = (accessToken, fieldsMapping, stayLoggedIn) => {
+  const context = this
+
   Utils.checkPromiseSupport()
 
   if (typeof accessToken !== 'string') {
@@ -24,7 +26,9 @@ export const loginWithGooglePlusSdk = (accessToken, fieldsMapping, stayLoggedIn)
 
   return new Promise((resolve, reject) => {
     function loginRequest() {
-      sendSocialLoginRequest(accessToken, 'googleplus', fieldsMapping, stayLoggedIn, new Async(resolve, reject))
+      const asyncHandler = new Async(resolve, reject)
+
+      return sendSocialLoginRequest.call(context, accessToken, 'googleplus', fieldsMapping, stayLoggedIn, asyncHandler)
     }
 
     if (accessToken || !fieldsMapping) {

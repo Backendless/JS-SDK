@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import LocalCache from '../local-cache'
 import { getLocalCurrentUser, setLocalCurrentUser } from './current-user'
 
@@ -33,8 +31,8 @@ export function login(login, password, stayLoggedIn, /** async */) {
     password: password
   }
 
-  let result = Request.post({
-    url         : Urls.userLogin(),
+  let result = this.backendless.request.post({
+    url         : this.backendless.urls.userLogin(),
     isAsync     : isAsync,
     asyncHandler: responder,
     data        : data

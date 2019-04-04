@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
 import LocalCache from '../local-cache'
 import { updateRTUserTokenIfNeeded } from '../rt'
@@ -55,8 +53,8 @@ export function isValidLogin(/** async */) {
   if (userToken) {
     if (!isAsync) {
       try {
-        const result = Request.get({
-          url: Urls.userTokenCheck(userToken)
+        const result = this.backendless.request.get({
+          url: this.backendless.urls.userTokenCheck(userToken)
         })
         return !!result
       } catch (e) {
@@ -64,8 +62,8 @@ export function isValidLogin(/** async */) {
       }
     }
 
-    return Request.get({
-      url         : Urls.userTokenCheck(userToken),
+    return this.backendless.request.get({
+      url         : this.backendless.urls.userTokenCheck(userToken),
       isAsync     : isAsync,
       asyncHandler: responder
     })

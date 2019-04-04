@@ -18,7 +18,13 @@ import {
   loginWithTwitter
 } from './social'
 
-const Users = {
+class Users {
+  constructor(backendless) {
+    this.backendless = backendless
+  }
+}
+
+Object.assign(Users.prototype, {
 
   @deprecated('Backendless.Users', 'Backendless.Users.register')
   registerSync: Utils.synchronized(register),
@@ -84,6 +90,6 @@ const Users = {
 
   loggedInUser: loggedInUser,
 
-}
+})
 
 export default Users

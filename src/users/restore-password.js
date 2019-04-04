@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 export function restorePassword(emailAddress /** async */) {
   if (!emailAddress) {
@@ -10,8 +8,8 @@ export function restorePassword(emailAddress /** async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  return Request.get({
-    url         : Urls.userRestorePassword(emailAddress),
+  return this.backendless.request.get({
+    url         : this.backendless.urls.userRestorePassword(emailAddress),
     isAsync     : isAsync,
     asyncHandler: responder
   })

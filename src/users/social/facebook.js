@@ -10,10 +10,12 @@ export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyn
     'Use method "loginWithFacebookSdk" instead.'
   )
 
-  return loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
+  return loginSocial.call(this, 'Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
 }
 
 export const loginWithFacebookSdk = (accessToken, fieldsMapping, stayLoggedIn, options) => {
+  const context = this
+
   Utils.checkPromiseSupport()
 
   if (typeof accessToken !== 'string') {
@@ -25,7 +27,9 @@ export const loginWithFacebookSdk = (accessToken, fieldsMapping, stayLoggedIn, o
 
   return new Promise((resolve, reject) => {
     function loginRequest() {
-      sendSocialLoginRequest(accessToken, 'facebook', fieldsMapping, stayLoggedIn, new Async(resolve, reject))
+      const asyncHandler = new Async(resolve, reject)
+
+      return sendSocialLoginRequest.call(context, accessToken, 'facebook', fieldsMapping, stayLoggedIn, asyncHandler)
     }
 
     if (accessToken || !fieldsMapping) {

@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import LocalCache from '../local-cache'
 import { setLocalCurrentUser } from './current-user'
 
@@ -40,8 +38,8 @@ export function logout(/** async */) {
   }
 
   try {
-    result = Request.get({
-      url         : Urls.userLogout(),
+    result = this.backendless.request.get({
+      url         : this.backendless.urls.userLogout(),
       isAsync     : isAsync,
       asyncHandler: responder
     })

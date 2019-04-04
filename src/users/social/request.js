@@ -1,6 +1,4 @@
 import Async from '../../request/async'
-import Urls from '../../urls'
-import Request from '../../request'
 import LocalCache from '../../local-cache'
 import { getLocalCurrentUser, setLocalCurrentUser } from '../current-user'
 
@@ -19,8 +17,8 @@ export const sendSocialLoginRequest = (accessToken, socialType, fieldsMapping, s
     asyncHandler.fault(e)
   })
 
-  Request.post({
-    url         : Urls.userSocialLogin(socialType),
+  this.backendless.request.post({
+    url         : this.backendless.urls.userSocialLogin(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,
     data        : {
