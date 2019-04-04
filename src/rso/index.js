@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import { RTClient, RTScopeConnector, checkUsesInBusinessLogic, disallowInBusinessLogic } from '../rt'
+import { RTScopeConnector } from '../rt'
 
 const ListenerTypes = Utils.mirrorKeys({
   CHANGES: null,
@@ -8,54 +8,42 @@ const ListenerTypes = Utils.mirrorKeys({
 })
 
 export default class RemoteSharedObject extends RTScopeConnector {
+  constructor(options, backendless) {
+    super(options)
+
+    this.backendless = backendless
+    this.invocationTarget = null
+  }
 
   static connect(name) {
     return new this({ name })
   }
 
   get connectSubscriber() {
-    return RTClient.subscriptions.connectToRSO
+    return this.backendless.RT.subscriptions.connectToRSO
   }
 
   get usersSubscriber() {
-    return RTClient.subscriptions.onRSOUserStatus
+    return this.backendless.RT.subscriptions.onRSOUserStatus
   }
 
   get commandSubscriber() {
-    return RTClient.subscriptions.onRSOCommand
+    return this.backendless.RT.subscriptions.onRSOCommand
   }
 
   get commandSender() {
-    return RTClient.methods.sendRSOCommand
-  }
-
-  constructor(options) {
-    super(options)
-
-    this.invocationTarget = null
+    return this.backendless.RT.methods.sendRSOCommand
   }
 
   setInvocationTarget(invocationTarget) {
-    checkUsesInBusinessLogic('SharedObject.setInvocationTarget')
-
     this.invocationTarget = invocationTarget
   }
 
   subscribeOnRemoteInvokes() {
-    let isAllowToSubscribeOnRemoteInvoke = false
-
-    try {
-      checkUsesInBusinessLogic('Remote Invoke')
-
-      isAllowToSubscribeOnRemoteInvoke = true
-    } catch (e) {
-      // Remote Invoke is not supported in Business Logic
-    }
-
-    if (isAllowToSubscribeOnRemoteInvoke && !this.subscribedOnRemoteInvokes) {
+    if (!this.subscribedOnRemoteInvokes) {
       this.subscribedOnRemoteInvokes = true
 
-      this.addSubscription(ListenerTypes.INVOKE, RTClient.subscriptions.onRSOInvoke, {
+      this.addSubscription(ListenerTypes.INVOKE, this.backendless.RT.subscriptions.onRSOInvoke, {
         callback: this.onInvoke
       })
     }
@@ -80,10 +68,9 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.invocationTarget[method](...args)
   }
 
-  @disallowInBusinessLogic('SharedObject.addChangesListener')
   @RTScopeConnector.connectionRequired()
   addChangesListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CHANGES, RTClient.subscriptions.onRSOChanges, {
+    this.addSubscription(ListenerTypes.CHANGES, this.backendless.RT.subscriptions.onRSOChanges, {
       callback,
       onError
     })
@@ -94,10 +81,9 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.stopSubscription(ListenerTypes.CHANGES, { callback })
   }
 
-  @disallowInBusinessLogic('SharedObject.addClearListener')
   @RTScopeConnector.connectionRequired()
   addClearListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CLEARED, RTClient.subscriptions.onRSOClear, {
+    this.addSubscription(ListenerTypes.CLEARED, this.backendless.RT.subscriptions.onRSOClear, {
       callback,
       onError
     })
@@ -108,29 +94,27 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.stopSubscription(ListenerTypes.CLEARED, { callback })
   }
 
-  @disallowInBusinessLogic('SharedObject.addCommandListener')
   addCommandListener() {
     return super.addCommandListener.apply(this, arguments)
   }
 
-  @disallowInBusinessLogic('SharedObject.addUserStatusListener')
   addUserStatusListener() {
     return super.addUserStatusListener.apply(this, arguments)
   }
 
   @RTScopeConnector.connectionRequired(true)
   get(key) {
-    return RTClient.methods.getRSO({ ...this.getScopeOptions(), key })
+    return this.backendless.RT.methods.getRSO({ ...this.getScopeOptions(), key })
   }
 
   @RTScopeConnector.connectionRequired(true)
   set(key, data) {
-    return RTClient.methods.setRSO({ ...this.getScopeOptions(), key, data })
+    return this.backendless.RT.methods.setRSO({ ...this.getScopeOptions(), key, data })
   }
 
   @RTScopeConnector.connectionRequired(true)
   clear() {
-    return RTClient.methods.clearRSO(this.getScopeOptions())
+    return this.backendless.RT.methods.clearRSO(this.getScopeOptions())
   }
 
   @RTScopeConnector.connectionRequired(true)
@@ -143,7 +127,12 @@ export default class RemoteSharedObject extends RTScopeConnector {
     return Promise
       .resolve()
       .then(() => checkInvocationTargetMethod(this.invocationTarget, method))
-      .then(() => RTClient.methods.invokeRSOMethod({ ...this.getScopeOptions(), method, targets, args }))
+      .then(() => this.backendless.RT.methods.invokeRSOMethod({
+        ...this.getScopeOptions(),
+        method,
+        targets,
+        args
+      }))
   }
 }
 

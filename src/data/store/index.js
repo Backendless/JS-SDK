@@ -15,7 +15,7 @@ const namespaceLabel = 'Backendless.Data.of(<ClassName>)'
 
 class DataStore {
 
-  constructor(model) {
+  constructor(model, backendless) {
     if (Utils.isString(model)) {
       this.className = model
       this.model = resolveModelClassFromString(this.className)
@@ -28,10 +28,12 @@ class DataStore {
     if (!this.className) {
       throw new Error('Class name should be specified')
     }
+
+    this.backendless = backendless
   }
 
   rt() {
-    return this.eventHandler = this.eventHandler || new EventHandler(this)
+    return this.eventHandler = this.eventHandler || new EventHandler(this, this.backendless)
   }
 }
 
