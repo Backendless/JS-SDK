@@ -3,12 +3,16 @@ import { deprecated } from '../decorators'
 
 import { dispatchEvent } from './dispatch-event'
 
-const Events = {
+class Events {
+  constructor(backendless) {
+    this.backendless = backendless
+  }
+}
 
+Object.assign(Events.prototype, {
   @deprecated('Backendless.Events', 'Backendless.Events.dispatch')
   dispatchSync: Utils.synchronized(dispatchEvent),
-  dispatch: Utils.promisified(dispatchEvent),
-
-}
+  dispatch    : Utils.promisified(dispatchEvent),
+})
 
 export default Events

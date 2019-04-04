@@ -1,5 +1,3 @@
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
 
 export function invokeServiceMethod(serviceName, method, parameters, asyncHandler) {
@@ -8,8 +6,8 @@ export function invokeServiceMethod(serviceName, method, parameters, asyncHandle
     parameters = undefined
   }
 
-  return Request.post({
-    url         : Urls.blServiceMethod(serviceName, method),
+  return this.backendless.request.post({
+    url         : this.backendless.urls.blServiceMethod(serviceName, method),
     data        : parameters,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

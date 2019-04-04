@@ -1,7 +1,5 @@
 import Utils from '../utils'
-import Request from '../request'
 import Async from '../request/async'
-import Urls from '../urls'
 
 export function dispatchEvent(eventName, eventArgs, asyncHandler) {
   if (!eventName || !Utils.isString(eventName)) {
@@ -21,8 +19,8 @@ export function dispatchEvent(eventName, eventArgs, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.post({
-    url         : Urls.blEvent(eventName),
+  return this.backendless.request.post({
+    url         : this.backendless.urls.blEvent(eventName),
     data        : eventArgs,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
