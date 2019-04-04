@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
 
 class LoggingCollector {
@@ -10,7 +8,7 @@ class LoggingCollector {
   constructor(backendless) {
     this.backendless = backendless
 
-    this.url = Urls(backendless).logging()
+    this.url = this.backendless.urls.logging()
 
     this.flush = Utils.promisified(this.flush)
     this.flushSync = Utils.synchronized(this.flush)
@@ -100,7 +98,7 @@ class LoggingCollector {
         listeners.push(asyncHandler)
       }
 
-      Request.put({
+      this.backendless.request.put({
         isAsync     : !!asyncHandler,
         asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
         url         : this.url,
