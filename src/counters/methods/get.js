@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request/index'
 
 export function get(counterName, asyncHandler) {
   if (!counterName || !Utils.isString(counterName)) {
@@ -11,8 +9,8 @@ export function get(counterName, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.get({
-    url         : Urls.counter(counterName),
+  return this.backendless.request.get({
+    url         : this.backendless.urls.counter(counterName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

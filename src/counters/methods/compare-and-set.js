@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request/index'
 
 export function compareAndSet(counterName, expected, updated, asyncHandler) {
   if (!counterName || !Utils.isString(counterName)) {
@@ -19,8 +17,8 @@ export function compareAndSet(counterName, expected, updated, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.put({
-    url         : Urls.counterCompareAndSet(counterName),
+  return this.backendless.request.put({
+    url         : this.backendless.urls.counterCompareAndSet(counterName),
     query       : { expected, updatedvalue: updated },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

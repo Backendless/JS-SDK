@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request/index'
 
 export function incrementAndGet(counterName, asyncHandler) {
   if (!counterName || !Utils.isString(counterName)) {
@@ -11,11 +9,9 @@ export function incrementAndGet(counterName, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.put({
-    url         : Urls.counterIncrementAndGet(counterName),
+  return this.backendless.request.put({
+    url         : this.backendless.urls.counterIncrementAndGet(counterName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })
 }
-
-

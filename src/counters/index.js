@@ -14,12 +14,17 @@ import {
   reset
 } from './methods'
 
-const Counters = {
+class Counters {
+  constructor(backendless) {
+    this.backendless = backendless
+  }
 
   of(name) {
-    return new Counter(name)
-  },
+    return new Counter(name, this.backendless)
+  }
+}
 
+Object.assign(Counters.prototype, {
   @deprecated('Backendless.Counters', 'Backendless.Counters.incrementAndGet')
   incrementAndGetSync: Utils.synchronized(incrementAndGet),
   incrementAndGet    : Utils.promisified(incrementAndGet),
@@ -55,6 +60,6 @@ const Counters = {
   @deprecated('Backendless.Counters', 'Backendless.Counters.compareAndSet')
   compareAndSetSync: Utils.synchronized(compareAndSet),
   compareAndSet    : Utils.promisified(compareAndSet),
-}
+})
 
 export default Counters
