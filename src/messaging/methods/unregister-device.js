@@ -1,7 +1,5 @@
-import Device from '../../device'
-
 export function unregisterDevice(asyncHandler) {
-  const device = Device.required()
+  const device = this.backendless.device
 
   return this.backendless.request.delete({
     url         : this.backendless.urls.messagingRegistrationDevice(device.uuid),

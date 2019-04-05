@@ -1,9 +1,8 @@
 import Utils from '../../utils'
-import Device from '../../device'
 import Async from '../../request/async'
 
 export function registerDevice(deviceToken, channels, expiration, asyncHandler) {
-  const device = Device.required()
+  const device = this.backendless.device
 
   if (expiration instanceof Async) {
     asyncHandler = expiration

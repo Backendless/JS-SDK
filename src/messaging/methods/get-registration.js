@@ -1,7 +1,5 @@
-import Device from '../../device'
-
 export function getRegistrations(asyncHandler) {
-  const device = Device.required()
+  const device = this.backendless.device
 
   return this.backendless.request.get({
     url         : this.backendless.urls.messagingRegistrationDevice(device.uuid),
