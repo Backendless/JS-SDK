@@ -31,6 +31,8 @@ const Utils = {
 
   isBrowser: isBrowser(),
 
+  isLocalStorageSupported: isLocalStorageSupported(),
+
   castArray(value) {
     if (Utils.isArray(value)) {
       return value
@@ -208,6 +210,20 @@ const Utils = {
 
 function isBrowser() {
   return (typeof self === 'object' && self.self === self) && (typeof window === 'object' && window === self)
+}
+
+function isLocalStorageSupported() {
+  try {
+    if (isBrowser() && window.localStorage) {
+      localStorage.setItem('localStorageTest', true)
+      localStorage.removeItem('localStorageTest')
+      return true
+    } else {
+      return false
+    }
+  } catch (e) {
+    return false
+  }
 }
 
 function classWrapper(obj) {
