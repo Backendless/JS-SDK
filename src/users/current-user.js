@@ -1,16 +1,14 @@
 import Utils from '../utils'
 import Async from '../request/async'
-import LocalCache from '../local-cache'
-import { updateRTUserTokenIfNeeded } from '../rt'
 
 import { getUserFromResponse } from './utils'
 
-let currentUser = null
+const currentUser = null
 
 export function setLocalCurrentUser(user) {
-  currentUser = user || null
+  this.currentUser = user || null
 
-  updateRTUserTokenIfNeeded()
+  this.backendless.RT.updateUserTokenIfNeeded()
 }
 
 export function getLocalCurrentUser() {
@@ -18,35 +16,37 @@ export function getLocalCurrentUser() {
 }
 
 export function getCurrentUserToken() {
-  if (currentUser && currentUser['user-token']) {
+  if (this.currentUser && this.currentUser['user-token']) {
     return currentUser['user-token'] || null
   }
 
-  return LocalCache.get('user-token') || null
+  return this.backendless.LocalCache.get('user-token') || null
 }
 
 export const getCurrentUser = asyncHandler => {
-  if (currentUser) {
-    const userFromResponse = getUserFromResponse(currentUser)
+  if (this.currentUser) {
+    const userFromResponse = getUserFromResponse.call(this, this.currentUser)
 
     return asyncHandler ? asyncHandler.success(userFromResponse) : userFromResponse
   }
 
-  const stayLoggedIn = LocalCache.get('stayLoggedIn')
-  const currentUserId = stayLoggedIn && LocalCache.get('current-user-id')
+  const stayLoggedIn = this.backendless.LocalCache.get('stayLoggedIn')
+  const currentUserId = stayLoggedIn && this.backendless.LocalCache.get('current-user-id')
 
   if (currentUserId) {
-    const { default: Data } = require('../data')
-    const { default: User } = require('./user')
+    const Data = this.backendless.Data
+    const User = this.backendless.User
 
     return Data.of(User).findById(currentUserId, asyncHandler)
   }
 
-  return asyncHandler ? asyncHandler.success(null) : null
+  return asyncHandler
+    ? asyncHandler.success(null)
+    : null
 }
 
 export function isValidLogin(/** async */) {
-  const userToken = getCurrentUserToken()
+  const userToken = this.getCurrentUserToken()
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
@@ -70,12 +70,12 @@ export function isValidLogin(/** async */) {
   }
 
   if (!isAsync) {
-    return !!getCurrentUser()
+    return !!this.getCurrentUser()
   }
 
-  getCurrentUser(new Async(user => responder.success(!!user), () => responder.success(false)))
+  this.getCurrentUser(new Async(user => responder.success(!!user), () => responder.success(false)))
 }
 
 export const loggedInUser = () => {
-  return LocalCache.get('current-user-id')
+  return this.backendless.LocalCache.get('current-user-id')
 }

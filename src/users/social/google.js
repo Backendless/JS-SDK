@@ -5,7 +5,7 @@ import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
 
 export const loginWithGooglePlus = (fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) => {
-  console.warn(
+  console.warn( // eslint-disable-line no-console
     'Method "loginWithGooglePlus" is deprecated. and will be removed in the nearest release.\n' +
     'Use method "loginWithGooglePlusSdk" instead.'
   )
@@ -35,7 +35,10 @@ export const loginWithGooglePlusSdk = (accessToken, fieldsMapping, stayLoggedIn)
       return loginRequest()
     }
 
-    console.warn('You must pass "accessToken" as the first argument into "loginWithGooglePlusSdk(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method')
+    console.warn(// eslint-disable-line no-console
+      'You must pass "accessToken" as the first argument into ' +
+      '"loginWithGooglePlusSdk(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method'
+    )
 
     if (!gapi) {
       return reject(new Error('Google Plus SDK not found'))

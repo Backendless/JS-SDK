@@ -10,7 +10,7 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
   const serverURL = this.backendless.serverURL
 
   asyncHandler = Utils.extractResponder(arguments)
-  asyncHandler = wrapAsync(asyncHandler, stayLoggedIn)
+  asyncHandler = wrapAsync.call(this, asyncHandler, stayLoggedIn)
 
   addWindowEventListener('message', window, function(e) {
     if (e.origin === serverURL) {

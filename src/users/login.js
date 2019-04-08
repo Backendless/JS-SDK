@@ -1,7 +1,4 @@
 import Utils from '../utils'
-import LocalCache from '../local-cache'
-import { getLocalCurrentUser, setLocalCurrentUser } from './current-user'
-
 import { parseResponse, getUserFromResponse, wrapAsync } from './utils'
 
 export function login(login, password, stayLoggedIn, /** async */) {
@@ -15,15 +12,15 @@ export function login(login, password, stayLoggedIn, /** async */) {
 
   stayLoggedIn = stayLoggedIn === true
 
-  LocalCache.remove('user-token')
-  LocalCache.remove('current-user-id')
-  LocalCache.set('stayLoggedIn', false)
+  this.backendless.LocalCache.remove('user-token')
+  this.backendless.LocalCache.remove('current-user-id')
+  this.backendless.LocalCache.set('stayLoggedIn', false)
 
   let responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
   if (responder) {
-    responder = wrapAsync(responder, stayLoggedIn)
+    responder = wrapAsync.call(this, responder, stayLoggedIn)
   }
 
   const data = {
@@ -39,9 +36,9 @@ export function login(login, password, stayLoggedIn, /** async */) {
   })
 
   if (!isAsync && result) {
-    setLocalCurrentUser(parseResponse(result, stayLoggedIn))
+    this.setLocalCurrentUser(parseResponse.call(this, result, stayLoggedIn))
 
-    result = getUserFromResponse(getLocalCurrentUser())
+    result = getUserFromResponse.call(this, this.getLocalCurrentUser())
   }
 
   return result

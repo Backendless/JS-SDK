@@ -31,7 +31,7 @@ export function getUserRoles(/** async */) {
     asyncHandler: responder
   })
 
-  return isAsync ? result : parseResponse(result)
+  return isAsync ? result : parseResponse.call(this, result)
 }
 
 export const assignRole = (identity, rolename, asyncHandler) => {

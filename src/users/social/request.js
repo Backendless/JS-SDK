@@ -1,6 +1,4 @@
 import Async from '../../request/async'
-import LocalCache from '../../local-cache'
-import { getLocalCurrentUser, setLocalCurrentUser } from '../current-user'
 
 import { parseResponse, getUserFromResponse } from '../utils'
 
@@ -9,10 +7,13 @@ export const sendSocialLoginRequest = (accessToken, socialType, fieldsMapping, s
     return asyncHandler.fault('"accessToken" is missing.')
   }
 
+  const context = this
+
   const interimCallback = new Async(function(r) {
-    setLocalCurrentUser(parseResponse(r))
-    LocalCache.set('stayLoggedIn', !!stayLoggedIn)
-    asyncHandler.success(getUserFromResponse(getLocalCurrentUser()))
+    context.setLocalCurrentUser(parseResponse.call(context, r))
+    context.backendless.LocalCache.set('stayLoggedIn', !!stayLoggedIn)
+
+    asyncHandler.success(getUserFromResponse.call(context, context.getLocalCurrentUser()))
   }, function(e) {
     asyncHandler.fault(e)
   })

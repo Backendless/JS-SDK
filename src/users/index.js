@@ -8,7 +8,6 @@ import { logout } from './logout'
 import { update } from './update'
 import { describeUserClass } from './describe-class'
 import { restorePassword } from './restore-password'
-import { getCurrentUser, isValidLogin, loggedInUser } from './current-user'
 import { resendEmailConfirmation } from './email-confirmation'
 import {
   loginWithGooglePlusSdk,
@@ -17,6 +16,14 @@ import {
   loginWithFacebook,
   loginWithTwitter
 } from './social'
+import {
+  setLocalCurrentUser,
+  getLocalCurrentUser,
+  getCurrentUserToken,
+  getCurrentUser,
+  isValidLogin,
+  loggedInUser
+} from './current-user'
 
 class Users {
   constructor(backendless) {
@@ -88,8 +95,10 @@ Object.assign(Users.prototype, {
   resendEmailConfirmationSync: Utils.synchronized(resendEmailConfirmation),
   resendEmailConfirmation    : Utils.promisified(resendEmailConfirmation),
 
-  loggedInUser: loggedInUser,
-
+  loggedInUser       : loggedInUser,
+  getCurrentUserToken: getCurrentUserToken,
+  getLocalCurrentUser: getLocalCurrentUser,
+  setLocalCurrentUser: setLocalCurrentUser
 })
 
 export default Users
