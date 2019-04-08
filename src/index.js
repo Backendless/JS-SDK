@@ -9,6 +9,7 @@ const DEFAULT_PROPS = {
   apiKey        : null,
   serverURL     : 'https://api.backendless.com',
   debugMode     : true,
+  standalone    : false,
   ServerCode    : null,
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
     ? XMLHttpRequest
@@ -36,6 +37,22 @@ const parseArgs = (...args) => {
     appId,
     apiKey
   }
+}
+
+const SERVICES = {
+  'Logging'     : () => require('./logging').default,
+  'Counters'    : () => require('./counters').default,
+  'Cache'       : () => require('./cache').default,
+  'Commerce'    : () => require('./commerce').default,
+  'Users'       : () => require('./users').default,
+  'BL'          : () => require('./bl').default,
+  'Geo'         : () => require('./geo').default,
+  'Data'        : () => require('./data').default,
+  'Messaging'   : () => require('./messaging').default,
+  'Files'       : () => require('./files').default,
+  'RT'          : () => require('./rt').default,
+  'SharedObject': () => require('./rso').default,
+  'LocalCache'  : () => require('./local-cache').default,
 }
 
 class Backendless {
@@ -67,32 +84,27 @@ class Backendless {
    * @returns {Backendless}
    */
   initApp(...args) {
-    const { standalone, ...restProps } = parseArgs(...args)
+    const props = parseArgs(...args)
 
-    const app = standalone
+    const app = props.standalone
       ? new Backendless(this)
       : this
 
-    app.initProps(restProps)
+    app.initProps(props)
 
     app.resetRT()
     app.Logging.reset()
     app.Geo.resetGeofenceMonitoring()
     app.Users.setLocalCurrentUser()
 
-    // const { default: LoggingCollector } = require('./logging/collector')
-    // const { default: GeoTracker } = require('./geo/tracker-monitor/tracker')
-    // const { initRTClient } = require('./rt')
-    // const { setLocalCurrentUser } = require('./users/current-user')
-
     return app
   }
 
-  __getService(name, path) {
+  __getService(name) {
     const privateName = `__${name}`
 
     if (!this[privateName]) {
-      const Service = require(path).default
+      const Service = SERVICES[name]()
 
       this[privateName] = new Service(this)
     }
@@ -101,6 +113,18 @@ class Backendless {
   }
 
   ///--------SETTERS/GETTERS-------///
+
+  ///--------standalone-------///
+  get standalone() {
+    return this.__standalone
+  }
+
+  set standalone(standalone) {
+    throw new Error(
+      'Setting value to Backendless.standalone directly is not possible, ' +
+      `instead you must use Backendless.initApp({ appId: [APP_ID], apiKey: [API_KEY], standalone: ${standalone} })`
+    )
+  }
 
   ///--------applicationId-------///
   get applicationId() {
@@ -179,16 +203,32 @@ class Backendless {
     this.__ServerCode = ServerCode
   }
 
-  ///----------UTIL METHODS--------///
+  ///--------device-------///
+  get device() {
+    if (!this.__device) {
+      throw new Error('Device is not defined. Please, run the Backendless.setupDevice')
+    }
 
-  getCurrentUserToken() {
-    return require('./users/current-user').getCurrentUserToken()
+    return this.__device
+  }
+
+  set device(props) {
+    throw new Error(
+      'Setting value to Backendless.device directly is not possible, ' +
+      'instead you must use Backendless.setupDevice(deviceProperties) for setup the device'
+    )
   }
 
   setupDevice(...args) {
     const { default: Device } = require('./device')
 
-    Device.setup(...args)
+    this.__device = new Device(...args)
+  }
+
+  ///----------UTIL METHODS--------///
+
+  getCurrentUserToken() {
+    return this.Users.getCurrentUserToken()
   }
 
   get browser() {
@@ -207,23 +247,23 @@ class Backendless {
   ///-------------- SERVICES -------------///
 
   get Logging() {
-    return this.__getService('Logging', './logging')
+    return this.__getService('Logging')
   }
 
   get Counters() {
-    return this.__getService('Counters', './counters')
+    return this.__getService('Counters')
   }
 
   get Cache() {
-    return this.__getService('Cache', './cache')
+    return this.__getService('Cache')
   }
 
   get Commerce() {
-    return this.__getService('Commerce', './commerce')
+    return this.__getService('Commerce')
   }
 
   get Users() {
-    return this.__getService('Users', './users')
+    return this.__getService('Users')
   }
 
   get User() {
@@ -231,7 +271,7 @@ class Backendless {
   }
 
   get BL() {
-    return this.__getService('BL', './bl')
+    return this.__getService('BL')
   }
 
   get CustomServices() {
@@ -243,23 +283,23 @@ class Backendless {
   }
 
   get Geo() {
-    return this.__getService('Geo', './geo')
+    return this.__getService('Geo')
   }
 
   get Data() {
-    return this.__getService('Data', './data')
+    return this.__getService('Data')
   }
 
   get Messaging() {
-    return this.__getService('Messaging', './messaging')
+    return this.__getService('Messaging')
   }
 
   get Files() {
-    return this.__getService('Files', './files')
+    return this.__getService('Files')
   }
 
   get RT() {
-    return this.__getService('RT', './rt')
+    return this.__getService('RT')
   }
 
   resetRT() {
@@ -270,7 +310,11 @@ class Backendless {
   }
 
   get SharedObject() {
-    return require('./rso').default //TODO back compatibility problems
+    return this.__getService('SharedObject')
+  }
+
+  get LocalCache() {
+    return this.__getService('LocalCache')
   }
 
   ///-------------- SERVICES -------------///
@@ -323,10 +367,6 @@ class Backendless {
 
   get PublishOptionsHeaders() {
     return this.Messaging.PublishOptionsHeaders
-  }
-
-  get LocalCache() {
-    return require('./local-cache').default
   }
 
   /** @deprecated */
