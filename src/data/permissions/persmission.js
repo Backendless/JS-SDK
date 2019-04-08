@@ -1,5 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
 import { deprecated } from '../../decorators'
 
 import { sendRequest } from './send-request'

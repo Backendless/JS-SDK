@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request/index'
 
 export function reset(counterName, asyncHandler) {
   if (!counterName || !Utils.isString(counterName)) {

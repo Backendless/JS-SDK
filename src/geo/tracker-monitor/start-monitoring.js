@@ -48,7 +48,8 @@ const TypesMapper = {
  * @param {Object} lastResults
  * @param {Object} asyncHandler
  */
-/* eslint-disable-next-line max-len */
+
+// eslint-disable-next-line max-len
 function checkPosition(tracker, fenceActions, geofenceName, coords, geoPoint, GeoFenceCallback, lastResults, asyncHandler) {
 
   for (let k = 0; k < tracker._trackedFences.length; k++) {
@@ -166,7 +167,7 @@ export default function startMonitoring(geofenceName, secondParam, asyncHandler)
     const geoPoint = isGeoPoint ? secondParam : null
     const callback = !isGeoPoint ? secondParam : null
 
-    /* eslint-disable-next-line max-len */
+    // eslint-disable-next-line max-len
     checkPosition(tracker, fenceActions, geofenceName, position.coords, geoPoint, callback, tracker._lastResults, asyncHandler)
   }
 

@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import Urls from '../urls'
+
 import { deprecated } from '../decorators'
 
 import Permissions from './permissions'
@@ -41,5 +41,3 @@ export default class Data {
     return this.of(className).saveSync(obj, asyncHandler)
   }
 }
-
-export default Data
