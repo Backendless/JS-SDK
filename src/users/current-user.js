@@ -3,8 +3,6 @@ import Async from '../request/async'
 
 import { getUserFromResponse } from './utils'
 
-const currentUser = null
-
 export function setLocalCurrentUser(user) {
   this.currentUser = user || null
 
@@ -12,12 +10,12 @@ export function setLocalCurrentUser(user) {
 }
 
 export function getLocalCurrentUser() {
-  return currentUser
+  return this.currentUser
 }
 
 export function getCurrentUserToken() {
   if (this.currentUser && this.currentUser['user-token']) {
-    return currentUser['user-token'] || null
+    return this.currentUser['user-token'] || null
   }
 
   return this.backendless.LocalCache.get('user-token') || null

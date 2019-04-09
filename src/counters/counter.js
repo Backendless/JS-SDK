@@ -13,7 +13,7 @@ import {
   reset
 } from './methods'
 
-export default class Counter {
+class Counter {
   constructor(name, backendless) {
     if (!name || !Utils.isString(name)) {
       throw new Error('Counter Name must be non empty String')
@@ -25,7 +25,7 @@ export default class Counter {
 }
 
 const withCounterName = method => function(...args) {
-  return method(this.name, ...args)
+  return method.call(this, this.name, ...args)
 }
 
 //TODO: will be removed when remove sync methods
@@ -70,4 +70,6 @@ Object.assign(Counter.prototype, {
   compareAndSet    : Utils.promisified(withCounterName(compareAndSet)),
 
 })
+
+export default Counter
 
