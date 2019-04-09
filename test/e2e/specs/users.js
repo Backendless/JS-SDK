@@ -26,6 +26,8 @@ describe('Backendless.Users', function() {
       const user = randUser()
 
       return Backendless.UserService.register(user)
+        //TODO Backendless make login on register but doesn't return 'user-token'
+        .then(() => Backendless.UserService.logout())
         .then(() => Backendless.UserService.login(user.email, user.password, true))
         .then(serverUser => Object.assign(user, serverUser))
     }
@@ -158,6 +160,8 @@ describe('Backendless.Users', function() {
     beforeEach(function() {
       return Backendless.UserService.register(randUser())
         .then(serverUser => Object.assign(user, serverUser))
+        //TODO Backendless make login on register but doesn't return 'user-token'
+        .then(() => Backendless.UserService.logout())
     })
 
     before(function() {
