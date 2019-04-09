@@ -62,7 +62,7 @@ class Backendless {
     this.Request = Request
 
     this.request = new APIRequest(this)
-    this.urls = Urls(this)
+    this.urls = new Urls(this)
   }
 
   /**
@@ -70,10 +70,12 @@ class Backendless {
    */
   initProps(props) {
     for (const key in DEFAULT_PROPS) {
-      if (DEFAULT_PROPS.hasOwnProperty(key) && props.hasOwnProperty(key)) {
+      if (DEFAULT_PROPS.hasOwnProperty(key)) {
         const privateKey = `__${key}`
 
-        this[privateKey] = props[key]
+        this[privateKey] = props.hasOwnProperty(key)
+          ? props[key]
+          : DEFAULT_PROPS[key]
       }
     }
   }

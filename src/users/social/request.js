@@ -2,7 +2,7 @@ import Async from '../../request/async'
 
 import { parseResponse, getUserFromResponse } from '../utils'
 
-export const sendSocialLoginRequest = (accessToken, socialType, fieldsMapping, stayLoggedIn, asyncHandler) => {
+export function sendSocialLoginRequest (accessToken, socialType, fieldsMapping, stayLoggedIn, asyncHandler) {
   if (!accessToken) {
     return asyncHandler.fault('"accessToken" is missing.')
   }

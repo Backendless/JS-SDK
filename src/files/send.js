@@ -2,7 +2,7 @@ import Utils from '../utils'
 
 const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
 
-export const sendFile = options => {
+export function sendFile (options) {
   const url = this.backendless.urls.filePath(options.path) + '/' + sanitizeFileName(options.fileName)
   const query = {}
 

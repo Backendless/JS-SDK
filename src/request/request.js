@@ -2,7 +2,7 @@ import Request from 'backendless-request'
 
 import { ajaxForBrowser } from './request-for-browser'
 
-export const sendRequest = config => {
+export function sendRequest(config) {
   const XMLHttpRequest = this.backendless.XMLHttpRequest
   const userToken = this.backendless.getCurrentUserToken()
 

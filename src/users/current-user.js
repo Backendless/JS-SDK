@@ -23,7 +23,7 @@ export function getCurrentUserToken() {
   return this.backendless.LocalCache.get('user-token') || null
 }
 
-export const getCurrentUser = asyncHandler => {
+export function getCurrentUser(asyncHandler) {
   if (this.currentUser) {
     const userFromResponse = getUserFromResponse.call(this, this.currentUser)
 
@@ -76,6 +76,6 @@ export function isValidLogin(/** async */) {
   this.getCurrentUser(new Async(user => responder.success(!!user), () => responder.success(false)))
 }
 
-export const loggedInUser = () => {
+export function loggedInUser() {
   return this.backendless.LocalCache.get('current-user-id')
 }
