@@ -273,8 +273,8 @@ describe('Backendless.Geo', function() {
           .then(() => Backendless.Geo.savePoint(createPoint(({ city: 'Bongo' }))))
           .then(() => Backendless.Geo.find({ includeMetadata: false }))
           .then(points => {
-            expect(points[0].metadata).to.be.empty
-            expect(points[1].metadata).to.be.empty
+            expect(points[0].metadata).to.be.undefined
+            expect(points[1].metadata).to.be.undefined
           })
       })
 
@@ -327,25 +327,25 @@ describe('Backendless.Geo', function() {
           return createPoints
             .then(() => Backendless.Geo.find(geoQuery(['even'], 1000, 500)))
             .then(result => {
-              expect(result).to.have.deep.property('[0].latitude', 30)
-              expect(result).to.have.deep.property('[0].longitude', 12)
-              expect(result).to.have.deep.property('[0].totalPoints', 2)
-              expect(result).to.have.deep.property('[0].categories.length', 1)
-              expect(result).to.have.deep.property('[0].categories[0]', 'even')
-              expect(result).to.have.deep.property('[1].latitude', 30)
-              expect(result).to.have.deep.property('[1].longitude', 17)
-              expect(result).to.have.deep.property('[1].totalPoints', 3)
-              expect(result).to.have.deep.property('[1].categories.length', 1)
-              expect(result).to.have.deep.property('[1].categories[0]', 'even')
+              expect(result).to.have.nested.property('[0].latitude', 30)
+              expect(result).to.have.nested.property('[0].longitude', 12)
+              expect(result).to.have.nested.property('[0].totalPoints', 2)
+              expect(result).to.have.nested.property('[0].categories.length', 1)
+              expect(result).to.have.nested.property('[0].categories[0]', 'even')
+              expect(result).to.have.nested.property('[1].latitude', 30)
+              expect(result).to.have.nested.property('[1].longitude', 17)
+              expect(result).to.have.nested.property('[1].totalPoints', 3)
+              expect(result).to.have.nested.property('[1].categories.length', 1)
+              expect(result).to.have.nested.property('[1].categories[0]', 'even')
             })
             .then(() => Backendless.Geo.find(geoQuery(['even', 'odd'], 100, 100)))
             .then(result => {
-              expect(result).to.have.deep.property('[0].latitude', 30)
-              expect(result).to.have.deep.property('[0].longitude', 14.5)
-              expect(result).to.have.deep.property('[0].totalPoints', 10)
-              expect(result).to.have.deep.property('[0].categories.length', 2)
-              expect(result).to.have.deep.property('[0].categories[0]', 'even')
-              expect(result).to.have.deep.property('[0].categories[1]', 'odd')
+              expect(result).to.have.nested.property('[0].latitude', 30)
+              expect(result).to.have.nested.property('[0].longitude', 14.5)
+              expect(result).to.have.nested.property('[0].totalPoints', 10)
+              expect(result).to.have.nested.property('[0].categories.length', 2)
+              expect(result).to.have.nested.property('[0].categories[0]', 'even')
+              expect(result).to.have.nested.property('[0].categories[1]', 'odd')
             })
         })
 
@@ -386,7 +386,7 @@ describe('Backendless.Geo', function() {
             .then(result => {
               expect(result).to.have.lengthOf(1)
               expect(result[0].totalPoints).to.equal(3)
-              expect(result[0].metadata).to.be.empty
+              expect(result[0].metadata).to.be.undefined
             })
         })
       })
@@ -436,7 +436,7 @@ describe('Backendless.Geo', function() {
 
       return Promise.resolve()
         .then(() => expect(Backendless.Geo.runOnEnterAction('colorado', point))
-          .to.eventually.be.fullfiled)
+          .to.eventually.be.fulfilled)
         .then(() => expect(Backendless.Geo.runOnStayAction('colorado', point))
           .to.eventually.be.rejected
           .and.eventually.have.property('code', 4063))
