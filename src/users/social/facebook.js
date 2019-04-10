@@ -4,7 +4,7 @@ import Utils from '../../utils'
 import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
 
-export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyncHandler) => {
+export function loginWithFacebook(fieldsMapping, permissions, stayLoggedIn, asyncHandler) {
   console.warn( // eslint-disable-line no-console
     'Method "loginWithFacebook" is deprecated. and will be removed in the nearest release.\n' +
     'Use method "loginWithFacebookSdk" instead.'
@@ -13,7 +13,7 @@ export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyn
   return loginSocial.call(this, 'Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
 }
 
-export const loginWithFacebookSdk = (accessToken, fieldsMapping, stayLoggedIn, options) => {
+export function loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options) {
   const context = this
 
   Utils.checkPromiseSupport()

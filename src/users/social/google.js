@@ -4,7 +4,7 @@ import Utils from '../../utils'
 import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
 
-export const loginWithGooglePlus = (fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) => {
+export function loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) {
   console.warn( // eslint-disable-line no-console
     'Method "loginWithGooglePlus" is deprecated. and will be removed in the nearest release.\n' +
     'Use method "loginWithGooglePlusSdk" instead.'
@@ -13,7 +13,7 @@ export const loginWithGooglePlus = (fieldsMapping, permissions, container, stayL
   return loginSocial.call(this, 'GooglePlus', fieldsMapping, permissions, container, stayLoggedIn, asyncHandler)
 }
 
-export const loginWithGooglePlusSdk = (accessToken, fieldsMapping, stayLoggedIn) => {
+export function loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
   const context = this
 
   Utils.checkPromiseSupport()

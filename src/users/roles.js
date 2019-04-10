@@ -34,10 +34,10 @@ export function getUserRoles(/** async */) {
   return isAsync ? result : parseResponse.call(this, result)
 }
 
-export const assignRole = (identity, rolename, asyncHandler) => {
+export function assignRole(identity, rolename, asyncHandler) {
   return roleHelper.call(this, identity, rolename, asyncHandler, 'assignRole')
 }
 
-export const unassignRole = (identity, rolename, asyncHandler) => {
+export function unassignRole(identity, rolename, asyncHandler) {
   return roleHelper.call(this, identity, rolename, asyncHandler, 'unassignRole')
 }

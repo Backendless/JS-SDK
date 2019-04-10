@@ -178,7 +178,7 @@ export default class EventHandler extends RTListeners {
     this.stopSubscription(event, { matcher })
   }
 
-  parseObjectToInstance = object => {
+  parseObjectToInstance(object) {
     //TODO: "parseFindResponse" method must be moved to dataStore
     return parseFindResponse(object, this.dataStore.model)
   }
