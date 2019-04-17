@@ -703,6 +703,8 @@ declare module __Backendless {
         getMessageStatus(messageId: string): Promise<boolean>;
 
         getPushTemplates(): Promise<Object>;
+
+        pushWithTemplate(templateName: string): Promise<Object>;
     }
 
     /**

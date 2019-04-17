@@ -579,7 +579,9 @@ function testMessaging() {
     resultObj = Backendless.Messaging.unregisterDeviceSync();
     promiseObject = Backendless.Messaging.unregisterDevice();
 
-    promiseObject = Backendless.Messaging.getPushTemplates();
+    promiseObject = Backendless.Messaging.getPushTemplates('ios');
+
+    promiseObject = Backendless.Messaging.pushWithTemplate('templateName');
 
 }
 

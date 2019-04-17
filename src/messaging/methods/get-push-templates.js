@@ -1,9 +1,9 @@
 import Urls from '../../urls'
 import Request from '../../request'
 
-export function getPushTemplates(asyncHandler) {
+export function getPushTemplates(deviceType, asyncHandler) {
   return Request.get({
-    url         : Urls.messagingPushTemplates(),
+    url         : Urls.messagingPushTemplates(deviceType),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })
