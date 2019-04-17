@@ -27,7 +27,7 @@ declare module __Backendless {
      * @public
      * @type: Function
      **/
-    function initApp(applicationId: string, jsSecretKey: string): void;
+    function initApp(appId: string | Object, apiKey: string): void;
 
     /**
      * @public

@@ -73,13 +73,13 @@ class Backendless {
       if (DEFAULT_PROPS.hasOwnProperty(key)) {
         const privateKey = `__${key}`
 
-        const defaultValue = this.hasOwnProperty(privateKey)
-          ? this[privateKey]
-          : DEFAULT_PROPS[key]
+        const defaultValue = this[privateKey] === undefined
+          ? DEFAULT_PROPS[key]
+          : this[privateKey]
 
-        this[privateKey] = props.hasOwnProperty(key)
-          ? props[key]
-          : defaultValue
+        this[privateKey] = props[key] === undefined
+          ? defaultValue
+          : props[key]
       }
     }
   }
