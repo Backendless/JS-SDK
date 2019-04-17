@@ -702,7 +702,7 @@ declare module __Backendless {
 
         getMessageStatus(messageId: string): Promise<boolean>;
 
-        getPushTemplates(): Promise<Object>;
+        getPushTemplates(deviceType: string): Promise<Object>;
 
         pushWithTemplate(templateName: string): Promise<Object>;
     }
