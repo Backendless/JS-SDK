@@ -546,6 +546,9 @@ function testMessaging() {
     let promiseObject: Promise<Object>;
     let PromiseString: Promise<String>;
     const bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
+    const envelopeObject: Backendless.EmailEnvelope = new Backendless.EmailEnvelope();
+    const templateValues: Object | Backendless.EmailEnvelope = {};
+    const templateName: string = 'str';
     const recipients: string[] = ['str'];
     const attachments: string[] = ['str'];
     const channels: string[] = ['str'];
@@ -566,6 +569,12 @@ function testMessaging() {
 
     resultString = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
     PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
+
+    resultString = Backendless.Messaging.sendEmailSync(templateName, templateValues, envelopeObject);
+    PromiseString = Backendless.Messaging.sendEmail(templateName, templateValues, envelopeObject);
+
+    resultString = Backendless.Messaging.sendEmailSync(templateName, envelopeObject);
+    PromiseString = Backendless.Messaging.sendEmail(templateName, envelopeObject);
 
     resultBool = Backendless.Messaging.cancelSync(messageId);
     promiseObject = Backendless.Messaging.cancel(messageId);

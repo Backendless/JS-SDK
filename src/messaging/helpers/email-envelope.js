@@ -150,14 +150,6 @@ export default class EmailEnvelop {
     return this.criteria
   }
 
-  /**
-   *
-   * @returns {EmailEnvelop}
-   */
-  build() {
-    return this
-  }
-
   toJSON() {
     return {
       ['addresses']      : this.addresses,

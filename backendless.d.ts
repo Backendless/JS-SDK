@@ -690,9 +690,9 @@ declare module __Backendless {
 
         publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        sendEmailSync(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): String;
+        sendEmailSync(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope | Object, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): String;
 
-        sendEmail(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): Promise<String>;
+        sendEmail(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope | Object, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): Promise<String>;
 
         cancelSync(messageId: string): boolean;
 
