@@ -316,6 +316,18 @@ declare module __Backendless {
 
     /**
      * @public
+     * @class Backendless.EmailEnvelop
+     * @constructor
+     */
+    class EmailEnvelope {
+        addresses: string[];
+        ccAddresses: string[];
+        bccAddresses: string[];
+        criteria: string|null;
+    }
+
+    /**
+     * @public
      * @class Backendless.DeliveryOptions
      * @constructor
      */
@@ -678,9 +690,9 @@ declare module __Backendless {
 
         publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        sendEmailSync(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): String;
+        sendEmailSync(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): String;
 
-        sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
+        sendEmail(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): Promise<String>;
 
         cancelSync(messageId: string): boolean;
 
