@@ -316,7 +316,7 @@ declare module __Backendless {
 
     /**
      * @public
-     * @class Backendless.EmailEnvelop
+     * @class Backendless.EmailEnvelope
      * @constructor
      */
     class EmailEnvelope {
@@ -324,6 +324,30 @@ declare module __Backendless {
         ccAddresses: string[];
         bccAddresses: string[];
         criteria: string|null;
+
+        static create(): Backendless.EmailEnvelope;
+
+        setTo(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        addTo(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        getTo(): string[];
+
+        setCc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        addCc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        getCc(): string[];
+
+        setBcc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        addBcc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        getBcc(): string[];
+
+        setCriteria(criteria: string): Backendless.EmailEnvelope;
+
+        getCriteria(): string;
     }
 
     /**
