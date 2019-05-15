@@ -8,15 +8,22 @@ function checkCriteria(criteria) {
 
 export default class EmailEnvelop {
 
-  static create() {
-    return new EmailEnvelop()
+  /**
+   *
+   * @param {Object} data
+   * @returns {EmailEnvelop}
+   */
+  static create(data) {
+    return new EmailEnvelop(data)
   }
 
-  constructor() {
-    this.addresses = []
-    this.ccAddresses = []
-    this.bccAddresses = []
-    this.criteria = null
+  constructor(data) {
+    data = data || {}
+
+    this.addresses = data.addresses || []
+    this.ccAddresses = data.ccAddresses || []
+    this.bccAddresses = data.bccAddresses || []
+    this.criteria = data.criteria || null
   }
 
   /**

@@ -532,6 +532,30 @@ function testGoeService() {
 
 }
 
+function testEmailEnvelope() {
+    let addresses: string[];
+    let criteria: string;
+    let address: string = 'foo@foo.com';
+    const data: object = {};
+    let envelopeObject = new Backendless.EmailEnvelope();
+
+    envelopeObject = Backendless.EmailEnvelope.create(data);
+    envelopeObject = envelopeObject.setTo(address);
+    addresses = envelopeObject.getTo();
+    envelopeObject = envelopeObject.addTo(address);
+    addresses = envelopeObject.getTo();
+    envelopeObject = envelopeObject.setCc(address);
+    addresses = envelopeObject.getCc();
+    envelopeObject = envelopeObject.addCc(address);
+    addresses = envelopeObject.getCc();
+    envelopeObject = envelopeObject.setBcc(address);
+    addresses = envelopeObject.getBcc();
+    envelopeObject = envelopeObject.addBcc(address);
+    addresses = envelopeObject.getBcc();
+    envelopeObject = envelopeObject.setCriteria('criteria');
+    criteria = envelopeObject.getCriteria();
+}
+
 function testMessaging() {
     const restUrl: string = Backendless.Messaging.restUrl;
     const channelProperties: Object = Backendless.Messaging.channelProperties;

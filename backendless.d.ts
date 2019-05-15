@@ -325,7 +325,9 @@ declare module __Backendless {
         bccAddresses: string[];
         criteria: string|null;
 
-        static create(): Backendless.EmailEnvelope;
+        constructor(data?: Object);
+
+        static create(data?: Object): Backendless.EmailEnvelope;
 
         setTo(addresses: string|string[]): Backendless.EmailEnvelope;
 
