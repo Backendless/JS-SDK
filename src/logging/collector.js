@@ -82,14 +82,15 @@ class LoggingCollector {
       }
 
       let listeners
+      const loggingCollector = this
 
       const cb = method => function() {
         listeners.forEach(callbacks => {
           callbacks[method].apply(null, arguments)
         })
 
-        if (listeners === this.lastFlushListeners) {
-          this.lastFlushListeners = null
+        if (listeners === loggingCollector.lastFlushListeners) {
+          loggingCollector.lastFlushListeners = null
         }
       }
 
