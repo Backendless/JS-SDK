@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "5.2.9-st.1",
+  "version": "5.2.9-st.2",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
