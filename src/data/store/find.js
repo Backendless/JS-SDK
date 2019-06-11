@@ -14,6 +14,12 @@ import { extractQueryOptions } from './extract-query-options'
 export function findUtil(className, Model, dataQuery, asyncHandler) {
   dataQuery = dataQuery || {}
 
+  const dataQueryURL = dataQuery.url
+
+  if (dataQuery instanceof QueryBuilder) {
+    dataQuery = dataQuery.build()
+  }
+
   const query = []
 
   if (asyncHandler) {
@@ -38,8 +44,8 @@ export function findUtil(className, Model, dataQuery, asyncHandler) {
 
   let url = Urls.dataTable(className)
 
-  if (dataQuery.url) {
-    url += '/' + dataQuery.url
+  if (dataQueryURL) {
+    url += '/' + dataQueryURL
   }
 
   if (query.length) {
@@ -72,9 +78,7 @@ export function find(queryBuilder, asyncHandler) {
     throw new Error('The first argument should be instance of Backendless.DataQueryBuilder')
   }
 
-  const dataQuery = queryBuilder ? queryBuilder.build() : {}
-
-  return findUtil(this.className, this.model, dataQuery, asyncHandler)
+  return findUtil(this.className, this.model, queryBuilder, asyncHandler)
 }
 
 export function findById() {
