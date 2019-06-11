@@ -259,6 +259,10 @@ declare module __Backendless {
 
         setOffset(offset: number): Backendless.LoadRelationsQueryBuilder;
 
+        getSortBy(): Array<string>;
+
+        setSortBy(sortBy: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
+
         prepareNextPage(): Backendless.LoadRelationsQueryBuilder;
 
         preparePreviousPage(): Backendless.LoadRelationsQueryBuilder;
