@@ -245,6 +245,16 @@ declare module __Backendless {
 
         setRelationName(relationName: string): Backendless.LoadRelationsQueryBuilder;
 
+        getProperties(): Array<string>;
+
+        setProperties(properties: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
+
+        addProperty(properties: string): Backendless.LoadRelationsQueryBuilder;
+
+        getWhereClause(): string;
+
+        setWhereClause(whereClause: string): Backendless.LoadRelationsQueryBuilder;
+
         setPageSize(pageSize: number): Backendless.LoadRelationsQueryBuilder;
 
         setOffset(offset: number): Backendless.LoadRelationsQueryBuilder;
