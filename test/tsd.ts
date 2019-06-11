@@ -57,6 +57,26 @@ function testDataQueryClass() {
     dataQuery.addProperty(str);
 }
 
+function testLoadRelationsQueryBuilder() {
+    let loadRelationsQueryBuilder: Backendless.LoadRelationsQueryBuilder;
+    loadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder.create();
+
+    loadRelationsQueryBuilder.setRelationName('relationColumn');
+    loadRelationsQueryBuilder.setOffset(50);
+    loadRelationsQueryBuilder.setPageSize(50);
+    loadRelationsQueryBuilder.setSortBy('columnName');
+    loadRelationsQueryBuilder.setSortBy(['columnName']);
+    loadRelationsQueryBuilder.setProperties('columnName');
+    loadRelationsQueryBuilder.setProperties(['columnName']);
+
+    const properties: Array<string> = loadRelationsQueryBuilder.getProperties();
+    const sortBy: Array<string> = loadRelationsQueryBuilder.getSortBy();
+    const whereClause: string = loadRelationsQueryBuilder.getWhereClause();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.preparePreviousPage();
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
+}
+
 function testDataStoreClass() {
     const item: Object = {};
     const dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
