@@ -1,5 +1,5 @@
 const LocalVars = {
-  debugMode     : true,
+  debugMode     : false,
   serverURL     : 'https://api.backendless.com',
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined' ? XMLHttpRequest : undefined,
   applicationId : null,

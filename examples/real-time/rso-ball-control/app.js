@@ -18,7 +18,6 @@
 
   Backendless.serverURL = API_HOST;
   Backendless.initApp(APP_ID, API_KEY);
-  Backendless.debugMode = false
 
   class Ball {
     constructor(court) {
