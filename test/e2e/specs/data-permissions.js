@@ -7,117 +7,48 @@ describe('Data - Permissions', function() {
   sandbox.forSuite()
 
   const roleName = 'AuthenticatedUser'
-  let Permissions
-  let user
+  const operations = ['FIND', 'UPDATE', 'REMOVE']
 
-  before(function() {
+  let Permissions
+
+  let user
+  let incident
+
+  beforeEach(async function() {
     Permissions = Backendless.Data.Permissions
 
-    return Backendless.Data.of(Backendless.User)
-      .save({
-        email   : 'john@lennon.co',
-        name    : 'John Lennon',
-        password: 'beatlesforever'
-      })
-      .then(result => user = result)
-  })
-
-  describe('FIND', function() {
-
-    describe('GRANT', function() {
-
-      it('user', function() {
-        return Permissions.FIND.grantUser(user.objectId, user)
-      })
-
-      it('role', function() {
-        return Permissions.FIND.grantRole(roleName, user)
-      })
-
-      it('all users', function() {
-        return Permissions.FIND.grant(user)
-      })
+    user = await Backendless.Data.of(Backendless.User).save({
+      email   : `john-${Date.now()}-lennon@lennon.co`,
+      name    : 'John Lennon',
+      password: 'beatlesforever'
     })
 
-    describe('DENY', function() {
+    incident = await Backendless.Data.of('Incident').save({})
+  })
 
-      it('user', function() {
-        return Permissions.FIND.denyUser(user.objectId, user)
+  operations.forEach(operation => {
+    describe(operation, function() {
+
+      it('for user', async () => {
+        await Permissions[operation].grantForUser(user.objectId, incident)
+        await Permissions[operation].denyForUser(user.objectId, incident)
       })
 
-      it('role', function() {
-        return Permissions.FIND.denyRole(roleName, user)
+      it('for role', async () => {
+        await Permissions[operation].grantForRole(roleName, incident)
+        await Permissions[operation].denyForRole(roleName, incident)
       })
 
-      it('all users', function() {
-        return Permissions.FIND.deny(user)
+      it('for all users', async () => {
+        await Permissions[operation].grantForAllUsers(incident)
+        await Permissions[operation].denyForAllUsers(incident)
+      })
+
+      it('for all roles', async () => {
+        await Permissions[operation].grantForAllRoles(incident)
+        await Permissions[operation].denyForAllRoles(incident)
       })
     })
   })
 
-  describe('REMOVE', function() {
-
-    describe('GRANT', function() {
-
-      it('user', function() {
-        return Permissions.REMOVE.grantUser(user.objectId, user)
-      })
-
-      it('role', function() {
-        return Permissions.REMOVE.grantRole(roleName, user)
-      })
-
-      it('all users', function() {
-        return Permissions.REMOVE.grant(user)
-      })
-    })
-
-    describe('DENY', function() {
-
-      it('user', function() {
-        return Permissions.REMOVE.denyUser(user.objectId, user)
-      })
-
-      it('role', function() {
-        return Permissions.REMOVE.denyRole(roleName, user)
-      })
-
-      it('all users', function() {
-        return Permissions.REMOVE.deny(user)
-      })
-    })
-  })
-
-  describe('UPDATE', function() {
-
-    describe('GRANT', function() {
-
-      it('user', function() {
-        return Permissions.UPDATE.grantUser(user.objectId, user)
-      })
-
-      it('role', function() {
-        return Permissions.UPDATE.grantRole(roleName, user)
-      })
-
-      it('all users', function() {
-        return Permissions.UPDATE.grant(user)
-      })
-    })
-
-    describe('DENY', function() {
-
-      it('user', function() {
-        return Permissions.UPDATE.denyUser(user.objectId, user)
-      })
-
-      it('role', function() {
-        return Permissions.UPDATE.denyRole(roleName, user)
-      })
-
-      it('all users', function() {
-        return Permissions.UPDATE.deny(user)
-      })
-    })
-  })
 })
