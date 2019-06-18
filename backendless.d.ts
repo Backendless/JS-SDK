@@ -404,35 +404,35 @@ declare module __Backendless {
      * @class EventHandler
      */
     class EventHandler {
-        addCreateListener<T=object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addCreateListener<T=object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
-        addCreateListener<T=object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addCreateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
+        addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addCreateListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addCreateListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
 
         removeCreateListeners(whereClause: string): Backendless.EventHandler;
         removeCreateListeners(): Backendless.EventHandler;
 
-        removeCreateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
+        removeCreateListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        addUpdateListener<T=object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addUpdateListener<T=object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
-        addUpdateListener<T=object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addUpdateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
+        addUpdateListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpdateListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addUpdateListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpdateListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
 
         removeUpdateListeners(whereClause: string): Backendless.EventHandler;
         removeUpdateListeners(): Backendless.EventHandler;
 
-        removeUpdateListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
+        removeUpdateListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
 
-        addDeleteListener<T=object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addDeleteListener<T=object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
-        addDeleteListener<T=object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addDeleteListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
+        addDeleteListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addDeleteListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
 
         removeDeleteListeners(whereClause: string): Backendless.EventHandler;
         removeDeleteListeners(): Backendless.EventHandler;
 
-        removeDeleteListener<T=object>(callback: (obj: T) => void): Backendless.EventHandler;
+        removeDeleteListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
 
         addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
@@ -1045,12 +1045,12 @@ declare module __Backendless {
         loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
 
         /**@deprecated */
-        loginWithFacebookSdk<T=Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        loginWithFacebookSdk<T=Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
+        loginWithFacebookSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
 
         /**@deprecated */
-        loginWithGooglePlusSdk<T=Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        loginWithGooglePlusSdk<T=Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        loginWithGooglePlusSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
 
         isValidLoginSync(): boolean;
 
@@ -1075,47 +1075,99 @@ declare module __Backendless {
     }
 
     interface PersistencePermissionI {
+        /** @deprecated */
         grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
-        grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
+        /** @deprecated */
         denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
+        /** @deprecated */
+        grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        /** @deprecated */
         denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
 
+        /** @deprecated */
+        grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+        /** @deprecated */
         denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
+        /** @deprecated */
+        grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        /** @deprecated */
         denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
 
+        /** @deprecated */
+        grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+        /** @deprecated */
         denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
+        /** @deprecated */
+        grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        /** @deprecated */
         deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        grantForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        grantForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        grantForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        grantForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+        denyForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
     }
 
     interface FilePermissionI {
+        /** @deprecated */
         grantUserSync(userId: string, url: string): boolean;
 
+        /** @deprecated */
         grantUser(userId: string, url: string): Promise<boolean>;
 
+        /** @deprecated */
         grantRoleSync(roleName: string, url: string): boolean;
 
+        /** @deprecated */
         grantRole(roleName: string, url: string): Promise<boolean>;
 
+        /** @deprecated */
         denyUserSync(userId: string, url: string): boolean;
 
+        /** @deprecated */
         denyUser(userId: string, url: string): Promise<boolean>;
 
+        /** @deprecated */
         denyRoleSync(roleName: string, url: string): boolean;
 
+        /** @deprecated */
         denyRole(roleName: string, url: string): Promise<boolean>;
+
+        grantForUser(userId: string, url: string): Promise<boolean>;
+
+        denyForUser(userId: string, url: string): Promise<boolean>;
+
+        grantForRole(roleName: string, url: string): Promise<boolean>;
+
+        denyForRole(roleName: string, url: string): Promise<boolean>;
+
+        grantForAllUsers(url: string): Promise<boolean>;
+
+        denyForAllUsers(url: string): Promise<boolean>;
+
+        grantForAllRoles(url: string): Promise<boolean>;
+
+        denyForAllRoles(url: string): Promise<boolean>;
     }
 
     interface DataQueryValueI {

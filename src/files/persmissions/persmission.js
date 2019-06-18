@@ -8,30 +8,37 @@ const PermissionTypes = {
   DENY : 'DENY',
 }
 
-function grantUser(userId, url, asyncHandler) {
+function grantForUser(userId, url, asyncHandler) {
   return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId }, asyncHandler)
 }
 
-function grantRole(roleName, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName }, asyncHandler)
-}
-
-function grant(url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
-}
-
-function denyUser(userId, url, asyncHandler) {
+function denyForUser(userId, url, asyncHandler) {
   return sendRequest(this.permission, PermissionTypes.DENY, url, { userId }, asyncHandler)
 }
 
-function denyRole(roleName, url, asyncHandler) {
+function grantForRole(roleName, url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName }, asyncHandler)
+}
+
+function denyForRole(roleName, url, asyncHandler) {
   return sendRequest(this.permission, PermissionTypes.DENY, url, { roleName }, asyncHandler)
 }
 
-function deny(url, asyncHandler) {
+function grantForAllUsers(url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
+}
+
+function denyForAllUsers(url, asyncHandler) {
   return sendRequest(this.permission, PermissionTypes.DENY, url, { userId: '*' }, asyncHandler)
 }
 
+function grantForAllRoles(url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName: '*' }, asyncHandler)
+}
+
+function denyForAllRoles(url, asyncHandler) {
+  return sendRequest(this.permission, PermissionTypes.DENY, url, { roleName: '*' }, asyncHandler)
+}
 
 //TODO: will be removed when remove sync methods
 const namespaceLabel = 'Backendless.Files.Permissions.{READ|DELETE|WRITE}'
@@ -42,28 +49,52 @@ export default class FilePermission {
     this.permission = permission
   }
 
-  @deprecated(namespaceLabel, `${namespaceLabel}.grantUser`)
-  grantUserSync = Utils.synchronized(grantUser)
-  grantUser = Utils.promisified(grantUser)
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantForUser`)
+  grantUserSync = Utils.synchronized(grantForUser)
 
-  @deprecated(namespaceLabel, `${namespaceLabel}.grantRole`)
-  grantRoleSync = Utils.synchronized(grantRole)
-  grantRole = Utils.promisified(grantRole)
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantForUser`)
+  grantUser = Utils.promisified(grantForUser)
 
-  @deprecated(namespaceLabel, `${namespaceLabel}.grant`)
-  grantSync = Utils.synchronized(grant)
-  grant = Utils.promisified(grant)
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyForUser`)
+  denyUserSync = Utils.synchronized(denyForUser)
 
-  @deprecated(namespaceLabel, `${namespaceLabel}.denyUser`)
-  denyUserSync = Utils.synchronized(denyUser)
-  denyUser = Utils.promisified(denyUser)
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyForUser`)
+  denyUser = Utils.promisified(denyForUser)
 
-  @deprecated(namespaceLabel, `${namespaceLabel}.denyRole`)
-  denyRoleSync = Utils.synchronized(denyRole)
-  denyRole = Utils.promisified(denyRole)
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantForRole`)
+  grantRoleSync = Utils.synchronized(grantForRole)
 
-  @deprecated(namespaceLabel, `${namespaceLabel}.deny`)
-  denySync = Utils.synchronized(deny)
-  deny = Utils.promisified(deny)
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantForRole`)
+  grantRole = Utils.promisified(grantForRole)
+
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyForRole`)
+  denyRoleSync = Utils.synchronized(denyForRole)
+
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyForRole`)
+  denyRole = Utils.promisified(denyForRole)
+
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantForAllUsers`)
+  grantSync = Utils.synchronized(grantForAllUsers)
+
+  @deprecated(namespaceLabel, `${namespaceLabel}.grantForAllUsers`)
+  grant = Utils.promisified(grantForAllUsers)
+
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyForAllUsers`)
+  denySync = Utils.synchronized(denyForAllUsers)
+
+  @deprecated(namespaceLabel, `${namespaceLabel}.denyForAllUsers`)
+  deny = Utils.promisified(denyForAllUsers)
+
+  grantForUser = Utils.promisified(grantForUser)
+  denyForUser = Utils.promisified(denyForUser)
+
+  grantForRole = Utils.promisified(grantForRole)
+  denyForRole = Utils.promisified(denyForRole)
+
+  grantForAllUsers = Utils.promisified(grantForAllUsers)
+  denyForAllUsers = Utils.promisified(denyForAllUsers)
+
+  grantForAllRoles = Utils.promisified(grantForAllRoles)
+  denyForAllRoles = Utils.promisified(denyForAllRoles)
 
 }
