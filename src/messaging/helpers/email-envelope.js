@@ -6,15 +6,15 @@ function checkCriteria(criteria) {
   }
 }
 
-export default class EmailEnvelop {
+export default class EmailEnvelope {
 
   /**
    *
    * @param {Object} data
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   static create(data) {
-    return new EmailEnvelop(data)
+    return new EmailEnvelope(data)
   }
 
   constructor(data) {
@@ -29,7 +29,7 @@ export default class EmailEnvelop {
   /**
    *
    * @param {Array|String} addresses
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   setTo(addresses) {
     if (addresses) {
@@ -44,7 +44,7 @@ export default class EmailEnvelop {
   /**
    *
    * @param {Array|String} addresses
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   addTo(addresses) {
     checkCriteria(this.criteria)
@@ -65,7 +65,7 @@ export default class EmailEnvelop {
   /**
    *
    * @param {Array|String} addresses
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   setCc(addresses) {
     if (addresses) {
@@ -80,7 +80,7 @@ export default class EmailEnvelop {
   /**
    *
    * @param {Array|String} addresses
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   addCc(addresses) {
     checkCriteria(this.criteria)
@@ -101,7 +101,7 @@ export default class EmailEnvelop {
   /**
    *
    * @param {Array|String} addresses
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   setBcc(addresses) {
     if (addresses) {
@@ -116,7 +116,7 @@ export default class EmailEnvelop {
   /**
    *
    * @param {Array|String} addresses
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   addBcc(addresses) {
     checkCriteria(this.criteria)
@@ -137,7 +137,7 @@ export default class EmailEnvelop {
   /**
    *
    * @param {String|null} criteria
-   * @returns {EmailEnvelop}
+   * @returns {EmailEnvelope}
    */
   setCriteria(criteria) {
     if ([this.addresses, this.ccAddresses, this.bccAddresses].some(addresses => addresses.length > 0)) {
