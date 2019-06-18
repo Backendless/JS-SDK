@@ -330,6 +330,44 @@ declare module __Backendless {
 
     /**
      * @public
+     * @class Backendless.EmailEnvelope
+     * @constructor
+     */
+    class EmailEnvelope {
+        addresses: string[];
+        ccAddresses: string[];
+        bccAddresses: string[];
+        criteria: string|null;
+
+        constructor(data?: Object);
+
+        static create(data?: Object): Backendless.EmailEnvelope;
+
+        setTo(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        addTo(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        getTo(): string[];
+
+        setCc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        addCc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        getCc(): string[];
+
+        setBcc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        addBcc(addresses: string|string[]): Backendless.EmailEnvelope;
+
+        getBcc(): string[];
+
+        setCriteria(criteria: string): Backendless.EmailEnvelope;
+
+        getCriteria(): string;
+    }
+
+    /**
+     * @public
      * @class Backendless.DeliveryOptions
      * @constructor
      */
@@ -692,9 +730,9 @@ declare module __Backendless {
 
         publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        sendEmailSync(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): String;
+        sendEmailSync(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope | Object, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): String;
 
-        sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
+        sendEmail(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope | Object, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): Promise<String>;
 
         cancelSync(messageId: string): boolean;
 

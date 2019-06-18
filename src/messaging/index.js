@@ -9,6 +9,7 @@ import {
   DeliveryOptions,
   Bodyparts,
   SubscriptionOptions,
+  EmailEnvelope
 } from './helpers'
 
 import {
@@ -29,6 +30,7 @@ const Messaging = {
   PublishOptions       : PublishOptions,
   DeliveryOptions      : DeliveryOptions,
   PublishOptionsHeaders: PublishOptionsHeaders,
+  EmailEnvelope        : EmailEnvelope,
 
   /** @deprecated */
   SubscriptionOptions: SubscriptionOptions,
