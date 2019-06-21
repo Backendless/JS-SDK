@@ -1,11 +1,5 @@
 import Utils from '../../utils'
 
-function checkCriteria(criteria) {
-  if (criteria) {
-    throw new Error('Addresses can not be set if criteria is already set in a builder')
-  }
-}
-
 export default class EmailEnvelope {
 
   /**
@@ -32,10 +26,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   setTo(addresses) {
-    if (addresses) {
-      checkCriteria(this.criteria)
-    }
-
     this.addresses = Utils.castArray(addresses)
 
     return this
@@ -47,8 +37,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   addTo(addresses) {
-    checkCriteria(this.criteria)
-
     this.addresses = this.addresses.concat(Utils.castArray(addresses))
 
     return this
@@ -68,9 +56,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   setCc(addresses) {
-    if (addresses) {
-      checkCriteria(this.criteria)
-    }
 
     this.ccAddresses = Utils.castArray(addresses)
 
@@ -83,8 +68,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   addCc(addresses) {
-    checkCriteria(this.criteria)
-
     this.ccAddresses = this.ccAddresses.concat(Utils.castArray(addresses))
 
     return this
@@ -104,10 +87,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   setBcc(addresses) {
-    if (addresses) {
-      checkCriteria(this.criteria)
-    }
-
     this.bccAddresses = Utils.castArray(addresses)
 
     return this
@@ -119,8 +98,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   addBcc(addresses) {
-    checkCriteria(this.criteria)
-
     this.bccAddresses = this.bccAddresses.concat(Utils.castArray(addresses))
 
     return this

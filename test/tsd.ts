@@ -641,11 +641,11 @@ function testMessaging() {
     resultString = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
     PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
-    resultString = Backendless.Messaging.sendEmailSync(templateName, templateValues, envelopeObject);
-    PromiseString = Backendless.Messaging.sendEmail(templateName, templateValues, envelopeObject);
+    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, templateValues, envelopeObject);
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, templateValues, envelopeObject);
 
-    resultString = Backendless.Messaging.sendEmailSync(templateName, envelopeObject);
-    PromiseString = Backendless.Messaging.sendEmail(templateName, envelopeObject);
+    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject);
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
 
     resultBool = Backendless.Messaging.cancelSync(messageId);
     promiseObject = Backendless.Messaging.cancel(messageId);
