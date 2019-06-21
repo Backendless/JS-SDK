@@ -337,27 +337,27 @@ declare module __Backendless {
         addresses: string[];
         ccAddresses: string[];
         bccAddresses: string[];
-        criteria: string|null;
+        criteria: string | null;
 
         constructor(data?: Object);
 
         static create(data?: Object): Backendless.EmailEnvelope;
 
-        setTo(addresses: string|string[]): Backendless.EmailEnvelope;
+        setTo(addresses: string | string[]): Backendless.EmailEnvelope;
 
-        addTo(addresses: string|string[]): Backendless.EmailEnvelope;
+        addTo(addresses: string | string[]): Backendless.EmailEnvelope;
 
         getTo(): string[];
 
-        setCc(addresses: string|string[]): Backendless.EmailEnvelope;
+        setCc(addresses: string | string[]): Backendless.EmailEnvelope;
 
-        addCc(addresses: string|string[]): Backendless.EmailEnvelope;
+        addCc(addresses: string | string[]): Backendless.EmailEnvelope;
 
         getCc(): string[];
 
-        setBcc(addresses: string|string[]): Backendless.EmailEnvelope;
+        setBcc(addresses: string | string[]): Backendless.EmailEnvelope;
 
-        addBcc(addresses: string|string[]): Backendless.EmailEnvelope;
+        addBcc(addresses: string | string[]): Backendless.EmailEnvelope;
 
         getBcc(): string[];
 
@@ -730,9 +730,13 @@ declare module __Backendless {
 
         publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        sendEmailSync(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope | Object, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): String;
+        sendEmailSync(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): String;
 
-        sendEmail(subject: string, bodyParts?: Backendless.Bodyparts | Backendless.EmailEnvelope | Object, recipients?: string[] | Backendless.EmailEnvelope, attachments?: string[]): Promise<String>;
+        sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
+
+        sendEmailFromTemplateSync(templateName: string, templateValues: object | Backendless.EmailEnvelope, emailEnvelope?: Backendless.EmailEnvelope): object;
+
+        sendEmailFromTemplate(templateName: string, templateValues: object | Backendless.EmailEnvelope, emailEnvelope?: Backendless.EmailEnvelope): Promise<object>;
 
         cancelSync(messageId: string): boolean;
 

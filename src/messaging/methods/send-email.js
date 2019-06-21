@@ -2,14 +2,8 @@ import Utils from '../../utils'
 import Urls from '../../urls'
 import Request from '../../request'
 import Bodyparts from '../helpers/body-parts'
-import EmailEnvelope from '../helpers/email-envelope'
-import sendEmailTemplate from './send-email-template'
 
 export function sendEmail(subject, bodyParts, recipients, attachments/**, async */) {
-  if (bodyParts instanceof EmailEnvelope || recipients instanceof EmailEnvelope) {
-    return sendEmailTemplate.apply(null, arguments)
-  }
-
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
   const data = {}

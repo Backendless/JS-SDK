@@ -3,7 +3,7 @@ import Urls from '../../urls'
 import Request from '../../request'
 import EmailEnvelope from '../helpers/email-envelope'
 
-export default function sendEmailTemplate(templateName, templateValues, envelopeObject/**, async */) {
+export function sendEmailFromTemplate(templateName, templateValues, envelopeObject/**, async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
