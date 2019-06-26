@@ -15,6 +15,10 @@ export function sendEmailFromTemplate(templateName, templateValues, envelopeObje
     envelopeObject = templateValues
   }
 
+  if (!(envelopeObject instanceof EmailEnvelope)) {
+    throw new Error('EmailEnvelope is required and should be instance of Backendless.Messaging.EmailEnvelope')
+  }
+
   const data = envelopeObject.toJSON()
   data['template-name'] = templateName
 
