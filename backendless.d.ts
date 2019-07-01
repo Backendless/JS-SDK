@@ -734,9 +734,9 @@ declare module __Backendless {
 
         sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
 
-        sendEmailFromTemplateSync(templateName: string, templateValues: object | Backendless.EmailEnvelope, emailEnvelope?: Backendless.EmailEnvelope): object;
+        sendEmailFromTemplateSync(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): object;
 
-        sendEmailFromTemplate(templateName: string, templateValues: object | Backendless.EmailEnvelope, emailEnvelope?: Backendless.EmailEnvelope): Promise<object>;
+        sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): Promise<object>;
 
         cancelSync(messageId: string): boolean;
 

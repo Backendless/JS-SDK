@@ -3,16 +3,12 @@ import Urls from '../../urls'
 import Request from '../../request'
 import EmailEnvelope from '../helpers/email-envelope'
 
-export function sendEmailFromTemplate(templateName, templateValues, envelopeObject/**, async */) {
+export function sendEmailFromTemplate(templateName, envelopeObject, templateValues/**, async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  if (typeof templateName !== 'string') {
-    throw new Error('Template name must be a string')
-  }
-
-  if (templateValues instanceof EmailEnvelope) {
-    envelopeObject = templateValues
+  if (typeof templateName !== 'string' || !templateName) {
+    throw new Error('Template name is required and must be a string')
   }
 
   if (!(envelopeObject instanceof EmailEnvelope)) {
@@ -20,9 +16,10 @@ export function sendEmailFromTemplate(templateName, templateValues, envelopeObje
   }
 
   const data = envelopeObject.toJSON()
+
   data['template-name'] = templateName
 
-  if (!(templateValues instanceof EmailEnvelope)) {
+  if (templateValues) {
     data['template-values'] = templateValues
   }
 
