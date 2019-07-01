@@ -117,10 +117,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   setCriteria(criteria) {
-    if ([this.addresses, this.ccAddresses, this.bccAddresses].some(addresses => addresses.length > 0)) {
-      throw new Error('Criteria can not be set if addresses already set in a builder')
-    }
-
     this.criteria = criteria
 
     return this
@@ -135,11 +131,24 @@ export default class EmailEnvelope {
   }
 
   toJSON() {
-    return {
-      ['addresses']      : this.addresses,
-      ['cc-addresses']   : this.ccAddresses,
-      ['bcc-addresses']  : this.bccAddresses,
-      ['criteria']       : this.criteria,
+    const data = {}
+
+    if (this.addresses.length > 0) {
+      data.addresses = this.addresses
     }
+
+    if (this.ccAddresses.length > 0) {
+      data['cc-addresses'] = this.ccAddresses
+    }
+
+    if (this.bccAddresses.length > 0) {
+      data['bcc-addresses'] = this.bccAddresses
+    }
+
+    if (this.criteria) {
+      data.criteria = this.criteria
+    }
+
+    return data
   }
 }

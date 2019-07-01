@@ -641,8 +641,8 @@ function testMessaging() {
     resultString = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
     PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
-    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, templateValues, envelopeObject);
-    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, templateValues, envelopeObject);
+    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject, templateValues);
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
 
     resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject);
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
