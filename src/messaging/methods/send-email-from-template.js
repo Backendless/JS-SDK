@@ -23,14 +23,10 @@ export function sendEmailFromTemplate(templateName, envelopeObject, templateValu
     data['template-values'] = templateValues
   }
 
-  function responseMessageStatus(res) {
-    return res.status
-  }
-
   return Request.post({
     url         : Urls.emailTemplateSend(),
     isAsync     : isAsync,
-    asyncHandler: Utils.wrapAsync(responder, responseMessageStatus),
+    asyncHandler: responder,
     data        : data
   })
 }
