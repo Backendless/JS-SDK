@@ -17,7 +17,7 @@ export default class EmailEnvelope {
     this.addresses = data.addresses || []
     this.ccAddresses = data.ccAddresses || []
     this.bccAddresses = data.bccAddresses || []
-    this.criteria = data.criteria || null
+    this.query = data.query || null
   }
 
   /**
@@ -113,21 +113,21 @@ export default class EmailEnvelope {
 
   /**
    *
-   * @param {String|null} criteria
+   * @param {String|null} query
    * @returns {EmailEnvelope}
    */
-  setCriteria(criteria) {
-    this.criteria = criteria
+  setQuery(query) {
+    this.query = query
 
     return this
   }
 
   /**
    *
-   * @returns {String} - criteria
+   * @returns {String} - query
    */
-  getCriteria() {
-    return this.criteria
+  getQuery() {
+    return this.query
   }
 
   toJSON() {
@@ -145,8 +145,8 @@ export default class EmailEnvelope {
       data['bcc-addresses'] = this.bccAddresses
     }
 
-    if (this.criteria) {
-      data.criteria = this.criteria
+    if (this.query) {
+      data.criteria = this.query
     }
 
     return data

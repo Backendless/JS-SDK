@@ -581,7 +581,7 @@ function testGoeService() {
 
 function testEmailEnvelope() {
     let addresses: string[];
-    let criteria: string;
+    let query: string;
     let address: string = 'foo@foo.com';
     const data: object = {};
     let envelopeObject = new Backendless.EmailEnvelope();
@@ -599,8 +599,8 @@ function testEmailEnvelope() {
     addresses = envelopeObject.getBcc();
     envelopeObject = envelopeObject.addBcc(address);
     addresses = envelopeObject.getBcc();
-    envelopeObject = envelopeObject.setCriteria('criteria');
-    criteria = envelopeObject.getCriteria();
+    envelopeObject = envelopeObject.setQuery('query');
+    query = envelopeObject.getQuery();
 }
 
 function testMessaging() {

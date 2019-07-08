@@ -337,7 +337,7 @@ declare module __Backendless {
         addresses: string[];
         ccAddresses: string[];
         bccAddresses: string[];
-        criteria: string | null;
+        query: string | null;
 
         constructor(data?: Object);
 
@@ -361,9 +361,9 @@ declare module __Backendless {
 
         getBcc(): string[];
 
-        setCriteria(criteria: string): Backendless.EmailEnvelope;
+        setQuery(query: string): Backendless.EmailEnvelope;
 
-        getCriteria(): string;
+        getQuery(): string;
     }
 
     /**
