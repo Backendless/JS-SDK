@@ -2,10 +2,10 @@ import Urls from '../urls'
 import Request from '../request'
 import Async from '../request/async'
 
-import { EXECUTION_TYPE_HEADER } from './constants'
+import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
 export function invokeServiceMethod(serviceName, method, parameters, executionType, asyncHandler) {
-  if (typeof parameters === 'string') {
+  if (typeof parameters === 'string' && isExecutionType(parameters)) {
     asyncHandler = executionType
     executionType = parameters
     parameters = undefined

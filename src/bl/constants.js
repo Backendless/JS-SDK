@@ -5,3 +5,7 @@ export const ExecutionTypes = {
   ASYNC             : 'async',
   ASYNC_LOW_PRIORITY: 'async-low-priority'
 }
+
+const executionTypesList = Object.keys(ExecutionTypes).map(k => ExecutionTypes[k])
+
+export const isExecutionType = type => executionTypesList.includes(type)
