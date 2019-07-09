@@ -9,6 +9,7 @@ import {
   DeliveryOptions,
   Bodyparts,
   SubscriptionOptions,
+  EmailEnvelope
 } from './helpers'
 
 import {
@@ -21,6 +22,7 @@ import {
   getRegistrations,
   getMessageStatus,
   getPushTemplates,
+  sendEmailFromTemplate
 } from './methods'
 
 const Messaging = {
@@ -29,11 +31,12 @@ const Messaging = {
   PublishOptions       : PublishOptions,
   DeliveryOptions      : DeliveryOptions,
   PublishOptionsHeaders: PublishOptionsHeaders,
+  EmailEnvelope        : EmailEnvelope,
 
   /** @deprecated */
   SubscriptionOptions: SubscriptionOptions,
 
-  subscribe: function(channelName) {
+  subscribe: function (channelName) {
     if (!channelName || typeof channelName !== 'string') {
       throw new Error('"channelName" must be non empty string')
     }
@@ -54,6 +57,10 @@ const Messaging = {
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
   sendEmailSync: Utils.synchronized(sendEmail),
   sendEmail    : Utils.promisified(sendEmail),
+
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmailFromTemplate')
+  sendEmailFromTemplateSync: Utils.synchronized(sendEmailFromTemplate),
+  sendEmailFromTemplate    : Utils.promisified(sendEmailFromTemplate),
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.cancel')
   cancelSync: Utils.synchronized(cancel),

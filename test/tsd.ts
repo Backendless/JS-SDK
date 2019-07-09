@@ -295,6 +295,33 @@ function testDataPermissions() {
     promiseObject = Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj);
     promiseObject = Backendless.Data.Permissions.UPDATE.deny(dataObj);
 
+    promiseObject = Backendless.Data.Permissions.FIND.grantForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grantForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grantForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grantForAllRoles(dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForAllRoles(dataObj);
+
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForAllRoles(dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForAllRoles(dataObj);
+
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForAllRoles(dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForAllRoles(dataObj);
+
 }
 
 function testUser() {
@@ -552,6 +579,30 @@ function testGoeService() {
 
 }
 
+function testEmailEnvelope() {
+    let addresses: string[];
+    let query: string;
+    let address: string = 'foo@foo.com';
+    const data: object = {};
+    let envelopeObject = new Backendless.EmailEnvelope();
+
+    envelopeObject = Backendless.EmailEnvelope.create(data);
+    envelopeObject = envelopeObject.setTo(address);
+    addresses = envelopeObject.getTo();
+    envelopeObject = envelopeObject.addTo(address);
+    addresses = envelopeObject.getTo();
+    envelopeObject = envelopeObject.setCc(address);
+    addresses = envelopeObject.getCc();
+    envelopeObject = envelopeObject.addCc(address);
+    addresses = envelopeObject.getCc();
+    envelopeObject = envelopeObject.setBcc(address);
+    addresses = envelopeObject.getBcc();
+    envelopeObject = envelopeObject.addBcc(address);
+    addresses = envelopeObject.getBcc();
+    envelopeObject = envelopeObject.setQuery('query');
+    query = envelopeObject.getQuery();
+}
+
 function testMessaging() {
     const restUrl: string = Backendless.Messaging.restUrl;
     const channelProperties: Object = Backendless.Messaging.channelProperties;
@@ -566,6 +617,9 @@ function testMessaging() {
     let promiseObject: Promise<Object>;
     let PromiseString: Promise<String>;
     const bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
+    const envelopeObject: Backendless.EmailEnvelope = new Backendless.EmailEnvelope();
+    const templateValues: Object | Backendless.EmailEnvelope = {};
+    const templateName: string = 'str';
     const recipients: string[] = ['str'];
     const attachments: string[] = ['str'];
     const channels: string[] = ['str'];
@@ -586,6 +640,12 @@ function testMessaging() {
 
     resultString = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
     PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
+
+    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject, templateValues);
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
+
+    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject);
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
 
     resultBool = Backendless.Messaging.cancelSync(messageId);
     promiseObject = Backendless.Messaging.cancel(messageId);
@@ -711,6 +771,34 @@ function testFilesService() {
     promiseObject = Backendless.Files.Permissions.WRITE.grantRole(roleName, url);
     promiseObject = Backendless.Files.Permissions.WRITE.denyUser(userid, url);
     promiseObject = Backendless.Files.Permissions.WRITE.denyRole(roleName, url);
+
+    promiseObject = Backendless.Files.Permissions.READ.grantForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.READ.grantForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.READ.grantForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.READ.grantForAllRoles(url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForAllRoles(url);
+
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllRoles(url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllRoles(url);
+
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllRoles(url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllRoles(url);
+
 }
 
 function testCommerce() {

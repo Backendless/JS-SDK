@@ -50,6 +50,9 @@ const Urls = {
   messagingRegistrations     : () => `${Urls.messaging()}/registrations`,
   messagingRegistrationDevice: deviceId => `${Urls.messagingRegistrations()}/${deviceId}`,
 
+  emailTemplate: () => `${Urls.root()}/emailtemplate`,
+  emailTemplateSend: () => `${Urls.emailTemplate()}/send`,
+
   geo             : () => `${Urls.root()}/geo`,
   geoRelative     : () => `${Urls.geo()}/relative`,
   geoPoints       : () => `${Urls.geo()}/points`,

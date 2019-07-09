@@ -219,6 +219,10 @@ const Backendless = {
     return Backendless.Messaging.PublishOptionsHeaders
   },
 
+  get EmailEnvelope() {
+    return Backendless.Messaging.EmailEnvelope
+  },
+
   get LocalCache() {
     return require('./local-cache').default
   },

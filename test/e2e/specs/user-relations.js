@@ -97,8 +97,8 @@ describe('User - Relations', function() {
         expect(blockedUser4.objectId).to.be.equal(user4.objectId)
         expect(blockedUser5.objectId).to.be.equal(user5.objectId)
 
-        expect(friendsUser2).to.be.equal(blockedUser2)
-        expect(friendsUser3).to.be.equal(blockedUser3)
+        expect(friendsUser2).to.deep.equal(blockedUser2)
+        expect(friendsUser3).to.deep.equal(blockedUser3)
       })
   })
 })
