@@ -14,17 +14,47 @@ export function register(user /** async */) {
     url         : Urls.userRegister(),
     isAsync     : isAsync,
     asyncHandler: responder && wrapAsync(responder),
-    data        : user
+    data        : enrichWithLocaleInfo(user)
   })
 
   return isAsync ? result : parseResponse(result)
+}
+
+function enrichWithLocaleInfo(user) {
+  if (user.blUserLocale === null || user.blUserLocale === '') {
+    return user
+  }
+
+  user.blUserLocale = getClientLanguage()
+
+  return user
+}
+
+function getClientLanguage() {
+  if (typeof navigator === 'undefined') {
+    return 'en'
+  }
+
+  let language = ''
+
+  if (navigator.languages && navigator.languages.length) {
+    language = navigator.languages[0]
+  } else {
+    language = navigator.userLanguage
+      || navigator.language
+      || navigator.browserLanguage
+      || navigator.systemLanguage
+      || 'en'
+  }
+
+  return language.slice(0, 2).toLowerCase()
 }
 
 function parseResponse(data) {
   return Utils.deepExtend(new User(), data)
 }
 
-function wrapAsync(asyncHandler){
+function wrapAsync(asyncHandler) {
   const onSuccess = data => asyncHandler.success(parseResponse(data))
   const onError = error => asyncHandler.fault(error)
 
