@@ -145,6 +145,7 @@ declare module __Backendless {
         username?: string;
         password: string;
         email?: string;
+        blUserLocale?: string;
     }
 
     /**
