@@ -376,6 +376,11 @@ function testUserService() {
     promiseObject = Backendless.UserService.login(userName, password);
     promiseObject = Backendless.UserService.login(userName, password, bol);
 
+    newUser = Backendless.UserService.loginAsGuestSync();
+    newUser = Backendless.UserService.loginAsGuestSync(bol);
+    promiseObject = Backendless.UserService.loginAsGuest();
+    promiseObject = Backendless.UserService.loginAsGuest(bol);
+
     resultListOfObjects = Backendless.UserService.describeUserClassSync();
     promiseListOfObject = Backendless.UserService.describeUserClass();
 
