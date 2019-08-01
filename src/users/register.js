@@ -21,7 +21,7 @@ export function register(user /** async */) {
 }
 
 function enrichWithLocaleInfo(user) {
-  if (!user.hasOwnProperty('blUserLocale') || user.blUserLocale === null || user.blUserLocale === '') {
+  if (!user.blUserLocale) {
     user.blUserLocale = getClientLanguage()
   }
 
