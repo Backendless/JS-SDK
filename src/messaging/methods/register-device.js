@@ -2,15 +2,11 @@ import Utils from '../../utils'
 import Urls from '../../urls'
 import Device from '../../device'
 import Request from '../../request'
-import Async from '../../request/async'
 
 export function registerDevice(deviceToken, channels, expiration, asyncHandler) {
   const device = Device.required()
 
-  if (expiration instanceof Async) {
-    asyncHandler = expiration
-    expiration = undefined
-  }
+  asyncHandler = Utils.extractResponder(arguments)
 
   const data = {
     deviceToken: deviceToken,
