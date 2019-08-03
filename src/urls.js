@@ -83,6 +83,7 @@ const Urls = {
   userObject            : objectId => `${Urls.users()}/${objectId}`,
   userRegister          : () => `${Urls.users()}/register`,
   userLogin             : () => `${Urls.users()}/login`,
+  guestLogin            : () => `${Urls.users()}/register/guest`,
   userLogout            : () => `${Urls.users()}/logout`,
   userRoles             : () => `${Urls.users()}/userroles`,
   userRoleOperation     : operation => `${Urls.users()}/${operation}`,

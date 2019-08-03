@@ -1049,8 +1049,14 @@ declare module __Backendless {
         loginSync(userName: string, password: string, stayLoggedIn?: boolean): Backendless.User;
         loginSync<T>(userName: string, password: string, stayLoggedIn?: boolean): T;
 
-        login(idenity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
-        login<T>(idenity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
+        login(identity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
+        login<T>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
+
+        loginAsGuestSync(stayLoggedIn?: boolean): Backendless.User;
+        loginAsGuestSync<T>(stayLoggedIn?: boolean): T;
+
+        loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
+        loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;
 
         loggedInUser(): boolean;
 
