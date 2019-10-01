@@ -64,11 +64,11 @@ function parseCircularDependencies(obj) {
   return result
 }
 
-export function parseFindResponse(response, Model) {
+export function parseFindResponse(response, Model, classToTableMap) {
   const sanitizeResponseItem = resp => {
     Model = Utils.isFunction(Model) ? Model : resolveModelClassFromString(resp.___class)
 
-    return Utils.deepExtend(new Model(), resp.fields || resp)
+    return Utils.deepExtend(new Model(), resp.fields || resp, classToTableMap)
   }
 
   const result = Utils.isArray(response)

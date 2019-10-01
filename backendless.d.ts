@@ -512,8 +512,9 @@ declare module __Backendless {
         model: Function | Object;
         className: string;
         restUrl: string;
+        classToTableMap: Object;
 
-        constructor(name: string | Object | Function);
+        constructor(name: string | Object | Function, classToTableMap: Object);
 
         save(obj: Object): Promise<Object>;
         save<T>(obj: T): Promise<T>;
@@ -622,6 +623,8 @@ declare module __Backendless {
         callStoredProcedure(spName: string, argumentValues: Object | string): Promise<Object>;
 
         callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
+
+        mapTableToClass(tableName: string, clientClass: Function);
     }
 
     /**

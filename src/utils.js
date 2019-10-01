@@ -97,12 +97,12 @@ const Utils = {
     return arr.map(item => encodeURIComponent(item)).join(',')
   },
 
-  deepExtend(destination, source) {
+  deepExtend(destination, source, classToTableMap = {}) {
     //TODO: refactor it
     for (const property in source) {
       if (source[property] !== undefined && source.hasOwnProperty(property)) {
         destination[property] = destination[property] || {}
-        destination[property] = classWrapper(source[property])
+        destination[property] = classWrapper(source[property], classToTableMap)
 
         if (
           destination[property]
@@ -111,7 +111,7 @@ const Utils = {
           && destination[property][property].hasOwnProperty('__originSubID')
         ) {
 
-          destination[property][property] = classWrapper(destination[property])
+          destination[property][property] = classWrapper(destination[property], classToTableMap)
         }
       }
     }
@@ -210,7 +210,7 @@ function isBrowser() {
   return (typeof self === 'object' && self.self === self) && (typeof window === 'object' && window === self)
 }
 
-function classWrapper(obj) {
+function classWrapper(obj, classToTableMap) {
   //TODO: refactor it
   const wrapper = obj => {
     let wrapperName = null
@@ -227,8 +227,8 @@ function classWrapper(obj) {
 
     if (wrapperName) {
       try {
-        Wrapper = eval(wrapperName)
-        obj = Utils.deepExtend(new Wrapper(), obj)
+        Wrapper = classToTableMap[wrapperName] || eval(wrapperName)
+        obj = Utils.deepExtend(new Wrapper(), obj, classToTableMap)
       } catch (e) {
       }
     }
