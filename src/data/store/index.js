@@ -15,14 +15,16 @@ const namespaceLabel = 'Backendless.Data.of(<ClassName>)'
 
 class DataStore {
 
-  constructor(model) {
+  constructor(model, classToTableMap) {
+    this.classToTableMap = classToTableMap
+
     if (Utils.isString(model)) {
       this.className = model
-      this.model = resolveModelClassFromString(this.className)
+      this.model = classToTableMap[this.className] || resolveModelClassFromString(this.className)
 
     } else {
       this.className = Utils.getClassName(model)
-      this.model = model
+      this.model = classToTableMap[this.className] || model
     }
 
     if (!this.className) {

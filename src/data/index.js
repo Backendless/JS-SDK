@@ -8,13 +8,15 @@ import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import { describe } from './describe'
 
+const classToTableMap = {}
+
 const Data = {
   Permissions              : Permissions,
   QueryBuilder             : QueryBuilder,
   LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
 
   of: function(model) {
-    return new Store(model)
+    return new Store(model, classToTableMap)
   },
 
   @deprecated('Backendless.Data', 'Backendless.Data.describe')
@@ -29,8 +31,15 @@ const Data = {
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   saveSync(className, obj, asyncHandler){
     return this.of(className).saveSync(obj, asyncHandler)
-  }
+  },
 
+  mapTableToClass(tableName, clientClass) {
+    if (!clientClass) {
+      throw new Error('Class is not defined')
+    }
+
+    classToTableMap[tableName] = clientClass
+  }
 }
 
 export default Data
