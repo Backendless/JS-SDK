@@ -34,8 +34,12 @@ const Data = {
   },
 
   mapTableToClass(tableName, clientClass) {
+    if (!tableName) {
+      throw new Error('Table name is not specified')
+    }
+
     if (!clientClass) {
-      throw new Error('Class is not defined')
+      throw new Error('Class is not specified')
     }
 
     classToTableMap[tableName] = clientClass
