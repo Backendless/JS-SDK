@@ -22,7 +22,7 @@ const wktToGeoJSON = wktString => {
 
   const white = () => matches(/^\s*/)
 
-  const multicoords = () => {
+  const getMultiCoordinates = () => {
     white()
 
     let depth = 0
@@ -74,7 +74,7 @@ const wktToGeoJSON = wktString => {
     return rings
   }
 
-  const coords = () => {
+  const getCoordinates = () => {
     const list = []
     let item
     let pt
@@ -116,9 +116,9 @@ const wktToGeoJSON = wktString => {
 
     white()
 
-    const c = coords()
+    const coordinates = getCoordinates()
 
-    if (!c) {
+    if (!coordinates) {
       return null
     }
 
@@ -128,7 +128,7 @@ const wktToGeoJSON = wktString => {
 
     return {
       type       : GeoTypes.POINT,
-      coordinates: c[0]
+      coordinates: coordinates[0]
     }
   }
 
@@ -143,9 +143,9 @@ const wktToGeoJSON = wktString => {
       return null
     }
 
-    const c = coords()
+    const coordinates = getCoordinates()
 
-    if (!c) {
+    if (!coordinates) {
       return null
     }
 
@@ -155,7 +155,7 @@ const wktToGeoJSON = wktString => {
 
     return {
       type       : GeoTypes.LINE_STRING,
-      coordinates: c
+      coordinates
     }
   }
 
@@ -166,15 +166,15 @@ const wktToGeoJSON = wktString => {
 
     white()
 
-    const c = multicoords()
+    const coordinates = getMultiCoordinates()
 
-    if (!c) {
+    if (!coordinates) {
       return null
     }
 
     return {
       type       : GeoTypes.POLYGON,
-      coordinates: c
+      coordinates
     }
   }
 
