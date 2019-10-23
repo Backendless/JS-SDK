@@ -36,27 +36,8 @@ class Polygon extends Geometry {
     srs = srs || SpatialReferenceSystem.DEFAULT
     super(srs)
 
-    if (!boundary) {
-      throw new Error('The \'boundary\' argument is required.')
-    }
-
-    if (!(boundary instanceof LineString)) {
-      boundary = new LineString(boundary, srs)
-    }
-
-    checkConsistence(boundary, srs)
-
-    if (holes && holes.length > 0) {
-      for (const hole of holes) {
-        checkConsistence(hole, srs)
-      }
-
-      this.holes = holes
-    } else {
-      this.holes = []
-    }
-
-    this.boundary = boundary
+    this.setBoundary(boundary)
+    this.setHoles(holes)
   }
 
   validate() {
@@ -72,7 +53,16 @@ class Polygon extends Geometry {
   }
 
   setBoundary(boundary) {
+    if (!boundary) {
+      throw new Error('The \'boundary\' argument is required.')
+    }
+
+    if (!(boundary instanceof LineString)) {
+      boundary = new LineString(boundary, this.srs)
+    }
+
     checkConsistence(boundary, this.srs)
+
     this.boundary = boundary
 
     return this
@@ -83,11 +73,15 @@ class Polygon extends Geometry {
   }
 
   setHoles(holes) {
-    for (const hole of holes) {
-      checkConsistence(hole, this.srs)
-    }
+    if (holes && holes.length > 0) {
+      for (const hole of holes) {
+        checkConsistence(hole, this.srs)
+      }
 
-    this.holes = holes
+      this.holes = holes
+    } else {
+      this.holes = []
+    }
 
     return this
   }

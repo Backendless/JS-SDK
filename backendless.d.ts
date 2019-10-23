@@ -2,9 +2,7 @@
  * @global
  * @namespace Backendless
  */
-declare module __Backendless {
-    import Backendless = __Backendless;
-
+declare module Backendless {
     var debugMode: boolean;
     var serverURL: string;
     var applicationId: string;
@@ -21,7 +19,6 @@ declare module __Backendless {
      * @dictionary
      */
     var PublishOptionsHeaders: { [key: string]: string; };
-
 
     /**
      * @public
@@ -41,14 +38,237 @@ declare module __Backendless {
     var LocalCache: Backendless.LocalCacheI;
 
     /**
-     * @namespace Backendless.Persistence
-     **/
-    var Persistence: Backendless.PersistenceClass;
-
-    /**
+     * @public
      * @namespace Backendless.Data
-     **/
-    var Data: Backendless.PersistenceClass;
+     */
+    namespace Data {
+
+        /**
+         * @private
+         */
+        interface PersistencePermissionI {
+            /** @deprecated */
+            grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        }
+
+        /**
+         * @public
+         * @interface Backendless.Data.Permissions
+         */
+        namespace Permissions {
+            const FIND: PersistencePermissionI;
+            const REMOVE: PersistencePermissionI;
+            const UPDATE: PersistencePermissionI;
+        }
+
+        namespace SpatialReferenceSystem {
+            class SpatialType {
+                constructor(spatialType: { srsId: string, name: string });
+
+                getSRSId(): string;
+
+                getName(): string;
+
+                toString(): string;
+            }
+
+            const CARTESIAN: SpatialType;
+            const PULKOVO_1995: SpatialType;
+            const WGS84: SpatialType;
+            const WGS84_PSEUDO_MERCATOR: SpatialType;
+            const WGS84_WORLD_MERCATOR: SpatialType;
+            const DEFAULT: SpatialType;
+
+            function valueBySRSId(srsId: string): SpatialType;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.Geometry
+         */
+        class Geometry {
+            constructor(srs: SpatialReferenceSystem.SpatialType);
+
+            getSRS(): SpatialReferenceSystem.SpatialType;
+
+            asGeoJSON(): String;
+
+            asWKT(): String;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.Point
+         */
+        class Point extends Geometry {
+            constructor(srs?: SpatialReferenceSystem.SpatialType);
+
+            validate(): void;
+
+            getX(): Number;
+
+            getY(): Number;
+
+            getLongitude(): Number;
+
+            getLatitude(): Number;
+
+            setX(x: Number): Point;
+
+            setY(y: Number): Point;
+
+            setLongitude(x: Number): Point;
+
+            setLatitude(y: Number): Point;
+
+            setSrs(srs: Object): Point;
+
+            getGeojsonType(): String;
+
+            getWktType(): String;
+
+            wktCoordinatePairs(): String;
+
+            jsonCoordinatePairs(): String;
+
+            equals(o: Object): Boolean;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.LineString
+         */
+        class LineString extends Geometry {
+            constructor(points: Point[], srs?: SpatialReferenceSystem.SpatialType);
+
+            getPoints(): Point[];
+
+            setPoints(points: Point[]): LineString;
+
+            getGeojsonType(): String;
+
+            getWktType(): String;
+
+            jsonCoordinatePairs(): String;
+
+            wktCoordinatePairs(): String;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.Polygon
+         */
+        class Polygon extends Geometry {
+            constructor(boundary: LineString | Point[], holes?: LineString[], srs?: SpatialReferenceSystem.SpatialType);
+
+            validate(): void;
+
+            getBoundary(): LineString;
+
+            setBoundary(boundary: LineString): Polygon;
+
+            getHoles(): LineString[];
+
+            setHoles(holes: LineString[]): Polygon;
+
+            getGeojsonType(): String;
+
+            getWktType(): String;
+
+            jsonCoordinatePairs(): String;
+
+            wktCoordinatePairs(): String;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.GeoJSONParser
+         */
+        class GeoJSONParser {
+            constructor(srs: SpatialReferenceSystem.SpatialType);
+
+            read(geoJSON: String): Geometry;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.WKTParser
+         */
+        class WKTParser {
+            constructor(srs: SpatialReferenceSystem.SpatialType);
+
+            read(wktString: String): Geometry;
+        }
+
+        function of(model: string | Object | Function): Backendless.DataStore;
+
+        function save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
+
+        function saveSync(model: Backendless.DataStore | string, data: Object): Object;
+
+        function getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
+
+        function getViewSync(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Object;
+
+        function describe(model: string | Object | Function): Promise<Object>;
+
+        function describeSync(model: string | Object | Function): Object;
+
+        function callStoredProcedure(spName: string, argumentValues: Object | string): Promise<Object>;
+
+        function callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
+
+        function mapTableToClass(tableName: string, clientClass: Function);
+    }
 
     /**
      * @namespace Backendless.UserService
@@ -596,54 +816,9 @@ declare module __Backendless {
 
     /**
      * @private
-     * @class Persistence
-     * @refers {@link Backendless.Persistence}
+     * @interface Backendless.Geo
      */
-    class PersistenceClass {
-
-        /**
-         * @namespace Backendless.Persistence.Permissions
-         **/
-        Permissions: PersistencePermissionsClass;
-
-        of(model: string | Object | Function): Backendless.DataStore;
-
-        save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
-
-        saveSync(model: Backendless.DataStore | string, data: Object): Object;
-
-        getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
-
-        getViewSync(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Object;
-
-        describe(model: string | Object | Function): Promise<Object>;
-
-        describeSync(model: string | Object | Function): Object;
-
-        callStoredProcedure(spName: string, argumentValues: Object | string): Promise<Object>;
-
-        callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
-
-        mapTableToClass(tableName: string, clientClass: Function);
-    }
-
-    /**
-     * @private
-     * @class PersistencePermissions
-     * @refers {@link Backendless.Persistence.Permissions}
-     */
-    class PersistencePermissionsClass {
-        FIND: PersistencePermissionI;
-        REMOVE: PersistencePermissionI;
-        UPDATE: PersistencePermissionI;
-    }
-
-    /**
-     * @private
-     * @class Geo
-     * @refers {@link Backendless.Geo}
-     */
-    class GeoClass {
+    interface GeoClass {
         restUrl: string;
 
         UNITS: Object;
@@ -658,9 +833,11 @@ declare module __Backendless {
         find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
         getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
+
         getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
 
         getGeopointCountSync(fenceName: string, query: Backendless.GeoQueryI): number
+
         getGeopointCountSync(query: Backendless.GeoQueryI): number
 
         deletePointSync(point: string | Backendless.GeoPoint): string;
@@ -720,7 +897,7 @@ declare module __Backendless {
 
     /**
      * @private
-     * @class Messaging
+     * @class Backendless.Messaging
      * @refers {@link Backendless.Messaging}
      */
     class MessagingClass {
@@ -1125,59 +1302,6 @@ declare module __Backendless {
         getLogger(name: string): Backendless.Logger;
     }
 
-    interface PersistencePermissionI {
-        /** @deprecated */
-        grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-    }
 
     interface FilePermissionI {
         /** @deprecated */
@@ -1343,10 +1467,6 @@ declare module __Backendless {
     }
 }
 
-import Backendless = __Backendless;
-
 declare module 'backendless' {
-    import Backendless = __Backendless;
-
     export default Backendless;
 }
