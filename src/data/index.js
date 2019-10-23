@@ -8,14 +8,33 @@ import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import { describe } from './describe'
 
+import Point from './geo/point'
+import LineString from './geo/linestring'
+import Polygon from './geo/polygon'
+import Geometry from './geo/geometry'
+import SpatialReferenceSystem from './geo/spatial-reference-system'
+import WKTParser from './geo/wkt-parser'
+import GeoJSONParser from './geo/geo-json-parser'
+
 const classToTableMap = {}
 
 const Data = {
-  Permissions              : Permissions,
+  Permissions: Permissions,
+
   QueryBuilder             : QueryBuilder,
   LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
 
-  of: function(model) {
+  Point     : Point,
+  LineString: LineString,
+  Polygon   : Polygon,
+  Geometry  : Geometry,
+
+  GeoJSONParser: GeoJSONParser,
+  WKTParser    : WKTParser,
+
+  SpatialReferenceSystem: SpatialReferenceSystem,
+
+  of: function (model) {
     return new Store(model, classToTableMap)
   },
 
@@ -24,12 +43,12 @@ const Data = {
   describe    : Utils.promisified(describe),
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  save(className, obj){
+  save(className, obj) {
     return this.of(className).save(obj)
   },
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  saveSync(className, obj, asyncHandler){
+  saveSync(className, obj, asyncHandler) {
     return this.of(className).saveSync(obj, asyncHandler)
   },
 
