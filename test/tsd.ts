@@ -189,8 +189,8 @@ function testDataGeometry() {
 
     geometry = new Backendless.Data.Geometry(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
     srs = geometry.getSRS();
-    const geoJSON: string = geometry.asGeoJSON()
-    const wktString: string = geometry.asWKT()
+    const geoJSON: string = geometry.toGeoJSON();
+    const wktString: string = geometry.toWKT();
 }
 
 function testDataPoint() {
@@ -232,6 +232,7 @@ function testDataLineString() {
     const wktString: string = lineString.getWktType();
     const wktCoordinatePairs: string = lineString.wktCoordinatePairs();
     const jsonCoordinatePairs: string = lineString.jsonCoordinatePairs();
+    const validationResult: void = lineString.validate();
 }
 
 function testDataPolygon() {
@@ -258,6 +259,7 @@ function testDataPolygon() {
     const wktString: string = polygon.getWktType();
     const wktCoordinatePairs: string = polygon.wktCoordinatePairs();
     const jsonCoordinatePairs: string = polygon.jsonCoordinatePairs();
+    const validationResult: void = polygon.validate();
 }
 
 function testData() {

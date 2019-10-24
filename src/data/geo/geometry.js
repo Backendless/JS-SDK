@@ -11,19 +11,19 @@ class Geometry {
     return this.srs
   }
 
-  asGeoJSON() {
+  toGeoJSON() {
     return JSON.stringify({
       type       : this.getGeojsonType(),
       coordinates: this.jsonCoordinatePairs()
     })
   }
 
-  asWKT() {
+  toWKT() {
     return this.getWktType() + '(' + this.wktCoordinatePairs() + ')'
   }
 
   toString() {
-    return '\'' + this.asWKT() + '\''
+    return '\'' + this.toWKT() + '\''
   }
 }
 

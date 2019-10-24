@@ -13,30 +13,14 @@ const POINTS_NUMBER_ERROR_MSG = 'The number of points must be greater than two.'
 
 const NOT_ARRAY_ERROR_MSG = 'Points argument should be an array'
 
-const validate = (points, srs) => {
-  if (!Array.isArray(points)) {
-    throw new Error(NOT_ARRAY_ERROR_MSG)
-  }
-
-  if (points.length < 2) {
-    throw new Error(POINTS_NUMBER_ERROR_MSG)
-  }
-
-  for (const point of points) {
-    if (point.getSRS() !== srs) {
-      throw new Error(DIFFERENT_SRS_ERROR_MSG)
-    }
-  }
-}
-
 class LineString extends Geometry {
   constructor(points, srs) {
-    srs = srs || SpatialReferenceSystem.DEFAULT
+    srs = srs || arguments.length > 1 ? null : SpatialReferenceSystem.DEFAULT
     points = points || []
 
     super(srs)
 
-    validate(points, srs)
+    this.validate(points)
     this.points = points
   }
 
@@ -45,7 +29,7 @@ class LineString extends Geometry {
   }
 
   setPoints(points) {
-    validate(points, this.srs)
+    this.validate(points)
     this.points = points
 
     return this
@@ -73,6 +57,22 @@ class LineString extends Geometry {
     return this.getPoints()
       .map(point => `${ point.getX() } ${ point.getY() }`)
       .join(',')
+  }
+
+  validate = points => {
+    if (!Array.isArray(points)) {
+      throw new Error(NOT_ARRAY_ERROR_MSG)
+    }
+
+    if (points.length < 2) {
+      throw new Error(POINTS_NUMBER_ERROR_MSG)
+    }
+
+    for (const point of points) {
+      if (point.getSRS() !== this.srs) {
+        throw new Error(DIFFERENT_SRS_ERROR_MSG)
+      }
+    }
   }
 }
 

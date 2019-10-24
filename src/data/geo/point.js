@@ -22,7 +22,7 @@ const validateY = (y, srs) => {
 
 export default class Point extends Geometry {
   constructor(srs) {
-    srs = srs || SpatialReferenceSystem.DEFAULT
+    srs = srs || arguments.length > 0 ? null : SpatialReferenceSystem.DEFAULT
 
     super(srs)
   }
@@ -68,12 +68,6 @@ export default class Point extends Geometry {
 
   setLatitude(y) {
     return this.setY(y)
-  }
-
-  setSrs(srs) {
-    this.srs = srs
-
-    return this
   }
 
   getGeojsonType() {

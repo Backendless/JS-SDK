@@ -165,9 +165,9 @@ declare module Backendless {
 
             getSRS(): SpatialReferenceSystem.SpatialType;
 
-            asGeoJSON(): string;
+            toGeoJSON(): string;
 
-            asWKT(): string;
+            toWKT(): string;
         }
 
         /**
@@ -226,6 +226,8 @@ declare module Backendless {
             jsonCoordinatePairs(): string;
 
             wktCoordinatePairs(): string;
+
+            validate(): void;
         }
 
         /**

@@ -50,15 +50,23 @@ const SpatialReferenceSystem = {
   WGS84_WORLD_MERCATOR,
   DEFAULT: WGS84,
 
+  SRS_MAP: {},
+
   valueBySRSId(srsId) {
-    for (const spatialType in this) {
-      if (this[spatialType] instanceof SpatialType && this[spatialType].getSRSId() === srsId) {
-        return this[spatialType]
-      }
+    if (!SpatialReferenceSystem.SRS_MAP[srsId]) {
+      throw new Error(`SpatialReferenceSystem doesn\'t contain value with id ${ srsId }`)
     }
 
-    throw new Error(`SpatialReferenceSystem doesn\'t contain value with id ${ srsId }`)
+    return SpatialReferenceSystem.SRS_MAP[srsId]
   }
 }
+
+Object.keys(SpatialReferenceSystem).forEach(type => {
+  if (SpatialReferenceSystem[type] instanceof SpatialType) {
+    const spatialType = SpatialReferenceSystem[type]
+
+    SpatialReferenceSystem.SRS_MAP[spatialType.getSRSId()] = spatialType
+  }
+})
 
 export default SpatialReferenceSystem

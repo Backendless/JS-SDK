@@ -33,7 +33,8 @@ const checkConsistence = (lineString, srs) => {
 
 class Polygon extends Geometry {
   constructor(boundary, holes, srs) {
-    srs = srs || SpatialReferenceSystem.DEFAULT
+    srs = srs || arguments.length > 2 ? null : SpatialReferenceSystem.DEFAULT
+
     super(srs)
 
     this.setBoundary(boundary)
