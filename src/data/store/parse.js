@@ -69,6 +69,7 @@ const geoClasses = [
   'com.backendless.persistence.Polygon',
   'com.backendless.persistence.LineString',
   'com.backendless.persistence.Point',
+  'com.backendless.persistence.Geometry',
 ]
 
 const castGeoColumns = item => {

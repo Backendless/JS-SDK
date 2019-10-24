@@ -2,9 +2,7 @@ import SpatialReferenceSystem from './spatial-reference-system'
 
 class Geometry {
   constructor(srs) {
-    srs = srs || SpatialReferenceSystem.DEFAULT
-
-    this.srs = srs
+    this.srs = srs || SpatialReferenceSystem.DEFAULT
   }
 
   getSRS() {
