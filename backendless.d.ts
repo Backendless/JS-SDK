@@ -647,44 +647,45 @@ declare module Backendless {
             ASYNC_LOW_PRIORITY: string,
         }
 
-        /**
-         * @public
-         * @namespace Backendless.BL.CustomServices
-         **/
-        namespace CustomServices {
-            function invokeSync(serviceName: string, method: string, parameters: Object): any;
+        export interface CustomServicesI {
+            invokeSync(serviceName: string, method: string, parameters: Object): any;
 
-            function invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
-            function invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
-            function invoke(serviceName: string, method: string, executionType: string): Promise<any>;
+            invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
+
+            invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
+
+            invoke(serviceName: string, method: string, executionType: string): Promise<any>;
         }
 
-        let Events: {
+        /**
+         * @public
+         * @interface CustomServicesI
+         * @namespace Backendless.BL.CustomServices
+         **/
+        let CustomServices: CustomServicesI;
+
+        export interface EventsI {
             restUrl: string;
 
             dispatchSync(eventName: string, eventArgs: Object): Object;
 
             dispatch(eventName: string): Promise<Object>;
+
             dispatch(eventName: string, eventArgs: Object): Promise<Object>;
+
             dispatch(eventName: string, eventArgs: Object, executionType: string): Promise<Object>;
+
             dispatch(eventName: string, executionType: string): Promise<Object>;
         }
+
+        let Events: EventsI
     }
 
     /**
      * @public
      * @namespace Backendless.Events
      **/
-    namespace Events {
-        let restUrl: string;
-
-        function dispatchSync(eventName: string, eventArgs: Object): Object;
-
-        function dispatch(eventName: string): Promise<Object>;
-        function dispatch(eventName: string, eventArgs: Object): Promise<Object>;
-        function dispatch(eventName: string, eventArgs: Object, executionType: string): Promise<Object>;
-        function dispatch(eventName: string, executionType: string): Promise<Object>;
-    }
+    let Events: Backendless.BL.EventsI;
 
     /**
      * @public
@@ -763,13 +764,7 @@ declare module Backendless {
      * @public
      * @namespace Backendless.CustomServices
      **/
-    namespace CustomServices {
-        function invokeSync(serviceName: string, method: string, parameters: Object): any;
-
-        function invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
-        function invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
-        function invoke(serviceName: string, method: string, executionType: string): Promise<any>;
-    }
+    let CustomServices: Backendless.BL.CustomServicesI;
 
     /**
      * @public
