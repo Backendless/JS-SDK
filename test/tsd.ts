@@ -186,29 +186,21 @@ function testPersistence() {
 function testDataGeometry() {
     let geometry: Backendless.Data.Geometry;
     let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
-    let geoJSON: String;
-    let wktString: String;
 
     geometry = new Backendless.Data.Geometry(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
     srs = geometry.getSRS();
-    geoJSON = geometry.asGeoJSON()
-    wktString = geometry.asWKT()
+    const geoJSON: string = geometry.asGeoJSON()
+    const wktString: string = geometry.asWKT()
 }
 
 function testDataPoint() {
     let point: Backendless.Data.Point;
-    let validationResult: void;
     let coordinate: Number;
     let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
-    let geoJSON: String;
-    let wktString: String;
-    let wktCoordinatePairs: String;
-    let jsonCoordinatePairs: String;
-    let equals: Boolean;
 
     point = new Backendless.Data.Point();
     point = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
-    validationResult = point.validate();
+    const validationResult: void = point.validate();
     coordinate = point.getX();
     coordinate = point.getY();
     coordinate = point.getLongitude();
@@ -218,20 +210,16 @@ function testDataPoint() {
     point = point.setLatitude(coordinate);
     point = point.setLongitude(coordinate);
     point = point.setSrs(srs);
-    geoJSON = point.getGeojsonType();
-    wktString = point.getWktType();
-    wktCoordinatePairs = point.wktCoordinatePairs();
-    jsonCoordinatePairs = point.jsonCoordinatePairs();
-    equals = point.equals(point);
+    const geoJSON: string = point.getGeojsonType();
+    const wktString: string = point.getWktType();
+    const wktCoordinatePairs: string = point.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = point.jsonCoordinatePairs();
+    const equals: boolean = point.equals(point);
 }
 
 function testDataLineString() {
     let lineString: Backendless.Data.LineString;
     let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
-    let geoJSON: String;
-    let wktString: String;
-    let wktCoordinatePairs: String;
-    let jsonCoordinatePairs: String;
     let point1 = new Backendless.Data.Point();
     let point2 = new Backendless.Data.Point();
     let points = [point1, point2];
@@ -240,20 +228,16 @@ function testDataLineString() {
     lineString = new Backendless.Data.LineString(points, srs);
     points = lineString.getPoints();
     lineString = lineString.setPoints(points);
-    geoJSON = lineString.getGeojsonType();
-    wktString = lineString.getWktType();
-    wktCoordinatePairs = lineString.wktCoordinatePairs();
-    jsonCoordinatePairs = lineString.jsonCoordinatePairs();
+    const geoJSON: string = lineString.getGeojsonType();
+    const wktString: string = lineString.getWktType();
+    const wktCoordinatePairs: string = lineString.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = lineString.jsonCoordinatePairs();
 }
 
 function testDataPolygon() {
     let polygon: Backendless.Data.Polygon;
     let lineStringType: Backendless.Data.LineString;
     let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
-    let geoJSON: String;
-    let wktString: String;
-    let wktCoordinatePairs: String;
-    let jsonCoordinatePairs: String;
     let point1 = new Backendless.Data.Point();
     let point2 = new Backendless.Data.Point();
     let points = [point1, point2];
@@ -270,10 +254,10 @@ function testDataPolygon() {
     lineStringsArray = polygon.getHoles();
     polygon = polygon.setHoles(lineStringsArray);
     lineStringType = polygon.getBoundary();
-    geoJSON = polygon.getGeojsonType();
-    wktString = polygon.getWktType();
-    wktCoordinatePairs = polygon.wktCoordinatePairs();
-    jsonCoordinatePairs = polygon.jsonCoordinatePairs();
+    const geoJSON: string = polygon.getGeojsonType();
+    const wktString: string = polygon.getWktType();
+    const wktCoordinatePairs: string = polygon.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = polygon.jsonCoordinatePairs();
 }
 
 function testData() {

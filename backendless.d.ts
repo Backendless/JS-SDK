@@ -165,9 +165,9 @@ declare module Backendless {
 
             getSRS(): SpatialReferenceSystem.SpatialType;
 
-            asGeoJSON(): String;
+            asGeoJSON(): string;
 
-            asWKT(): String;
+            asWKT(): string;
         }
 
         /**
@@ -197,15 +197,15 @@ declare module Backendless {
 
             setSrs(srs: Object): Point;
 
-            getGeojsonType(): String;
+            getGeojsonType(): string;
 
-            getWktType(): String;
+            getWktType(): string;
 
-            wktCoordinatePairs(): String;
+            wktCoordinatePairs(): string;
 
-            jsonCoordinatePairs(): String;
+            jsonCoordinatePairs(): string;
 
-            equals(o: Object): Boolean;
+            equals(o: Object): boolean;
         }
 
         /**
@@ -219,13 +219,13 @@ declare module Backendless {
 
             setPoints(points: Point[]): LineString;
 
-            getGeojsonType(): String;
+            getGeojsonType(): string;
 
-            getWktType(): String;
+            getWktType(): string;
 
-            jsonCoordinatePairs(): String;
+            jsonCoordinatePairs(): string;
 
-            wktCoordinatePairs(): String;
+            wktCoordinatePairs(): string;
         }
 
         /**
@@ -245,13 +245,13 @@ declare module Backendless {
 
             setHoles(holes: LineString[]): Polygon;
 
-            getGeojsonType(): String;
+            getGeojsonType(): string;
 
-            getWktType(): String;
+            getWktType(): string;
 
-            jsonCoordinatePairs(): String;
+            jsonCoordinatePairs(): string;
 
-            wktCoordinatePairs(): String;
+            wktCoordinatePairs(): string;
         }
 
         /**
@@ -261,7 +261,7 @@ declare module Backendless {
         class GeoJSONParser {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
-            read(geoJSON: String): Geometry;
+            read(geoJSON: string): Geometry;
         }
 
         /**
@@ -271,7 +271,7 @@ declare module Backendless {
         class WKTParser {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
-            read(wktString: String): Geometry;
+            read(wktString: string): Geometry;
         }
 
         function of(model: string | Object | Function): Backendless.DataStore;
