@@ -1,35 +1,13 @@
 import Geometry from './geometry'
-import SpatialReferenceSystem from './spatial-reference-system'
 import { GeoTypes } from './constants'
 
 const GEOJSON_TYPE = GeoTypes.POINT
 const WKT_TYPE = GEOJSON_TYPE.toUpperCase()
 const PRECISION = .000000001
 
-const VALIDATION_MSG = 'In geospatial systems \'longitude\'(x) and \'latitude\'(y) should have correct values.'
-
-const validateX = (x, srs) => {
-  if ((srs === SpatialReferenceSystem.WGS84 || srs === SpatialReferenceSystem.PULKOVO_1995) && (x > 180 || x < -180)) {
-    throw new Error(VALIDATION_MSG)
-  }
-}
-
-const validateY = (y, srs) => {
-  if ((srs === SpatialReferenceSystem.WGS84 || srs === SpatialReferenceSystem.PULKOVO_1995) && (y > 90 || y < -90)) {
-    throw new Error(VALIDATION_MSG)
-  }
-}
-
 export default class Point extends Geometry {
   constructor(srs) {
-    srs = srs || arguments.length > 0 ? null : SpatialReferenceSystem.DEFAULT
-
     super(srs)
-  }
-
-  validate() {
-    validateX(this.x, this.srs)
-    validateY(this.y, this.srs)
   }
 
   getX() {
@@ -49,14 +27,12 @@ export default class Point extends Geometry {
   }
 
   setX(x) {
-    validateX(x, this.srs)
     this.x = x
 
     return this
   }
 
   setY(y) {
-    validateY(y, this.srs)
     this.y = y
 
     return this

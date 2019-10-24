@@ -2,6 +2,7 @@ import Point from './point'
 import LineString from './linestring'
 import Polygon from './polygon'
 import { GeoTypes } from './constants'
+import SpatialReferenceSystem from './spatial-reference-system'
 
 const pointConstructor = (coordinates, srs) => {
   const [x, y] = coordinates
@@ -30,6 +31,7 @@ const Constructors = {
 
 export default function (geoObject, srs) {
   const constructor = Constructors[geoObject.type]
+  srs = srs || SpatialReferenceSystem.valueBySRSId(geoObject.srsId)
 
   if (constructor) {
     return constructor(geoObject.coordinates, srs)

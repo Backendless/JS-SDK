@@ -1,5 +1,6 @@
 import Utils from '../../utils'
 import { resolveModelClassFromString } from '../utils'
+import constructGeoObject from '../geo/geo-constructor'
 
 function isObject(item) {
   return typeof item === 'object' && item !== null
@@ -64,16 +65,40 @@ function parseCircularDependencies(obj) {
   return result
 }
 
+const geoClasses = [
+  'com.backendless.persistence.Polygon',
+  'com.backendless.persistence.LineString',
+  'com.backendless.persistence.Point',
+]
+
+const castGeoColumns = item => {
+  for (const field in item) {
+    const value = item[field]
+    const valueIsObject = typeof value === 'object' && value !== null
+    const valueIsArray = Array.isArray(value)
+
+    if (valueIsObject && !valueIsArray && geoClasses.includes(value.__class)) {
+      item[field] = constructGeoObject(value)
+    } else if (valueIsArray) {
+      value.map(castGeoColumns)
+    }
+  }
+
+  return item
+}
+
 export function parseFindResponse(response, Model, classToTableMap) {
+  const parseResponseItem = item => {
+    return sanitizeResponseItem(castGeoColumns(item))
+  }
+
   const sanitizeResponseItem = resp => {
     Model = Utils.isFunction(Model) ? Model : resolveModelClassFromString(resp.___class)
 
     return Utils.deepExtend(new Model(), resp.fields || resp, classToTableMap)
   }
 
-  const result = Utils.isArray(response)
-    ? response.map(sanitizeResponseItem)
-    : sanitizeResponseItem(response)
-
-  return parseCircularDependencies(result)
+  return Utils.isArray(response)
+    ? parseCircularDependencies(response).map(parseResponseItem)
+    : parseResponseItem(parseCircularDependencies(response))
 }

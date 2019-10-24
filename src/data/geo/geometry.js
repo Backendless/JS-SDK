@@ -1,8 +1,8 @@
+import SpatialReferenceSystem from './spatial-reference-system'
+
 class Geometry {
   constructor(srs) {
-    if (srs == null) {
-      throw new Error('Spatial Reference System (SRS) cannot be null.')
-    }
+    srs = srs || SpatialReferenceSystem.DEFAULT
 
     this.srs = srs
   }
