@@ -1,6 +1,7 @@
 import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
+import LocalVars from '../local-vars'
 import Async from '../request/async'
 
 import User from './user'
@@ -30,7 +31,7 @@ function enrichWithLocaleInfo(user) {
 
 function getClientLanguage() {
   if (typeof navigator === 'undefined') {
-    return 'en'
+    return LocalVars.defaultUserLang
   }
 
   let language = ''
@@ -42,7 +43,7 @@ function getClientLanguage() {
       || navigator.language
       || navigator.browserLanguage
       || navigator.systemLanguage
-      || 'en'
+      || LocalVars.defaultUserLang
   }
 
   return language.slice(0, 2).toLowerCase()
