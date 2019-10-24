@@ -36,7 +36,7 @@ class LineString extends Geometry {
       pointsArray.push([point.getX(), point.getY()])
     })
 
-    return JSON.stringify(pointsArray)
+    return pointsArray
   }
 
   wktCoordinatePairs() {

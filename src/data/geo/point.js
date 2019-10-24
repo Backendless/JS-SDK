@@ -59,7 +59,7 @@ export default class Point extends Geometry {
   }
 
   jsonCoordinatePairs() {
-    return JSON.stringify([this.x, this.y])
+    return [this.x, this.y]
   }
 
   equals(point) {

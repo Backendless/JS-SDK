@@ -50,10 +50,11 @@ class Polygon extends Geometry {
   }
 
   jsonCoordinatePairs() {
-    const boundariesList = []
+    const outerBoundaries = []
+    const innerBoundaries = []
 
     this.getBoundary().getPoints().forEach(point => {
-      boundariesList.push([point.getX(), point.getY()])
+      outerBoundaries.push([point.getX(), point.getY()])
     })
 
     this.holes.forEach(hole => {
@@ -61,10 +62,10 @@ class Polygon extends Geometry {
 
       hole.getPoints().forEach(point => holeBoundaries.push([point.getX(), point.getY()]))
 
-      boundariesList.push(holeBoundaries)
+      innerBoundaries.push(holeBoundaries)
     })
 
-    return JSON.stringify(boundariesList)
+    return [outerBoundaries, ...innerBoundaries]
   }
 
   wktCoordinatePairs() {

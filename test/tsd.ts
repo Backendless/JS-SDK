@@ -191,6 +191,9 @@ function testDataGeometry() {
     srs = geometry.getSRS();
     const geoJSON: string = geometry.toGeoJSON();
     const wktString: string = geometry.toWKT();
+
+    geometry = Backendless.Data.Geometry.fromGeoJSON('{"type":"Point","coordinates":[10,20]}')
+    geometry = Backendless.Data.Geometry.fromWKT('POINT(10 20)')
 }
 
 function testDataPoint() {

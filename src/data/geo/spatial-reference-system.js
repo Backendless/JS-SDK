@@ -53,10 +53,6 @@ const SpatialReferenceSystem = {
   SRS_MAP: {},
 
   valueBySRSId(srsId) {
-    if (!SpatialReferenceSystem.SRS_MAP[srsId]) {
-      throw new Error(`SpatialReferenceSystem doesn\'t contain value with id ${ srsId }`)
-    }
-
     return SpatialReferenceSystem.SRS_MAP[srsId]
   }
 }

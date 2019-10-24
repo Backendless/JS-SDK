@@ -163,6 +163,10 @@ declare module Backendless {
         class Geometry {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
+            static fromWKT(wellKnownText: string, srs?: SpatialReferenceSystem.SpatialType): Point|LineString|Polygon;
+
+            static fromGeoJSON(geoJSON: string, srs?: SpatialReferenceSystem.SpatialType): Point|LineString|Polygon;
+
             getSRS(): SpatialReferenceSystem.SpatialType;
 
             toGeoJSON(): string;
@@ -241,7 +245,7 @@ declare module Backendless {
 
             getBoundary(): LineString;
 
-            setBoundary(boundary: LineString): Polygon;
+            setBoundary(boundary: LineString | Point[]): Polygon;
 
             getHoles(): LineString[];
 
@@ -263,7 +267,7 @@ declare module Backendless {
         class GeoJSONParser {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
-            read(geoJSON: string): Geometry;
+            read(geoJSON: string): Point|LineString|Polygon;
         }
 
         /**
@@ -273,7 +277,7 @@ declare module Backendless {
         class WKTParser {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
-            read(wktString: string): Geometry;
+            read(wktString: string): Point|LineString|Polygon;
         }
 
         function of(model: string | Object | Function): Backendless.DataStore;
