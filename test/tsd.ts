@@ -8,6 +8,7 @@ function testMain() {
     const secretKey: string = Backendless.secretKey;
     const serverURL: string = Backendless.serverURL;
     const appPath: string = Backendless.appPath;
+    const defaultUserLang: string = Backendless.defaultUserLang;
     const browser: { browser: string, version: string } = Backendless.browser;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');

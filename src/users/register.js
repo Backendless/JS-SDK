@@ -1,6 +1,7 @@
 import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
+import LocalVars from '../local-vars'
 import Async from '../request/async'
 
 import User from './user'
@@ -14,17 +15,45 @@ export function register(user /** async */) {
     url         : Urls.userRegister(),
     isAsync     : isAsync,
     asyncHandler: responder && wrapAsync(responder),
-    data        : user
+    data        : enrichWithLocaleInfo(user)
   })
 
   return isAsync ? result : parseResponse(result)
+}
+
+function enrichWithLocaleInfo(user) {
+  if (!user.blUserLocale) {
+    user.blUserLocale = getClientLanguage()
+  }
+
+  return user
+}
+
+function getClientLanguage() {
+  if (typeof navigator === 'undefined') {
+    return LocalVars.defaultUserLang
+  }
+
+  let language = ''
+
+  if (navigator.languages && navigator.languages.length) {
+    language = navigator.languages[0]
+  } else {
+    language = navigator.userLanguage
+      || navigator.language
+      || navigator.browserLanguage
+      || navigator.systemLanguage
+      || LocalVars.defaultUserLang
+  }
+
+  return language.slice(0, 2).toLowerCase()
 }
 
 function parseResponse(data) {
   return Utils.deepExtend(new User(), data)
 }
 
-function wrapAsync(asyncHandler){
+function wrapAsync(asyncHandler) {
   const onSuccess = data => asyncHandler.success(parseResponse(data))
   const onError = error => asyncHandler.fault(error)
 
