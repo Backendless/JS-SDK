@@ -76,12 +76,12 @@ const Backendless = {
     LocalVars.ServerCode = ServerCode
   },
 
-  get defaultUserLang() {
-    return LocalVars.defaultUserLang
+  get defaultUserLocale() {
+    return LocalVars.defaultUserLocale
   },
 
-  set defaultUserLang(lang) {
-    LocalVars.defaultUserLang = lang
+  set defaultUserLocale(locale) {
+    LocalVars.defaultUserLocale = locale
   },
 
   initApp(...args) {

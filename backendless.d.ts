@@ -11,7 +11,7 @@ declare module __Backendless {
     var secretKey: string;
     var appPath: string;
     var XMLHttpRequest: any;
-    var defaultUserLang: string;
+    var defaultUserLocale: string;
 
     var browser: {
         browser: string;

@@ -31,7 +31,7 @@ function enrichWithLocaleInfo(user) {
 
 function getClientLanguage() {
   if (typeof navigator === 'undefined') {
-    return LocalVars.defaultUserLang
+    return LocalVars.defaultUserLocale
   }
 
   let language = ''
@@ -43,7 +43,7 @@ function getClientLanguage() {
       || navigator.language
       || navigator.browserLanguage
       || navigator.systemLanguage
-      || LocalVars.defaultUserLang
+      || LocalVars.defaultUserLocale
   }
 
   return language.slice(0, 2).toLowerCase()
