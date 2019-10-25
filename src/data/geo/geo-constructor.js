@@ -35,7 +35,7 @@ export default function (geoObject, srs) {
 
   if (constructor) {
     return constructor(geoObject.coordinates, srs)
-  } else {
-    throw new Error(`There is no constructor for ${ geoObject.type }`)
   }
+
+  throw new Error(`There is no constructor for ${ geoObject.type }`)
 }

@@ -46,18 +46,30 @@ export default class Point extends Geometry {
     return this.setY(y)
   }
 
+  /**
+   * @override
+   */
   getGeojsonType() {
     return GEOJSON_TYPE
   }
 
+  /**
+   * @override
+   */
   getWktType() {
     return WKT_TYPE
   }
 
+  /**
+   * @override
+   */
   wktCoordinatePairs() {
     return `${ this.x } ${ this.y }`
   }
 
+  /**
+   * @override
+   */
   jsonCoordinatePairs() {
     return [this.x, this.y]
   }

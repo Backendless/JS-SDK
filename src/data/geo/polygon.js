@@ -41,33 +41,40 @@ class Polygon extends Geometry {
     return this
   }
 
+  /**
+   * @override
+   */
   getGeojsonType() {
     return GEOJSON_TYPE
   }
 
+  /**
+   * @override
+   */
   getWktType() {
     return WKT_TYPE
   }
 
+  /**
+   * @override
+   */
   jsonCoordinatePairs() {
     const outerBoundaries = []
-    const innerBoundaries = []
 
     this.getBoundary().getPoints().forEach(point => {
       outerBoundaries.push([point.getX(), point.getY()])
     })
 
-    this.holes.forEach(hole => {
-      const holeBoundaries = []
-
-      hole.getPoints().forEach(point => holeBoundaries.push([point.getX(), point.getY()]))
-
-      innerBoundaries.push(holeBoundaries)
+    const innerBoundaries = this.holes.map(hole => {
+      return hole.getPoints().map(point => ([point.getX(), point.getY()]))
     })
 
     return [outerBoundaries, ...innerBoundaries]
   }
 
+  /**
+   * @override
+   */
   wktCoordinatePairs() {
     const wktPairsListCollection = [this.getBoundary().wktCoordinatePairs()]
 

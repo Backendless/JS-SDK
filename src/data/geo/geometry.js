@@ -19,6 +19,34 @@ class Geometry {
     return this.srs
   }
 
+  /**
+   * @abstract
+   * @description It is an abstract method and it must be overridden in an inherited class
+   */
+  getGeojsonType() {
+  }
+
+  /**
+   * @abstract
+   * @description It is an abstract method and it must be overridden in an inherited class
+   */
+  getWktType() {
+  }
+
+  /**
+   * @abstract
+   * @description It is an abstract method and it must be overridden in an inherited class
+   */
+  wktCoordinatePairs() {
+  }
+
+  /**
+   * @abstract
+   * @description It is an abstract method and it must be overridden in an inherited class
+   */
+  jsonCoordinatePairs() {
+  }
+
   toGeoJSON() {
     return JSON.stringify({
       type       : this.getGeojsonType(),

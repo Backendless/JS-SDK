@@ -21,14 +21,23 @@ class LineString extends Geometry {
     return this
   }
 
+  /**
+   * @override
+   */
   getGeojsonType() {
     return GEOJSON_TYPE
   }
 
+  /**
+   * @override
+   */
   getWktType() {
     return WKT_TYPE
   }
 
+  /**
+   * @override
+   */
   jsonCoordinatePairs() {
     const pointsArray = []
 
@@ -39,6 +48,9 @@ class LineString extends Geometry {
     return pointsArray
   }
 
+  /**
+   * @override
+   */
   wktCoordinatePairs() {
     return this.getPoints()
       .map(point => `${ point.getX() } ${ point.getY() }`)
