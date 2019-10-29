@@ -76,14 +76,6 @@ const Backendless = {
     LocalVars.ServerCode = ServerCode
   },
 
-  get defaultUserLocale() {
-    return LocalVars.defaultUserLocale
-  },
-
-  set defaultUserLocale(locale) {
-    LocalVars.defaultUserLocale = locale
-  },
-
   initApp(...args) {
     require('./init-app').initApp(...args)
   },

@@ -1,7 +1,6 @@
 import Utils from '../utils'
 import Urls from '../urls'
 import Request from '../request'
-import LocalVars from '../local-vars'
 import Async from '../request/async'
 
 import User from './user'
@@ -23,15 +22,19 @@ export function register(user /** async */) {
 
 function enrichWithLocaleInfo(user) {
   if (!user.blUserLocale) {
-    user.blUserLocale = getClientLanguage()
+    const clientUserLocale = getClientUserLocale()
+
+    if (clientUserLocale) {
+      user.blUserLocale = clientUserLocale
+    }
   }
 
   return user
 }
 
-function getClientLanguage() {
+function getClientUserLocale() {
   if (typeof navigator === 'undefined') {
-    return LocalVars.defaultUserLocale
+    return
   }
 
   let language = ''
@@ -43,7 +46,7 @@ function getClientLanguage() {
       || navigator.language
       || navigator.browserLanguage
       || navigator.systemLanguage
-      || LocalVars.defaultUserLocale
+      || ''
   }
 
   return language.slice(0, 2).toLowerCase()
