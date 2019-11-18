@@ -77,6 +77,47 @@ function testLoadRelationsQueryBuilder() {
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
 }
 
+function testDataQueryBuilderClass() {
+    let strings: Array<string>;
+    let str: string;
+    let num: number;
+
+    let dataQueryBuilder: Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
+
+    dataQueryBuilder = dataQueryBuilder.setPageSize(123);
+    dataQueryBuilder = dataQueryBuilder.setOffset(123);
+    dataQueryBuilder = dataQueryBuilder.prepareNextPage();
+    dataQueryBuilder = dataQueryBuilder.preparePreviousPage();
+
+    strings = dataQueryBuilder.getProperties();
+
+    dataQueryBuilder = dataQueryBuilder.setProperties('str');
+    dataQueryBuilder = dataQueryBuilder.setProperties(strings);
+
+    dataQueryBuilder = dataQueryBuilder.addProperty('str');
+
+    str = dataQueryBuilder.getWhereClause();
+    dataQueryBuilder = dataQueryBuilder.setWhereClause('str');
+
+    strings = dataQueryBuilder.getSortBy();
+    dataQueryBuilder = dataQueryBuilder.setSortBy('str');
+    dataQueryBuilder = dataQueryBuilder.setSortBy(strings);
+
+    strings = dataQueryBuilder.getRelated();
+    dataQueryBuilder = dataQueryBuilder.setRelated('str');
+    dataQueryBuilder = dataQueryBuilder.setRelated(strings);
+    dataQueryBuilder = dataQueryBuilder.addRelated('str');
+    dataQueryBuilder = dataQueryBuilder.addRelated(strings);
+
+    num = dataQueryBuilder.getRelationsDepth();
+    dataQueryBuilder = dataQueryBuilder.setRelationsDepth(num);
+
+    num = dataQueryBuilder.getRelationsPageSize();
+    dataQueryBuilder = dataQueryBuilder.setRelationsPageSize(num);
+
+    const query: Backendless.DataQueryValueI = dataQueryBuilder.build();
+}
+
 function testDataStoreClass() {
     const item: Object = {};
     const dataStore: Backendless.DataStore = Backendless.Persistence.of('str');

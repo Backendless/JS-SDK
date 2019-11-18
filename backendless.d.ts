@@ -210,6 +210,10 @@ declare module __Backendless {
 
         setRelationsDepth(relationsDepth: number): Backendless.DataQueryBuilder;
 
+        getRelationsPageSize(): number;
+
+        setRelationsPageSize(relationsPageSize: number): Backendless.DataQueryBuilder;
+
         build(): Backendless.DataQueryValueI;
     }
 
