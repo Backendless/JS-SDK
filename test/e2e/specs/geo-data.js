@@ -86,7 +86,7 @@ describe('Backendless.Data.Point', function () {
   it('should return correct WKT presentation', function () {
     const point = createPoint()
 
-    expect(point.toWKT()).to.equal(`POINT(${ point.getX() } ${ point.getY() })`)
+    expect(point.asWKT()).to.equal(`POINT(${ point.getX() } ${ point.getY() })`)
   })
 })
 
@@ -166,7 +166,7 @@ describe('Backendless.Data.LineString', function () {
 
     const lineString = new Backendless.Data.LineString([point1, point2])
 
-    expect(lineString.toWKT()).to.eql(`LINESTRING(${ x1 } ${ y1 },${ x2 } ${ y2 })`)
+    expect(lineString.asWKT()).to.eql(`LINESTRING(${ x1 } ${ y1 },${ x2 } ${ y2 })`)
   })
 })
 
@@ -261,7 +261,7 @@ describe('Backendless.Data.Polygon', function () {
 
     const expectedWKT = `POLYGON((${ x1 } ${ y1 },${ x2 } ${ y2 },${ x3 } ${ y3 },${ x4 } ${ y4 }))`
 
-    expect(polygon.toWKT()).to.eql(expectedWKT)
+    expect(polygon.asWKT()).to.eql(expectedWKT)
   })
 })
 
@@ -272,7 +272,7 @@ describe('Parse from WKT', function () {
 
     expect(pointObj.getX()).to.eql(10)
     expect(pointObj.getY()).to.eql(20)
-    expect(pointObj.toWKT()).to.eql(pointWKT)
+    expect(pointObj.asWKT()).to.eql(pointWKT)
 
     const constructedPoint = new Backendless.Data.Point().setX(10).setY(20)
 
@@ -288,7 +288,7 @@ describe('Parse from WKT', function () {
     const point3 = new Backendless.Data.Point().setX(30).setY(40)
 
     expect(linestringObj.getPoints()).to.eql([point1, point2, point3])
-    expect(linestringObj.toWKT()).to.eql(linestringWKT)
+    expect(linestringObj.asWKT()).to.eql(linestringWKT)
 
     const constructedLinestring = new Backendless.Data.LineString([point1, point2, point3])
 
@@ -322,11 +322,11 @@ describe('Parse from GeoJSON', function () {
   it('should correctly parse point geoJSON', function () {
     const constructedPoint = new Backendless.Data.Point().setX(10).setY(20)
 
-    const pointObj = Backendless.Data.Geometry.fromGeoJSON(constructedPoint.toGeoJSON())
+    const pointObj = Backendless.Data.Geometry.fromGeoJSON(constructedPoint.asGeoJSON())
 
     expect(pointObj.getX()).to.eql(10)
     expect(pointObj.getY()).to.eql(20)
-    expect(pointObj.toGeoJSON()).to.eql(constructedPoint.toGeoJSON())
+    expect(pointObj.asGeoJSON()).to.eql(constructedPoint.asGeoJSON())
     expect(pointObj).to.eql(constructedPoint)
   })
 
@@ -337,10 +337,10 @@ describe('Parse from GeoJSON', function () {
 
     const constructedLineString = new Backendless.Data.LineString([point1, point2, point3])
 
-    const linestringObj = Backendless.Data.Geometry.fromGeoJSON(constructedLineString.toGeoJSON())
+    const linestringObj = Backendless.Data.Geometry.fromGeoJSON(constructedLineString.asGeoJSON())
 
     expect(linestringObj.getPoints()).to.eql([point1, point2, point3])
-    expect(linestringObj.toGeoJSON()).to.eql(constructedLineString.toGeoJSON())
+    expect(linestringObj.asGeoJSON()).to.eql(constructedLineString.asGeoJSON())
     expect(linestringObj).to.eql(constructedLineString)
   })
 
@@ -357,11 +357,11 @@ describe('Parse from GeoJSON', function () {
 
     const constructedPolygon = new Backendless.Data.Polygon(boundary, [holes])
 
-    const polygonObj = Backendless.Data.Geometry.fromGeoJSON(constructedPolygon.toGeoJSON())
+    const polygonObj = Backendless.Data.Geometry.fromGeoJSON(constructedPolygon.asGeoJSON())
 
     expect(polygonObj.getBoundary()).to.eql(boundary)
     expect(polygonObj.getHoles()).to.eql([holes])
-    expect(polygonObj.toGeoJSON()).to.eql(constructedPolygon.toGeoJSON())
+    expect(polygonObj.asGeoJSON()).to.eql(constructedPolygon.asGeoJSON())
     expect(constructedPolygon).to.eql(polygonObj)
   })
 })

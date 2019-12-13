@@ -1,6 +1,7 @@
 import Utils from '../../utils'
 import Urls from '../../urls'
 import Request from '../../request'
+import { convertObject } from '../utils'
 
 import { parseFindResponse } from './parse'
 
@@ -51,7 +52,7 @@ export function save(obj, asyncHandler) {
 
   const result = Request.put({
     url         : Urls.dataTable(this.className),
-    data        : obj,
+    data        : convertObject(obj),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -78,7 +78,7 @@ const castGeoColumns = item => {
     const valueIsObject = typeof value === 'object' && value !== null
     const valueIsArray = Array.isArray(value)
 
-    if (valueIsObject && !valueIsArray && geoClasses.includes(value.__class)) {
+    if (valueIsObject && !valueIsArray && geoClasses.includes(value.___class)) {
       item[field] = constructGeoObject(value)
     } else if (valueIsArray) {
       value.map(castGeoColumns)

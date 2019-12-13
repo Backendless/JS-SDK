@@ -169,9 +169,9 @@ declare module Backendless {
 
             getSRS(): SpatialReferenceSystem.SpatialType;
 
-            toGeoJSON(): string;
+            asGeoJSON(): string;
 
-            toWKT(): string;
+            asWKT(): string;
         }
 
         /**
@@ -180,8 +180,6 @@ declare module Backendless {
          */
         class Point extends Geometry {
             constructor(srs?: SpatialReferenceSystem.SpatialType);
-
-            validate(): void;
 
             getX(): Number;
 
@@ -230,8 +228,6 @@ declare module Backendless {
             jsonCoordinatePairs(): string;
 
             wktCoordinatePairs(): string;
-
-            validate(): void;
         }
 
         /**
@@ -240,8 +236,6 @@ declare module Backendless {
          */
         class Polygon extends Geometry {
             constructor(boundary: LineString | Point[], holes?: LineString[], srs?: SpatialReferenceSystem.SpatialType);
-
-            validate(): void;
 
             getBoundary(): LineString;
 

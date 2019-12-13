@@ -47,19 +47,19 @@ class Geometry {
   jsonCoordinatePairs() {
   }
 
-  toGeoJSON() {
+  asGeoJSON() {
     return JSON.stringify({
       type       : this.getGeojsonType(),
       coordinates: this.jsonCoordinatePairs()
     })
   }
 
-  toWKT() {
+  asWKT() {
     return this.getWktType() + '(' + this.wktCoordinatePairs() + ')'
   }
 
   toString() {
-    return '\'' + this.toWKT() + '\''
+    return '\'' + this.asWKT() + '\''
   }
 }
 
