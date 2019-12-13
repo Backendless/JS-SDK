@@ -189,7 +189,7 @@ function testDataGeometry() {
 
     geometry = new Backendless.Data.Geometry(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
     srs = geometry.getSRS();
-    const geoJSON: string = geometry.asGeoJSON();
+    const geoJSON: object = geometry.asGeoJSON();
     const wktString: string = geometry.asWKT();
 
     geometry = Backendless.Data.Geometry.fromGeoJSON('{"type":"Point","coordinates":[10,20]}')

@@ -1,7 +1,6 @@
 import Utils from '../../utils'
 import Urls from '../../urls'
 import Request from '../../request'
-import { convertObject } from '../utils'
 import Async from '../../request/async'
 
 export function bulkCreate(objects, asyncHandler) {
@@ -20,11 +19,9 @@ export function bulkCreate(objects, asyncHandler) {
     }
   })
 
-  const preparedObjects = objects.map(obj => convertObject(obj))
-
   return Request.post({
     url         : Urls.dataBulkTable(this.className),
-    data        : preparedObjects,
+    data        : objects,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })
@@ -42,7 +39,7 @@ export function bulkUpdate(where, changes, asyncHandler) {
   return Request.put({
     url         : Urls.dataBulkTable(this.className),
     query       : { where },
-    data        : convertObject(changes),
+    data        : changes,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

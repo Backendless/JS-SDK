@@ -48,14 +48,18 @@ class Geometry {
   }
 
   asGeoJSON() {
-    return JSON.stringify({
+    return {
       type       : this.getGeojsonType(),
       coordinates: this.jsonCoordinatePairs()
-    })
+    }
   }
 
   asWKT() {
     return this.getWktType() + '(' + this.wktCoordinatePairs() + ')'
+  }
+
+  toJSON() {
+    return this.asGeoJSON()
   }
 
   toString() {

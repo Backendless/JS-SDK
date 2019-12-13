@@ -6,9 +6,7 @@ class GeoJSONParser {
   }
 
   read(geoJSON) {
-    const geoObject = JSON.parse(geoJSON)
-
-    return geoConstructor(geoObject, this.srs)
+    return geoConstructor(geoJSON, this.srs)
   }
 }
 
