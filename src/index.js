@@ -191,10 +191,6 @@ const Backendless = {
     return Backendless.Geo.Cluster
   },
 
-  get Persistence() {
-    return Backendless.Data
-  },
-
   get DataQueryBuilder() {
     return Backendless.Data.QueryBuilder
   },

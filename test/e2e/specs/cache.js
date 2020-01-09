@@ -38,7 +38,7 @@ describe('Backendless.Cache', function() {
 
   it('contains', function() {
     return Promise.resolve()
-      .then(() => Backendless.Persistence.of(Foo).save(cacheValues.customType))
+      .then(() => Backendless.Data.of(Foo).save(cacheValues.customType))
       //put all keys to cache
       .then(() => Promise.all(cacheKeys.map(key => Backendless.Cache.put(key, cacheValues[key]))))
       //validate contains

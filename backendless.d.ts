@@ -2,17 +2,15 @@
  * @global
  * @namespace Backendless
  */
-declare module __Backendless {
-    import Backendless = __Backendless;
+declare module Backendless {
+    let debugMode: boolean;
+    let serverURL: string;
+    let applicationId: string;
+    let secretKey: string;
+    let appPath: string;
+    let XMLHttpRequest: any;
 
-    var debugMode: boolean;
-    var serverURL: string;
-    var applicationId: string;
-    var secretKey: string;
-    var appPath: string;
-    var XMLHttpRequest: any;
-
-    var browser: {
+    let browser: {
         browser: string;
         version: string;
     };
@@ -20,8 +18,7 @@ declare module __Backendless {
     /**
      * @dictionary
      */
-    var PublishOptionsHeaders: { [key: string]: string; };
-
+    let PublishOptionsHeaders: { [key: string]: string; };
 
     /**
      * @public
@@ -36,89 +33,778 @@ declare module __Backendless {
     function setupDevice(deviceProps: Object): void;
 
     /**
+     * @public
      * @namespace Backendless.LocalCache
      **/
-    var LocalCache: Backendless.LocalCacheI;
+    namespace LocalCache {
+        let enabled: boolean;
+
+        function exists(key: string): boolean;
+
+        function set(key: string): boolean;
+
+        function set<T>(key: string, val: T): T;
+
+        function remove(key: string): boolean;
+
+        function get(key: string): any;
+
+        function getAll(): Object;
+
+        function getCachePolicy(key: string): Object;
+
+        function serialize(value: any): string;
+
+        function deserialize(value: string): any;
+
+        function clear(): void;
+
+        function flushExpired(): void;
+    }
 
     /**
-     * @namespace Backendless.Persistence
-     **/
-    var Persistence: Backendless.PersistenceClass;
-
-    /**
+     * @public
      * @namespace Backendless.Data
-     **/
-    var Data: Backendless.PersistenceClass;
+     */
+    namespace Data {
+
+        /**
+         * @private
+         */
+        interface PersistencePermissionI {
+            /** @deprecated */
+            grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
+
+            /** @deprecated */
+            grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            /** @deprecated */
+            deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            grantForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+
+            denyForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
+        }
+
+        /**
+         * @public
+         * @interface Backendless.Data.Permissions
+         */
+        namespace Permissions {
+            const FIND: PersistencePermissionI;
+            const REMOVE: PersistencePermissionI;
+            const UPDATE: PersistencePermissionI;
+        }
+
+        namespace SpatialReferenceSystem {
+            class SpatialType {
+                constructor(spatialType: { srsId: string, name: string });
+
+                getSRSId(): string;
+
+                getName(): string;
+
+                toString(): string;
+            }
+
+            const CARTESIAN: SpatialType;
+            const PULKOVO_1995: SpatialType;
+            const WGS84: SpatialType;
+            const WGS84_PSEUDO_MERCATOR: SpatialType;
+            const WGS84_WORLD_MERCATOR: SpatialType;
+            const DEFAULT: SpatialType;
+
+            function valueBySRSId(srsId: string): SpatialType;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.Geometry
+         */
+        class Geometry {
+            constructor(srs: SpatialReferenceSystem.SpatialType);
+
+            static fromWKT(wellKnownText: string, srs?: SpatialReferenceSystem.SpatialType): Point|LineString|Polygon;
+
+            static fromGeoJSON(geoJSON: string, srs?: SpatialReferenceSystem.SpatialType): Point|LineString|Polygon;
+
+            getSRS(): SpatialReferenceSystem.SpatialType;
+
+            asGeoJSON(): string;
+
+            asWKT(): string;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.Point
+         */
+        class Point extends Geometry {
+            constructor(srs?: SpatialReferenceSystem.SpatialType);
+
+            getX(): Number;
+
+            getY(): Number;
+
+            getLongitude(): Number;
+
+            getLatitude(): Number;
+
+            setX(x: Number): Point;
+
+            setY(y: Number): Point;
+
+            setLongitude(x: Number): Point;
+
+            setLatitude(y: Number): Point;
+
+            setSrs(srs: Object): Point;
+
+            getGeojsonType(): string;
+
+            getWktType(): string;
+
+            wktCoordinatePairs(): string;
+
+            jsonCoordinatePairs(): string;
+
+            equals(o: Object): boolean;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.LineString
+         */
+        class LineString extends Geometry {
+            constructor(points: Point[], srs?: SpatialReferenceSystem.SpatialType);
+
+            getPoints(): Point[];
+
+            setPoints(points: Point[]): LineString;
+
+            getGeojsonType(): string;
+
+            getWktType(): string;
+
+            jsonCoordinatePairs(): string;
+
+            wktCoordinatePairs(): string;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.Polygon
+         */
+        class Polygon extends Geometry {
+            constructor(boundary: LineString | Point[], holes?: LineString[], srs?: SpatialReferenceSystem.SpatialType);
+
+            getBoundary(): LineString;
+
+            setBoundary(boundary: LineString | Point[]): Polygon;
+
+            getHoles(): LineString[];
+
+            setHoles(holes: LineString[]): Polygon;
+
+            getGeojsonType(): string;
+
+            getWktType(): string;
+
+            jsonCoordinatePairs(): string;
+
+            wktCoordinatePairs(): string;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.GeoJSONParser
+         */
+        class GeoJSONParser {
+            constructor(srs: SpatialReferenceSystem.SpatialType);
+
+            read(geoJSON: string): Point|LineString|Polygon;
+        }
+
+        /**
+         * @public
+         * @class Backendless.Data.WKTParser
+         */
+        class WKTParser {
+            constructor(srs: SpatialReferenceSystem.SpatialType);
+
+            read(wktString: string): Point|LineString|Polygon;
+        }
+
+        function of(model: string | Object | Function): Backendless.DataStore;
+
+        function save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
+
+        function saveSync(model: Backendless.DataStore | string, data: Object): Object;
+
+        function getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
+
+        function getViewSync(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Object;
+
+        function describe(model: string | Object | Function): Promise<Object>;
+
+        function describeSync(model: string | Object | Function): Object;
+
+        function callStoredProcedure(spName: string, argumentValues: Object | string): Promise<Object>;
+
+        function callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
+
+        function mapTableToClass(tableName: string, clientClass: Function);
+    }
 
     /**
+     * @public
      * @namespace Backendless.UserService
      **/
-    var UserService: Backendless.UserServiceClass;
+    namespace UserService {
+        let restUrl: string;
+
+        function registerSync(user: Backendless.User): Backendless.User;
+        function registerSync<T>(user: T): T;
+
+        function register(user: Backendless.User): Promise<Backendless.User>;
+        function register<T>(user: T): Promise<T>;
+
+        function getUserRolesSync(): string[];
+
+        function getUserRoles(): Promise<string[]>;
+
+        function describeUserClassSync(): Object[] ;
+
+        function describeUserClass(): Promise<Object[]>;
+
+        function restorePasswordSync(email: string): void;
+
+        function restorePassword(email: string): Promise<void>;
+
+        function assignRoleSync(identity: string, roleName: string): void;
+
+        function assignRole(identity: string, roleName: string): Promise<void>;
+
+        function unassignRoleSync(identity: string, roleName: string): void;
+
+        function unassignRole(identity: string, roleName: string): Promise<void>;
+
+        function loginSync(userName: string, password: string, stayLoggedIn?: boolean): Backendless.User;
+        function loginSync<T>(userName: string, password: string, stayLoggedIn?: boolean): T;
+
+        function login(identity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
+        function login<T>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
+
+        function loginAsGuestSync(stayLoggedIn?: boolean): Backendless.User;
+        function loginAsGuestSync<T>(stayLoggedIn?: boolean): T;
+
+        function loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
+        function loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;
+
+        function loggedInUser(): boolean;
+
+        function logoutSync(): void;
+
+        function logout(): Promise<void>;
+
+        function getCurrentUserSync(): Backendless.User;
+        function getCurrentUserSync<T>(): T;
+
+        function getCurrentUser(): Promise<Backendless.User>;
+        function getCurrentUser<T>(): Promise<T>;
+
+        function updateSync(user: Backendless.User): Backendless.User;
+        function updateSync<T>(user: T): T;
+
+        function update(user: Backendless.User): Promise<Backendless.User>;
+        function update<T>(user: T): Promise<T>;
+
+        /**@deprecated */
+        function loginWithFacebookSync(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): void;
+
+        /**@deprecated */
+        function loginWithFacebook(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): Promise<void>;
+
+        /**@deprecated */
+        function loginWithGooglePlusSync(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): void;
+
+        /**@deprecated */
+        function loginWithGooglePlus(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): Promise<void>;
+
+        function loginWithTwitterSync(fields?: Object, stayLoggedIn?: boolean): void;
+
+        function loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
+
+        /**@deprecated */
+        function loginWithFacebookSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
+
+        /**@deprecated */
+        function loginWithGooglePlusSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+
+        function isValidLoginSync(): boolean;
+
+        function isValidLogin(): Promise<boolean>;
+
+        function resendEmailConfirmationSync(email: string): void;
+
+        function resendEmailConfirmation(email: string): Promise<void>;
+    }
 
     /**
+     * @public
      * @namespace Backendless.Geo
      **/
-    var Geo: Backendless.GeoClass;
+    namespace Geo {
+        let restUrl: string;
+
+        let UNITS: Object;
+        let EARTH_RADIUS: number;
+
+        function savePointSync(point: Backendless.GeoPoint): Backendless.GeoPoint;
+
+        function savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
+
+        function findSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
+
+        function getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
+
+        function getGeopointCountSync(fenceName: string, query: Backendless.GeoQueryI): number
+
+        function getGeopointCountSync(query: Backendless.GeoQueryI): number
+
+        function deletePointSync(point: string | Backendless.GeoPoint): string;
+
+        function deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
+
+        function loadMetadataSync(point: Backendless.GeoPoint | Backendless.GeoCluster): Object;
+
+        function loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
+
+        function getClusterPointsSync(cluster: Backendless.GeoCluster): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function getFencePointsSync(fenceName: string, query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function relativeFindSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function addCategorySync(name: string): Backendless.GeoCategoryI;
+
+        function addCategory(name: string): Promise<Backendless.GeoCategoryI>;
+
+        function deleteCategorySync(name: string): boolean;
+
+        function deleteCategory(name: string): Promise<boolean>;
+
+        function getCategoriesSync(): Array<Backendless.GeoCategoryI>;
+
+        function getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
+
+        function runOnStayActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        function runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        function runOnExitActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        function runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        function runOnEnterActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        function runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        function startGeofenceMonitoringWithInAppCallbackSync(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): void;
+
+        function startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
+
+        function startGeofenceMonitoringWithRemoteCallbackSync(fenceName: string, point: Backendless.GeoPoint): void;
+
+        function startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
+
+        function stopGeofenceMonitoring(fenceName: string): void;
+    }
 
     /**
+     * @public
      * @namespace Backendless.Messaging
      **/
-    var Messaging: Backendless.MessagingClass;
+    namespace Messaging {
+        let restUrl: string;
+        let channelProperties: Object;
+
+        function subscribe(channelName: string): ChannelClass;
+
+        function publishSync(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Object;
+
+        function publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
+
+        function sendEmailSync(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): String;
+
+        function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
+
+        function sendEmailFromTemplateSync(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): object;
+
+        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): Promise<object>;
+
+        function cancelSync(messageId: string): boolean;
+
+        function cancel(messageId: string): Promise<boolean>;
+
+        function registerDeviceSync(deviceToken: string, channels?: string[], expiration?: number | Date): Object;
+
+        function registerDevice(deviceToken: string, channels?: string[], expiration?: number | Date): Promise<Object>;
+
+        function getRegistrationsSync(): Object;
+
+        function getRegistrations(): Promise<Object>;
+
+        function unregisterDeviceSync(): Object;
+
+        function unregisterDevice(): Promise<Object>;
+
+        function getMessageStatusSync(messageId: string): boolean;
+
+        function getMessageStatus(messageId: string): Promise<boolean>;
+
+        function getPushTemplates(deviceType: string): Promise<Object>;
+
+        function pushWithTemplate(templateName: string): Promise<Object>;
+    }
 
     /**
+     * @public
      * @namespace Backendless.Files
      **/
-    var Files: Backendless.FilesClass;
+    namespace Files {
+
+        interface FilePermissionI {
+            /** @deprecated */
+            grantUserSync(userId: string, url: string): boolean;
+
+            /** @deprecated */
+            grantUser(userId: string, url: string): Promise<boolean>;
+
+            /** @deprecated */
+            grantRoleSync(roleName: string, url: string): boolean;
+
+            /** @deprecated */
+            grantRole(roleName: string, url: string): Promise<boolean>;
+
+            /** @deprecated */
+            denyUserSync(userId: string, url: string): boolean;
+
+            /** @deprecated */
+            denyUser(userId: string, url: string): Promise<boolean>;
+
+            /** @deprecated */
+            denyRoleSync(roleName: string, url: string): boolean;
+
+            /** @deprecated */
+            denyRole(roleName: string, url: string): Promise<boolean>;
+
+            grantForUser(userId: string, url: string): Promise<boolean>;
+
+            denyForUser(userId: string, url: string): Promise<boolean>;
+
+            grantForRole(roleName: string, url: string): Promise<boolean>;
+
+            denyForRole(roleName: string, url: string): Promise<boolean>;
+
+            grantForAllUsers(url: string): Promise<boolean>;
+
+            denyForAllUsers(url: string): Promise<boolean>;
+
+            grantForAllRoles(url: string): Promise<boolean>;
+
+            denyForAllRoles(url: string): Promise<boolean>;
+        }
+
+        /**
+         * @public
+         * @namespace Backendless.Files.Permissions
+         **/
+        namespace Permissions {
+            let READ: FilePermissionI;
+            let DELETE: FilePermissionI;
+            let WRITE: FilePermissionI;
+        }
+
+        let restUrl: string;
+
+        function saveFileSync(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): boolean;
+
+        function saveFile(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): Promise<boolean>;
+
+        function uploadSync(files: File | File[], path: string, overwrite?: boolean): void;
+
+        function upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
+
+        function listingSync(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Object;
+
+        function listing(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Promise<Object>;
+
+        function renameFileSync(oldPathName: string, newName: string): Object;
+
+        function renameFile(oldPathName: string, newName: string): Promise<Object>;
+
+        function moveFileSync(sourcePath: string, targetPath: string): Object;
+
+        function moveFile(sourcePath: string, targetPath: string): Promise<Object>;
+
+        function copyFileSync(sourcePath: string, targetPath: string): Object;
+
+        function copyFile(sourcePath: string, targetPath: string): Promise<Object>;
+
+        function removeSync(fileURL: string): number;
+
+        function remove(fileURL: string): Promise<number>;
+
+        function existsSync(path: string): Object;
+
+        function exists(path: string): Promise<Object>;
+
+        function removeDirectorySync(path: string): number;
+
+        function removeDirectory(path: string): Promise<number>;
+    }
 
     /**
+     * @public
      * @namespace Backendless.Commerce
      **/
-    var Commerce: Backendless.CommerceClass;
+    namespace Commerce {
+        let restUrl: string;
+
+        function validatePlayPurchaseSync(packageName: string, productId: string, token: string): Object;
+
+        function validatePlayPurchase(packageName: string, productId: string, token: string): Promise<Object>;
+
+        function cancelPlaySubscriptionSync(packageName: string, subscriptionId: string, token: string): Object;
+
+        function cancelPlaySubscription(packageName: string, subscriptionId: string, token: string): Promise<Object>;
+
+        function getPlaySubscriptionStatusSync(packageName: string, subscriptionId: string, token: string): Object;
+
+        function getPlaySubscriptionStatus(packageName: string, subscriptionId: string, token: string): Promise<Object>;
+    }
 
     /**
-     * @namespace Backendless.Events
-     **/
-    var Events: Backendless.EventsClass;
-
-    /**
+     * @public
      * @namespace Backendless.BL
      **/
-    var BL: Backendless.BLClass;
+    namespace BL {
+        let ExecutionTypes: {
+            SYNC: string,
+            ASYNC: string,
+            ASYNC_LOW_PRIORITY: string,
+        }
+
+        export interface CustomServicesI {
+            invokeSync(serviceName: string, method: string, parameters: Object): any;
+
+            invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
+
+            invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
+
+            invoke(serviceName: string, method: string, executionType: string): Promise<any>;
+        }
+
+        /**
+         * @public
+         * @interface CustomServicesI
+         * @namespace Backendless.BL.CustomServices
+         **/
+        let CustomServices: CustomServicesI;
+
+        export interface EventsI {
+            restUrl: string;
+
+            dispatchSync(eventName: string, eventArgs: Object): Object;
+
+            dispatch(eventName: string): Promise<Object>;
+
+            dispatch(eventName: string, eventArgs: Object): Promise<Object>;
+
+            dispatch(eventName: string, eventArgs: Object, executionType: string): Promise<Object>;
+
+            dispatch(eventName: string, executionType: string): Promise<Object>;
+        }
+
+        let Events: EventsI
+    }
 
     /**
+     * @public
+     * @namespace Backendless.Events
+     **/
+    let Events: Backendless.BL.EventsI;
+
+    /**
+     * @public
      * @namespace Backendless.Cache
      **/
-    var Cache: Backendless.CacheClass;
+    namespace Cache {
+        function putSync(key: string, value: any, timeToLive?: number): Object;
+
+        function put(key: string, value: any, timeToLive?: number): Promise<Object>;
+
+        function expireInSync(key: string, time: number | Date): Object;
+
+        function expireIn(key: string, time: number | Date): Promise<Object>;
+
+        function expireAtSync(key: string, time: number | Date): Object;
+
+        function expireAt(key: string, time: number | Date): Promise<Object>;
+
+        function containsSync(key: string): Object;
+
+        function contains(key: string): Promise<Object>;
+
+        function getSync(key: string): Object;
+
+        function get(key: string): Promise<Object>;
+
+        function removeSync(key: string): Object;
+
+        function remove(key: string): Promise<Object>;
+    }
 
     /**
      * @namespace Backendless.Counters
      **/
-    var Counters: Backendless.CountersClass;
+    namespace Counters {
+        function of(counterName: string): Counter;
+
+        function getSync(counterName: string): number;
+
+        function get(counterName: string): Promise<number>;
+
+        function getAndIncrementSync(counterName: string): number;
+
+        function getAndIncrement(counterName: string): Promise<number>;
+
+        function incrementAndGetSync(counterName: string): number;
+
+        function incrementAndGet(counterName: string): Promise<number>;
+
+        function getAndDecrementSync(counterName: string): number;
+
+        function getAndDecrement(counterName: string): Promise<number>;
+
+        function decrementAndGetSync(counterName: string): number;
+
+        function decrementAndGet(counterName: string): Promise<number>;
+
+        function addAndGetSync(counterName: string, value: number): number;
+
+        function addAndGet(counterName: string, value: number): Promise<number>;
+
+        function getAndAddSync(counterName: string, value: number): number;
+
+        function getAndAdd(counterName: string, value: number): Promise<number>
+
+        function compareAndSetSync(counterName: string, expected: number, updated: number): number;
+
+        function compareAndSet(counterName: string, expected: number, updated: number): Promise<number>;
+
+        function resetSync(counterName: string): number;
+
+        function reset(counterName: string): Promise<number>;
+    }
 
     /**
+     * @public
      * @namespace Backendless.CustomServices
      **/
-    var CustomServices: Backendless.CustomServicesClass;
+    let CustomServices: Backendless.BL.CustomServicesI;
 
     /**
+     * @public
      * @namespace Backendless.Logging
      **/
-    var Logging: LoggingI;
+    namespace Logging {
+        let restUrl: string;
+        let loggers: Object;
+        let logInfo: Object[];
+        let messagesCount: number;
+        let numOfMessages: number;
+        let timeFrequency: number;
 
-    var RT: {
-        addConnectEventListener(callback: () => void): void;
-        removeConnectEventListener(callback: () => void): void;
+        function setLogReportingPolicy(numOfMessages: number, timeFrequencySec: number): void;
 
-        addConnectErrorEventListener(callback: (error: string) => void): void;
-        removeConnectErrorEventListener(callback: (error: string) => void): void;
+        function getLogger(name: string): Backendless.Logger;
+    }
 
-        addDisconnectEventListener(callback: () => void): void;
-        removeDisconnectEventListener(callback: () => void): void;
+    /**
+     * @public
+     * @namespace Backendless.RT
+     **/
+    namespace RT {
+        function addConnectEventListener(callback: () => void): void;
 
-        addReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
-        removeReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
+        function removeConnectEventListener(callback: () => void): void;
 
-        removeConnectionListeners(): void;
+        function addConnectErrorEventListener(callback: (error: string) => void): void;
+
+        function removeConnectErrorEventListener(callback: (error: string) => void): void;
+
+        function addDisconnectEventListener(callback: () => void): void;
+
+        function removeDisconnectEventListener(callback: () => void): void;
+
+        function addReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
+
+        function removeReconnectAttemptEventListener(callback: (attempt: number, timeout: number) => void): void;
+
+        function removeConnectionListeners(): void;
     }
 
     /**
@@ -594,324 +1280,6 @@ declare module __Backendless {
         rt(): EventHandler;
     }
 
-
-    /**
-     * @private
-     * @class Persistence
-     * @refers {@link Backendless.Persistence}
-     */
-    class PersistenceClass {
-
-        /**
-         * @namespace Backendless.Persistence.Permissions
-         **/
-        Permissions: PersistencePermissionsClass;
-
-        of(model: string | Object | Function): Backendless.DataStore;
-
-        save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
-
-        saveSync(model: Backendless.DataStore | string, data: Object): Object;
-
-        getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
-
-        getViewSync(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Object;
-
-        describe(model: string | Object | Function): Promise<Object>;
-
-        describeSync(model: string | Object | Function): Object;
-
-        callStoredProcedure(spName: string, argumentValues: Object | string): Promise<Object>;
-
-        callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
-
-        mapTableToClass(tableName: string, clientClass: Function);
-    }
-
-    /**
-     * @private
-     * @class PersistencePermissions
-     * @refers {@link Backendless.Persistence.Permissions}
-     */
-    class PersistencePermissionsClass {
-        FIND: PersistencePermissionI;
-        REMOVE: PersistencePermissionI;
-        UPDATE: PersistencePermissionI;
-    }
-
-    /**
-     * @private
-     * @class Geo
-     * @refers {@link Backendless.Geo}
-     */
-    class GeoClass {
-        restUrl: string;
-
-        UNITS: Object;
-        EARTH_RADIUS: number;
-
-        savePointSync(point: Backendless.GeoPoint): Backendless.GeoPoint;
-
-        savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
-
-        findSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
-        find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
-        getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
-
-        getGeopointCountSync(fenceName: string, query: Backendless.GeoQueryI): number
-        getGeopointCountSync(query: Backendless.GeoQueryI): number
-
-        deletePointSync(point: string | Backendless.GeoPoint): string;
-
-        deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
-
-        loadMetadataSync(point: Backendless.GeoPoint | Backendless.GeoCluster): Object;
-
-        loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
-
-        getClusterPointsSync(cluster: Backendless.GeoCluster): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
-        getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        getFencePointsSync(fenceName: string, query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
-        getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        relativeFindSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
-        relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        addCategorySync(name: string): Backendless.GeoCategoryI;
-
-        addCategory(name: string): Promise<Backendless.GeoCategoryI>;
-
-        deleteCategorySync(name: string): boolean;
-
-        deleteCategory(name: string): Promise<boolean>;
-
-        getCategoriesSync(): Array<Backendless.GeoCategoryI>;
-
-        getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
-
-        runOnStayActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
-
-        runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        runOnExitActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
-
-        runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        runOnEnterActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
-
-        runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        startGeofenceMonitoringWithInAppCallbackSync(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): void;
-
-        startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
-
-        startGeofenceMonitoringWithRemoteCallbackSync(fenceName: string, point: Backendless.GeoPoint): void;
-
-        startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
-
-        stopGeofenceMonitoring(fenceName: string): void;
-    }
-
-    /**
-     * @private
-     * @class Messaging
-     * @refers {@link Backendless.Messaging}
-     */
-    class MessagingClass {
-        restUrl: string;
-        channelProperties: Object;
-
-        subscribe(channelName: string): ChannelClass;
-
-        publishSync(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Object;
-
-        publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
-
-        sendEmailSync(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): String;
-
-        sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
-
-        sendEmailFromTemplateSync(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): object;
-
-        sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): Promise<object>;
-
-        cancelSync(messageId: string): boolean;
-
-        cancel(messageId: string): Promise<boolean>;
-
-        registerDeviceSync(deviceToken: string, channels?: string[], expiration?: number | Date): Object;
-
-        registerDevice(deviceToken: string, channels?: string[], expiration?: number | Date): Promise<Object>;
-
-        getRegistrationsSync(): Object;
-
-        getRegistrations(): Promise<Object>;
-
-        unregisterDeviceSync(): Object;
-
-        unregisterDevice(): Promise<Object>;
-
-        getMessageStatusSync(messageId: string): boolean;
-
-        getMessageStatus(messageId: string): Promise<boolean>;
-
-        getPushTemplates(deviceType: string): Promise<Object>;
-
-        pushWithTemplate(templateName: string): Promise<Object>;
-    }
-
-    /**
-     * @private
-     * @class Files
-     * @refers {@link Backendless.Files}
-     */
-    class FilesClass {
-        /**
-         * @namespace Backendless.Files.Permissions
-         **/
-        Permissions: FilePermissions;
-
-        restUrl: string;
-
-        saveFileSync(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): boolean;
-
-        saveFile(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): Promise<boolean>;
-
-        uploadSync(files: File | File[], path: string, overwrite?: boolean): void;
-
-        upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
-
-        listingSync(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Object;
-
-        listing(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Promise<Object>;
-
-        renameFileSync(oldPathName: string, newName: string): Object;
-
-        renameFile(oldPathName: string, newName: string): Promise<Object>;
-
-        moveFileSync(sourcePath: string, targetPath: string): Object;
-
-        moveFile(sourcePath: string, targetPath: string): Promise<Object>;
-
-        copyFileSync(sourcePath: string, targetPath: string): Object;
-
-        copyFile(sourcePath: string, targetPath: string): Promise<Object>;
-
-        removeSync(fileURL: string): number;
-
-        remove(fileURL: string): Promise<number>;
-
-        existsSync(path: string): Object;
-
-        exists(path: string): Promise<Object>;
-
-        removeDirectorySync(path: string): number;
-
-        removeDirectory(path: string): Promise<number>;
-    }
-
-    /**
-     * @private
-     * @class FilePermissions
-     * @refers {@link Backendless.Files.Permissions}
-     */
-    class FilePermissions {
-        READ: FilePermissionI;
-        DELETE: FilePermissionI;
-        WRITE: FilePermissionI;
-    }
-
-    /**
-     * @private
-     * @class Commerce
-     * @refers {@link Backendless.Commerce}
-     */
-    class CommerceClass {
-        restUrl: string;
-
-        validatePlayPurchaseSync(packageName: string, productId: string, token: string): Object;
-
-        validatePlayPurchase(packageName: string, productId: string, token: string): Promise<Object>;
-
-        cancelPlaySubscriptionSync(packageName: string, subscriptionId: string, token: string): Object;
-
-        cancelPlaySubscription(packageName: string, subscriptionId: string, token: string): Promise<Object>;
-
-        getPlaySubscriptionStatusSync(packageName: string, subscriptionId: string, token: string): Object;
-
-        getPlaySubscriptionStatus(packageName: string, subscriptionId: string, token: string): Promise<Object>;
-    }
-
-    /**
-     * @private
-     * @class Events
-     * @refers {@link Backendless.Events}
-     */
-    class EventsClass {
-        restUrl: string;
-
-        dispatchSync(eventName: string, eventArgs: Object): Object;
-
-        dispatch(eventName: string): Promise<Object>;
-        dispatch(eventName: string, eventArgs: Object): Promise<Object>;
-        dispatch(eventName: string, eventArgs: Object, executionType: string): Promise<Object>;
-        dispatch(eventName: string, executionType: string): Promise<Object>;
-    }
-
-    /**
-     * @private
-     * @class BL
-     * @refers {@link Backendless.BL}
-     */
-    class BLClass {
-        ExecutionTypes: {
-            SYNC: string,
-            ASYNC: string,
-            ASYNC_LOW_PRIORITY: string,
-        }
-
-        CustomServices: CustomServicesClass
-        Events: EventsClass
-    }
-
-    /**
-     * @private
-     * @class Cache
-     * @refers {@link Backendless.Cache}
-     */
-    class CacheClass {
-        putSync(key: string, value: any, timeToLive?: number): Object;
-
-        put(key: string, value: any, timeToLive?: number): Promise<Object>;
-
-        expireInSync(key: string, time: number | Date): Object;
-
-        expireIn(key: string, time: number | Date): Promise<Object>;
-
-        expireAtSync(key: string, time: number | Date): Object;
-
-        expireAt(key: string, time: number | Date): Promise<Object>;
-
-        containsSync(key: string): Object;
-
-        contains(key: string): Promise<Object>;
-
-        getSync(key: string): Object;
-
-        get(key: string): Promise<Object>;
-
-        removeSync(key: string): Object;
-
-        remove(key: string): Promise<Object>;
-    }
-
     /**
      * @private
      * @class Counter
@@ -957,302 +1325,11 @@ declare module __Backendless {
         reset(): Promise<number>;
     }
 
-
-    /**
-     * @private
-     * @class Counters
-     * @refers {@link Backendless.Counters}
-     */
-    class CountersClass {
-        of(counterName: string): Counter;
-
-        getSync(counterName: string): number;
-
-        get(counterName: string): Promise<number>;
-
-        getAndIncrementSync(counterName: string): number;
-
-        getAndIncrement(counterName: string): Promise<number>;
-
-        incrementAndGetSync(counterName: string): number;
-
-        incrementAndGet(counterName: string): Promise<number>;
-
-        getAndDecrementSync(counterName: string): number;
-
-        getAndDecrement(counterName: string): Promise<number>;
-
-        decrementAndGetSync(counterName: string): number;
-
-        decrementAndGet(counterName: string): Promise<number>;
-
-        addAndGetSync(counterName: string, value: number): number;
-
-        addAndGet(counterName: string, value: number): Promise<number>;
-
-        getAndAddSync(counterName: string, value: number): number;
-
-        getAndAdd(counterName: string, value: number): Promise<number>
-
-        compareAndSetSync(counterName: string, expected: number, updated: number): number;
-
-        compareAndSet(counterName: string, expected: number, updated: number): Promise<number>;
-
-        resetSync(counterName: string): number;
-
-        reset(counterName: string): Promise<number>;
-    }
-
-    /**
-     * @private
-     * @class CustomServices
-     * @refers {@link Backendless.CustomServices}
-     */
-    class CustomServicesClass {
-        invokeSync(serviceName: string, method: string, parameters: Object): any;
-
-        invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
-        invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
-        invoke(serviceName: string, method: string, executionType: string): Promise<any>;
-    }
-
-    /**
-     * @private
-     * @class UserService
-     * @refers {@link Backendless.UserService}
-     */
-    class UserServiceClass {
-        restUrl: string;
-
-        registerSync(user: Backendless.User): Backendless.User;
-        registerSync<T>(user: T): T;
-
-        register(user: Backendless.User): Promise<Backendless.User>;
-        register<T>(user: T): Promise<T>;
-
-        getUserRolesSync(): string[];
-
-        getUserRoles(): Promise<string[]>;
-
-        describeUserClassSync(): Object[] ;
-
-        describeUserClass(): Promise<Object[]>;
-
-        restorePasswordSync(email: string): void;
-
-        restorePassword(email: string): Promise<void>;
-
-        assignRoleSync(identity: string, roleName: string): void;
-
-        assignRole(identity: string, roleName: string): Promise<void>;
-
-        unassignRoleSync(identity: string, roleName: string): void;
-
-        unassignRole(identity: string, roleName: string): Promise<void>;
-
-        loginSync(userName: string, password: string, stayLoggedIn?: boolean): Backendless.User;
-        loginSync<T>(userName: string, password: string, stayLoggedIn?: boolean): T;
-
-        login(identity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
-        login<T>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
-
-        loginAsGuestSync(stayLoggedIn?: boolean): Backendless.User;
-        loginAsGuestSync<T>(stayLoggedIn?: boolean): T;
-
-        loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
-        loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;
-
-        loggedInUser(): boolean;
-
-        logoutSync(): void;
-
-        logout(): Promise<void>;
-
-        getCurrentUserSync(): Backendless.User;
-        getCurrentUserSync<T>(): T;
-
-        getCurrentUser(): Promise<Backendless.User>;
-        getCurrentUser<T>(): Promise<T>;
-
-        updateSync(user: Backendless.User): Backendless.User;
-        updateSync<T>(user: T): T;
-
-        update(user: Backendless.User): Promise<Backendless.User>;
-        update<T>(user: T): Promise<T>;
-
-        /**@deprecated */
-        loginWithFacebookSync(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): void;
-
-        /**@deprecated */
-        loginWithFacebook(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): Promise<void>;
-
-        /**@deprecated */
-        loginWithGooglePlusSync(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): void;
-
-        /**@deprecated */
-        loginWithGooglePlus(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): Promise<void>;
-
-        loginWithTwitterSync(fields?: Object, stayLoggedIn?: boolean): void;
-
-        loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
-
-        /**@deprecated */
-        loginWithFacebookSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
-
-        /**@deprecated */
-        loginWithGooglePlusSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-
-        isValidLoginSync(): boolean;
-
-        isValidLogin(): Promise<boolean>;
-
-        resendEmailConfirmationSync(email: string): void;
-
-        resendEmailConfirmation(email: string): Promise<void>;
-    }
-
-    interface LoggingI {
-        restUrl: string;
-        loggers: Object;
-        logInfo: Object[];
-        messagesCount: number;
-        numOfMessages: number;
-        timeFrequency: number;
-
-        setLogReportingPolicy(numOfMessages: number, timeFrequencySec: number): void;
-
-        getLogger(name: string): Backendless.Logger;
-    }
-
-    interface PersistencePermissionI {
-        /** @deprecated */
-        grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-        /** @deprecated */
-        grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        /** @deprecated */
-        deny(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForAllUsers(dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        grantForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-        denyForAllRoles(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-    }
-
-    interface FilePermissionI {
-        /** @deprecated */
-        grantUserSync(userId: string, url: string): boolean;
-
-        /** @deprecated */
-        grantUser(userId: string, url: string): Promise<boolean>;
-
-        /** @deprecated */
-        grantRoleSync(roleName: string, url: string): boolean;
-
-        /** @deprecated */
-        grantRole(roleName: string, url: string): Promise<boolean>;
-
-        /** @deprecated */
-        denyUserSync(userId: string, url: string): boolean;
-
-        /** @deprecated */
-        denyUser(userId: string, url: string): Promise<boolean>;
-
-        /** @deprecated */
-        denyRoleSync(roleName: string, url: string): boolean;
-
-        /** @deprecated */
-        denyRole(roleName: string, url: string): Promise<boolean>;
-
-        grantForUser(userId: string, url: string): Promise<boolean>;
-
-        denyForUser(userId: string, url: string): Promise<boolean>;
-
-        grantForRole(roleName: string, url: string): Promise<boolean>;
-
-        denyForRole(roleName: string, url: string): Promise<boolean>;
-
-        grantForAllUsers(url: string): Promise<boolean>;
-
-        denyForAllUsers(url: string): Promise<boolean>;
-
-        grantForAllRoles(url: string): Promise<boolean>;
-
-        denyForAllRoles(url: string): Promise<boolean>;
-    }
-
     interface DataQueryValueI {
         properties?: string[];
         condition?: string;
         options?: Object;
         url?: string;
-    }
-
-    interface LocalCacheI {
-        enabled: boolean;
-
-        exists(key: string): boolean;
-
-        set(key: string): boolean;
-
-        set<T>(key: string, val: T): T;
-
-        remove(key: string): boolean;
-
-        get(key: string): any;
-
-        getAll(): Object;
-
-        getCachePolicy(key: string): Object;
-
-        serialize(value: any): string;
-
-        deserialize(value: string): any;
-
-        clear(): void;
-
-        flushExpired(): void;
     }
 
     interface GeoCategoryI {
@@ -1344,10 +1421,6 @@ declare module __Backendless {
     }
 }
 
-import Backendless = __Backendless;
-
 declare module 'backendless' {
-    import Backendless = __Backendless;
-
     export default Backendless;
 }

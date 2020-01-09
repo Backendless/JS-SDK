@@ -1,7 +1,7 @@
 /// <reference path="../backendless.d.ts" />
 /// <reference path="./es6-promise.d.ts" />
 
-import Counter = __Backendless.Counter;
+import Counter = Backendless.Counter;
 
 function testMain() {
     const applicationId: string = Backendless.applicationId;
@@ -79,9 +79,9 @@ function testLoadRelationsQueryBuilder() {
 
 function testDataStoreClass() {
     const item: Object = {};
-    const dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
-    const dataStore2: Backendless.DataStore = Backendless.Persistence.of({});
-    const dataStore3: Backendless.DataStore = Backendless.Persistence.of(function () {
+    const dataStore: Backendless.DataStore = Backendless.Data.of('str');
+    const dataStore2: Backendless.DataStore = Backendless.Data.of({});
+    const dataStore3: Backendless.DataStore = Backendless.Data.of(function () {
     });
 
     const model: Function | Object = dataStore.model;
@@ -148,44 +148,123 @@ function testDataStoreClass() {
 
 function testPersistence() {
     let resultObj: Object;
-    let dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
     let promiseObject: Promise<Object>;
 
-    resultObj = Backendless.Persistence.saveSync('model', {});
-    resultObj = Backendless.Persistence.saveSync(dataStore, {});
-    promiseObject = Backendless.Persistence.save('model', {});
-    promiseObject = Backendless.Persistence.save(dataStore, {});
+    resultObj = Backendless.Data.saveSync('model', {});
+    resultObj = Backendless.Data.saveSync(dataStore, {});
+    promiseObject = Backendless.Data.save('model', {});
+    promiseObject = Backendless.Data.save(dataStore, {});
 
-    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123, 123);
-    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123);
-    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause');
-    resultObj = Backendless.Persistence.getViewSync('viewName');
-    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause', 123, 123);
-    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause', 123);
-    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause');
-    promiseObject = Backendless.Persistence.getView('viewName');
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123, 123);
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123);
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause');
+    resultObj = Backendless.Data.getViewSync('viewName');
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause');
+    promiseObject = Backendless.Data.getView('viewName');
 
-    resultObj = Backendless.Persistence.callStoredProcedureSync('spName', 'argumentValues');
-    resultObj = Backendless.Persistence.callStoredProcedureSync('spName', {});
-    promiseObject = Backendless.Persistence.callStoredProcedure('spName', 'argumentValues');
-    promiseObject = Backendless.Persistence.callStoredProcedure('spName', {});
+    resultObj = Backendless.Data.callStoredProcedureSync('spName', 'argumentValues');
+    resultObj = Backendless.Data.callStoredProcedureSync('spName', {});
+    promiseObject = Backendless.Data.callStoredProcedure('spName', 'argumentValues');
+    promiseObject = Backendless.Data.callStoredProcedure('spName', {});
 
-    dataStore = Backendless.Persistence.of(Model);
-    dataStore = Backendless.Persistence.of('str');
-    dataStore = Backendless.Persistence.of({});
+    dataStore = Backendless.Data.of(Model);
+    dataStore = Backendless.Data.of('str');
+    dataStore = Backendless.Data.of({});
 
-    resultObj = Backendless.Persistence.describeSync(Model);
-    resultObj = Backendless.Persistence.describeSync('str');
-    resultObj = Backendless.Persistence.describeSync({});
-    promiseObject = Backendless.Persistence.describe(Model);
-    promiseObject = Backendless.Persistence.describe('str');
-    promiseObject = Backendless.Persistence.describe({});
+    resultObj = Backendless.Data.describeSync(Model);
+    resultObj = Backendless.Data.describeSync('str');
+    resultObj = Backendless.Data.describeSync({});
+    promiseObject = Backendless.Data.describe(Model);
+    promiseObject = Backendless.Data.describe('str');
+    promiseObject = Backendless.Data.describe({});
+}
+
+function testDataGeometry() {
+    let geometry: Backendless.Data.Geometry;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+
+    geometry = new Backendless.Data.Geometry(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
+    srs = geometry.getSRS();
+    const geoJSON: object = geometry.asGeoJSON();
+    const wktString: string = geometry.asWKT();
+
+    geometry = Backendless.Data.Geometry.fromGeoJSON('{"type":"Point","coordinates":[10,20]}')
+    geometry = Backendless.Data.Geometry.fromWKT('POINT(10 20)')
+}
+
+function testDataPoint() {
+    let point: Backendless.Data.Point;
+    let coordinate: Number;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+
+    point = new Backendless.Data.Point();
+    point = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
+    coordinate = point.getX();
+    coordinate = point.getY();
+    coordinate = point.getLongitude();
+    coordinate = point.getLatitude();
+    point = point.setX(coordinate);
+    point = point.setY(coordinate);
+    point = point.setLatitude(coordinate);
+    point = point.setLongitude(coordinate);
+    point = point.setSrs(srs);
+    const geoJSON: string = point.getGeojsonType();
+    const wktString: string = point.getWktType();
+    const wktCoordinatePairs: string = point.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = point.jsonCoordinatePairs();
+    const equals: boolean = point.equals(point);
+}
+
+function testDataLineString() {
+    let lineString: Backendless.Data.LineString;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+    let point1 = new Backendless.Data.Point();
+    let point2 = new Backendless.Data.Point();
+    let points = [point1, point2];
+
+    lineString = new Backendless.Data.LineString(points);
+    lineString = new Backendless.Data.LineString(points, srs);
+    points = lineString.getPoints();
+    lineString = lineString.setPoints(points);
+    const geoJSON: string = lineString.getGeojsonType();
+    const wktString: string = lineString.getWktType();
+    const wktCoordinatePairs: string = lineString.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = lineString.jsonCoordinatePairs();
+}
+
+function testDataPolygon() {
+    let polygon: Backendless.Data.Polygon;
+    let lineStringType: Backendless.Data.LineString;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+    let point1 = new Backendless.Data.Point();
+    let point2 = new Backendless.Data.Point();
+    let points = [point1, point2];
+    let lineString = new Backendless.Data.LineString(points);
+    let lineStringsArray = [lineString]
+
+    polygon = new Backendless.Data.Polygon(lineString);
+    polygon = new Backendless.Data.Polygon(lineString, lineStringsArray);
+    polygon = new Backendless.Data.Polygon(lineString, lineStringsArray, srs);
+    polygon = new Backendless.Data.Polygon(points);
+    polygon = new Backendless.Data.Polygon(points, lineStringsArray);
+    polygon = new Backendless.Data.Polygon(points, lineStringsArray, srs);
+    polygon = polygon.setBoundary(lineString);
+    lineStringsArray = polygon.getHoles();
+    polygon = polygon.setHoles(lineStringsArray);
+    lineStringType = polygon.getBoundary();
+    const geoJSON: string = polygon.getGeojsonType();
+    const wktString: string = polygon.getWktType();
+    const wktCoordinatePairs: string = polygon.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = polygon.jsonCoordinatePairs();
 }
 
 function testData() {
     let resultObj: Object;
-    let dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
     let promiseObject: Promise<Object>;
 
@@ -221,7 +300,7 @@ function testData() {
 }
 
 function testBulkOperations() {
-    let dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    let dataStore: Backendless.DataStore = Backendless.Data.of('str');
 
     let resultPromiseListOfString: Promise<Array<string>>;
     let resultListOfString: Array<string>;
