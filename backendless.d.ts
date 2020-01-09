@@ -831,6 +831,7 @@ declare module Backendless {
         username?: string;
         password: string;
         email?: string;
+        blUserLocale?: string;
     }
 
     /**
