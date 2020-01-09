@@ -169,7 +169,7 @@ declare module Backendless {
 
             getSRS(): SpatialReferenceSystem.SpatialType;
 
-            asGeoJSON(): string;
+            asGeoJSON(): object;
 
             asWKT(): string;
         }
