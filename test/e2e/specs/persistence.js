@@ -293,17 +293,52 @@ describe('Data', function() {
       })
   })
 
-  it('Find with properties', function() {
+  it('Find with properties', async function() {
     const db = Backendless.Data.of('TableWithPagination')
-    const query = Backendless.DataQueryBuilder.create().setProperties(['name'])
 
-    return Promise.resolve()
-      .then(createBigTable)
-      .then(() => db.find(query))
-      .then(result => {
-        expect(result[0]).to.not.have.property('counter')
-        expect(result[0]).to.have.property('name')
-      })
+    await createBigTable()
+
+    let query
+    let result
+
+    query = Backendless.DataQueryBuilder.create()
+    query.setProperties(['name'])
+
+    result = await db.find(query)
+
+    expect(result[0]).to.not.have.property('counter')
+    expect(result[0]).to.have.property('name')
+
+    query = Backendless.DataQueryBuilder.create()
+    query.addProperties('name', 'created')
+
+    result = await db.find(query)
+
+    expect(result[0]).to.not.have.property('counter')
+    expect(result[0]).to.not.have.property('updated')
+    expect(result[0]).to.have.property('name')
+    expect(result[0]).to.have.property('created')
+
+    query = Backendless.DataQueryBuilder.create()
+    query.addProperties(['name', 'created'])
+
+    result = await db.find(query)
+
+    expect(result[0]).to.not.have.property('counter')
+    expect(result[0]).to.not.have.property('updated')
+    expect(result[0]).to.have.property('name')
+    expect(result[0]).to.have.property('created')
+
+    query = Backendless.DataQueryBuilder.create()
+    query.addProperties('name')
+    query.addProperties( 'created')
+
+    result = await db.find(query)
+
+    expect(result[0]).to.not.have.property('counter')
+    expect(result[0]).to.not.have.property('updated')
+    expect(result[0]).to.have.property('name')
+    expect(result[0]).to.have.property('created')
   })
 
   it('Find with non existing properties', function() {

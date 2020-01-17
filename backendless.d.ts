@@ -876,7 +876,9 @@ declare module Backendless {
 
         setProperties(properties: string | Array<string>): Backendless.DataQueryBuilder;
 
-        addProperty(properties: string): Backendless.DataQueryBuilder;
+        addProperty(property: string): Backendless.DataQueryBuilder;
+
+        addProperties(...properties: Array<string | Array<string>>): Backendless.DataQueryBuilder;
 
         getWhereClause(): string;
 

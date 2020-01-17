@@ -53,6 +53,14 @@ export default class DataQueryBuilder {
     return this
   }
 
+  addProperties(...properties) {
+    properties.forEach(p => {
+      Utils.castArray(p).forEach(property => this._query.addProperty(property))
+    })
+
+    return this
+  }
+
   getWhereClause() {
     return this._query.condition
   }
