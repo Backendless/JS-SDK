@@ -8,6 +8,7 @@ import { updateRTUserTokenIfNeeded } from '../rt'
 import { getUserFromResponse } from './utils'
 
 let currentUser = null
+let currentUserRequest = null
 
 export function setLocalCurrentUser(user) {
   currentUser = user || null
@@ -34,6 +35,14 @@ export const getCurrentUser = asyncHandler => {
     return asyncHandler ? asyncHandler.success(userFromResponse) : userFromResponse
   }
 
+  if (currentUserRequest && asyncHandler) {
+    currentUserRequest
+      .then(result => asyncHandler.success(result))
+      .catch(error => asyncHandler.fault(error))
+
+    return currentUserRequest
+  }
+
   const stayLoggedIn = LocalCache.get('stayLoggedIn')
   const currentUserId = stayLoggedIn && LocalCache.get('current-user-id')
 
@@ -41,7 +50,21 @@ export const getCurrentUser = asyncHandler => {
     const { default: Data } = require('../data')
     const { default: User } = require('./user')
 
-    return Data.of(User).findById(currentUserId, asyncHandler)
+    return currentUserRequest = Data.of(User).findById(currentUserId)
+      .then(result => {
+        currentUserRequest = null
+
+        currentUser = getUserFromResponse(result)
+
+        return asyncHandler.success(currentUser)
+      })
+      .catch(error => {
+        currentUserRequest = null
+
+        asyncHandler.fault(error)
+
+        throw error
+      })
   }
 
   return asyncHandler ? asyncHandler.success(null) : null
