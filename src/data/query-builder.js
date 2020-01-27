@@ -121,6 +121,16 @@ export default class DataQueryBuilder {
     return this
   }
 
+  getRelationsPageSize() {
+    return this._query.getOption('relationsPageSize')
+  }
+
+  setRelationsPageSize(relationsPageSize) {
+    this._query.setOption('relationsPageSize', relationsPageSize)
+
+    return this
+  }
+
   build() {
     this._query.setOptions(this._paging.build())
 
@@ -129,15 +139,16 @@ export default class DataQueryBuilder {
 
   toJSON() {
     const source = {
-      pageSize      : this._paging.pageSize,
-      offset        : this._paging.offset,
-      props         : this._query.properties,
-      where         : this._query.condition,
-      having        : this._query.havingClause,
-      sortBy        : this._query.options && this._query.options.sortBy,
-      groupBy       : this._query.options && this._query.options.groupBy,
-      loadRelations : this._query.options && this._query.options.relations,
-      relationsDepth: this._query.options && this._query.options.relationsDepth,
+      pageSize         : this._paging.pageSize,
+      offset           : this._paging.offset,
+      props            : this._query.properties,
+      where            : this._query.condition,
+      having           : this._query.havingClause,
+      sortBy           : this._query.options && this._query.options.sortBy,
+      groupBy          : this._query.options && this._query.options.groupBy,
+      loadRelations    : this._query.options && this._query.options.relations,
+      relationsDepth   : this._query.options && this._query.options.relationsDepth,
+      relationsPageSize: this._query.options && this._query.options.relationsPageSize,
     }
 
     const target = {}
@@ -176,6 +187,10 @@ export default class DataQueryBuilder {
 
     if (source.relationsDepth > 0) {
       target.relationsDepth = source.relationsDepth
+    }
+
+    if (source.relationsPageSize > 0) {
+      target.relationsPageSize = source.relationsPageSize
     }
 
     return target
