@@ -191,6 +191,7 @@ const Backendless = {
     return Backendless.Geo.Cluster
   },
 
+  /** @deprecated */
   get Persistence() {
     return Backendless.Data
   },
