@@ -73,6 +73,7 @@ const Urls = {
 
   files          : () => `${Urls.root()}/files`,
   filePath       : path => `${Urls.files()}/${path}`,
+  fileBinaryPath : path => `${Urls.files()}/binary/${path}`,
   fileCopy       : () => `${Urls.files()}/copy`,
   fileMove       : () => `${Urls.files()}/move`,
   fileRename     : () => `${Urls.files()}/rename`,
