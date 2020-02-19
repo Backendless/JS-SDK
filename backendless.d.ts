@@ -9,6 +9,8 @@ declare module Backendless {
     let secretKey: string;
     let appPath: string;
     let XMLHttpRequest: any;
+    let LocalStoragePolicy: object;
+    let DataRetrievalPolicy: object;
 
     let browser: {
         browser: string;
@@ -293,6 +295,15 @@ declare module Backendless {
         function callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
 
         function mapTableToClass(tableName: string, clientClass: Function);
+
+        const RetrievalPolicy: string;
+        const LocalStoragePolicy: string;
+
+        function clearLocalDatabase(): Promise<void>;
+        function enableOfflineSync(): void;
+        function disableAutoSync(): void;
+        function startOfflineSync(): Promise<void>;
+        function isOfflineSyncEnabled(): Boolean;
     }
 
     /**
@@ -902,6 +913,20 @@ declare module Backendless {
 
         setRelationsPageSize(relationsPageSize: number): Backendless.DataQueryBuilder;
 
+        getPageSize(): number;
+
+        getOffset(): number;
+
+        getPaging(): object;
+
+        setRetrievalPolicy(retrievalPolicy: string): Backendless.DataQueryBuilder;
+
+        getRetrievalPolicy(): string;
+
+        setStoragePolicy(localStoragePolicy: string): Backendless.DataQueryBuilder;
+
+        getStoragePolicy(): string;
+
         build(): Backendless.DataQueryValueI;
     }
 
@@ -917,6 +942,10 @@ declare module Backendless {
         setPageSize(pageSize: number): PagingQueryBuilder;
 
         setOffset(offset: number): PagingQueryBuilder;
+
+        getPageSize(): number;
+
+        getOffset(): number;
 
         prepareNextPage(): PagingQueryBuilder;
 
@@ -1197,6 +1226,13 @@ declare module Backendless {
         removeAllListeners(): Backendless.EventHandler;
     }
 
+    interface offlineAwareCallbackI {
+        handleLocalResponse?: Function;
+        handleLocalFault?: Function;
+        handleRemoteResponse?: Function;
+        handleRemoteFault?: Function;
+    }
+
     /**
      * @private
      * @class DataStore
@@ -1284,6 +1320,28 @@ declare module Backendless {
         bulkDeleteSync(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): string;
 
         rt(): EventHandler;
+
+        clearLocalDatabase(): Promise<void>;
+
+        onSave(onSuccess: Function, onError: Function): void;
+
+        onRemove(onSuccess: Function, onError: Function): void;
+
+        enableOfflineSync(): void;
+
+        disableOfflineSync(): void;
+
+        isOfflineSyncEnabled(): Boolean;
+
+        startOfflineSync(): Promise<void>;
+
+        fetchAll(query?: Backendless.DataQueryBuilder): Promise<Object[]>;
+
+        initLocalDatabase(query: Backendless.DataQueryBuilder): Promise<Object[]>;
+
+        saveEventually(obj: Object, offlineAwareCallback?: offlineAwareCallbackI): Promise<Object>;
+
+        removeEventually(obj: Object, offlineAwareCallback?: offlineAwareCallbackI): Promise<Object>;
     }
 
     /**

@@ -9,6 +9,8 @@ function testMain() {
     const serverURL: string = Backendless.serverURL;
     const appPath: string = Backendless.appPath;
     const browser: { browser: string, version: string } = Backendless.browser;
+    const localStoragePolicy: object = Backendless.LocalStoragePolicy;
+    const dataRetrievalPolicy: object = Backendless.DataRetrievalPolicy;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
 }
@@ -68,9 +70,13 @@ function testDataQueryBuilderClass() {
     dataQuery = dataQuery.setOffset(num);
     dataQuery = dataQuery.prepareNextPage();
     dataQuery = dataQuery.preparePreviousPage();
+    dataQuery = dataQuery.setStoragePolicy(str);
+    dataQuery = dataQuery.setRetrievalPolicy(str);
 
     dataQuery = dataQuery.setWhereClause(str);
     str = dataQuery.getWhereClause();
+    str = dataQuery.getStoragePolicy();
+    str = dataQuery.getRetrievalPolicy();
 
     dataQuery = dataQuery.setProperties('abc');
     dataQuery = dataQuery.setProperties(['abc','abc','abc']);
@@ -95,6 +101,9 @@ function testDataQueryBuilderClass() {
 
     dataQuery = dataQuery.setRelationsDepth(num);
     num = dataQuery.getRelationsDepth();
+    num = dataQuery.getPageSize();
+    num = dataQuery.getOffset();
+    const paging:object = dataQuery.getPaging();
 }
 
 function testLoadRelationsQueryBuilder() {
@@ -184,10 +193,14 @@ function testDataStoreClass() {
 
     let resultObj: Object;
     let resultNum: number;
+    let resultVoid: void;
+    let resultBool: Boolean;
     let promisePerson: Promise<Person>;
     let promisePersons: Promise<Person[]>;
     let promiseObject: Promise<Object>;
+    let promiseObjects: Promise<Object[]>;
     let promiseNum: Promise<number>;
+    let promiseVoid: Promise<void>;
 
 
     resultObj = dataStore.saveSync(item);
@@ -225,6 +238,26 @@ function testDataStoreClass() {
     promiseNum = dataStore.getObjectCount();
     promiseNum = dataStore.getObjectCount(dataQueryBuilder);
 
+    promiseVoid = dataStore.clearLocalDatabase();
+    resultVoid = dataStore.onSave(function(){}, function(){});
+    resultVoid = dataStore.onRemove(function(){}, function(){});
+    resultVoid = dataStore.enableOfflineSync();
+    resultVoid = dataStore.disableOfflineSync();
+    resultBool = dataStore.isOfflineSyncEnabled();
+    promiseVoid = dataStore.startOfflineSync();
+    promiseObjects = dataStore.fetchAll();
+    promiseObjects = dataStore.fetchAll(dataQueryBuilder);
+    promiseObjects = dataStore.initLocalDatabase(dataQueryBuilder);
+    promiseObject = dataStore.saveEventually({});
+    promiseObject = dataStore.saveEventually({}, { handleLocalResponse: () => {} });
+    promiseObject = dataStore.saveEventually({}, { handleLocalFault: () => {} });
+    promiseObject = dataStore.saveEventually({}, { handleRemoteResponse: () => {} });
+    promiseObject = dataStore.saveEventually({}, { handleRemoteFault: () => {} });
+    promiseObject = dataStore.removeEventually({});
+    promiseObject = dataStore.removeEventually({}, { handleLocalResponse: () => {} });
+    promiseObject = dataStore.removeEventually({}, { handleLocalFault: () => {} });
+    promiseObject = dataStore.removeEventually({}, { handleRemoteResponse: () => {} });
+    promiseObject = dataStore.removeEventually({}, { handleRemoteFault: () => {} });
 }
 
 function testPersistence() {
@@ -232,6 +265,8 @@ function testPersistence() {
     let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
     let promiseObject: Promise<Object>;
+    let promiseVoid: Promise<void>;
+    let resultVoid: void;
 
     resultObj = Backendless.Data.saveSync('model', {});
     resultObj = Backendless.Data.saveSync(dataStore, {});
@@ -262,6 +297,15 @@ function testPersistence() {
     promiseObject = Backendless.Data.describe(Model);
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
+
+    let retrievalPolicy:string = Backendless.Data.RetrievalPolicy;
+    let localStoragePolicy:string = Backendless.Data.LocalStoragePolicy;
+
+    promiseVoid = Backendless.Data.clearLocalDatabase();
+    resultVoid = Backendless.Data.enableOfflineSync();
+    resultVoid = Backendless.Data.disableAutoSync();
+    promiseVoid = Backendless.Data.startOfflineSync();
+    const isOfflineSyncEnabled:Boolean = Backendless.Data.isOfflineSyncEnabled();
 }
 
 function testDataGeometry() {
