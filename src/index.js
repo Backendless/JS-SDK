@@ -167,6 +167,14 @@ const Backendless = {
     return require('./rso').default
   },
 
+  get LocalStoragePolicy() {
+    return require('./data/offline/policy').LocalStoragePolicy
+  },
+
+  get DataRetrievalPolicy() {
+    return require('./data/offline/policy').DataRetrievalPolicy
+  },
+
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
 

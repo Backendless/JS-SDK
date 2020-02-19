@@ -1,17 +1,63 @@
-import Utils from '../../utils'
-import Urls from '../../urls'
-import Async from '../../request/async'
+import Data from '../../data'
 import Request from '../../request'
+import Async from '../../request/async'
+import Urls from '../../urls'
+import Utils from '../../utils'
+
+import { DBManager } from '../offline/database-manager'
+import { isOnline } from '../offline/network'
+import { DataRetrievalPolicy, LocalStoragePolicy } from '../offline/policy'
 
 import QueryBuilder from '../query-builder'
-
-import { parseFindResponse } from './parse'
 import { extractQueryOptions } from './extract-query-options'
 
+import { parseFindResponse } from './parse'
 
 //TODO: refactor me
 
+const getRetrievalPolicy = dataQuery => {
+  return dataQuery instanceof QueryBuilder
+    ? dataQuery.getRetrievalPolicy()
+    : Data.RetrievalPolicy
+}
+
+const getLocalStoragePolicy = dataQuery => {
+  return dataQuery instanceof QueryBuilder
+    ? dataQuery.getStoragePolicy()
+    : Data.LocalStoragePolicy
+}
+
+const shouldSearchLocally = dataQuery => {
+  const retrievalPolicy = getRetrievalPolicy(dataQuery)
+
+  return retrievalPolicy === DataRetrievalPolicy.OFFLINEONLY
+    || (!isOnline() && retrievalPolicy === DataRetrievalPolicy.DYNAMIC)
+}
+
 export function findUtil(className, Model, dataQuery, asyncHandler, classToTableMap) {
+  const searchLocally = shouldSearchLocally(dataQuery)
+  const localStoragePolicy = getLocalStoragePolicy(dataQuery)
+  const shouldStoreResult = !searchLocally && localStoragePolicy !== LocalStoragePolicy.DONOTSTOREANY
+
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => {
+      if (shouldStoreResult) {
+        DBManager
+          .storeFindResult(className, resp, localStoragePolicy)
+          .catch(err => console.log(err))
+      }
+
+      return parseFindResponse(resp, Model, classToTableMap)
+    })
+  }
+
+  if (searchLocally) {
+    return DBManager
+      .find(className, dataQuery)
+      .then(result => asyncHandler.success(result))
+      .catch(error => asyncHandler.fault(error))
+  }
+
   dataQuery = dataQuery || {}
 
   const dataQueryURL = dataQuery.url
@@ -21,10 +67,6 @@ export function findUtil(className, Model, dataQuery, asyncHandler, classToTable
   }
 
   const query = []
-
-  if (asyncHandler) {
-    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, Model, classToTableMap))
-  }
 
   if (dataQuery.options) {
     query.push(extractQueryOptions(dataQuery.options))

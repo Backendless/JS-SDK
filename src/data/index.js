@@ -1,20 +1,22 @@
-import Utils from '../utils'
 import { deprecated } from '../decorators'
-
-import Permissions from './permissions'
-import Store from './store'
-import QueryBuilder from './query-builder'
-import LoadRelationsQueryBuilder from './load-relations-query-builder'
+import Utils from '../utils'
 
 import { describe } from './describe'
+import GeoJSONParser from './geo/geo-json-parser'
+import Geometry from './geo/geometry'
+import LineString from './geo/linestring'
 
 import Point from './geo/point'
-import LineString from './geo/linestring'
 import Polygon from './geo/polygon'
-import Geometry from './geo/geometry'
 import SpatialReferenceSystem from './geo/spatial-reference-system'
 import WKTParser from './geo/wkt-parser'
-import GeoJSONParser from './geo/geo-json-parser'
+import LoadRelationsQueryBuilder from './load-relations-query-builder'
+import { DBManager, idbConnection, SyncModes } from './offline/database-manager'
+import { DataRetrievalPolicy, LocalStoragePolicy } from './offline/policy'
+
+import Permissions from './permissions'
+import QueryBuilder from './query-builder'
+import Store from './store'
 
 const classToTableMap = {}
 
@@ -23,6 +25,9 @@ const Data = {
 
   QueryBuilder             : QueryBuilder,
   LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
+
+  RetrievalPolicy   : DataRetrievalPolicy.ONLINEONLY,
+  LocalStoragePolicy: LocalStoragePolicy.DONOTSTOREANY,
 
   Point     : Point,
   LineString: LineString,
@@ -62,6 +67,30 @@ const Data = {
     }
 
     classToTableMap[tableName] = clientClass
+  },
+
+  async clearLocalDatabase() {
+    if (!Utils.isBrowser) {
+      throw new Error('Offline DB is not available outside of browser')
+    }
+
+    await idbConnection.dropDb()
+  },
+
+  enableOfflineSync() {
+    DBManager.setGlobalSyncMode(SyncModes.AUTO)
+  },
+
+  disableAutoSync() {
+    DBManager.setGlobalSyncMode(null)
+  },
+
+  startOfflineSync() {
+    return DBManager.startOfflineSync()
+  },
+
+  isOfflineSyncEnabled() {
+    return DBManager.getGlobalSyncMode() === SyncModes.AUTO
   }
 }
 

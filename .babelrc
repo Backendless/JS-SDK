@@ -1,10 +1,14 @@
 {
   "presets": [
-    "env",
-    "stage-1"
+    ["@babel/preset-env", {
+      "modules": "commonjs"
+    }]
   ],
   "plugins": [
-    "transform-object-assign",
-    "transform-decorators-legacy"
+    "@babel/plugin-transform-object-assign",
+    ["@babel/plugin-proposal-decorators", {
+       "legacy": true
+    }],
+    "@babel/plugin-proposal-class-properties"
   ]
 }

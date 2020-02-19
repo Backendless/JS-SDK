@@ -117,7 +117,7 @@ function testLoadRelationsQueryBuilder() {
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
 }
 
-function testDataQueryBuilderClass() {
+function testDataQueryBuilder() {
     let strings: Array<string>;
     let str: string;
     let num: number;

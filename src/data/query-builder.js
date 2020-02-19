@@ -1,6 +1,7 @@
+import DataStore from '../data'
 import Utils from '../utils'
-import Query from './query'
 import PagingQueryBuilder from './paging-query-builder'
+import Query from './query'
 
 export default class DataQueryBuilder {
 
@@ -11,6 +12,8 @@ export default class DataQueryBuilder {
   constructor() {
     this._query = new Query()
     this._paging = new PagingQueryBuilder()
+    this.retrievalPolicy = DataStore.RetrievalPolicy
+    this.localStoragePolicy = DataStore.LocalStoragePolicy
   }
 
   setPageSize(pageSize) {
@@ -19,10 +22,25 @@ export default class DataQueryBuilder {
     return this
   }
 
+  getPageSize() {
+    return this._paging.getPageSize()
+  }
+
   setOffset(offset) {
     this._paging.setOffset(offset)
 
     return this
+  }
+
+  getOffset() {
+    return this._paging.getOffset()
+  }
+
+  getPaging() {
+    return {
+      offset  : this.getOffset(),
+      pageSize: this.getPageSize()
+    }
   }
 
   prepareNextPage() {
@@ -137,6 +155,26 @@ export default class DataQueryBuilder {
     this._query.setOption('relationsPageSize', relationsPageSize)
 
     return this
+  }
+
+  setRetrievalPolicy(retrievalPolicy) {
+    this.retrievalPolicy = retrievalPolicy
+
+    return this
+  }
+
+  getRetrievalPolicy() {
+    return this.retrievalPolicy
+  }
+
+  setStoragePolicy(localStoragePolicy) {
+    this.localStoragePolicy = localStoragePolicy
+
+    return this
+  }
+
+  getStoragePolicy() {
+    return this.localStoragePolicy
   }
 
   build() {

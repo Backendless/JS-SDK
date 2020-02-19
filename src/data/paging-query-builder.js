@@ -20,6 +20,10 @@ export default class DataPagingQueryBuilder {
     return this
   }
 
+  getPageSize() {
+    return this.pageSize
+  }
+
   setOffset(offset) {
     if (offset < 0) {
       throw new Error('Offset cannot have a negative value.')
@@ -28,6 +32,10 @@ export default class DataPagingQueryBuilder {
     this.offset = offset
 
     return this
+  }
+
+  getOffset() {
+    return this.offset
   }
 
   prepareNextPage() {

@@ -5,7 +5,7 @@ const Utils = {
     return obj === Object(obj)
   },
 
-  isArray: (Array.isArray || function(obj) {
+  isArray: (Array.isArray || function (obj) {
     return Object.prototype.toString.call(obj).slice(8, -1) === 'Array'
   }),
 
@@ -149,14 +149,14 @@ const Utils = {
   },
 
   promisified(method) {
-    return function() {
+    return function () {
       Utils.checkPromiseSupport()
 
       const args = [].slice.call(arguments)
       const context = this
       const fn = typeof method === 'function' ? method : context[method]
 
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         args.push(new Async(resolve, reject, context))
         fn.apply(context, args)
       })
@@ -164,7 +164,7 @@ const Utils = {
   },
 
   synchronized(method) {
-    return function() {
+    return function () {
       // eslint-disable-next-line no-console
       console.warn('Using of sync methods is an outdated approach. Please use async methods.')
 
@@ -198,12 +198,31 @@ const Utils = {
 
   uuid() {
     const chr4 = () => Math.random().toString(16).slice(-4).toUpperCase()
-    const chr8 = () => `${chr4()}${chr4()}`
-    const chr12 = () => `${chr4()}${chr4()}${chr4()}`
+    const chr8 = () => `${ chr4() }${ chr4() }`
+    const chr12 = () => `${ chr4() }${ chr4() }${ chr4() }`
 
-    return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
+    return `${ chr8() }-${ chr4() }-${ chr4() }-${ chr4() }-${ chr12() }`
   },
 
+  forEach(obj, fn) {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        fn(obj[key], key)
+      }
+    }
+  },
+
+  omit(obj, propNames) {
+    const result = {}
+
+    this.forEach(obj, (value, key) => {
+      if (!propNames.includes(key)) {
+        result[key] = value
+      }
+    })
+
+    return result
+  }
 }
 
 function isBrowser() {
