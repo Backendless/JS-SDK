@@ -5,28 +5,40 @@ import Operations from './operations'
 
 const sanitizeRecord = record => {
   delete record.blPendingOperation
+  delete record.blLocalId
 
   return record
 }
 
 const saveRecord = async (tableName, record) => {
   const { blLocalId } = record
+  const [onSave, onError] = callbackManager.getCallbacks(ActionTypes.SAVE, tableName)
 
-  const savedObject = await Data.of(tableName).save(sanitizeRecord(record))
+  try {
+    const savedObject = await Data.of(tableName).save(sanitizeRecord(record))
 
-  await DBManager.replaceLocalObject(tableName, { ...savedObject, blLocalId: savedObject.objectId }, blLocalId)
+    await DBManager.replaceLocalObject(tableName, { ...savedObject, blLocalId: savedObject.objectId }, blLocalId)
 
-  return savedObject
+    onSave(tableName, savedObject)
+  } catch (error) {
+    onError(tableName, error)
+  }
 }
 
 const deleteRecord = async (tableName, record) => {
-  if (record.objectId) {
-    await Data.of(tableName).remove(record)
+  const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.DELETE, tableName)
+
+  try {
+    if (record.objectId) {
+      await Data.of(tableName).remove(record)
+    }
+
+    await DBManager.deleteLocalObject(tableName, record)
+
+    onSuccess(sanitizeRecord(record))
+  } catch(error) {
+    onError(tableName, error)
   }
-
-  await DBManager.deleteLocalObject(tableName, record)
-
-  return sanitizeRecord(record)
 }
 
 const performTransaction = async (tableName, record, transaction) => {
