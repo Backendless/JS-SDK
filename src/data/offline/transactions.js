@@ -36,17 +36,6 @@ const deleteRecord = async (tableName, record) => {
     await DBManager.deleteLocalObject(tableName, record)
 
     onSuccess(sanitizeRecord(record))
-  } catch(error) {
-    onError(tableName, error)
-  }
-}
-
-const performTransaction = async (tableName, record, transaction) => {
-  const [onSuccess, onError] = callbackManager.getCallbacks(transaction.type, tableName)
-
-  try {
-    const result = await transaction.run(tableName, record)
-    onSuccess(tableName, result)
   } catch (error) {
     onError(tableName, error)
   }
@@ -54,16 +43,13 @@ const performTransaction = async (tableName, record, transaction) => {
 
 const transactionsMap = {
   [Operations.CREATE]: {
-    type: ActionTypes.SAVE,
-    run : saveRecord
+    run: saveRecord
   },
   [Operations.UPDATE]: {
-    type: ActionTypes.SAVE,
-    run : saveRecord
+    run: saveRecord
   },
   [Operations.DELETE]: {
-    type: ActionTypes.DELETE,
-    run : deleteRecord
+    run: deleteRecord
   },
 }
 
@@ -81,9 +67,11 @@ const getUnsavedRecords = tableName => {
 async function executeTransactions(tableName) {
   const unsavedRecords = await getUnsavedRecords(tableName)
 
-  return Promise.all(unsavedRecords.map(record => (
-    performTransaction(tableName, record, transactionsMap[record.blPendingOperation])
-  )))
+  return Promise.all(unsavedRecords.map(record => {
+    const transaction = transactionsMap[record.blPendingOperation]
+
+    return transaction.run(tableName, record)
+  }))
 }
 
 export {
