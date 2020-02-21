@@ -263,7 +263,7 @@ describe('Backendless.Files', function() {
 
   describe('Upload', function() {
     it('Upload file', function() {
-      if (process.env.TEST_ENV !== 'node') {
+      if (typeof File !== 'undefined') {
         const fileName = 'testFile'
         const fileDir = 'upload-test'
         const filePath = fileDir + '/' + fileName
@@ -281,7 +281,7 @@ describe('Backendless.Files', function() {
       return createFile(testFile)
     })
 
-    const operations = ['grant', 'deny']
+    const operations = ['grantForAllUsers', 'denyForAllUsers', 'grantForAllRoles', 'denyForAllRoles']
     const permissions = ['READ', 'WRITE', 'DELETE']
 
     operations.forEach(operation =>

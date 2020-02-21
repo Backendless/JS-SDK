@@ -8,11 +8,13 @@ describe('Backendless.Events', function() {
   sandbox.forSuite()
 
   it('dispatch event with event arguments', function() {
-    return expect(Backendless.Events.dispatch('customEvent', {})).to.eventually.be.empty
+    return expect(Backendless.Events.dispatch('customEvent', {})).to.eventually.be
+      .rejectedWith(Error, 'Custom event handler with name \'customEvent\' does not exists')
   })
 
   it('dispatch event without event arguments', function() {
-    return expect(Backendless.Events.dispatch('customEvent')).to.eventually.be.empty
+    return expect(Backendless.Events.dispatch('customEvent')).to.eventually.be
+      .rejectedWith(Error, 'Custom event handler with name \'customEvent\' does not exists')
   })
 
   it('dispatch event without event name', function() {

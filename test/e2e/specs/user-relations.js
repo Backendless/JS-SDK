@@ -26,12 +26,12 @@ describe('User - Relations', function() {
   it('Circular Users relations', function() {
     const usersStore = Backendless.Data.of(Backendless.User)
 
-    let user1 = { email: 'user1@com', password: '123456' }
-    let user2 = { email: 'user2@com', password: '123456' }
-    let user3 = { email: 'user3@com', password: '123456' }
-    let user4 = { email: 'user4@com', password: '123456' }
-    let user5 = { email: 'user5@com', password: '123456' }
-    let user6 = { email: 'user6@com', password: '123456' }
+    let user1 = { email: 'user1@bar.com', password: '123456' }
+    let user2 = { email: 'user2@bar.com', password: '123456' }
+    let user3 = { email: 'user3@bar.com', password: '123456' }
+    let user4 = { email: 'user4@bar.com', password: '123456' }
+    let user5 = { email: 'user5@bar.com', password: '123456' }
+    let user6 = { email: 'user6@bar.com', password: '123456' }
 
     return Promise.resolve()
       .then(() => {
