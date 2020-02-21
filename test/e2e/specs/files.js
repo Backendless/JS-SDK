@@ -19,7 +19,7 @@ describe('Backendless.Files', function() {
 
     createFile = (path, content = '') => this.consoleApi.files.createFile(this.app.id, path, content)
     createDir = (path, name) => this.consoleApi.files.createDir(this.app.id, path, name)
-    readFile = path => this.consoleApi.files.getFileContent(this.app.id, path)
+    readFile = path => this.consoleApi.files.getFileContent(this.app.id, this.dev.authKey, path)
   })
 
   describe('Directory Listing', function() {
@@ -246,18 +246,18 @@ describe('Backendless.Files', function() {
   })
 
   describe('Save', function() {
-    it('Save file', function() {
-      if (process.env.TEST_ENV !== 'node') {
-        const fileName = 'testFile'
-        const fileDir = 'save-test'
-        const filePath = fileDir + '/' + fileName
+    it('Save file', async () => {
+      const fileName = 'testFile'
+      const fileDir = 'save-test'
+      const filePath = `${fileDir}/${fileName}`
 
-        return Promise.resolve()
-          .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent')).to.eventually.have.string(filePath))
-          .then(() => expect(readFile(filePath)).to.eventually.eql('testContent'))
-          .then(() => expect(Files.saveFile(fileDir, fileName, 'testContent 2')).to.eventually.have.string(filePath))
-          .then(() => expect(readFile(filePath)).to.eventually.eql('testContent 2'))
-      }
+      const fileURL = await Files.saveFile(fileDir, fileName, 'testContent')
+
+      expect(fileURL).to.have.string(filePath)
+
+      const fileContent = await readFile(filePath)
+
+      expect(fileContent).to.eql('testContent')
     })
   })
 
