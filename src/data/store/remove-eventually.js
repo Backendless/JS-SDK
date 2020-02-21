@@ -31,10 +31,10 @@ async function tryRemoveFromLocal(object, offlineAwareCallback = {}) {
     return object
   } catch (error) {
     if (offlineAwareCallback.handleLocalFault) {
-      offlineAwareCallback.handleLocalFault(error)
+      offlineAwareCallback.handleLocalFault(error.message || error)
     }
 
-    throw new Error(error)
+    throw new Error(error.message || error)
   }
 }
 
@@ -60,12 +60,12 @@ async function removeEventually(object, offlineAwareCallback = {}) {
     return object
   } catch (error) {
     if (offlineAwareCallback.handleRemoteFault) {
-      offlineAwareCallback.handleRemoteFault(error)
+      offlineAwareCallback.handleRemoteFault(error.message || error)
     }
 
-    onError(error)
+    onError(error.message || error)
 
-    throw new Error(error)
+    throw new Error(error.message || error)
   }
 }
 

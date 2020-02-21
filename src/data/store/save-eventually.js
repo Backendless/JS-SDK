@@ -5,14 +5,15 @@ import objectRefsMap from '../offline/database-manager/objects-ref-map'
 import { isOnline } from '../offline/network'
 import Operations from '../offline/operations'
 import { save as saveToRemoteDB } from './save'
+import { convertBooleansToStrings } from '../offline/database-manager/utils'
 
 const storeLocally = async (tableName, object) => {
   const blLocalId = objectRefsMap.get(object)
 
-  const objectToSave = {
+  const objectToSave = convertBooleansToStrings({
     ...object,
     blPendingOperation: object.objectId ? Operations.UPDATE : Operations.CREATE
-  }
+  })
 
   objectToSave.blLocalId = object.objectId || blLocalId || Utils.uuid()
 
@@ -34,10 +35,10 @@ async function tryStoreLocally(object, offlineAwareCallback = {}) {
     return object
   } catch (error) {
     if (offlineAwareCallback.handleLocalFault) {
-      offlineAwareCallback.handleLocalFault(error)
+      offlineAwareCallback.handleLocalFault(error.message || error)
     }
 
-    throw new Error(error)
+    throw new Error(error.message || error)
   }
 }
 
@@ -66,12 +67,12 @@ async function saveEventually(object, offlineAwareCallback = {}) {
     return savedObject
   } catch (error) {
     if (offlineAwareCallback.handleRemoteFault) {
-      offlineAwareCallback.handleRemoteFault(error)
+      offlineAwareCallback.handleRemoteFault(error.message || error)
     }
 
-    onError(this.className, error)
+    onError(this.className, error.message || error)
 
-    throw new Error(error)
+    throw new Error(error.message || error)
   }
 }
 
