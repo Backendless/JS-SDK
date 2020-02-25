@@ -88,6 +88,7 @@
   "dependencies": {
     "backendless-request": "~0.1.0",
     "backendless-rt-client": "0.0.17",
+    "backendless-where-clause-monitor": "^1.1.0",
     "jsstore": "3.7.3"
   }
 }

@@ -1,4 +1,5 @@
 import objectRefsMap from './objects-ref-map'
+import { parseBooleans } from './utils'
 
 function sanitizeRecords(records) {
   return records.map(record => {
@@ -6,6 +7,8 @@ function sanitizeRecords(records) {
 
     delete record.blLocalId
     delete record.blPendingOperation
+
+    record = parseBooleans(record)
 
     objectRefsMap.put(record, blLocalId)
 

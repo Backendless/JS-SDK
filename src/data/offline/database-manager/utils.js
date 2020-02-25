@@ -1,10 +1,10 @@
-import createMonitor from 'backendless-where-clause-monitor'
+import monitor from 'backendless-where-clause-monitor'
 import QueryBuilder from '../../query-builder'
 
 const getWhereClause = dataQuery => {
   const whereClauseString = dataQuery instanceof QueryBuilder && dataQuery.getWhereClause()
 
-  return whereClauseString ? createMonitor(dataQuery.getWhereClause()) : undefined
+  return whereClauseString ? monitor.createJSStoreVisitor(dataQuery.getWhereClause()) : undefined
 }
 
 const DefaultPaging = {
@@ -26,8 +26,35 @@ const getOrder = dataQuery => {
   return order.length ? order : undefined
 }
 
+const BooleanOptions = {
+  'true': true,
+  'false': false,
+}
+
+const parseBooleans = record => {
+  for (const field in record) {
+    if (BooleanOptions.hasOwnProperty(record[field])) {
+      record[field] = BooleanOptions[record[field]]
+    }
+  }
+
+  return record
+}
+
+const convertBooleansToStrings = record => {
+  for (const field in record) {
+    if (typeof record[field] === 'boolean') {
+      record[field] = `${record[field]}`
+    }
+  }
+
+  return record
+}
+
 export {
   getWhereClause,
   getPaging,
-  getOrder
+  getOrder,
+  parseBooleans,
+  convertBooleansToStrings
 }

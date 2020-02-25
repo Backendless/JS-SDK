@@ -9,6 +9,7 @@ import { findById } from './find-by-id'
 import { findFirst } from './find-first'
 import { findLast } from './find-last'
 import objectRefsMap from './objects-ref-map'
+import { convertBooleansToStrings } from './utils'
 
 if (Utils.isBrowser) {
   window['JsStoreWorker'] = JsStoreWorker
@@ -89,7 +90,7 @@ class DatabaseManager {
   upsertObject(tableName, record) {
     return idbConnection.insert({
       into  : tableName,
-      values: [record],
+      values: [convertBooleansToStrings(record)],
       upsert: true
     })
   }
@@ -104,7 +105,7 @@ class DatabaseManager {
       }),
       idbConnection.insert({
         into  : tableName,
-        values: [record]
+        values: [convertBooleansToStrings(record)]
       })
     ])
   }

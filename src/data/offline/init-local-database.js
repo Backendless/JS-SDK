@@ -2,6 +2,7 @@ import Utils from '../../utils'
 import { describe } from '../describe'
 import { DataType, DBManager, DBName, idbConnection } from './database-manager'
 import objectRefsMap from './database-manager/objects-ref-map'
+import { parseBooleans, convertBooleansToStrings } from './database-manager/utils'
 
 const getColumnType = backendlessType => {
   if (['STRING', 'STRING_ID', 'TEXT', 'FILE_REF'].includes(backendlessType)) {
@@ -13,11 +14,11 @@ const getColumnType = backendlessType => {
   }
 
   if (backendlessType === 'BOOLEAN') {
-    return DataType.Boolean
+    return DataType.String // 'true', 'false'
   }
 }
 
-const enrichRecord = r => ({ ...r, blLocalId: r.objectId })
+const enrichRecord = r => ({ ...convertBooleansToStrings(r), blLocalId: r.objectId })
 
 const prepareColumns = schema => {
   const columns = {}
@@ -69,7 +70,7 @@ const shouldFetchData = async tableName => {
 
 const sanitizeRecord = record => {
   const blLocalId = record.blLocalId
-  const sanitizedRecord = Utils.omit(record, ['blLocalId', 'blPendingOperation'])
+  const sanitizedRecord = parseBooleans(Utils.omit(record, ['blLocalId', 'blPendingOperation']))
 
   if (blLocalId) {
     objectRefsMap.put(sanitizedRecord, blLocalId)

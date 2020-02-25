@@ -1,13 +1,14 @@
 import Data from '../../data'
 import { ActionTypes, callbackManager } from './callback-manager'
 import { DBManager, idbConnection } from './database-manager'
+import { parseBooleans } from './database-manager/utils'
 import Operations from './operations'
 
 const sanitizeRecord = record => {
   delete record.blPendingOperation
   delete record.blLocalId
 
-  return record
+  return parseBooleans(record)
 }
 
 const saveRecord = async (tableName, record) => {
