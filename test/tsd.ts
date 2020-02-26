@@ -241,9 +241,9 @@ function testDataStoreClass() {
     promiseVoid = dataStore.clearLocalDatabase();
     resultVoid = dataStore.onSave(function(){}, function(){});
     resultVoid = dataStore.onRemove(function(){}, function(){});
-    resultVoid = dataStore.enableOfflineSync();
-    resultVoid = dataStore.disableOfflineSync();
-    resultBool = dataStore.isOfflineSyncEnabled();
+    resultVoid = dataStore.enableAutoSync();
+    resultVoid = dataStore.disableAutoSync();
+    resultBool = dataStore.isAutoSyncEnabled();
     promiseVoid = dataStore.startOfflineSync();
     promiseObjects = dataStore.fetchAll();
     promiseObjects = dataStore.fetchAll(dataQueryBuilder);
@@ -302,10 +302,10 @@ function testPersistence() {
     let localStoragePolicy:string = Backendless.Data.LocalStoragePolicy;
 
     promiseVoid = Backendless.Data.clearLocalDatabase();
-    resultVoid = Backendless.Data.enableOfflineSync();
+    resultVoid = Backendless.Data.enableAutoSync();
     resultVoid = Backendless.Data.disableAutoSync();
     promiseVoid = Backendless.Data.startOfflineSync();
-    const isOfflineSyncEnabled:Boolean = Backendless.Data.isOfflineSyncEnabled();
+    const isAutoSyncEnabled:Boolean = Backendless.Data.isAutoSyncEnabled();
 }
 
 function testDataGeometry() {

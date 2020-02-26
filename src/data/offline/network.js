@@ -1,6 +1,6 @@
 import Utils from '../../utils'
 
-const isOnline = () => {
+export const isOnline = () => {
   if (Utils.isBrowser) {
     return navigator.onLine
   }
@@ -8,20 +8,14 @@ const isOnline = () => {
   throw new Error('Offline DB is not available outside of browser')
 }
 
-const onOnline = cb => {
+export const onOnline = cb => {
   if (Utils.isBrowser) {
     window.addEventListener('online', cb)
   }
 }
 
-const onOffline = cb => {
+export const onOffline = cb => {
   if (Utils.isBrowser) {
     window.addEventListener('offline', cb)
   }
-}
-
-export {
-  isOnline,
-  onOnline,
-  onOffline
 }

@@ -300,10 +300,10 @@ declare module Backendless {
         const LocalStoragePolicy: string;
 
         function clearLocalDatabase(): Promise<void>;
-        function enableOfflineSync(): void;
+        function enableAutoSync(): void;
         function disableAutoSync(): void;
         function startOfflineSync(): Promise<void>;
-        function isOfflineSyncEnabled(): Boolean;
+        function isAutoSyncEnabled(): Boolean;
     }
 
     /**
@@ -1327,11 +1327,11 @@ declare module Backendless {
 
         onRemove(onSuccess: Function, onError: Function): void;
 
-        enableOfflineSync(): void;
+        enableAutoSync(): void;
 
-        disableOfflineSync(): void;
+        disableAutoSync(): void;
 
-        isOfflineSyncEnabled(): Boolean;
+        isAutoSyncEnabled(): Boolean;
 
         startOfflineSync(): Promise<void>;
 

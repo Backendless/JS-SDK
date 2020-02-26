@@ -1,7 +1,7 @@
 import { idbConnection } from '../database-manager'
-import { sanitizeRecords } from './sanitizer'
+import { sanitizeRecords } from './utils'
 
-async function findById(tableName, objectId) {
+export async function findById(tableName, objectId) {
   const records = await idbConnection.select({
     from : tableName,
     where: { objectId },
@@ -18,8 +18,4 @@ async function findById(tableName, objectId) {
   const [sanitizedRecord] = sanitizeRecords(records)
 
   return sanitizedRecord
-}
-
-export {
-  findById
 }

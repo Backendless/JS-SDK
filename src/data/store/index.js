@@ -2,7 +2,7 @@ import { deprecated } from '../../decorators'
 import Utils from '../../utils'
 import { ActionTypes, callbackManager } from '../offline/callback-manager'
 import { DBManager, idbConnection, SyncModes } from '../offline/database-manager'
-import initLocalDatabase from '../offline/init-local-database'
+import { initLocalDatabase } from '../offline/database-manager/init-local-database'
 import EventHandler from '../rt-store'
 import { resolveModelClassFromString } from '../utils'
 import { bulkCreate, bulkDelete, bulkUpdate } from './bulk'
@@ -58,15 +58,15 @@ class DataStore {
     callbackManager.register(ActionTypes.DELETE, this.className, [onSuccess, onError])
   }
 
-  enableOfflineSync() {
+  enableAutoSync() {
     DBManager.setTableSyncMode(this.className, SyncModes.AUTO)
   }
 
-  disableOfflineSync() {
+  disableAutoSync() {
     DBManager.setTableSyncMode(this.className, null)
   }
 
-  isOfflineSyncEnabled() {
+  isAutoSyncEnabled() {
     return DBManager.getTableSyncMode(this.className) === SyncModes.AUTO
   }
 

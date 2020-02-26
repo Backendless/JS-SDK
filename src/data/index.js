@@ -77,7 +77,7 @@ const Data = {
     await idbConnection.dropDb()
   },
 
-  enableOfflineSync() {
+  enableAutoSync() {
     DBManager.setGlobalSyncMode(SyncModes.AUTO)
   },
 
@@ -89,7 +89,7 @@ const Data = {
     return DBManager.startOfflineSync()
   },
 
-  isOfflineSyncEnabled() {
+  isAutoSyncEnabled() {
     return DBManager.getGlobalSyncMode() === SyncModes.AUTO
   }
 }

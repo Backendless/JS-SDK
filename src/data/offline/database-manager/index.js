@@ -1,6 +1,8 @@
 import * as JsStore from 'jsstore'
 import * as JsStoreWorker from 'jsstore/dist/jsstore.worker.commonjs2'
+import Data from '../../../data'
 import Utils from '../../../utils'
+import DataQueryBuilder from '../../query-builder'
 import { onOnline } from '../network'
 import { LocalStoragePolicy } from '../policy'
 import { executeTransactions } from '../transactions'
@@ -8,7 +10,6 @@ import { findAll } from './find-all'
 import { findById } from './find-by-id'
 import { findFirst } from './find-first'
 import { findLast } from './find-last'
-import objectRefsMap from './objects-ref-map'
 import { convertBooleansToStrings } from './utils'
 
 if (Utils.isBrowser) {
@@ -16,8 +17,10 @@ if (Utils.isBrowser) {
 }
 
 export const idbConnection = Utils.isBrowser && new JsStore.Connection()
-export const DBName = 'backendless_offline_db'
+export const DBName = 'backendless'
 export const DataType = JsStore.DATA_TYPE
+
+window.idbConnection = idbConnection
 
 export const SyncModes = {
   AUTO     : 'AUTO',
@@ -32,7 +35,7 @@ const getDBTablesList = async () => {
 }
 
 function storeAllFindResults(tableName, records) {
-  const objectsToStore = records.map(record => ({ ...record, blLocalId: record.objectId }))
+  const objectsToStore = Utils.castArray(records).map(record => ({ ...record, blLocalId: record.objectId }))
 
   return idbConnection.insert({
     into  : tableName,
@@ -42,12 +45,10 @@ function storeAllFindResults(tableName, records) {
 }
 
 function storeUpdatedFindResults(tableName, records) {
-  return Promise.all(records.map(record => idbConnection.update({
+  return Promise.all(Utils.castArray(records).map(record => idbConnection.update({
     in   : tableName,
     set  : { ...record, blLocalId: record.objectId },
-    where: {
-      objectId: record.objectId
-    }
+    where: { objectId: record.objectId }
   })))
 }
 
@@ -63,6 +64,12 @@ class DatabaseManager {
     onOnline(this.onNetworkEnabled.bind(this))
   }
 
+  async isTableExist(tableName) {
+    const dbSchema = await idbConnection.getDbSchema(DBName)
+
+    return dbSchema.tables && !!dbSchema.tables.find(table => table.name === tableName)
+  }
+
   async addTable(tableName, columns) {
     const [dbVersion, dbSchema] = await Promise.all([
       idbConnection.getDbVersion(DBName),
@@ -70,12 +77,25 @@ class DatabaseManager {
     ])
 
     const dbTables = dbSchema ? dbSchema.tables : []
+    const nextVersion = dbVersion + 1 // To say DB is must to update schema/tables, version should be incremented
+
+    dbTables.forEach(table => {
+      table.columns = table.columns.reduce((cols, column) => ({
+        ...cols,
+        [column.name]: column
+      }), {})
+
+      table.primaryKey = 'blLocalId'
+      table.version = nextVersion
+    })
+
     const indexOfTable = dbTables.findIndex(table => table.name === tableName)
 
     const table = {
-      name   : tableName,
-      columns: columns,
-      version: dbVersion + 1 // To say DB is must to update schema/tables, version should be incremented
+      name      : tableName,
+      columns   : columns,
+      version   : nextVersion,
+      primaryKey: 'blLocalId'
     }
 
     if (indexOfTable !== -1) {
@@ -111,11 +131,9 @@ class DatabaseManager {
   }
 
   deleteLocalObject(tableName, record) {
-    const blLocalId = objectRefsMap.get(record) || record.objectId
-
     return idbConnection.remove({
       from : tableName,
-      where: { blLocalId }
+      where: { blLocalId: record.blLocalId || record.objectId }
     })
   }
 
@@ -141,6 +159,14 @@ class DatabaseManager {
   }
 
   async storeFindResult(tableName, records, localStoragePolicy) {
+    if (localStoragePolicy !== LocalStoragePolicy.DONOTSTOREANY) {
+      const tableExists = await this.isTableExist(tableName)
+
+      if (!tableExists) {
+        await Data.of(tableName).initLocalDatabase(DataQueryBuilder.create().setWhereClause('objectId is null'))
+      }
+    }
+
     if (localStoragePolicy === LocalStoragePolicy.STOREALL) {
       await storeAllFindResults(tableName, records)
     }
@@ -176,7 +202,13 @@ class DatabaseManager {
       }
     })
 
-    return Promise.all(tablesToSync.map(tableName => executeTransactions(tableName)))
+    let promiseChain = Promise.resolve()
+
+    tablesToSync.forEach(tableName => {
+      promiseChain = promiseChain.then(() => executeTransactions(tableName))
+    })
+
+    return promiseChain
   }
 
   async startOfflineSync(tableName) {
@@ -186,7 +218,19 @@ class DatabaseManager {
 
     const dbTables = await getDBTablesList()
 
-    return Promise.all(dbTables.map(table => executeTransactions(table.name)))
+    const syncStatus = {
+      successfulCompletion: {},
+      failedCompletion    : {},
+    }
+
+    const syncStatuses = await Promise.all(dbTables.map(table => executeTransactions(table.name)))
+
+    syncStatuses.forEach((status, i) => {
+      syncStatus.successfulCompletion[dbTables[i]] = status.successfulCompletion
+      syncStatus.failedCompletion[dbTables[i]] = status.failedCompletion
+    })
+
+    return syncStatus
   }
 
   getDb(tables) {

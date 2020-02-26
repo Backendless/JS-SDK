@@ -1,15 +1,17 @@
-import Utils from '../../utils'
-import { describe } from '../describe'
-import { DataType, DBManager, DBName, idbConnection } from './database-manager'
-import objectRefsMap from './database-manager/objects-ref-map'
-import { parseBooleans, convertBooleansToStrings } from './database-manager/utils'
+import Utils from '../../../utils'
+import { describe } from '../../describe'
+import { DataType, DBManager, DBName, idbConnection } from '../database-manager'
+import { convertBooleansToStrings, sanitizeRecords } from './utils'
+
+const StringTypes = ['STRING', 'STRING_ID', 'TEXT', 'FILE_REF']
+const NumberTypes = ['DOUBLE', 'INT', 'DATETIME']
 
 const getColumnType = backendlessType => {
-  if (['STRING', 'STRING_ID', 'TEXT', 'FILE_REF'].includes(backendlessType)) {
+  if (StringTypes.includes(backendlessType)) {
     return DataType.String
   }
 
-  if (['DOUBLE', 'INT', 'DATETIME'].includes(backendlessType)) {
+  if (NumberTypes.includes(backendlessType)) {
     return DataType.Number
   }
 
@@ -68,25 +70,14 @@ const shouldFetchData = async tableName => {
   return objectsCount === 0
 }
 
-const sanitizeRecord = record => {
-  const blLocalId = record.blLocalId
-  const sanitizedRecord = parseBooleans(Utils.omit(record, ['blLocalId', 'blPendingOperation']))
-
-  if (blLocalId) {
-    objectRefsMap.put(sanitizedRecord, blLocalId)
-  }
-
-  return sanitizedRecord
-}
-
-async function initLocalDatabase(whereClause, callback) {
+export async function initLocalDatabase(whereClause, callback) {
   if (!Utils.isBrowser) {
     throw new Error('Offline DB is not available outside of browser')
   }
 
   if (!(await shouldFetchData(this.className))) {
     const records = await idbConnection.select({ from: this.className })
-    const sanitizedRecords = records.map(sanitizeRecord)
+    const sanitizedRecords = sanitizeRecords(records)
 
     if (callback) {
       callback(sanitizedRecords)
@@ -114,5 +105,3 @@ async function initLocalDatabase(whereClause, callback) {
 
   return tableRecords
 }
-
-export default initLocalDatabase

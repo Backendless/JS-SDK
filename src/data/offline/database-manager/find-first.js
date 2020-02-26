@@ -1,7 +1,7 @@
 import { idbConnection } from '../database-manager'
-import { sanitizeRecords } from './sanitizer'
+import { sanitizeRecords } from './utils'
 
-async function findFirst(tableName) {
+export async function findFirst(tableName) {
   const records = await idbConnection.select({
     from : tableName,
     order: {
@@ -21,8 +21,4 @@ async function findFirst(tableName) {
   const [sanitizedRecord] = sanitizeRecords(records)
 
   return sanitizedRecord
-}
-
-export {
-  findFirst
 }

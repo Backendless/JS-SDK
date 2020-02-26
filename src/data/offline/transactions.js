@@ -1,60 +1,74 @@
 import Data from '../../data'
+import Utils from '../../utils'
 import { ActionTypes, callbackManager } from './callback-manager'
 import { DBManager, idbConnection } from './database-manager'
-import { parseBooleans } from './database-manager/utils'
+import { sanitizeRecord } from './database-manager/utils'
 import Operations from './operations'
 
-const sanitizeRecord = record => {
-  delete record.blPendingOperation
-  delete record.blLocalId
-
-  return parseBooleans(record)
-}
-
-const saveRecord = async (tableName, record) => {
-  const { blLocalId } = record
-  const [onSave, onError] = callbackManager.getCallbacks(ActionTypes.SAVE, tableName)
+const saveObject = async (tableName, object) => {
+  const { blLocalId, blPendingOperation } = object
+  const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.SAVE, tableName)
 
   try {
-    const savedObject = await Data.of(tableName).save(sanitizeRecord(record))
+    const objectToSave = Utils.omit(sanitizeRecord(object), ['blPendingOperation', 'blLocalId'])
+    const savedObject = await Data.of(tableName).save(objectToSave)
 
-    await DBManager.replaceLocalObject(tableName, { ...savedObject, blLocalId: savedObject.objectId }, blLocalId)
+    await DBManager.replaceLocalObject(tableName, {
+      ...savedObject,
+      blPendingOperation: null,
+      blLocalId         : savedObject.objectId
+    }, blLocalId)
 
-    onSave(tableName, savedObject)
+    onSuccess(tableName, savedObject)
+
+    return { blPendingOperation, object: savedObject, status: 'success' }
   } catch (error) {
+    const errorMessage = error.message || error
+
     onError(tableName, error)
+
+    return { blPendingOperation, object, status: 'error', errorMessage }
   }
 }
 
-const deleteRecord = async (tableName, record) => {
+const deleteObject = async (tableName, object) => {
   const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.DELETE, tableName)
+  const { blPendingOperation } = object
 
   try {
-    if (record.objectId) {
-      await Data.of(tableName).remove(record)
+    if (object.objectId) {
+      await Data.of(tableName).remove(object)
     }
 
-    await DBManager.deleteLocalObject(tableName, record)
+    await DBManager.deleteLocalObject(tableName, object)
 
-    onSuccess(sanitizeRecord(record))
+    const sanitizedObject = sanitizeRecord(object)
+
+    onSuccess(sanitizedObject)
+
+    return { blPendingOperation, object: sanitizedObject, status: 'success' }
   } catch (error) {
+    const errorMessage = error.message || error
+
     onError(tableName, error)
+
+    return { blPendingOperation, object, status: 'error', errorMessage }
   }
 }
 
 const transactionsMap = {
   [Operations.CREATE]: {
-    run: saveRecord
+    run: saveObject
   },
   [Operations.UPDATE]: {
-    run: saveRecord
+    run: saveObject
   },
   [Operations.DELETE]: {
-    run: deleteRecord
+    run: deleteObject
   },
 }
 
-const getUnsavedRecords = tableName => {
+const getUnsavedObjects = tableName => {
   return idbConnection.select({
     from : tableName,
     where: {
@@ -65,16 +79,53 @@ const getUnsavedRecords = tableName => {
   })
 }
 
-async function executeTransactions(tableName) {
-  const unsavedRecords = await getUnsavedRecords(tableName)
+const getSyncStatus = result => {
+  const syncStatus = {
+    successfulCompletion: {
+      created: [],
+      updated: [],
+      deleted: [],
+    },
+    failedCompletion    : {
+      createErrors: [],
+      updateErrors: [],
+      deleteErrors: [],
+    }
+  }
 
-  return Promise.all(unsavedRecords.map(record => {
-    const transaction = transactionsMap[record.blPendingOperation]
+  result.forEach(({ object, status, blPendingOperation, errorMessage }) => {
+    if (status === 'success') {
+      const prop = blPendingOperation === Operations.CREATE
+        ? 'created'
+        : blPendingOperation === Operations.UPDATE
+          ? 'updated'
+          : 'deleted'
 
-    return transaction.run(tableName, record)
-  }))
+      syncStatus.successfulCompletion[prop].push(object)
+    }
+
+    if (status === 'error') {
+      const prop = blPendingOperation === Operations.CREATE
+        ? 'createErrors'
+        : blPendingOperation === Operations.UPDATE
+          ? 'updateErrors'
+          : 'deleteErrors'
+
+      syncStatus.failedCompletion[prop].push({ object, error: errorMessage })
+    }
+  })
+
+  return syncStatus
 }
 
-export {
-  executeTransactions
+export async function executeTransactions(tableName) {
+  const unsavedObjects = await getUnsavedObjects(tableName)
+
+  const result = await Promise.all(unsavedObjects.map(object => {
+    const transaction = transactionsMap[object.blPendingOperation]
+
+    return transaction.run(tableName, object)
+  }))
+
+  return getSyncStatus(result)
 }

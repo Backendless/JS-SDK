@@ -1,7 +1,7 @@
 import monitor from 'backendless-where-clause-monitor'
 import QueryBuilder from '../../query-builder'
 
-const getWhereClause = dataQuery => {
+export const getWhereClause = dataQuery => {
   const whereClauseString = dataQuery instanceof QueryBuilder && dataQuery.getWhereClause()
 
   return whereClauseString ? monitor.createJSStoreVisitor(dataQuery.getWhereClause()) : undefined
@@ -12,9 +12,9 @@ const DefaultPaging = {
   offset  : 0
 }
 
-const getPaging = dataQuery => dataQuery instanceof QueryBuilder ? dataQuery.getPaging() : DefaultPaging
+export const getPaging = dataQuery => dataQuery instanceof QueryBuilder ? dataQuery.getPaging() : DefaultPaging
 
-const getOrder = dataQuery => {
+export const getOrder = dataQuery => {
   const orderBy = dataQuery instanceof QueryBuilder && dataQuery.getSortBy() || []
 
   const order = orderBy.reduce((result, sorting) => {
@@ -27,11 +27,11 @@ const getOrder = dataQuery => {
 }
 
 const BooleanOptions = {
-  'true': true,
+  'true' : true,
   'false': false,
 }
 
-const parseBooleans = record => {
+export const parseBooleans = record => {
   for (const field in record) {
     if (BooleanOptions.hasOwnProperty(record[field])) {
       record[field] = BooleanOptions[record[field]]
@@ -41,20 +41,20 @@ const parseBooleans = record => {
   return record
 }
 
-const convertBooleansToStrings = record => {
+export const convertBooleansToStrings = record => {
   for (const field in record) {
     if (typeof record[field] === 'boolean') {
-      record[field] = `${record[field]}`
+      record[field] = `${ record[field] }`
     }
   }
 
   return record
 }
 
-export {
-  getWhereClause,
-  getPaging,
-  getOrder,
-  parseBooleans,
-  convertBooleansToStrings
+export function sanitizeRecords(records) {
+  return records.map(sanitizeRecord)
+}
+
+export function sanitizeRecord(record) {
+  return parseBooleans(record)
 }

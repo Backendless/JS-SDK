@@ -30,15 +30,17 @@ async function tryRemoveFromLocal(object, offlineAwareCallback = {}) {
 
     return object
   } catch (error) {
+    const errorMessage = error.message || error
+
     if (offlineAwareCallback.handleLocalFault) {
-      offlineAwareCallback.handleLocalFault(error.message || error)
+      offlineAwareCallback.handleLocalFault(errorMessage)
     }
 
-    throw new Error(error.message || error)
+    throw new Error(errorMessage)
   }
 }
 
-async function removeEventually(object, offlineAwareCallback = {}) {
+export async function removeEventually(object, offlineAwareCallback = {}) {
   if (!isOnline()) {
     return tryRemoveFromLocal.apply(this, arguments)
   }
@@ -46,29 +48,25 @@ async function removeEventually(object, offlineAwareCallback = {}) {
   const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.DELETE, this.className)
 
   try {
-    await Promise.all([
-      DBManager.deleteLocalObject(this.className, object),
-      deleteFromRemoteDB(object)
-    ])
+    await deleteFromRemoteDB(object)
+    await DBManager.deleteLocalObject(this.className, object)
 
     if (offlineAwareCallback.handleRemoteResponse) {
       offlineAwareCallback.handleRemoteResponse(object)
+    } else {
+      onSuccess(this.className, object)
     }
-
-    onSuccess(this.className, object)
 
     return object
   } catch (error) {
+    const errorMessage = error.message || error
+
     if (offlineAwareCallback.handleRemoteFault) {
-      offlineAwareCallback.handleRemoteFault(error.message || error)
+      offlineAwareCallback.handleRemoteFault(errorMessage)
+    } else {
+      onError(errorMessage)
     }
 
-    onError(error.message || error)
-
-    throw new Error(error.message || error)
+    throw new Error(errorMessage)
   }
-}
-
-export {
-  removeEventually
 }
