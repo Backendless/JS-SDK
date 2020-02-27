@@ -79,6 +79,8 @@ class DatabaseManager {
     const dbTables = dbSchema ? dbSchema.tables : []
     const nextVersion = dbVersion + 1 // To say DB is must to update schema/tables, version should be incremented
 
+    // transform existing table's columns from array to object
+    // [{ name: 'columnName', dataType: 'string' }, ...] => { columnName: { dataType: 'string' }, ...}
     dbTables.forEach(table => {
       table.columns = table.columns.reduce((cols, column) => ({
         ...cols,
@@ -98,9 +100,9 @@ class DatabaseManager {
     }
 
     if (indexOfTable !== -1) {
-      dbTables[indexOfTable] = table
+      dbTables[indexOfTable] = table // table exists, override it
     } else {
-      dbTables.push(table)
+      dbTables.push(table) // table not exists yet, add new one
     }
 
     await this.initJsStore(dbTables)
