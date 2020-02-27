@@ -85,7 +85,6 @@ class DatabaseManager {
         [column.name]: column
       }), {})
 
-      table.primaryKey = 'blLocalId'
       table.version = nextVersion
     })
 
