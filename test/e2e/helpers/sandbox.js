@@ -62,7 +62,7 @@ const createSandboxFor = each => () => {
       this.app = sandbox.app
 
       Backendless.serverURL = apiServerURL
-      Backendless.initApp(this.app.id, this.app.devices.JS)
+      Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
     })
   })
 

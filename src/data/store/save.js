@@ -58,5 +58,5 @@ export function save(obj, asyncHandler) {
     return result
   }
 
-  return Utils.deepExtend(objRef, parseFindResponse(result, this.model))
+  return Utils.deepExtend(objRef, parseFindResponse(result, this.model), this.classToTableMap)
 }

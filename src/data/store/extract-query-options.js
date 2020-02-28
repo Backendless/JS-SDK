@@ -42,6 +42,10 @@ export function extractQueryOptions(options) {
     params.push('relationsDepth=' + options.relationsDepth)
   }
 
+  if (Utils.isNumber(options.relationsPageSize)) {
+    params.push('relationsPageSize=' + options.relationsPageSize)
+  }
+
   if (options.relations) {
     if (Utils.isArray(options.relations)) {
       const loadRelations = options.relations.length ? Utils.encodeArrayToUriComponent(options.relations) : '*'

@@ -1,53 +1,41 @@
 import Utils from '../utils'
 import Async from '../request/async'
+import Request from '../request'
+import Urls from '../urls'
 
-import { sendFile } from './send'
-
-const MAX_CONTENT_SIZE = 2800000
-
-const toByteArray = content => {
+const toBase64 = content => {
   if (typeof Blob !== 'undefined') {
-
-    if (!Array.isArray(content)) {
-      content = [content]
+    if (!(content instanceof Blob)) {
+      content = new Blob([content], { type: '' })
     }
 
-    content = new Blob(content)
-
-  } else if (typeof Buffer !== 'undefined') {
-    const value = Buffer.from(content)
-
-    content = {
-      value  : value,
-      options: {
-        filename   : 'blob',
-        knownLength: value.byteLength,
-        contentType: 'application/octet-stream'
-      }
-    }
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onerror = error => reject(error)
+      reader.onload = event => resolve(event.target.result.split(';base64,')[1])
+      reader.readAsDataURL(content)
+    })
   }
 
-  return content
-}
-
-const getContentSize = content => {
-  if (content.size) {
-    return content.size
+  if (typeof Buffer !== 'undefined') {
+    return Promise.resolve(Buffer.from(content).toString('base64'))
   }
 
-  return content.options && content.options.knownLength
+  return Promise.resolve(content)
 }
+
+const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
 
 /**
- * @param {String} path
+ * @param {String} filePath
  * @param {String} fileName
  * @param {String|Uint8Array} fileContent
  * @param {Boolean} overwrite
  * @param {Async} asyncHandler
  * @returns {Promise.<String>}
  */
-export function saveFile(path, fileName, fileContent, overwrite, asyncHandler) {
-  if (!path || !Utils.isString(path)) {
+export function saveFile(filePath, fileName, fileContent, overwrite, asyncHandler) {
+  if (!filePath || !Utils.isString(filePath)) {
     throw new Error('Missing value for the "path" argument. The argument must contain a string value')
   }
 
@@ -60,17 +48,20 @@ export function saveFile(path, fileName, fileContent, overwrite, asyncHandler) {
     overwrite = undefined
   }
 
-  fileContent = toByteArray(fileContent)
+  return toBase64(fileContent)
+    .then(fileContent => {
+      const query = {}
 
-  if (getContentSize(fileContent) > MAX_CONTENT_SIZE) {
-    throw new Error('File Content size must be less than ' + MAX_CONTENT_SIZE + ' bytes')
-  }
+      if (Utils.isBoolean(overwrite)) {
+        query.overwrite = overwrite
+      }
 
-  return sendFile.call(this, {
-    overwrite   : overwrite,
-    path        : path,
-    fileName    : fileName,
-    file        : fileContent,
-    asyncHandler: asyncHandler
-  })
+      return this.backendless.request.put({
+        url    : `${Urls.fileBinaryPath(filePath)}/${sanitizeFileName(fileName)}`,
+        query  : query,
+        headers: { 'Content-Type': 'text/plain' },
+        data   : fileContent,
+        asyncHandler
+      })
+    })
 }

@@ -111,6 +111,10 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     query.push('having=' + encodeURIComponent(dataQuery.havingClause))
   }
 
+  if (dataQuery.properties && dataQuery.properties.length) {
+    query.push('props=' + Utils.encodeArrayToUriComponent(dataQuery.properties))
+  }
+
   let url = this.urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
 
   if (asyncHandler) {

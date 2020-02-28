@@ -1,5 +1,4 @@
 import Utils from '../../utils'
-
 import { deprecated } from '../../decorators'
 import { resolveModelClassFromString } from '../utils'
 import EventHandler from '../rt-store'
@@ -16,14 +15,16 @@ const namespaceLabel = 'Backendless.Data.of(<ClassName>)'
 
 class DataStore {
 
-  constructor(model, backendless) {
+  constructor(model, classToTableMap, backendless) {
+    this.classToTableMap = classToTableMap
+
     if (Utils.isString(model)) {
       this.className = model
-      this.model = resolveModelClassFromString(this.className)
+      this.model = classToTableMap[this.className] || resolveModelClassFromString(this.className)
 
     } else {
       this.className = Utils.getClassName(model)
-      this.model = model
+      this.model = classToTableMap[this.className] || model
     }
 
     if (!this.className) {

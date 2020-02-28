@@ -1,14 +1,14 @@
 import Utils from '../utils'
 import Async from '../request/async'
 
-import { EXECUTION_TYPE_HEADER } from './constants'
+import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
 export function dispatchEvent(eventName, eventArgs, executionType, asyncHandler) {
   if (!eventName || !Utils.isString(eventName)) {
     throw new Error('Event Name must be provided and must be not an empty STRING!')
   }
 
-  if (typeof eventArgs === 'string') {
+  if (typeof eventArgs === 'string' && isExecutionType(eventArgs)) {
     asyncHandler = executionType
     executionType = eventArgs
     eventArgs = undefined

@@ -143,8 +143,8 @@ export default class Urls {
     return `${this.messaging()}/push`
   }
 
-  messagingPushTemplates() {
-    return `${this.messaging()}/pushtemplates`
+  messagingPushTemplates(deviceType) {
+    return `${this.messaging()}/pushtemplates/${deviceType}`
   }
 
   messagingPushWithTemplate(templateName) {
@@ -169,6 +169,14 @@ export default class Urls {
 
   messagingRegistrationDevice(deviceId) {
     return `${this.messagingRegistrations()}/${deviceId}`
+  }
+
+  emailTemplate() {
+    return `${this.root()}/emailtemplate`
+  }
+
+  emailTemplateSend() {
+    return `${this.emailTemplate()}/send`
   }
 
   //geo

@@ -115,8 +115,9 @@ describe('Backendless.Users', function() {
 
       it('it fails', function() {
         return expect(Backendless.UserService.register(randUser()))
-          .to.eventually.be.rejected
-          .and.eventually.have.property('code', 3009)
+          .to.eventually.be
+          .rejectedWith(Error, 'You are not authorized.')
+          .and.eventually.have.property('status', 401)
       })
 
       after(function() {
@@ -427,7 +428,7 @@ describe('Backendless.Users', function() {
 
     describe('using servercode api key', function() {
       before(function() {
-        Backendless.initApp(this.app.id, this.app.devices.BL)
+        Backendless.initApp(this.app.id, this.app.apiKeysMap.BL)
       })
 
       it('assign/unassign custom role to a user', function() {

@@ -9,6 +9,7 @@ import {
   DeliveryOptions,
   Bodyparts,
   SubscriptionOptions,
+  EmailEnvelope
 } from './helpers'
 
 import {
@@ -21,6 +22,7 @@ import {
   getRegistrations,
   getMessageStatus,
   getPushTemplates,
+  sendEmailFromTemplate
 } from './methods'
 
 class Messaging {
@@ -31,6 +33,7 @@ class Messaging {
     this.PublishOptions = PublishOptions
     this.DeliveryOptions = DeliveryOptions
     this.PublishOptionsHeaders = PublishOptionsHeaders
+    this.EmailEnvelope = EmailEnvelope
 
     /** @deprecated */
     this.SubscriptionOptions = SubscriptionOptions
@@ -60,6 +63,10 @@ Object.assign(Messaging.prototype, {
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
   sendEmailSync: Utils.synchronized(sendEmail),
   sendEmail    : Utils.promisified(sendEmail),
+
+  @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmailFromTemplate')
+  sendEmailFromTemplateSync: Utils.synchronized(sendEmailFromTemplate),
+  sendEmailFromTemplate    : Utils.promisified(sendEmailFromTemplate),
 
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.cancel')
   cancelSync: Utils.synchronized(cancel),

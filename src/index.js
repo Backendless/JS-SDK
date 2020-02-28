@@ -347,6 +347,7 @@ class Backendless {
     return this.Geo.Cluster
   }
 
+  /** @deprecated */
   get Persistence() {
     return this.Data
   }
@@ -373,6 +374,10 @@ class Backendless {
 
   get PublishOptionsHeaders() {
     return this.Messaging.PublishOptionsHeaders
+  }
+
+  get EmailEnvelope() {
+    return this.Messaging.EmailEnvelope
   }
 
   /** @deprecated */

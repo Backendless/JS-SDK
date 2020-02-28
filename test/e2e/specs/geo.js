@@ -60,14 +60,19 @@ describe('Backendless.Geo', function() {
       return expect(Backendless.Geo.deleteCategory('unexisting')).to.eventually.be.rejected
     })
 
-    it('retrieving a list of categories', function() {
+    it('retrieving a list of categories', async function() {
       const addCategory = name => this.consoleApi.geo.addCategory(this.app.id, name)
 
-      const testCategories = ['One', 'Two', 'Three'].sort()
+      const testCategories = ['One', 'Two', 'Three']
 
-      return Promise.all(testCategories.map(addCategory))
-        .then(() => Backendless.Geo.getCategories())
-        .then(categories => expect(categories.map(category => category.name)).to.eql(testCategories))
+      await Promise.all(testCategories.map(addCategory))
+
+      const categories = await Backendless.Geo.getCategories()
+      const categoryNames = categories.map(category => category.name)
+
+      testCategories.forEach(categoryName => {
+        expect(categoryNames).to.contain(categoryName)
+      })
     })
   })
 

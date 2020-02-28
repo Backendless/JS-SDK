@@ -18,7 +18,7 @@ const FindHelpers = {
   },
 
   metadata: function(arg) {
-    return 'metadata=' + JSON.stringify(arg)
+    return 'metadata=' + encodeURIComponent(JSON.stringify(arg))
   },
 
   units: function(arg) {

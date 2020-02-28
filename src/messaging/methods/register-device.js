@@ -4,10 +4,7 @@ import Async from '../../request/async'
 export function registerDevice(deviceToken, channels, expiration, asyncHandler) {
   const device = this.backendless.device
 
-  if (expiration instanceof Async) {
-    asyncHandler = expiration
-    expiration = undefined
-  }
+  asyncHandler = Utils.extractResponder(arguments)
 
   const data = {
     deviceToken: deviceToken,

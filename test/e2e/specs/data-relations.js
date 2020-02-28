@@ -105,4 +105,104 @@ describe('Data - Relations', function() {
       })
   })
 
+  describe('Data - Relations ONE_TO_MANY', function() {
+    beforeEach(function() {
+      consoleApi = this.consoleApi
+      appId = this.app.id
+
+      ParentTable = Backendless.Data.of('Parent')
+      ChildTable = Backendless.Data.of('Child')
+
+      return Promise.resolve()
+        .then(() => createRelationColumn('Parent', 'children', 'Child', 'ONE_TO_MANY'))
+        .then(() => {
+          const requests = []
+
+          for (let i = 0; i < 20; i++) {
+            requests.push(save('Child'))
+          }
+
+          return Promise.all(requests)
+            .then(children => {
+              return ParentTable.addRelation(parent.objectId, 'children', children)
+            })
+        })
+    })
+
+    it('Find with default relations size', function() {
+      const query = Backendless.DataQueryBuilder.create().setRelationsDepth(1)
+
+      return Promise.resolve()
+        .then(() => ParentTable.findById(parent.objectId, query))
+        .then(result => {
+          expect(result.children).to.be.an('array')
+          expect(result.children.length).to.equal(10)
+        })
+    })
+
+    it('Find when relations size is less than default', function() {
+      const query = Backendless.DataQueryBuilder.create()
+        .setRelationsDepth(1)
+        .setRelationsPageSize(5)
+
+      return Promise.resolve()
+        .then(() => ParentTable.findById(parent.objectId, query))
+        .then(result => {
+          expect(result.children).to.be.an('array')
+          expect(result.children.length).to.equal(5)
+        })
+    })
+
+    it('Find when relations size is more than default', function() {
+      const query = Backendless.DataQueryBuilder.create()
+        .setRelationsDepth(1)
+        .setRelationsPageSize(20)
+
+      return Promise.resolve()
+        .then(() => ParentTable.findById(parent.objectId, query))
+        .then(result => {
+          expect(result.children).to.be.an('array')
+          expect(result.children.length).to.equal(20)
+        })
+    })
+
+    it('Find the first object with relations size', function() {
+      const query = Backendless.DataQueryBuilder.create()
+        .setRelationsDepth(1)
+        .setRelationsPageSize(20)
+
+      return Promise.resolve()
+        .then(() => ParentTable.findFirst(query))
+        .then(result => {
+          expect(result.children).to.be.an('array')
+          expect(result.children.length).to.equal(20)
+        })
+    })
+
+    it('Find the last object with relations size', function() {
+      const query = Backendless.DataQueryBuilder.create()
+        .setRelationsDepth(1)
+        .setRelationsPageSize(20)
+
+      return Promise.resolve()
+        .then(() => ParentTable.findLast(query))
+        .then(result => {
+          expect(result.children).to.be.an('array')
+          expect(result.children.length).to.equal(20)
+        })
+    })
+
+    it('Find objects with relations size', function() {
+      const query = Backendless.DataQueryBuilder.create()
+        .setRelationsDepth(1)
+        .setRelationsPageSize(20)
+
+      return Promise.resolve()
+        .then(() => ParentTable.find(query))
+        .then(result => {
+          expect(result[0].children).to.be.an('array')
+          expect(result[0].children.length).to.equal(20)
+        })
+    })
+  })
 })

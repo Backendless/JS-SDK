@@ -1,7 +1,7 @@
 /// <reference path="../backendless.d.ts" />
 /// <reference path="./es6-promise.d.ts" />
 
-import Counter = __Backendless.Counter;
+import Counter = Backendless.Counter;
 
 function testMain() {
     const applicationId: string = Backendless.applicationId;
@@ -57,11 +57,74 @@ function testDataQueryClass() {
     dataQuery.addProperty(str);
 }
 
+function testDataQueryBuilderClass() {
+    let dataQuery: Backendless.DataQueryBuilder = new Backendless.DataQueryBuilder();
+    dataQuery = Backendless.DataQueryBuilder.create();
+
+    let str: string = 'str';
+    let num: number = 123;
+    let strs: string[] = ['abc', 'foo', 'bar']
+
+    dataQuery = dataQuery.setPageSize(num);
+    dataQuery = dataQuery.setOffset(num);
+    dataQuery = dataQuery.prepareNextPage();
+    dataQuery = dataQuery.preparePreviousPage();
+
+    dataQuery = dataQuery.setWhereClause(str);
+    str = dataQuery.getWhereClause();
+
+    dataQuery = dataQuery.setProperties('abc');
+    dataQuery = dataQuery.setProperties(['abc','abc','abc']);
+    dataQuery = dataQuery.addProperty(str);
+    dataQuery = dataQuery.addProperties(str, str, str, str);
+    dataQuery = dataQuery.addProperties(['abc','abc','abc'], ['abc','abc','abc'], ['abc','abc','abc']);
+    dataQuery = dataQuery.addProperties(['abc','abc','abc'], str, str);
+    dataQuery = dataQuery.addProperties(str);
+    dataQuery = dataQuery.addProperties(['abc','abc','abc']);
+
+    strs = dataQuery.getProperties();
+
+    dataQuery = dataQuery.setSortBy(str);
+    dataQuery = dataQuery.setSortBy(strs);
+    strs = dataQuery.getSortBy();
+
+    dataQuery = dataQuery.setRelated(str);
+    dataQuery = dataQuery.setRelated(strs);
+    dataQuery = dataQuery.addRelated(str);
+    dataQuery = dataQuery.addRelated(strs);
+    strs = dataQuery.getRelated();
+
+    dataQuery = dataQuery.setRelationsDepth(num);
+    num = dataQuery.getRelationsDepth();
+
+    const query: Backendless.DataQueryValueI = dataQuery.build();
+}
+
+function testLoadRelationsQueryBuilder() {
+    let loadRelationsQueryBuilder: Backendless.LoadRelationsQueryBuilder;
+    loadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder.create();
+
+    loadRelationsQueryBuilder.setRelationName('relationColumn');
+    loadRelationsQueryBuilder.setOffset(50);
+    loadRelationsQueryBuilder.setPageSize(50);
+    loadRelationsQueryBuilder.setSortBy('columnName');
+    loadRelationsQueryBuilder.setSortBy(['columnName']);
+    loadRelationsQueryBuilder.setProperties('columnName');
+    loadRelationsQueryBuilder.setProperties(['columnName']);
+
+    const properties: Array<string> = loadRelationsQueryBuilder.getProperties();
+    const sortBy: Array<string> = loadRelationsQueryBuilder.getSortBy();
+    const whereClause: string = loadRelationsQueryBuilder.getWhereClause();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.preparePreviousPage();
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
+}
+
 function testDataStoreClass() {
     const item: Object = {};
-    const dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
-    const dataStore2: Backendless.DataStore = Backendless.Persistence.of({});
-    const dataStore3: Backendless.DataStore = Backendless.Persistence.of(function () {
+    const dataStore: Backendless.DataStore = Backendless.Data.of('str');
+    const dataStore2: Backendless.DataStore = Backendless.Data.of({});
+    const dataStore3: Backendless.DataStore = Backendless.Data.of(function () {
     });
 
     const model: Function | Object = dataStore.model;
@@ -128,44 +191,123 @@ function testDataStoreClass() {
 
 function testPersistence() {
     let resultObj: Object;
-    let dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
     let promiseObject: Promise<Object>;
 
-    resultObj = Backendless.Persistence.saveSync('model', {});
-    resultObj = Backendless.Persistence.saveSync(dataStore, {});
-    promiseObject = Backendless.Persistence.save('model', {});
-    promiseObject = Backendless.Persistence.save(dataStore, {});
+    resultObj = Backendless.Data.saveSync('model', {});
+    resultObj = Backendless.Data.saveSync(dataStore, {});
+    promiseObject = Backendless.Data.save('model', {});
+    promiseObject = Backendless.Data.save(dataStore, {});
 
-    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123, 123);
-    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause', 123);
-    resultObj = Backendless.Persistence.getViewSync('viewName', 'whereClause');
-    resultObj = Backendless.Persistence.getViewSync('viewName');
-    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause', 123, 123);
-    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause', 123);
-    promiseObject = Backendless.Persistence.getView('viewName', 'whereClause');
-    promiseObject = Backendless.Persistence.getView('viewName');
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123, 123);
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123);
+    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause');
+    resultObj = Backendless.Data.getViewSync('viewName');
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
+    promiseObject = Backendless.Data.getView('viewName', 'whereClause');
+    promiseObject = Backendless.Data.getView('viewName');
 
-    resultObj = Backendless.Persistence.callStoredProcedureSync('spName', 'argumentValues');
-    resultObj = Backendless.Persistence.callStoredProcedureSync('spName', {});
-    promiseObject = Backendless.Persistence.callStoredProcedure('spName', 'argumentValues');
-    promiseObject = Backendless.Persistence.callStoredProcedure('spName', {});
+    resultObj = Backendless.Data.callStoredProcedureSync('spName', 'argumentValues');
+    resultObj = Backendless.Data.callStoredProcedureSync('spName', {});
+    promiseObject = Backendless.Data.callStoredProcedure('spName', 'argumentValues');
+    promiseObject = Backendless.Data.callStoredProcedure('spName', {});
 
-    dataStore = Backendless.Persistence.of(Model);
-    dataStore = Backendless.Persistence.of('str');
-    dataStore = Backendless.Persistence.of({});
+    dataStore = Backendless.Data.of(Model);
+    dataStore = Backendless.Data.of('str');
+    dataStore = Backendless.Data.of({});
 
-    resultObj = Backendless.Persistence.describeSync(Model);
-    resultObj = Backendless.Persistence.describeSync('str');
-    resultObj = Backendless.Persistence.describeSync({});
-    promiseObject = Backendless.Persistence.describe(Model);
-    promiseObject = Backendless.Persistence.describe('str');
-    promiseObject = Backendless.Persistence.describe({});
+    resultObj = Backendless.Data.describeSync(Model);
+    resultObj = Backendless.Data.describeSync('str');
+    resultObj = Backendless.Data.describeSync({});
+    promiseObject = Backendless.Data.describe(Model);
+    promiseObject = Backendless.Data.describe('str');
+    promiseObject = Backendless.Data.describe({});
+}
+
+function testDataGeometry() {
+    let geometry: Backendless.Data.Geometry;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+
+    geometry = new Backendless.Data.Geometry(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
+    srs = geometry.getSRS();
+    const geoJSON: object = geometry.asGeoJSON();
+    const wktString: string = geometry.asWKT();
+
+    geometry = Backendless.Data.Geometry.fromGeoJSON('{"type":"Point","coordinates":[10,20]}')
+    geometry = Backendless.Data.Geometry.fromWKT('POINT(10 20)')
+}
+
+function testDataPoint() {
+    let point: Backendless.Data.Point;
+    let coordinate: Number;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+
+    point = new Backendless.Data.Point();
+    point = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.CARTESIAN);
+    coordinate = point.getX();
+    coordinate = point.getY();
+    coordinate = point.getLongitude();
+    coordinate = point.getLatitude();
+    point = point.setX(coordinate);
+    point = point.setY(coordinate);
+    point = point.setLatitude(coordinate);
+    point = point.setLongitude(coordinate);
+    point = point.setSrs(srs);
+    const geoJSON: string = point.getGeojsonType();
+    const wktString: string = point.getWktType();
+    const wktCoordinatePairs: string = point.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = point.jsonCoordinatePairs();
+    const equals: boolean = point.equals(point);
+}
+
+function testDataLineString() {
+    let lineString: Backendless.Data.LineString;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+    let point1 = new Backendless.Data.Point();
+    let point2 = new Backendless.Data.Point();
+    let points = [point1, point2];
+
+    lineString = new Backendless.Data.LineString(points);
+    lineString = new Backendless.Data.LineString(points, srs);
+    points = lineString.getPoints();
+    lineString = lineString.setPoints(points);
+    const geoJSON: string = lineString.getGeojsonType();
+    const wktString: string = lineString.getWktType();
+    const wktCoordinatePairs: string = lineString.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = lineString.jsonCoordinatePairs();
+}
+
+function testDataPolygon() {
+    let polygon: Backendless.Data.Polygon;
+    let lineStringType: Backendless.Data.LineString;
+    let srs: Backendless.Data.SpatialReferenceSystem.SpatialType;
+    let point1 = new Backendless.Data.Point();
+    let point2 = new Backendless.Data.Point();
+    let points = [point1, point2];
+    let lineString = new Backendless.Data.LineString(points);
+    let lineStringsArray = [lineString]
+
+    polygon = new Backendless.Data.Polygon(lineString);
+    polygon = new Backendless.Data.Polygon(lineString, lineStringsArray);
+    polygon = new Backendless.Data.Polygon(lineString, lineStringsArray, srs);
+    polygon = new Backendless.Data.Polygon(points);
+    polygon = new Backendless.Data.Polygon(points, lineStringsArray);
+    polygon = new Backendless.Data.Polygon(points, lineStringsArray, srs);
+    polygon = polygon.setBoundary(lineString);
+    lineStringsArray = polygon.getHoles();
+    polygon = polygon.setHoles(lineStringsArray);
+    lineStringType = polygon.getBoundary();
+    const geoJSON: string = polygon.getGeojsonType();
+    const wktString: string = polygon.getWktType();
+    const wktCoordinatePairs: string = polygon.wktCoordinatePairs();
+    const jsonCoordinatePairs: string = polygon.jsonCoordinatePairs();
 }
 
 function testData() {
     let resultObj: Object;
-    let dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
     let promiseObject: Promise<Object>;
 
@@ -201,7 +343,7 @@ function testData() {
 }
 
 function testBulkOperations() {
-    let dataStore: Backendless.DataStore = Backendless.Persistence.of('str');
+    let dataStore: Backendless.DataStore = Backendless.Data.of('str');
 
     let resultPromiseListOfString: Promise<Array<string>>;
     let resultListOfString: Array<string>;
@@ -275,6 +417,33 @@ function testDataPermissions() {
     promiseObject = Backendless.Data.Permissions.UPDATE.denyRole(roleName, dataObj);
     promiseObject = Backendless.Data.Permissions.UPDATE.deny(dataObj);
 
+    promiseObject = Backendless.Data.Permissions.FIND.grantForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grantForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grantForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.grantForAllRoles(dataObj);
+    promiseObject = Backendless.Data.Permissions.FIND.denyForAllRoles(dataObj);
+
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.grantForAllRoles(dataObj);
+    promiseObject = Backendless.Data.Permissions.REMOVE.denyForAllRoles(dataObj);
+
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForUser(userId, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForRole(roleName, dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForAllUsers(dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.grantForAllRoles(dataObj);
+    promiseObject = Backendless.Data.Permissions.UPDATE.denyForAllRoles(dataObj);
+
 }
 
 function testUser() {
@@ -328,6 +497,11 @@ function testUserService() {
     newUser = Backendless.UserService.loginSync(userName, password, bol);
     promiseObject = Backendless.UserService.login(userName, password);
     promiseObject = Backendless.UserService.login(userName, password, bol);
+
+    newUser = Backendless.UserService.loginAsGuestSync();
+    newUser = Backendless.UserService.loginAsGuestSync(bol);
+    promiseObject = Backendless.UserService.loginAsGuest();
+    promiseObject = Backendless.UserService.loginAsGuest(bol);
 
     resultListOfObjects = Backendless.UserService.describeUserClassSync();
     promiseListOfObject = Backendless.UserService.describeUserClass();
@@ -532,6 +706,30 @@ function testGoeService() {
 
 }
 
+function testEmailEnvelope() {
+    let addresses: string[];
+    let query: string;
+    let address: string = 'foo@foo.com';
+    const data: object = {};
+    let envelopeObject = new Backendless.EmailEnvelope();
+
+    envelopeObject = Backendless.EmailEnvelope.create(data);
+    envelopeObject = envelopeObject.setTo(address);
+    addresses = envelopeObject.getTo();
+    envelopeObject = envelopeObject.addTo(address);
+    addresses = envelopeObject.getTo();
+    envelopeObject = envelopeObject.setCc(address);
+    addresses = envelopeObject.getCc();
+    envelopeObject = envelopeObject.addCc(address);
+    addresses = envelopeObject.getCc();
+    envelopeObject = envelopeObject.setBcc(address);
+    addresses = envelopeObject.getBcc();
+    envelopeObject = envelopeObject.addBcc(address);
+    addresses = envelopeObject.getBcc();
+    envelopeObject = envelopeObject.setQuery('query');
+    query = envelopeObject.getQuery();
+}
+
 function testMessaging() {
     const restUrl: string = Backendless.Messaging.restUrl;
     const channelProperties: Object = Backendless.Messaging.channelProperties;
@@ -546,6 +744,9 @@ function testMessaging() {
     let promiseObject: Promise<Object>;
     let PromiseString: Promise<String>;
     const bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
+    const envelopeObject: Backendless.EmailEnvelope = new Backendless.EmailEnvelope();
+    const templateValues: Object | Backendless.EmailEnvelope = {};
+    const templateName: string = 'str';
     const recipients: string[] = ['str'];
     const attachments: string[] = ['str'];
     const channels: string[] = ['str'];
@@ -567,6 +768,12 @@ function testMessaging() {
     resultString = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
     PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
+    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject, templateValues);
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
+
+    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject);
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
+
     resultBool = Backendless.Messaging.cancelSync(messageId);
     promiseObject = Backendless.Messaging.cancel(messageId);
 
@@ -579,7 +786,9 @@ function testMessaging() {
     resultObj = Backendless.Messaging.unregisterDeviceSync();
     promiseObject = Backendless.Messaging.unregisterDevice();
 
-    promiseObject = Backendless.Messaging.getPushTemplates();
+    promiseObject = Backendless.Messaging.getPushTemplates('ios');
+
+    promiseObject = Backendless.Messaging.pushWithTemplate('templateName');
 
 }
 
@@ -689,6 +898,34 @@ function testFilesService() {
     promiseObject = Backendless.Files.Permissions.WRITE.grantRole(roleName, url);
     promiseObject = Backendless.Files.Permissions.WRITE.denyUser(userid, url);
     promiseObject = Backendless.Files.Permissions.WRITE.denyRole(roleName, url);
+
+    promiseObject = Backendless.Files.Permissions.READ.grantForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.READ.grantForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.READ.grantForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.READ.grantForAllRoles(url);
+    promiseObject = Backendless.Files.Permissions.READ.denyForAllRoles(url);
+
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllRoles(url);
+    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllRoles(url);
+
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForUser(userid, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForRole(roleName, url);
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllUsers(url);
+    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllRoles(url);
+    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllRoles(url);
+
 }
 
 function testCommerce() {

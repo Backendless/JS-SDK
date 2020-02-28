@@ -28,6 +28,14 @@ export function getCurrentUser(asyncHandler) {
     return asyncHandler ? asyncHandler.success(userFromResponse) : userFromResponse
   }
 
+  if (this.currentUserRequest && asyncHandler) {
+    this.currentUserRequest
+      .then(result => asyncHandler.success(result))
+      .catch(error => asyncHandler.fault(error))
+
+    return this.currentUserRequest
+  }
+
   const stayLoggedIn = this.backendless.LocalCache.get('stayLoggedIn')
   const currentUserId = stayLoggedIn && this.backendless.LocalCache.get('current-user-id')
 
@@ -35,7 +43,21 @@ export function getCurrentUser(asyncHandler) {
     const Data = this.backendless.Data
     const User = this.backendless.User
 
-    return Data.of(User).findById(currentUserId, asyncHandler)
+    return this.currentUserRequest = Data.of(User).findById(currentUserId)
+      .then(result => {
+        this.currentUserRequest = null
+
+        this.currentUser = getUserFromResponse(result)
+
+        return asyncHandler.success(currentUser)
+      })
+      .catch(error => {
+        this.currentUserRequest = null
+
+        asyncHandler.fault(error)
+
+        throw error
+      })
   }
 
   return asyncHandler

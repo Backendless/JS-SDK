@@ -4,6 +4,7 @@ import { deprecated } from '../decorators'
 import { register } from './register'
 import { assignRole, getUserRoles, unassignRole } from './roles'
 import { login } from './login'
+import { loginAsGuest } from './login-as-guest'
 import { logout } from './logout'
 import { update } from './update'
 import { describeUserClass } from './describe-class'
@@ -52,6 +53,10 @@ Object.assign(Users.prototype, {
   @deprecated('Backendless.Users', 'Backendless.Users.login')
   loginSync: Utils.synchronized(login),
   login    : Utils.promisified(login),
+
+  @deprecated('Backendless.Users', 'Backendless.Users.loginAsGuest')
+  loginAsGuestSync: Utils.synchronized(loginAsGuest),
+  loginAsGuest    : Utils.promisified(loginAsGuest),
 
   @deprecated('Backendless.Users', 'Backendless.Users.describeUserClass')
   describeUserClassSync: Utils.synchronized(describeUserClass),
