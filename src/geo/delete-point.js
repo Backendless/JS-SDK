@@ -10,8 +10,8 @@ export function deletePoint(point, asyncHandler) {
   let result = {}
 
   try {
-    result = this.backendless.request.delete({
-      url         : this.backendless.urls.geoPoint(pointId),
+    result = this.app.request.delete({
+      url         : this.app.urls.geoPoint(pointId),
       isAsync     : !!asyncHandler,
       asyncHandler: asyncHandler
     })

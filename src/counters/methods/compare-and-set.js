@@ -17,8 +17,8 @@ export function compareAndSet(counterName, expected, updated, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.counterCompareAndSet(counterName),
+  return this.app.request.put({
+    url         : this.app.urls.counterCompareAndSet(counterName),
     query       : { expected, updatedvalue: updated },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

@@ -35,8 +35,8 @@ export function publish(channelName, message, publishOptions, deliveryTarget, as
     Utils.deepExtend(data, deliveryTarget)
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.messagingChannel(channelName),
+  return this.app.request.post({
+    url         : this.app.urls.messagingChannel(channelName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler,
     data        : data

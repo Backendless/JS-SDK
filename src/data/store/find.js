@@ -21,7 +21,7 @@ function findUtil(url, Model, dataQuery, asyncHandler) {
   const query = []
 
   if (asyncHandler) {
-    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, Model, classToTableMap))
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, Model, this.classToTableMap))
   }
 
   if (dataQuery.options) {
@@ -48,7 +48,7 @@ function findUtil(url, Model, dataQuery, asyncHandler) {
     url += '?' + query.join('&')
   }
 
-  const result = this.backendless.request.get({
+  const result = this.app.request.get({
     url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler,
@@ -59,7 +59,7 @@ function findUtil(url, Model, dataQuery, asyncHandler) {
     return result
   }
 
-  return parseFindResponse(result, Model, classToTableMap)
+  return parseFindResponse(result, Model, this.classToTableMap)
 }
 
 export function find(queryBuilder, asyncHandler) {
@@ -75,7 +75,7 @@ export function find(queryBuilder, asyncHandler) {
   }
 
   const dataQuery = queryBuilder ? queryBuilder.build() : {}
-  const url = this.backendless.urls.dataTable(this.className)
+  const url = this.app.urls.dataTable(this.className)
 
   return findUtil.call(this, url, this.model, dataQuery, asyncHandler, this.classToTableMap)
 }
@@ -84,7 +84,7 @@ export function findById() {
   let argsObj
   let responder = Utils.extractResponder(arguments)
 
-  const url = this.backendless.urls.dataTable(this.className)
+  const url = this.app.urls.dataTable(this.className)
 
   if (Utils.isString(arguments[0])) {
     argsObj = !(arguments[1] instanceof Async) ? (arguments[1] || {}) : {}
@@ -111,13 +111,13 @@ export function findById() {
     let result
 
     if (Utils.getClassName(arguments[0]) === 'Object') {
-      result = this.backendless.request.get({
+      result = this.app.request.get({
         url         : url + send.replace(/&$/, ''),
         isAsync     : isAsync,
         asyncHandler: responder
       })
     } else {
-      result = this.backendless.request.put({
+      result = this.app.request.put({
         url         : url,
         data        : argsObj,
         isAsync     : isAsync,
@@ -137,7 +137,7 @@ export function findFirst(dataQuery, asyncHandler) {
 
   dataQuery.url = 'first'
 
-  const url = this.backendless.urls.dataTable(this.className)
+  const url = this.app.urls.dataTable(this.className)
 
   return findUtil.call(this, url, this.model, dataQuery, asyncHandler, this.classToTableMap)
 }
@@ -150,7 +150,7 @@ export function findLast(dataQuery, asyncHandler) {
 
   dataQuery.url = 'last'
 
-  const url = this.backendless.urls.dataTable(this.className)
+  const url = this.app.urls.dataTable(this.className)
 
   return findUtil.call(this, url, this.model, dataQuery, asyncHandler, this.classToTableMap)
 }

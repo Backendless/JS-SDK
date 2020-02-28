@@ -3,8 +3,8 @@ import Request from 'backendless-request'
 import { ajaxForBrowser } from './request-for-browser'
 
 export function sendRequest(config) {
-  const XMLHttpRequest = this.backendless.XMLHttpRequest
-  const userToken = this.backendless.getCurrentUserToken()
+  const XMLHttpRequest = this.app.XMLHttpRequest
+  const userToken = this.app.getCurrentUserToken()
 
   //--TODO remove this checking when we get rid of all sync methods
   if (config.isAsync === false || !config.asyncHandler) {

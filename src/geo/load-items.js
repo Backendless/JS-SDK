@@ -17,7 +17,7 @@ export function loadItems(query, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => responseParser(resp, query))
   }
 
-  const result = this.backendless.request.get({
+  const result = this.app.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

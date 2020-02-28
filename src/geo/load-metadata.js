@@ -36,7 +36,7 @@ export function loadMetadata(geoObject, asyncHandler) {
 
   }
 
-  return this.backendless.request.get({
+  return this.app.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

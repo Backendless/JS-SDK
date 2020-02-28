@@ -47,8 +47,8 @@ export function save(obj, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, this.model))
   }
 
-  const result = this.backendless.request.put({
-    url         : this.backendless.urls.dataTable(this.className),
+  const result = this.app.request.put({
+    url         : this.app.urls.dataTable(this.className),
     data        : obj,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

@@ -23,8 +23,8 @@ export function put(key, value, timeToLive, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+  return this.app.request.put({
+    url         : this.app.urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
     headers     : { 'Content-Type': 'application/json' },
     data        : JSON.stringify(value),
     isAsync     : !!asyncHandler,

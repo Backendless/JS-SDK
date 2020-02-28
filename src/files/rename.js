@@ -16,8 +16,8 @@ export function renameFile(oldPathName, newName, asyncHandler) {
     newName    : newName
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.fileRename(),
+  return this.app.request.put({
+    url         : this.app.urls.fileRename(),
     data        : parameters,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

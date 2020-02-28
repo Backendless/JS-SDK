@@ -8,27 +8,27 @@ const ListenerTypes = Utils.mirrorKeys({
 })
 
 export default class RemoteSharedObject extends RTScopeConnector {
-  constructor(options, backendless) {
+  constructor(options, app) {
     super(options)
 
-    this.backendless = backendless
+    this.app = app
     this.invocationTarget = null
   }
 
   get connectSubscriber() {
-    return this.backendless.RT.subscriptions.connectToRSO
+    return this.app.RT.subscriptions.connectToRSO
   }
 
   get usersSubscriber() {
-    return this.backendless.RT.subscriptions.onRSOUserStatus
+    return this.app.RT.subscriptions.onRSOUserStatus
   }
 
   get commandSubscriber() {
-    return this.backendless.RT.subscriptions.onRSOCommand
+    return this.app.RT.subscriptions.onRSOCommand
   }
 
   get commandSender() {
-    return this.backendless.RT.methods.sendRSOCommand
+    return this.app.RT.methods.sendRSOCommand
   }
 
   setInvocationTarget(invocationTarget) {
@@ -39,7 +39,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
     if (!this.subscribedOnRemoteInvokes) {
       this.subscribedOnRemoteInvokes = true
 
-      this.addSubscription(ListenerTypes.INVOKE, this.backendless.RT.subscriptions.onRSOInvoke, {
+      this.addSubscription(ListenerTypes.INVOKE, this.app.RT.subscriptions.onRSOInvoke, {
         callback: this.onInvoke
       })
     }
@@ -66,7 +66,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
 
   @RTScopeConnector.connectionRequired()
   addChangesListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CHANGES, this.backendless.RT.subscriptions.onRSOChanges, {
+    this.addSubscription(ListenerTypes.CHANGES, this.app.RT.subscriptions.onRSOChanges, {
       callback,
       onError
     })
@@ -79,7 +79,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
 
   @RTScopeConnector.connectionRequired()
   addClearListener(callback, onError) {
-    this.addSubscription(ListenerTypes.CLEARED, this.backendless.RT.subscriptions.onRSOClear, {
+    this.addSubscription(ListenerTypes.CLEARED, this.app.RT.subscriptions.onRSOClear, {
       callback,
       onError
     })
@@ -100,17 +100,17 @@ export default class RemoteSharedObject extends RTScopeConnector {
 
   @RTScopeConnector.connectionRequired(true)
   get(key) {
-    return this.backendless.RT.methods.getRSO({ ...this.getScopeOptions(), key })
+    return this.app.RT.methods.getRSO({ ...this.getScopeOptions(), key })
   }
 
   @RTScopeConnector.connectionRequired(true)
   set(key, data) {
-    return this.backendless.RT.methods.setRSO({ ...this.getScopeOptions(), key, data })
+    return this.app.RT.methods.setRSO({ ...this.getScopeOptions(), key, data })
   }
 
   @RTScopeConnector.connectionRequired(true)
   clear() {
-    return this.backendless.RT.methods.clearRSO(this.getScopeOptions())
+    return this.app.RT.methods.clearRSO(this.getScopeOptions())
   }
 
   @RTScopeConnector.connectionRequired(true)
@@ -123,7 +123,7 @@ export default class RemoteSharedObject extends RTScopeConnector {
     return Promise
       .resolve()
       .then(() => checkInvocationTargetMethod(this.invocationTarget, method))
-      .then(() => this.backendless.RT.methods.invokeRSOMethod({
+      .then(() => this.app.RT.methods.invokeRSOMethod({
         ...this.getScopeOptions(),
         method,
         targets,

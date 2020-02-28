@@ -1,6 +1,6 @@
 export function sendRequest(type, object, options, asyncHandler) {
   const permission = this.permission
-  const url = this.backendless.urls.dataObjectPermission(object.___class, type, object.objectId)
+  const url = this.app.urls.dataObjectPermission(object.___class, type, object.objectId)
 
   const { userId, roleName } = options
 
@@ -18,7 +18,7 @@ export function sendRequest(type, object, options, asyncHandler) {
     data.role = roleName
   }
 
-  return this.backendless.request.put({
+  return this.app.request.put({
     url,
     data,
     asyncHandler,

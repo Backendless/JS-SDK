@@ -7,7 +7,7 @@ import { SocialContainer } from './container'
 
 export function loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) {
   const socialContainer = new SocialContainer(socialType, container)
-  const serverURL = this.backendless.serverURL
+  const serverURL = this.app.serverURL
 
   asyncHandler = Utils.extractResponder(arguments)
   asyncHandler = wrapAsync.call(this, asyncHandler, stayLoggedIn)
@@ -38,8 +38,8 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
   request.fieldsMapping = fieldsMapping || {}
   request.permissions = permissions || []
 
-  this.backendless.request.post({
-    url         : this.backendless.urls.userSocialOAuth(socialType),
+  this.app.request.post({
+    url         : this.app.urls.userSocialOAuth(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,
     data        : request

@@ -6,7 +6,7 @@ import { getUserFromResponse } from './utils'
 export function setLocalCurrentUser(user) {
   this.currentUser = user || null
 
-  this.backendless.RT.updateUserTokenIfNeeded()
+  this.app.RT.updateUserTokenIfNeeded()
 }
 
 export function getLocalCurrentUser() {
@@ -18,7 +18,7 @@ export function getCurrentUserToken() {
     return this.currentUser['user-token'] || null
   }
 
-  return this.backendless.LocalCache.get('user-token') || null
+  return this.app.LocalCache.get('user-token') || null
 }
 
 export function getCurrentUser(asyncHandler) {
@@ -36,12 +36,12 @@ export function getCurrentUser(asyncHandler) {
     return this.currentUserRequest
   }
 
-  const stayLoggedIn = this.backendless.LocalCache.get('stayLoggedIn')
-  const currentUserId = stayLoggedIn && this.backendless.LocalCache.get('current-user-id')
+  const stayLoggedIn = this.app.LocalCache.get('stayLoggedIn')
+  const currentUserId = stayLoggedIn && this.app.LocalCache.get('current-user-id')
 
   if (currentUserId) {
-    const Data = this.backendless.Data
-    const User = this.backendless.User
+    const Data = this.app.Data
+    const User = this.app.User
 
     return this.currentUserRequest = Data.of(User).findById(currentUserId)
       .then(result => {
@@ -73,8 +73,8 @@ export function isValidLogin(/** async */) {
   if (userToken) {
     if (!isAsync) {
       try {
-        const result = this.backendless.request.get({
-          url: this.backendless.urls.userTokenCheck(userToken)
+        const result = this.app.request.get({
+          url: this.app.urls.userTokenCheck(userToken)
         })
         return !!result
       } catch (e) {
@@ -82,8 +82,8 @@ export function isValidLogin(/** async */) {
       }
     }
 
-    return this.backendless.request.get({
-      url         : this.backendless.urls.userTokenCheck(userToken),
+    return this.app.request.get({
+      url         : this.app.urls.userTokenCheck(userToken),
       isAsync     : isAsync,
       asyncHandler: responder
     })
@@ -97,5 +97,5 @@ export function isValidLogin(/** async */) {
 }
 
 export function loggedInUser() {
-  return this.backendless.LocalCache.get('current-user-id')
+  return this.app.LocalCache.get('current-user-id')
 }

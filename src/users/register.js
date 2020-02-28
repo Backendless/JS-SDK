@@ -8,8 +8,8 @@ export function register(user /** async */) {
 
   const isAsync = !!responder
 
-  const result = this.backendless.request.post({
-    url         : this.backendless.urls.userRegister(),
+  const result = this.app.request.post({
+    url         : this.app.urls.userRegister(),
     isAsync     : isAsync,
     asyncHandler: responder && wrapAsync(responder),
     data        : enrichWithLocaleInfo(user)

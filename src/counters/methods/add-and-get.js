@@ -13,8 +13,8 @@ export function addAndGet(counterName, value, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.counterAddAndGet(counterName),
+  return this.app.request.put({
+    url         : this.app.urls.counterAddAndGet(counterName),
     query       : { value },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

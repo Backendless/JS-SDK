@@ -8,8 +8,8 @@ export function update(user /** async */) {
 
   const isAsync = !!responder
 
-  const result = this.backendless.request.put({
-    url         : this.backendless.urls.userObject(user.objectId),
+  const result = this.app.request.put({
+    url         : this.app.urls.userObject(user.objectId),
     isAsync     : isAsync,
     asyncHandler: responder && wrapAsync(responder),
     data        : user

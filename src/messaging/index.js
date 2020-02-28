@@ -26,8 +26,8 @@ import {
 } from './methods'
 
 class Messaging {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
 
     this.Bodyparts = Bodyparts
     this.PublishOptions = PublishOptions
@@ -49,7 +49,7 @@ class Messaging {
       throw new Error('"channelName" can not contains slash chars')
     }
 
-    return new Channel({ name: channelName.trim() }, this.backendless)
+    return new Channel({ name: channelName.trim() }, this.app)
   }
 }
 

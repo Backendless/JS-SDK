@@ -36,8 +36,8 @@ export function sendEmail(subject, bodyParts, recipients, attachments/**, async 
     return res.status
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.messagingEmail(),
+  return this.app.request.post({
+    url         : this.app.urls.messagingEmail(),
     isAsync     : isAsync,
     asyncHandler: Utils.wrapAsync(responder, responseMessageStatus),
     data        : data

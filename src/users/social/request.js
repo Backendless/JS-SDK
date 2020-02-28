@@ -11,15 +11,15 @@ export function sendSocialLoginRequest (accessToken, socialType, fieldsMapping, 
 
   const interimCallback = new Async(function(r) {
     context.setLocalCurrentUser(parseResponse.call(context, r))
-    context.backendless.LocalCache.set('stayLoggedIn', !!stayLoggedIn)
+    context.app.LocalCache.set('stayLoggedIn', !!stayLoggedIn)
 
     asyncHandler.success(getUserFromResponse.call(context, context.getLocalCurrentUser()))
   }, function(e) {
     asyncHandler.fault(e)
   })
 
-  this.backendless.request.post({
-    url         : this.backendless.urls.userSocialLogin(socialType),
+  this.app.request.post({
+    url         : this.app.urls.userSocialLogin(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,
     data        : {

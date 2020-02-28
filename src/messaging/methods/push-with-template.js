@@ -8,8 +8,8 @@ export function pushWithTemplate(templateName) {
     throw new Error('Push Template Name must be non empty string!')
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.messagingPushWithTemplate(templateName),
+  return this.app.request.post({
+    url         : this.app.urls.messagingPushWithTemplate(templateName),
     isAsync     : isAsync,
     asyncHandler: responder
   })

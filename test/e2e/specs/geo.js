@@ -332,16 +332,16 @@ describe('Backendless.Geo', function() {
           return createPoints
             .then(() => Backendless.Geo.find(geoQuery(['even'], 1000, 500)))
             .then(result => {
-              expect(result).to.have.nested.property('[0].latitude', 30)
-              expect(result).to.have.nested.property('[0].longitude', 12)
-              expect(result).to.have.nested.property('[0].totalPoints', 2)
-              expect(result).to.have.nested.property('[0].categories.length', 1)
-              expect(result).to.have.nested.property('[0].categories[0]', 'even')
               expect(result).to.have.nested.property('[1].latitude', 30)
-              expect(result).to.have.nested.property('[1].longitude', 17)
-              expect(result).to.have.nested.property('[1].totalPoints', 3)
+              expect(result).to.have.nested.property('[1].longitude', 12)
+              expect(result).to.have.nested.property('[1].totalPoints', 2)
               expect(result).to.have.nested.property('[1].categories.length', 1)
               expect(result).to.have.nested.property('[1].categories[0]', 'even')
+              expect(result).to.have.nested.property('[0].latitude', 30)
+              expect(result).to.have.nested.property('[0].longitude', 17)
+              expect(result).to.have.nested.property('[0].totalPoints', 3)
+              expect(result).to.have.nested.property('[0].categories.length', 1)
+              expect(result).to.have.nested.property('[0].categories[0]', 'even')
             })
             .then(() => Backendless.Geo.find(geoQuery(['even', 'odd'], 100, 100)))
             .then(result => {

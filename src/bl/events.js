@@ -4,8 +4,8 @@ import { deprecated } from '../decorators'
 import { dispatchEvent } from './dispatch-event'
 
 class Events {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 }
 

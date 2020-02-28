@@ -9,8 +9,8 @@ export function get(counterName, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.counter(counterName),
+  return this.app.request.get({
+    url         : this.app.urls.counter(counterName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

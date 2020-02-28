@@ -25,8 +25,8 @@ export function invokeServiceMethod(serviceName, method, parameters, executionTy
     headers[EXECUTION_TYPE_HEADER] = executionType
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.blServiceMethod(serviceName, method),
+  return this.app.request.post({
+    url         : this.app.urls.blServiceMethod(serviceName, method),
     data        : parameters,
     isAsync     : !!asyncHandler,
     headers     : headers,

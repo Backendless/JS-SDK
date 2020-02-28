@@ -5,8 +5,8 @@ export function exists(path, asyncHandler) {
     throw new Error('Files "path" must not be empty and must be String')
   }
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.filePath(path),
+  return this.app.request.get({
+    url         : this.app.urls.filePath(path),
     query       : { action: 'exists' },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

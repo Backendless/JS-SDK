@@ -10,8 +10,8 @@ import { expireAt } from './expire-at'
 import { Parsers } from './parsers'
 
 class Cache {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 
   //TODO: do we need it?

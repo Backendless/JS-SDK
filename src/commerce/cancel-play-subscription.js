@@ -11,8 +11,8 @@ export function cancelPlaySubscription(packageName, subscriptionId, token, async
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.commerceSubCancel(packageName, subscriptionId, token),
+  return this.app.request.post({
+    url         : this.app.urls.commerceSubCancel(packageName, subscriptionId, token),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

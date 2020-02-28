@@ -1,8 +1,8 @@
 export function getRegistrations(asyncHandler) {
-  const device = this.backendless.device
+  const device = this.app.device
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.messagingRegistrationDevice(device.uuid),
+  return this.app.request.get({
+    url         : this.app.urls.messagingRegistrationDevice(device.uuid),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

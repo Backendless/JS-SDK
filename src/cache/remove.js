@@ -9,8 +9,8 @@ export function remove(key, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.delete({
-    url         : this.backendless.urls.cacheItem(key),
+  return this.app.request.delete({
+    url         : this.app.urls.cacheItem(key),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

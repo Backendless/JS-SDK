@@ -9,19 +9,19 @@ export function parseResponse(data, stayLoggedIn) {
   Utils.deepExtend(user, data)
 
   if (stayLoggedIn) {
-    this.backendless.LocalCache.set('stayLoggedIn', stayLoggedIn)
+    this.app.LocalCache.set('stayLoggedIn', stayLoggedIn)
   }
 
   return user
 }
 
 export function getUserFromResponse(user) {
-  this.backendless.LocalCache.set('current-user-id', user.objectId)
+  this.app.LocalCache.set('current-user-id', user.objectId)
 
   const userToken = user['user-token']
 
-  if (userToken && this.backendless.LocalCache.get('stayLoggedIn')) {
-    this.backendless.LocalCache.set('user-token', userToken)
+  if (userToken && this.app.LocalCache.get('stayLoggedIn')) {
+    this.app.LocalCache.set('user-token', userToken)
   }
 
   return new User(user)

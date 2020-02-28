@@ -20,10 +20,10 @@ const SingleChangesTypes = [
 
 export default class EventHandler extends RTListeners {
 
-  constructor(dataStore, backendless) {
+  constructor(dataStore, app) {
     super()
 
-    this.backendless = backendless
+    this.app = app
     this.dataStore = dataStore
   }
 
@@ -140,7 +140,7 @@ export default class EventHandler extends RTListeners {
       throw new Error('"callback" must be function.')
     }
 
-    this.addSubscription(event, this.backendless.RT.subscriptions.onObjectsChanges, {
+    this.addSubscription(event, this.app.RT.subscriptions.onObjectsChanges, {
       callback,
       onError,
       parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance : undefined,

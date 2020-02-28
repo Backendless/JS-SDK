@@ -3,8 +3,8 @@ import Cache from './cache'
 
 const STORAGE_KEY_NAMESPACE = 'Backendless'
 
-const composeStorageKey = backendless => {
-  const { applicationId, standalone } = backendless
+const composeStorageKey = app => {
+  const { applicationId, standalone } = app
 
   let key = STORAGE_KEY_NAMESPACE
 
@@ -47,7 +47,7 @@ export default class LocalStorageCache extends Cache {
   constructor(...args) {
     super(...args)
 
-    this.__storageKey = composeStorageKey(this.backendless)
+    this.__storageKey = composeStorageKey(this.app)
     this.__storage = window.localStorage
 
     this.initStorage()

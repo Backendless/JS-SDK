@@ -3,12 +3,12 @@ import Async from '../request/async'
 
 class LoggingCollector {
   /**
-   * @param {Backendless} backendless
+   * @param {Backendless} app
    */
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
 
-    this.url = this.backendless.urls.logging()
+    this.url = this.app.urls.logging()
 
     this.flush = Utils.promisified(this.flush)
     this.flushSync = Utils.synchronized(this.flush)
@@ -99,7 +99,7 @@ class LoggingCollector {
         listeners.push(asyncHandler)
       }
 
-      this.backendless.request.put({
+      this.app.request.put({
         isAsync     : !!asyncHandler,
         asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
         url         : this.url,

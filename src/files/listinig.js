@@ -43,8 +43,8 @@ export function listing(path, pattern, recursively, pagesize, offset, asyncHandl
     query.offset = offset
   }
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.filePath(path),
+  return this.app.request.get({
+    url         : this.app.urls.filePath(path),
     query       : query,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

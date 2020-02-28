@@ -12,8 +12,8 @@ export function getObjectCount(condition, asyncHandler) {
     condition = condition.build().condition || undefined
   }
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.dataTableCount(this.className),
+  return this.app.request.get({
+    url         : this.app.urls.dataTableCount(this.className),
     query       : { where: condition },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

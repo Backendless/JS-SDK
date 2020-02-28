@@ -3,8 +3,8 @@ export function addCategory(name, asyncHandler) {
     throw new Error('Category name is required.')
   }
 
-  const result = this.backendless.request.put({
-    url         : this.backendless.urls.geoCategory(name),
+  const result = this.app.request.put({
+    url         : this.app.urls.geoCategory(name),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -9,8 +9,8 @@ export function reset(counterName, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.counterReset(counterName),
+  return this.app.request.put({
+    url         : this.app.urls.counterReset(counterName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -6,8 +6,8 @@ export function deleteCategory(name, asyncHandler) {
   let result = {}
 
   try {
-    result = this.backendless.request.delete({
-      url         : this.backendless.urls.geoCategory(name),
+    result = this.app.request.delete({
+      url         : this.app.urls.geoCategory(name),
       isAsync     : !!asyncHandler,
       asyncHandler: asyncHandler
     })

@@ -9,8 +9,8 @@ export function contains(key, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.cacheItemCheck(key),
+  return this.app.request.get({
+    url         : this.app.urls.cacheItemCheck(key),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

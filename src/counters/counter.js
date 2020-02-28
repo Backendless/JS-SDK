@@ -14,13 +14,13 @@ import {
 } from './methods'
 
 class Counter {
-  constructor(name, backendless) {
+  constructor(name, app) {
     if (!name || !Utils.isString(name)) {
       throw new Error('Counter Name must be non empty String')
     }
 
     this.name = name
-    this.backendless = backendless
+    this.app = app
   }
 }
 

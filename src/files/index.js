@@ -15,10 +15,10 @@ import { removeDirectory } from './remove-directory'
 import { getFileCount } from './count'
 
 class Files {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
 
-    this.Permissions = new Permissions(backendless)
+    this.Permissions = new Permissions(app)
   }
 }
 

@@ -25,8 +25,8 @@ export function get(key, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, parseResult)
   }
 
-  const result = this.backendless.request.get({
-    url         : this.backendless.urls.cacheItem(key),
+  const result = this.app.request.get({
+    url         : this.app.urls.cacheItem(key),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

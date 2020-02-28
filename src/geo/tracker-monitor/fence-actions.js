@@ -6,8 +6,8 @@ import GeoPoint from '../point'
 //TODO: refactor me
 
 export default class GeoFenceActions {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 
   run(action, geoFenceName, geoPoint, asyncHandler) {
@@ -24,8 +24,8 @@ export default class GeoFenceActions {
       throw new Error('Method argument must be a valid instance of GeoPoint persisted on the server')
     }
 
-    return this.backendless.request.post({
-      url         : this.backendless.urls.geoFence(action, geoFenceName),
+    return this.app.request.post({
+      url         : this.app.urls.geoFence(action, geoFenceName),
       isAsync     : !!asyncHandler,
       data        : geoPoint,
       asyncHandler: asyncHandler

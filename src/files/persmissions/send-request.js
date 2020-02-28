@@ -1,5 +1,6 @@
-export function sendRequest(permission, type, path, options, asyncHandler) {
+export function sendRequest(type, path, options, asyncHandler) {
   const { userId, roleName } = options
+  const permission = this.permission
 
   const data = {
     permission
@@ -11,8 +12,8 @@ export function sendRequest(permission, type, path, options, asyncHandler) {
     data.role = roleName
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.filePermission(type, path),
+  return this.app.request.put({
+    url         : this.app.urls.filePermission(type, path),
     data        : data,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

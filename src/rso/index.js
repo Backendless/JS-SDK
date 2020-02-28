@@ -1,11 +1,11 @@
 import Connection from './connection'
 
 export default class RemoteSharedObjects {
-  constructor(options, backendless) {
-    this.backendless = backendless
+  constructor(options, app) {
+    this.app = app
   }
 
   connect(name) {
-    return new Connection({ name }, this.backendless)
+    return new Connection({ name }, this.app)
   }
 }

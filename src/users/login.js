@@ -12,9 +12,9 @@ export function login(login, password, stayLoggedIn, /** async */) {
 
   stayLoggedIn = stayLoggedIn === true
 
-  this.backendless.LocalCache.remove('user-token')
-  this.backendless.LocalCache.remove('current-user-id')
-  this.backendless.LocalCache.set('stayLoggedIn', false)
+  this.app.LocalCache.remove('user-token')
+  this.app.LocalCache.remove('current-user-id')
+  this.app.LocalCache.set('stayLoggedIn', false)
 
   let responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
@@ -28,8 +28,8 @@ export function login(login, password, stayLoggedIn, /** async */) {
     password: password
   }
 
-  let result = this.backendless.request.post({
-    url         : this.backendless.urls.userLogin(),
+  let result = this.app.request.post({
+    url         : this.app.urls.userLogin(),
     isAsync     : isAsync,
     asyncHandler: responder,
     data        : data

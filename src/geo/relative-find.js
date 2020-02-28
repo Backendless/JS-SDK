@@ -19,7 +19,7 @@ export function relativeFind(query, asyncHandler) {
 
   validateQueryObject(query)
 
-  query.url = this.backendless.urls.geoRelative()
+  query.url = this.app.urls.geoRelative()
 
   const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
 
@@ -27,7 +27,7 @@ export function relativeFind(query, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => responseParser(resp))
   }
 
-  const result = this.backendless.request.get({
+  const result = this.app.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

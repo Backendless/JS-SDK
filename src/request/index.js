@@ -9,8 +9,8 @@ const Methods = {
 }
 
 export default class Request {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
 
     this.Methods = Methods
   }

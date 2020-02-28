@@ -17,8 +17,8 @@ export function bulkCreate(objects, asyncHandler) {
     }
   })
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.dataBulkTable(this.className),
+  return this.app.request.post({
+    url         : this.app.urls.dataBulkTable(this.className),
     data        : objects,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
@@ -34,8 +34,8 @@ export function bulkUpdate(where, changes, asyncHandler) {
     throw new Error('Invalid bulkUpdate argument. The second argument must be object.')
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.dataBulkTable(this.className),
+  return this.app.request.put({
+    url         : this.app.urls.dataBulkTable(this.className),
     query       : { where },
     data        : changes,
     isAsync     : !!asyncHandler,
@@ -55,8 +55,8 @@ export function bulkDelete(where, asyncHandler) {
     where: Utils.isString(where) ? where : objectsToWhereClause(where)
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.dataBulkTableDelete(this.className),
+  return this.app.request.post({
+    url         : this.app.urls.dataBulkTableDelete(this.className),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler,
     data        : queryData

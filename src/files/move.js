@@ -6,8 +6,8 @@ export function moveFile(sourcePath, targetPath, asyncHandler) {
     targetPath: FilesUtils.ensureSlashInPath(targetPath)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.fileMove(),
+  return this.app.request.put({
+    url         : this.app.urls.fileMove(),
     data        : parameters,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

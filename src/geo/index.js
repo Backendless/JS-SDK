@@ -23,9 +23,9 @@ import { relativeFind } from './relative-find'
 import { loadFencePoints } from './load-fence-points'
 
 export default class Geo {
-  constructor(backendless) {
-    this.backendless = backendless
-    this.trackerMonitor = new GeoTrackerMonitor(backendless)
+  constructor(app) {
+    this.app = app
+    this.trackerMonitor = new GeoTrackerMonitor(app)
 
     this.EARTH_RADIUS = EARTH_RADIUS
     this.UNITS = UNITS

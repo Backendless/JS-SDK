@@ -8,26 +8,26 @@ const ListenerTypes = Utils.mirrorKeys({
 })
 
 export default class Channel extends RTScopeConnector {
-  constructor(props, backendless) {
-    super()
+  constructor(options, app) {
+    super(options)
 
-    this.backendless = backendless
+    this.app = app
   }
 
   get connectSubscriber() {
-    return this.backendless.RT.subscriptions.connectToPubSub
+    return this.app.RT.subscriptions.connectToPubSub
   }
 
   get usersSubscriber() {
-    return this.backendless.RT.subscriptions.onPubSubUserStatus
+    return this.app.RT.subscriptions.onPubSubUserStatus
   }
 
   get commandSubscriber() {
-    return this.backendless.RT.subscriptions.onPubSubCommand
+    return this.app.RT.subscriptions.onPubSubCommand
   }
 
   get commandSender() {
-    return this.backendless.RT.methods.sendPubSubCommand
+    return this.app.RT.methods.sendPubSubCommand
   }
 
   getScopeOptions() {
@@ -50,7 +50,7 @@ export default class Channel extends RTScopeConnector {
       selector = undefined
     }
 
-    this.addSubscription(ListenerTypes.MESSAGE, this.backendless.RT.subscriptions.onPubSubMessage, {
+    this.addSubscription(ListenerTypes.MESSAGE, this.app.RT.subscriptions.onPubSubMessage, {
       callback,
       onError,
       params: {

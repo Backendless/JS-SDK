@@ -13,8 +13,8 @@ function roleHelper(identity, rolename, asyncHandler, operation) {
 
   const responder = Utils.extractResponder(arguments)
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.userRoleOperation(operation),
+  return this.app.request.post({
+    url         : this.app.urls.userRoleOperation(operation),
     isAsync     : !!responder,
     asyncHandler: responder,
     data        : { user: identity, roleName: rolename }
@@ -25,8 +25,8 @@ export function getUserRoles(/** async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  const result = this.backendless.request.get({
-    url         : this.backendless.urls.userRoles(),
+  const result = this.app.request.get({
+    url         : this.app.urls.userRoles(),
     isAsync     : isAsync,
     asyncHandler: responder
   })

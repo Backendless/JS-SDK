@@ -9,8 +9,8 @@ export function resendEmailConfirmation(emailAddress /** async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.userResendConfirmation(emailAddress),
+  return this.app.request.post({
+    url         : this.app.urls.userResendConfirmation(emailAddress),
     isAsync     : isAsync,
     asyncHandler: responder
   })

@@ -1,6 +1,6 @@
 export function getPushTemplates(deviceType, asyncHandler) {
-  return this.backendless.request.get({
-    url         : this.backendless.urls.messagingPushTemplates(deviceType),
+  return this.app.request.get({
+    url         : this.app.urls.messagingPushTemplates(deviceType),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

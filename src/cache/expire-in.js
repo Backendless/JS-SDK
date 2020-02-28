@@ -13,8 +13,8 @@ export function expireIn(key, seconds, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
+  return this.app.request.put({
+    url         : this.app.urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
     data        : {},
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

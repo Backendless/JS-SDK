@@ -11,8 +11,8 @@ export function validatePlayPurchase(packageName, productId, token, asyncHandler
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.commerceValidate(packageName, productId, token),
+  return this.app.request.get({
+    url         : this.app.urls.commerceValidate(packageName, productId, token),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

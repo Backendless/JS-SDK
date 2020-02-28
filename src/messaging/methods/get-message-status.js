@@ -3,8 +3,8 @@ export function getMessageStatus(messageId, asyncHandler) {
     throw Error('Message ID is required.')
   }
 
-  return this.backendless.request.get({
-    url         : this.backendless.urls.messagingMessage(messageId),
+  return this.app.request.get({
+    url         : this.app.urls.messagingMessage(messageId),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

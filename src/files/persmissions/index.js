@@ -1,11 +1,11 @@
 import FilePermission from './persmission'
 
 export default class FilePermissions {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
 
-    this.READ = new FilePermission('READ', backendless)
-    this.DELETE = new FilePermission('DELETE', backendless)
-    this.WRITE = new FilePermission('WRITE', backendless)
+    this.READ = new FilePermission('READ', app)
+    this.DELETE = new FilePermission('DELETE', app)
+    this.WRITE = new FilePermission('WRITE', app)
   }
 }

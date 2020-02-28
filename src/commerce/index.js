@@ -6,8 +6,8 @@ import { cancelPlaySubscription } from './cancel-play-subscription'
 import { getPlaySubscriptionStatus } from './get-play-subscription-status'
 
 class Commerce {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 }
 

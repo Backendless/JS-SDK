@@ -15,12 +15,12 @@ import {
 } from './methods'
 
 class Counters {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 
   of(name) {
-    return new Counter(name, this.backendless)
+    return new Counter(name, this.app)
   }
 }
 

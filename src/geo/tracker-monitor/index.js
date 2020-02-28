@@ -7,9 +7,9 @@ import startMonitoring from './start-monitoring'
 import stopMonitoring from './stop-monitoring'
 
 export default class GeoTrackerMonitor {
-  constructor(backendless) {
-    this.backendless = backendless
-    this.geoFenceActions = new GeoFenceActions(backendless)
+  constructor(app) {
+    this.app = app
+    this.geoFenceActions = new GeoFenceActions(app)
     this.reset()
   }
 
@@ -70,8 +70,8 @@ export default class GeoTrackerMonitor {
   }
 
   getFences(geoFence) {
-    return this.backendless.request.get({
-      url: this.backendless.urls.geoFences(geoFence)
+    return this.app.request.get({
+      url: this.app.urls.geoFences(geoFence)
     })
   }
 }

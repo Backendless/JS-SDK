@@ -14,14 +14,14 @@ export function savePoint(geoPoint, asyncHandler) {
   }
 
   const method = geoPoint.objectId
-    ? this.backendless.request.Methods.PATCH
-    : this.backendless.request.Methods.POST
+    ? this.app.request.Methods.PATCH
+    : this.app.request.Methods.POST
 
   const url = geoPoint.objectId
-    ? this.backendless.urls.geoPoint(geoPoint.objectId)
-    : this.backendless.urls.geoPoints()
+    ? this.app.urls.geoPoint(geoPoint.objectId)
+    : this.app.urls.geoPoints()
 
-  const result = this.backendless.request.send({
+  const result = this.app.request.send({
     method,
     url,
     data   : geoPoint,

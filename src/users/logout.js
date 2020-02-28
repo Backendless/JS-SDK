@@ -11,9 +11,9 @@ export function logout(/** async */) {
   let result = {}
 
   const logoutUser = () => {
-    context.backendless.LocalCache.remove('user-token')
-    context.backendless.LocalCache.remove('current-user-id')
-    context.backendless.LocalCache.remove('stayLoggedIn')
+    context.app.LocalCache.remove('user-token')
+    context.app.LocalCache.remove('current-user-id')
+    context.app.LocalCache.remove('stayLoggedIn')
 
     context.setLocalCurrentUser(null)
   }
@@ -41,8 +41,8 @@ export function logout(/** async */) {
   }
 
   try {
-    result = this.backendless.request.get({
-      url         : this.backendless.urls.userLogout(),
+    result = this.app.request.get({
+      url         : this.app.urls.userLogout(),
       isAsync     : isAsync,
       asyncHandler: responder
     })

@@ -6,12 +6,12 @@ export const RTListeners = BackendlessRTClient.Listeners
 export const RTScopeConnector = BackendlessRTClient.ScopeConnector
 
 export default class RT extends BackendlessRTClient {
-  constructor(backendless) {
-    const { applicationId: appId, secretKey: apiKey, appPath, debugMode } = backendless
+  constructor(app) {
+    const { applicationId: appId, secretKey: apiKey, appPath, debugMode } = app
 
     const clientId = Utils.uuid()
     const lookupPath = `${appPath}/rt/lookup`
-    const userToken = backendless.getCurrentUserToken()
+    const userToken = app.getCurrentUserToken()
 
     super({
       appId,
@@ -26,12 +26,12 @@ export default class RT extends BackendlessRTClient {
       }
     })
 
-    this.backendless = backendless
+    this.app = app
   }
 
   updateUserTokenIfNeeded() {
     if (this.session) {
-      const userToken = this.backendless.getCurrentUserToken()
+      const userToken = this.app.getCurrentUserToken()
 
       this.methods.setUserToken({ userToken })
     }

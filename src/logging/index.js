@@ -3,9 +3,9 @@ import { deprecated } from '../decorators'
 import LoggingCollector from './collector'
 
 class Logging {
-  constructor(backendless) {
-    this.backendless = backendless
-    this.loggingCollector = new LoggingCollector(backendless)
+  constructor(app) {
+    this.app = app
+    this.loggingCollector = new LoggingCollector(app)
   }
 
   getLogger(...args) {

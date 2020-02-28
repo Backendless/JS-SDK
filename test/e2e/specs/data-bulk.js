@@ -30,8 +30,11 @@ describe('Data - Bulk Operations', function() {
 
   sandbox.forTest()
 
-  beforeEach(() => {
+  beforeEach(async function() {
     TestTable = Backendless.Data.of(TEST_TABLE_NAME)
+
+    const obj = await TestTable.save({ name: 'name', kind: 'kind' })
+    await TestTable.remove(obj)
   })
 
   describe('Create Operation', function() {

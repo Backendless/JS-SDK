@@ -26,7 +26,7 @@ const previousBackendless = root && root.Backendless
 // Backendless supports two signatures for the initApp method
 // two args - applicationId {String} and secretKey {String}
 // or one argument - whole set of options {Object}
-const parseArgs = (...args) => {
+const parseInitConfig = (...args) => {
   const [appId, apiKey] = args
 
   if (Utils.isObject(appId)) {
@@ -57,7 +57,7 @@ const SERVICES = {
 
 class Backendless {
   constructor(props) {
-    this.initProps(props)
+    this.initConfig(props)
 
     this.Request = Request
 
@@ -66,9 +66,9 @@ class Backendless {
   }
 
   /**
-   * @param {Object} props
+   * @param {Object} config
    */
-  initProps(props) {
+  initConfig(config) {
     for (const key in DEFAULT_PROPS) {
       if (DEFAULT_PROPS.hasOwnProperty(key)) {
         const privateKey = `__${key}`
@@ -77,26 +77,26 @@ class Backendless {
           ? DEFAULT_PROPS[key]
           : this[privateKey]
 
-        this[privateKey] = props[key] === undefined
+        this[privateKey] = config[key] === undefined
           ? defaultValue
-          : props[key]
+          : config[key]
       }
     }
   }
 
   /**
-   * @param {string|Object} applicationId|options
+   * @param {string|Object} appId|config
    * @param {string} [secretKey]
    * @returns {Backendless}
    */
-  initApp(...args) {
-    const props = parseArgs(...args)
+  initApp() {
+    const config = parseInitConfig(...arguments)
 
-    const app = props.standalone
+    const app = config.standalone
       ? new Backendless(this)
       : this
 
-    app.initProps(props)
+    app.initConfig(config)
 
     app.resetRT()
     app.Logging.reset()

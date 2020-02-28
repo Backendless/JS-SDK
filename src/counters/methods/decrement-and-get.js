@@ -9,8 +9,8 @@ export function decrementAndGet(counterName, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.counterDecrementAndGet(counterName),
+  return this.app.request.put({
+    url         : this.app.urls.counterDecrementAndGet(counterName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

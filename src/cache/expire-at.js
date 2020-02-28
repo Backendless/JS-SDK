@@ -15,8 +15,8 @@ export function expireAt(key, timestamp, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
+  return this.app.request.put({
+    url         : this.app.urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
     data        : {},
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

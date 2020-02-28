@@ -1,10 +1,10 @@
 export default class Urls {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 
   root() {
-    return this.backendless.appPath
+    return this.app.appPath
   }
 
   //bl
@@ -273,6 +273,10 @@ export default class Urls {
 
   filePermission(type, url) {
     return `${this.filePermissions()}/${type}/${encodeURIComponent(url)}`
+  }
+
+  fileBinaryPath(path) {
+    return `${this.files()}/binary/${path}`
   }
 
   //users

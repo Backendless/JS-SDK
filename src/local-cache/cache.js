@@ -1,6 +1,6 @@
 export default class Cache {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
     this.__storage = {}
   }
 

@@ -20,9 +20,9 @@ export function getGeopointCount(fenceName, query, asyncHandler) {
 
   validateQueryObject(query)
 
-  const url = this.backendless.urls.geoCount() + '?' + toQueryParams(query)
+  const url = this.app.urls.geoCount() + '?' + toQueryParams(query)
 
-  return this.backendless.request.get({
+  return this.app.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

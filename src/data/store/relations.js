@@ -53,7 +53,7 @@ function manageRelation(method, url, relation, asyncHandler) {
     )
   }
 
-  return this.backendless.request.send({
+  return this.app.request.send({
     method,
     url,
     isAsync     : !!responder,
@@ -63,7 +63,7 @@ function manageRelation(method, url, relation, asyncHandler) {
 }
 
 function buildRelationUrl(className, relation) {
-  let url = this.backendless.urls.dataTableObjectRelation(className, relation.parentId, relation.columnName)
+  let url = this.app.urls.dataTableObjectRelation(className, relation.parentId, relation.columnName)
 
   if (relation.whereClause) {
     url += '?' + Utils.toQueryParams({ whereClause: relation.whereClause })
@@ -125,7 +125,7 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     url += '?' + query.join('&')
   }
 
-  const result = this.backendless.request.get({
+  const result = this.app.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

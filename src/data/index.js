@@ -18,27 +18,27 @@ import WKTParser from './geo/wkt-parser'
 import GeoJSONParser from './geo/geo-json-parser'
 
 export default class Data {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
     this.classToTableMap = {}
 
-    this.Permissions = new Permissions(backendless)
+    this.Permissions = new Permissions(app)
     this.QueryBuilder = QueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
 
-    this.Point = Point,
-    this.LineString = LineString,
-    this.Polygon = Polygon,
-    this.Geometry = Geometry,
+    this.Point = Point
+    this.LineString = LineString
+    this.Polygon = Polygon
+    this.Geometry = Geometry
 
-    this.GeoJSONParser = GeoJSONParser,
-    this.WKTParser = WKTParser,
+    this.GeoJSONParser = GeoJSONParser
+    this.WKTParser = WKTParser
 
-    this.SpatialReferenceSystem = SpatialReferenceSystem,
+    this.SpatialReferenceSystem = SpatialReferenceSystem
   }
 
   of(model) {
-    return new Store(model, this.classToTableMap, this.backendless)
+    return new Store(model, this.classToTableMap, this.app)
   }
 
   @deprecated('Backendless.Data', 'Backendless.Data.describe')

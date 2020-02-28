@@ -38,8 +38,8 @@ export function dispatchEvent(eventName, eventArgs, executionType, asyncHandler)
     headers[EXECUTION_TYPE_HEADER] = executionType
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.blEvent(eventName),
+  return this.app.request.post({
+    url         : this.app.urls.blEvent(eventName),
     data        : eventArgs,
     isAsync     : !!asyncHandler,
     headers     : headers,

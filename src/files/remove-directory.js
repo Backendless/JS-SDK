@@ -5,8 +5,8 @@ export function removeDirectory(path, asyncHandler) {
     throw new Error('Directory "path" must not be empty and must be String')
   }
 
-  this.backendless.request.delete({
-    url         : this.backendless.urls.filePath(path),
+  this.app.request.delete({
+    url         : this.app.urls.filePath(path),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

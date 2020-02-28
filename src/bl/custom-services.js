@@ -4,8 +4,8 @@ import { deprecated } from '../decorators'
 import { invokeServiceMethod } from './invoke-service-method'
 
 class CustomServices {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 }
 

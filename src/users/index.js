@@ -27,8 +27,8 @@ import {
 } from './current-user'
 
 class Users {
-  constructor(backendless) {
-    this.backendless = backendless
+  constructor(app) {
+    this.app = app
   }
 }
 

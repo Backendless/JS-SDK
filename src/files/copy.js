@@ -6,8 +6,8 @@ export function copyFile(sourcePath, targetPath, asyncHandler) {
     targetPath: FilesUtils.ensureSlashInPath(targetPath)
   }
 
-  return this.backendless.request.put({
-    url         : this.backendless.urls.fileCopy(),
+  return this.app.request.put({
+    url         : this.app.urls.fileCopy(),
     data        : parameters,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

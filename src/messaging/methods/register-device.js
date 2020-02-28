@@ -2,7 +2,7 @@ import Utils from '../../utils'
 import Async from '../../request/async'
 
 export function registerDevice(deviceToken, channels, expiration, asyncHandler) {
-  const device = this.backendless.device
+  const device = this.app.device
 
   asyncHandler = Utils.extractResponder(arguments)
 
@@ -23,8 +23,8 @@ export function registerDevice(deviceToken, channels, expiration, asyncHandler) 
       : expiration
   }
 
-  return this.backendless.request.post({
-    url         : this.backendless.urls.messagingRegistrations(),
+  return this.app.request.post({
+    url         : this.app.urls.messagingRegistrations(),
     data        : data,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
