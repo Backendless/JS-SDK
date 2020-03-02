@@ -1,25 +1,26 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
-import LocalCache from '../local-cache'
-import { setLocalCurrentUser } from './current-user'
 
 export function logout(/** async */) {
+  const context = this
+
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
   const errorCallback = isAsync ? responder.fault : null
   const successCallback = isAsync ? responder.success : null
+
   let result = {}
 
   const logoutUser = () => {
-    LocalCache.remove('user-token')
-    LocalCache.remove('current-user-id')
-    LocalCache.remove('stayLoggedIn')
-    setLocalCurrentUser(null)
+    context.app.LocalCache.remove('user-token')
+    context.app.LocalCache.remove('current-user-id')
+    context.app.LocalCache.remove('stayLoggedIn')
+
+    context.setLocalCurrentUser(null)
   }
 
   const onLogoutSuccess = () => {
     logoutUser()
+
     if (Utils.isFunction(successCallback)) {
       successCallback()
     }
@@ -40,8 +41,8 @@ export function logout(/** async */) {
   }
 
   try {
-    result = Request.get({
-      url         : Urls.userLogout(),
+    result = this.app.request.get({
+      url         : this.app.urls.userLogout(),
       isAsync     : isAsync,
       asyncHandler: responder
     })

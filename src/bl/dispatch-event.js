@@ -1,7 +1,5 @@
 import Utils from '../utils'
-import Request from '../request'
 import Async from '../request/async'
-import Urls from '../urls'
 
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
@@ -40,8 +38,8 @@ export function dispatchEvent(eventName, eventArgs, executionType, asyncHandler)
     headers[EXECUTION_TYPE_HEADER] = executionType
   }
 
-  return Request.post({
-    url         : Urls.blEvent(eventName),
+  return this.app.request.post({
+    url         : this.app.urls.blEvent(eventName),
     data        : eventArgs,
     isAsync     : !!asyncHandler,
     headers     : headers,

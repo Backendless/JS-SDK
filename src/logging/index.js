@@ -2,15 +2,32 @@ import { deprecated } from '../decorators'
 
 import LoggingCollector from './collector'
 
-const Logging = {
+class Logging {
+  constructor(app) {
+    this.app = app
+    this.loggingCollector = new LoggingCollector(app)
+  }
 
-  getLogger: LoggingCollector.getLogger,
+  getLogger(...args) {
+    return this.loggingCollector.getLogger(...args)
+  }
 
   @deprecated('Backendless.Logging', 'Backendless.Logging.flush')
-  flushSync: LoggingCollector.flushSync,
-  flush    : LoggingCollector.flush,
+  flushSync(...args) {
+    return this.loggingCollector.flushSync(...args)
+  }
 
-  setLogReportingPolicy: LoggingCollector.setLogReportingPolicy
+  flush(...args) {
+    return this.loggingCollector.flush(...args)
+  }
+
+  reset(...args) {
+    return this.loggingCollector.reset(...args)
+  }
+
+  setLogReportingPolicy(...args) {
+    return this.loggingCollector.setLogReportingPolicy(...args)
+  }
 }
 
 export default Logging

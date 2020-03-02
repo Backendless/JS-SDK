@@ -1,6 +1,3 @@
-import Urls from '../urls'
-import Request from '../request'
-
 import FilesUtils from './utils'
 
 export function moveFile(sourcePath, targetPath, asyncHandler) {
@@ -9,8 +6,8 @@ export function moveFile(sourcePath, targetPath, asyncHandler) {
     targetPath: FilesUtils.ensureSlashInPath(targetPath)
   }
 
-  return Request.put({
-    url         : Urls.fileMove(),
+  return this.app.request.put({
+    url         : this.app.urls.fileMove(),
     data        : parameters,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

@@ -9,35 +9,35 @@ const PermissionTypes = {
 }
 
 function grantForUser(userId, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.GRANT, url, { userId }, asyncHandler)
 }
 
 function denyForUser(userId, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.DENY, url, { userId }, asyncHandler)
 }
 
 function grantForRole(roleName, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.GRANT, url, { roleName }, asyncHandler)
 }
 
 function denyForRole(roleName, url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { roleName }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.DENY, url, { roleName }, asyncHandler)
 }
 
 function grantForAllUsers(url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
 }
 
 function denyForAllUsers(url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { userId: '*' }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.DENY, url, { userId: '*' }, asyncHandler)
 }
 
 function grantForAllRoles(url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, url, { roleName: '*' }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.GRANT, url, { roleName: '*' }, asyncHandler)
 }
 
 function denyForAllRoles(url, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, url, { roleName: '*' }, asyncHandler)
+  return sendRequest.call(this, PermissionTypes.DENY, url, { roleName: '*' }, asyncHandler)
 }
 
 //TODO: will be removed when remove sync methods
@@ -45,8 +45,9 @@ const namespaceLabel = 'Backendless.Files.Permissions.{READ|DELETE|WRITE}'
 
 export default class FilePermission {
 
-  constructor(permission) {
+  constructor(permission, app) {
     this.permission = permission
+    this.app = app
   }
 
   @deprecated(namespaceLabel, `${namespaceLabel}.grantForUser`)

@@ -1,8 +1,5 @@
 import Utils from '../../utils'
 import Async from '../../request/async'
-import Urls from '../../urls'
-import Request from '../../request'
-import LocalVars from '../../local-vars'
 
 import { wrapAsync } from '../utils'
 
@@ -10,12 +7,13 @@ import { SocialContainer } from './container'
 
 export function loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) {
   const socialContainer = new SocialContainer(socialType, container)
+  const serverURL = this.app.serverURL
 
   asyncHandler = Utils.extractResponder(arguments)
-  asyncHandler = wrapAsync(asyncHandler, stayLoggedIn)
+  asyncHandler = wrapAsync.call(this, asyncHandler, stayLoggedIn)
 
   addWindowEventListener('message', window, function(e) {
-    if (e.origin === LocalVars.serverURL) {
+    if (e.origin === serverURL) {
       const result = JSON.parse(e.data)
 
       if (result.fault) {
@@ -40,8 +38,8 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
   request.fieldsMapping = fieldsMapping || {}
   request.permissions = permissions || []
 
-  Request.post({
-    url         : Urls.userSocialOAuth(socialType),
+  this.app.request.post({
+    url         : this.app.urls.userSocialOAuth(socialType),
     isAsync     : true,
     asyncHandler: interimCallback,
     data        : request

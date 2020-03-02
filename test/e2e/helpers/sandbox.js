@@ -1,41 +1,78 @@
 import { createClient } from 'backendless-console-sdk'
+import { TablesAPI } from './tables'
+import * as Utils  from './utils'
 // import Backendless from '../../../src/backendless'
 const Backendless = require('../../../lib')
 
-const chr4 = () => Math.random().toString(16).slice(-4)
-const chr8 = () => `${chr4()}${chr4()}`
-const uid = () => `${chr8()}${chr8()}${chr8()}${chr8()}`
+const TEST_APP_NAME_PATTERN = /^test_.{32}$/
+
+const USE_PERSISTED_LOCAL_DEV = true
+const DESTROY_APPS_AFTER_TESTS = false
 
 const generateDev = () => ({
   firstName: 'Test',
   lastName : 'Test',
-  email    : `${uid()}@test`,
-  pwd      : uid()
+  email    : `${Utils.uid()}@test`,
+  pwd      : Utils.uid()
+})
+
+const persistedLocalDev = () => ({
+  email: 'foo@foo.com',
+  pwd  : 'secret'
 })
 
 const generateApp = () => ({
-  name: `test_${uid()}`
+  name: `test_${Utils.uid()}`
 })
 
-const createDestroyer = sandbox => () =>
-  Promise.resolve()
-    .then(() => sandbox.api.apps.deleteApp(sandbox.app.id))
-    .then(() => sandbox.api.user.suicide())
+const destroyAllTestApps = async api => {
+  const apps = await api.apps.getApps()
 
-const createSandbox = api => {
+  await Promise.all(apps.map(app => {
+    if (TEST_APP_NAME_PATTERN.test(app.name)) {
+      return api.apps.deleteApp(app.id)
+    }
+  }))
+}
+
+const createDestroyer = sandbox => async () => {
+  if (DESTROY_APPS_AFTER_TESTS) {
+    await sandbox.api.apps.deleteApp(sandbox.app.id)
+  }
+
+  if (!USE_PERSISTED_LOCAL_DEV) {
+    await sandbox.api.user.suicide()
+  }
+}
+
+const createSandbox = async api => {
   const app = generateApp()
-  const dev = generateDev()
+  const dev = USE_PERSISTED_LOCAL_DEV
+    ? persistedLocalDev()
+    : generateDev()
 
   const sandbox = { app, api, dev }
   sandbox.destroy = createDestroyer(sandbox)
 
-  return Promise.resolve()
-    .then(() => api.user.register(dev))
-    .then(result => dev.id = result.id)
+  if (!USE_PERSISTED_LOCAL_DEV) {
+    await Promise.resolve()
+      .then(() => api.user.register(dev))
+      .then(result => dev.id = result.id)
+  }
 
+  await Promise.resolve()
     .then(() => api.user.login(dev.email, dev.pwd))
-    .then(({ authKey }) => dev.authKey = authKey)
+    .then(({ id, name, authKey }) => {
+      dev.id = id
+      dev.name = name
+      dev.authKey = authKey
+    })
 
+  if (!DESTROY_APPS_AFTER_TESTS) {
+    await destroyAllTestApps(api)
+  }
+
+  return Promise.resolve()
     .then(() => api.apps.createApp({ appName: app.name, refCode: null }))
     .then(result => Object.assign(app, result))
 
@@ -55,6 +92,7 @@ const createSandboxFor = each => () => {
   beforeHook(function() {
     this.timeout(120000)
     this.consoleApi = createClient(consoleServerURL)
+    this.tablesAPI = new TablesAPI(this)
 
     return createSandbox(this.consoleApi).then(sandbox => {
       this.sandbox = sandbox

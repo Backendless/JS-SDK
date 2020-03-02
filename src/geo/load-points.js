@@ -1,9 +1,7 @@
-import Urls from '../urls'
-
 import { loadItems } from './load-items'
 
 export function loadPoints(query, asyncHandler) {
-  query.url = Urls.geo()
+  query.url = this.app.urls.geo()
 
-  return loadItems(query, asyncHandler)
+  return loadItems.call(this, query, asyncHandler)
 }

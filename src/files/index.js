@@ -14,8 +14,15 @@ import { exists } from './exists'
 import { removeDirectory } from './remove-directory'
 import { getFileCount } from './count'
 
-const Files = {
-  Permissions,
+class Files {
+  constructor(app) {
+    this.app = app
+
+    this.Permissions = new Permissions(app)
+  }
+}
+
+Object.assign(Files.prototype, {
 
   @deprecated('Backendless.Files', 'Backendless.Files.saveFile')
   saveFileSync: Utils.synchronized(saveFile),
@@ -57,6 +64,6 @@ const Files = {
   getFileCountSync: Utils.synchronized(getFileCount),
   getFileCount    : Utils.promisified(getFileCount),
 
-}
+})
 
 export default Files

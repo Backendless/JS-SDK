@@ -1,171 +1,327 @@
 import Request from 'backendless-request'
 
-import LocalVars from './local-vars'
+import APIRequest from './request'
+import Utils from './utils'
+import Urls from './urls'
 
-const root = (typeof self === 'object' && self.self === self && self) ||
+const DEFAULT_PROPS = {
+  appId         : null,
+  apiKey        : null,
+  serverURL     : 'https://api.backendless.com',
+  debugMode     : false,
+  standalone    : false,
+  ServerCode    : null,
+  XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
+    ? XMLHttpRequest
+    : undefined,
+}
+
+const root = (
+  (typeof self === 'object' && self.self === self && self) ||
   (typeof global === 'object' && global.global === global && global)
+)
 
 const previousBackendless = root && root.Backendless
 
-const Backendless = {
+// Backendless supports two signatures for the initApp method
+// two args - applicationId {String} and secretKey {String}
+// or one argument - whole set of options {Object}
+const parseInitConfig = (...args) => {
+  const [appId, apiKey] = args
 
-  get debugMode() {
-    return LocalVars.debugMode
-  },
+  if (Utils.isObject(appId)) {
+    return appId
+  }
 
-  set debugMode(debugMode) {
-    LocalVars.debugMode = !!debugMode
+  return {
+    appId,
+    apiKey
+  }
+}
 
-    require('./rt').setRTDebugMode(LocalVars.debugMode)
-  },
+const SERVICES = {
+  'Logging'     : () => require('./logging').default,
+  'Counters'    : () => require('./counters').default,
+  'Cache'       : () => require('./cache').default,
+  'Commerce'    : () => require('./commerce').default,
+  'Users'       : () => require('./users').default,
+  'BL'          : () => require('./bl').default,
+  'Geo'         : () => require('./geo').default,
+  'Data'        : () => require('./data').default,
+  'Messaging'   : () => require('./messaging').default,
+  'Files'       : () => require('./files').default,
+  'RT'          : () => require('./rt').default,
+  'SharedObject': () => require('./rso').default,
+  'LocalCache'  : () => require('./local-cache').default,
+}
 
-  get serverURL() {
-    return LocalVars.serverURL
-  },
+class Backendless {
+  constructor(props) {
+    this.initConfig(props)
 
-  set serverURL(serverURL) {
-    LocalVars.serverURL = serverURL
-  },
+    this.Request = Request
 
-  get XMLHttpRequest() {
-    return LocalVars.XMLHttpRequest
-  },
+    this.request = new APIRequest(this)
+    this.urls = new Urls(this)
+  }
 
-  set XMLHttpRequest(XMLHttpRequest) {
-    LocalVars.XMLHttpRequest = XMLHttpRequest
-  },
+  /**
+   * @param {Object} config
+   */
+  initConfig(config) {
+    for (const key in DEFAULT_PROPS) {
+      if (DEFAULT_PROPS.hasOwnProperty(key)) {
+        const privateKey = `__${key}`
 
+        const defaultValue = this[privateKey] === undefined
+          ? DEFAULT_PROPS[key]
+          : this[privateKey]
+
+        this[privateKey] = config[key] === undefined
+          ? defaultValue
+          : config[key]
+      }
+    }
+  }
+
+  /**
+   * @param {string|Object} appId|config
+   * @param {string} [secretKey]
+   * @returns {Backendless}
+   */
+  initApp() {
+    const config = parseInitConfig(...arguments)
+
+    const app = config.standalone
+      ? new Backendless(this)
+      : this
+
+    app.initConfig(config)
+
+    app.resetRT()
+    app.Logging.reset()
+    app.Geo.resetGeofenceMonitoring()
+    app.Users.setLocalCurrentUser()
+
+    return app
+  }
+
+  __getService(name) {
+    const privateName = `__${name}`
+
+    if (!this[privateName]) {
+      const Service = SERVICES[name]()
+
+      this[privateName] = new Service(this)
+    }
+
+    return this[privateName]
+  }
+
+  ///--------SETTERS/GETTERS-------///
+
+  ///--------standalone-------///
+  get standalone() {
+    return this.__standalone
+  }
+
+  set standalone(standalone) {
+    throw new Error(
+      'Setting value to Backendless.standalone directly is not possible, ' +
+      `instead you must use Backendless.initApp({ appId: [APP_ID], apiKey: [API_KEY], standalone: ${standalone} })`
+    )
+  }
+
+  ///--------applicationId-------///
   get applicationId() {
-    return LocalVars.applicationId
-  },
+    return this.__appId
+  }
 
   set applicationId(appId) {
     throw new Error(
       `Setting '${appId}' value to Backendless.applicationId directly is not possible, ` +
       `instead you must use Backendless.initApp('${appId}', API_KEY)`
     )
-  },
+  }
 
+  ///--------secretKey-------///
   get secretKey() {
-    return LocalVars.secretKey
-  },
+    return this.__apiKey
+  }
 
   set secretKey(apiKey) {
     throw new Error(
       `Setting '${apiKey}' value to Backendless.secretKey directly is not possible, ` +
       `instead you must use Backendless.initApp(APP_ID, '${apiKey}')`
     )
-  },
+  }
 
+  ///--------serverURL-------///
+  get serverURL() {
+    return this.__serverURL
+  }
+
+  set serverURL(serverURL) {
+    this.__serverURL = serverURL
+  }
+
+  ///--------appPath-------///
   get appPath() {
-    return LocalVars.appPath
-  },
+    return [this.serverURL, this.applicationId, this.secretKey].join('/')
+  }
 
   set appPath(appPath) {
     throw new Error(
       `Setting '${appPath}' value to Backendless.appPath directly is not possible, ` +
       'instead you must use Backendless.initApp(APP_ID, API_KEY) for setup the value'
     )
-  },
+  }
 
+  ///--------debugMode-------///
+  get debugMode() {
+    return this.__debugMode
+  }
+
+  set debugMode(debugMode) {
+    debugMode = !!debugMode
+
+    if (this.__debugMode !== debugMode) {
+      this.__debugMode = debugMode
+      this.RT.setDebugMode(debugMode)
+    }
+  }
+
+  ///--------XMLHttpRequestMode-------///
+  get XMLHttpRequest() {
+    return this.__XMLHttpRequest
+  }
+
+  set XMLHttpRequest(XMLHttpRequest) {
+    this.__XMLHttpRequest = XMLHttpRequest
+  }
+
+  ///--------ServerCode-------///
   get ServerCode() {
-    return LocalVars.ServerCode
-  },
+    return this.__ServerCode
+  }
 
   set ServerCode(ServerCode) {
-    LocalVars.ServerCode = ServerCode
-  },
+    this.__ServerCode = ServerCode
+  }
 
-  initApp(...args) {
-    require('./init-app').initApp(...args)
-  },
+  ///--------device-------///
+  get device() {
+    if (!this.__device) {
+      throw new Error('Device is not defined. Please, run the Backendless.setupDevice')
+    }
 
-  getCurrentUserToken() {
-    return require('./users/current-user').getCurrentUserToken()
-  },
+    return this.__device
+  }
+
+  set device(props) {
+    throw new Error(
+      'Setting value to Backendless.device directly is not possible, ' +
+      'instead you must use Backendless.setupDevice(deviceProperties) for setup the device'
+    )
+  }
 
   setupDevice(...args) {
     const { default: Device } = require('./device')
 
-    Device.setup(...args)
-  },
+    this.__device = new Device(...args)
+  }
+
+  ///----------UTIL METHODS--------///
+
+  getCurrentUserToken() {
+    return this.Users.getCurrentUserToken()
+  }
 
   get browser() {
     return require('./user-agent').getUserAgent()
-  },
-
-  Request,
+  }
 
   noConflict() {
     if (root) {
       root.Backendless = previousBackendless
     }
 
-    return Backendless
-  },
+    return this
+  }
 
   ///-------------------------------------///
   ///-------------- SERVICES -------------///
 
   get Logging() {
-    return require('./logging').default
-  },
+    return this.__getService('Logging')
+  }
 
   get Counters() {
-    return require('./counters').default
-  },
+    return this.__getService('Counters')
+  }
 
   get Cache() {
-    return require('./cache').default
-  },
+    return this.__getService('Cache')
+  }
 
   get Commerce() {
-    return require('./commerce').default
-  },
+    return this.__getService('Commerce')
+  }
 
   get Users() {
-    return require('./users').default
-  },
+    return this.__getService('Users')
+  }
 
   get User() {
     return require('./users/user').default
-  },
+  }
 
   get BL() {
-    return require('./bl').default
-  },
+    return this.__getService('BL')
+  }
 
   get CustomServices() {
-    return Backendless.BL.CustomServices
-  },
+    return this.BL.CustomServices
+  }
 
   get Events() {
-    return Backendless.BL.Events
-  },
+    return this.BL.Events
+  }
 
   get Geo() {
-    return require('./geo').default
-  },
+    return this.__getService('Geo')
+  }
 
   get Data() {
-    return require('./data').default
-  },
+    return this.__getService('Data')
+  }
 
   get Messaging() {
-    return require('./messaging').default
-  },
+    return this.__getService('Messaging')
+  }
 
   get Files() {
-    return require('./files').default
-  },
+    return this.__getService('Files')
+  }
 
   get RT() {
-    return require('./rt').default
-  },
+    return this.__getService('RT')
+  }
+
+  resetRT() {
+    if (this.__RT) {
+      this.__RT.terminate()
+      delete this.__RT
+    }
+  }
 
   get SharedObject() {
-    return require('./rso').default
-  },
+    return this.__getService('SharedObject')
+  }
+
+  get LocalCache() {
+    return this.__getService('LocalCache')
+  }
 
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
@@ -176,71 +332,69 @@ const Backendless = {
   //TODO: do we need to remove it?
 
   get UserService() {
-    return Backendless.Users
-  },
+    return this.Users
+  }
 
   get GeoQuery() {
-    return Backendless.Geo.Query
-  },
+    return this.Geo.Query
+  }
 
   get GeoPoint() {
-    return Backendless.Geo.Point
-  },
+    return this.Geo.Point
+  }
 
   get GeoCluster() {
-    return Backendless.Geo.Cluster
-  },
+    return this.Geo.Cluster
+  }
 
   /** @deprecated */
   get Persistence() {
-    return Backendless.Data
-  },
+    return this.Data
+  }
 
   get DataQueryBuilder() {
-    return Backendless.Data.QueryBuilder
-  },
+    return this.Data.QueryBuilder
+  }
 
   get LoadRelationsQueryBuilder() {
-    return Backendless.Data.LoadRelationsQueryBuilder
-  },
+    return this.Data.LoadRelationsQueryBuilder
+  }
 
   get Bodyparts() {
-    return Backendless.Messaging.Bodyparts
-  },
+    return this.Messaging.Bodyparts
+  }
 
   get PublishOptions() {
-    return Backendless.Messaging.PublishOptions
-  },
+    return this.Messaging.PublishOptions
+  }
 
   get DeliveryOptions() {
-    return Backendless.Messaging.DeliveryOptions
-  },
+    return this.Messaging.DeliveryOptions
+  }
 
   get PublishOptionsHeaders() {
-    return Backendless.Messaging.PublishOptionsHeaders
-  },
+    return this.Messaging.PublishOptionsHeaders
+  }
 
   get EmailEnvelope() {
-    return Backendless.Messaging.EmailEnvelope
-  },
-
-  get LocalCache() {
-    return require('./local-cache').default
-  },
+    return this.Messaging.EmailEnvelope
+  }
 
   /** @deprecated */
   get SubscriptionOptions() {
-    return Backendless.Messaging.SubscriptionOptions
-  },
+    return this.Messaging.SubscriptionOptions
+  }
 
   ///--------BACKWARD COMPATIBILITY-------///
   ///-------------------------------------///
 }
 
+const backendless = new Backendless(DEFAULT_PROPS)
+
 if (root) {
-  root.Backendless = Backendless
+  root.Backendless = backendless
 }
 
-export default Backendless
+export default backendless
 
-module.exports = Backendless
+module.exports = backendless

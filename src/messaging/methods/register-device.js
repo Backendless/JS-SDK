@@ -1,10 +1,8 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Device from '../../device'
-import Request from '../../request'
+import Async from '../../request/async'
 
 export function registerDevice(deviceToken, channels, expiration, asyncHandler) {
-  const device = Device.required()
+  const device = this.app.device
 
   asyncHandler = Utils.extractResponder(arguments)
 
@@ -25,8 +23,8 @@ export function registerDevice(deviceToken, channels, expiration, asyncHandler) 
       : expiration
   }
 
-  return Request.post({
-    url         : Urls.messagingRegistrations(),
+  return this.app.request.post({
+    url         : this.app.urls.messagingRegistrations(),
     data        : data,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

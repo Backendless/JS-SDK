@@ -1,6 +1,5 @@
 import Utils from '../utils'
 import Async from '../request/async'
-import Request from '../request'
 import Urls from '../urls'
 
 const toBase64 = content => {
@@ -56,8 +55,8 @@ export function saveFile(filePath, fileName, fileContent, overwrite, asyncHandle
         query.overwrite = overwrite
       }
 
-      return Request.put({
-        url    : `${Urls.fileBinaryPath(filePath)}/${sanitizeFileName(fileName)}`,
+      return this.app.request.put({
+        url    : `${this.app.urls.fileBinaryPath(filePath)}/${sanitizeFileName(fileName)}`,
         query  : query,
         headers: { 'Content-Type': 'text/plain' },
         data   : fileContent,

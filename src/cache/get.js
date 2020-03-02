@@ -1,6 +1,5 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
+
 import { Parsers } from './parsers'
 
 function parseResult(result) {
@@ -26,8 +25,8 @@ export function get(key, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, parseResult)
   }
 
-  const result = Request.get({
-    url         : Urls.cacheItem(key),
+  const result = this.app.request.get({
+    url         : this.app.urls.cacheItem(key),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import Request from '../request'
 
 import GeoCluster from './cluster'
 import GeoPoint from './point'
@@ -18,7 +17,7 @@ export function loadItems(query, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => responseParser(resp, query))
   }
 
-  const result = Request.get({
+  const result = this.app.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

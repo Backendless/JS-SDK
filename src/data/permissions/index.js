@@ -1,9 +1,9 @@
 import Permission from './persmission'
 
-const DataPermissions = {
-  FIND  : new Permission('FIND'),
-  REMOVE: new Permission('REMOVE'),
-  UPDATE: new Permission('UPDATE'),
+export default class DataPermissions {
+  constructor(app) {
+    this.FIND = new Permission('FIND', app)
+    this.REMOVE = new Permission('REMOVE', app)
+    this.UPDATE = new Permission('UPDATE', app)
+  }
 }
-
-export default DataPermissions

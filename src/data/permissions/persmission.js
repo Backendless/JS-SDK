@@ -9,41 +9,42 @@ const PermissionTypes = {
 }
 
 function grantForUser(userId, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, object, { userId }, asyncHandler)
+  return this.sendRequest(PermissionTypes.GRANT, object, { userId }, asyncHandler)
 }
 
 function denyForUser(userId, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, object, { userId }, asyncHandler)
+  return this.sendRequest(PermissionTypes.DENY, object, { userId }, asyncHandler)
 }
 
 function grantForRole(roleName, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, object, { roleName }, asyncHandler)
+  return this.sendRequest(PermissionTypes.GRANT, object, { roleName }, asyncHandler)
 }
 
 function denyForRole(roleName, object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, object, { roleName }, asyncHandler)
+  return this.sendRequest(PermissionTypes.DENY, object, { roleName }, asyncHandler)
 }
 
 function grantForAllUsers(object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, object, { userId: '*' }, asyncHandler)
+  return this.sendRequest(PermissionTypes.GRANT, object, { userId: '*' }, asyncHandler)
 }
 
 function denyForAllUsers(object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, object, { userId: '*' }, asyncHandler)
+  return this.sendRequest(PermissionTypes.DENY, object, { userId: '*' }, asyncHandler)
 }
 
 function grantForAllRoles(object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.GRANT, object, { roleName: '*' }, asyncHandler)
+  return this.sendRequest(PermissionTypes.GRANT, object, { roleName: '*' }, asyncHandler)
 }
 
 function denyForAllRoles(object, asyncHandler) {
-  return sendRequest(this.permission, PermissionTypes.DENY, object, { roleName: '*' }, asyncHandler)
+  return this.sendRequest(PermissionTypes.DENY, object, { roleName: '*' }, asyncHandler)
 }
 
 class DataPermission {
 
-  constructor(permission) {
+  constructor(permission, app) {
     this.permission = permission
+    this.app = app
   }
 
 }
@@ -101,6 +102,7 @@ Object.assign(DataPermission.prototype, {
   grantForAllRoles: Utils.promisified(grantForAllRoles),
   denyForAllRoles : Utils.promisified(denyForAllRoles),
 
+  sendRequest: sendRequest
 })
 
 export default DataPermission
