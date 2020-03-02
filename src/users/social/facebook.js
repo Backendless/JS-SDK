@@ -4,16 +4,18 @@ import Utils from '../../utils'
 import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
 
-export const loginWithFacebook = (fieldsMapping, permissions, stayLoggedIn, asyncHandler) => {
-  console.warn(
+export function loginWithFacebook(fieldsMapping, permissions, stayLoggedIn, asyncHandler) {
+  console.warn( // eslint-disable-line no-console
     'Method "loginWithFacebook" is deprecated. and will be removed in the nearest release.\n' +
     'Use method "loginWithFacebookSdk" instead.'
   )
 
-  return loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
+  return loginSocial.call(this, 'Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
 }
 
-export const loginWithFacebookSdk = (accessToken, fieldsMapping, stayLoggedIn, options) => {
+export function loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options) {
+  const context = this
+
   Utils.checkPromiseSupport()
 
   if (typeof accessToken !== 'string') {
@@ -25,14 +27,20 @@ export const loginWithFacebookSdk = (accessToken, fieldsMapping, stayLoggedIn, o
 
   return new Promise((resolve, reject) => {
     function loginRequest() {
-      sendSocialLoginRequest(accessToken, 'facebook', fieldsMapping, stayLoggedIn, new Async(resolve, reject))
+      const asyncHandler = new Async(resolve, reject)
+
+      return sendSocialLoginRequest.call(context, accessToken, 'facebook', fieldsMapping, stayLoggedIn, asyncHandler)
     }
 
     if (accessToken || !fieldsMapping) {
       return loginRequest()
     }
 
-    console.warn('You must pass "accessToken" as the first argument into "loginWithFacebook(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method')
+    // eslint-disable-next-line no-console
+    console.warn(
+      'You must pass "accessToken" as the first argument into ' +
+      ' "loginWithFacebook(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method'
+    )
 
     if (!FB) {
       return reject(new Error('Facebook SDK not found'))

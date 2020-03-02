@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 import GeoPoint from './point'
 
@@ -15,12 +13,20 @@ export function savePoint(geoPoint, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, parseResponse)
   }
 
-  const result = Request.send({
-    method      : geoPoint.objectId ? Request.Methods.PATCH : Request.Methods.POST,
-    url         : geoPoint.objectId ? Urls.geoPoint(geoPoint.objectId) : Urls.geoPoints(),
-    data        : geoPoint,
-    isAsync     : !!asyncHandler,
-    asyncHandler: asyncHandler
+  const method = geoPoint.objectId
+    ? this.app.request.Methods.PATCH
+    : this.app.request.Methods.POST
+
+  const url = geoPoint.objectId
+    ? this.app.urls.geoPoint(geoPoint.objectId)
+    : this.app.urls.geoPoints()
+
+  const result = this.app.request.send({
+    method,
+    url,
+    data   : geoPoint,
+    isAsync: !!asyncHandler,
+    asyncHandler
   })
 
   if (asyncHandler) {

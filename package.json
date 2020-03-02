@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "5.7.1",
+  "version": "5.8.0",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -15,7 +15,7 @@
   ],
   "typings": "backendless.d.ts",
   "scripts": {
-    "dev": "watch 'npm run build:umd' ./src",
+    "dev": "watch 'npm run build:commonjs' ./src",
     "clean": "rimraf lib dist es",
     "lint": "eslint src --fix",
     "check": "npm run lint && npm run test",

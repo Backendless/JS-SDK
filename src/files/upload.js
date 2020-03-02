@@ -15,12 +15,12 @@ const getFileName = file => {
 
 /**
  * @param {File} file
- * @param {String} path
+ * @param {String} filePath
  * @param {Boolean} overwrite
  * @param {Async} asyncHandler
  * @returns {Promise.<String>}
  */
-export function upload(file, path, overwrite, asyncHandler) {
+export function upload(file, filePath, overwrite, asyncHandler) {
   const fileName = getFileName(file)
 
   if (!fileName) {
@@ -32,9 +32,9 @@ export function upload(file, path, overwrite, asyncHandler) {
     overwrite = undefined
   }
 
-  return sendFile({
+  return sendFile.call(this, {
     overwrite   : overwrite,
-    path        : path,
+    path        : filePath,
     fileName    : fileName,
     file        : file,
     asyncHandler: asyncHandler

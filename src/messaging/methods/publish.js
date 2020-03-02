@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request'
 import Async from '../../request/async'
 import DeliveryOptions from '../helpers/delivery-options'
 import PublishOptions from '../helpers/publish-options'
@@ -37,8 +35,8 @@ export function publish(channelName, message, publishOptions, deliveryTarget, as
     Utils.deepExtend(data, deliveryTarget)
   }
 
-  return Request.post({
-    url         : Urls.messagingChannel(channelName),
+  return this.app.request.post({
+    url         : this.app.urls.messagingChannel(channelName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler,
     data        : data

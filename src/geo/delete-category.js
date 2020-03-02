@@ -1,6 +1,3 @@
-import Urls from '../urls'
-import Request from '../request'
-
 export function deleteCategory(name, asyncHandler) {
   if (!name) {
     throw new Error('Category name is required.')
@@ -9,8 +6,8 @@ export function deleteCategory(name, asyncHandler) {
   let result = {}
 
   try {
-    result = Request.delete({
-      url         : Urls.geoCategory(name),
+    result = this.app.request.delete({
+      url         : this.app.urls.geoCategory(name),
       isAsync     : !!asyncHandler,
       asyncHandler: asyncHandler
     })

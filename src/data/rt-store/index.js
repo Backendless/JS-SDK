@@ -1,4 +1,4 @@
-import { RTClient, RTListeners, checkUsesInBusinessLogic } from '../../rt'
+import { RTListeners } from '../../rt'
 
 import { parseFindResponse } from '../store/parse'
 
@@ -20,9 +20,10 @@ const SingleChangesTypes = [
 
 export default class EventHandler extends RTListeners {
 
-  constructor(dataStore) {
+  constructor(dataStore, app) {
     super()
 
+    this.app = app
     this.dataStore = dataStore
   }
 
@@ -129,8 +130,6 @@ export default class EventHandler extends RTListeners {
   }
 
   addChangesListener(event, whereClause, callback, onError) {
-    checkUsesInBusinessLogic('Subscribe on Data changes')
-
     if (typeof whereClause === 'function') {
       onError = callback
       callback = whereClause
@@ -141,7 +140,7 @@ export default class EventHandler extends RTListeners {
       throw new Error('"callback" must be function.')
     }
 
-    this.addSubscription(event, RTClient.subscriptions.onObjectsChanges, {
+    this.addSubscription(event, this.app.RT.subscriptions.onObjectsChanges, {
       callback,
       onError,
       parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance : undefined,
@@ -179,7 +178,7 @@ export default class EventHandler extends RTListeners {
     this.stopSubscription(event, { matcher })
   }
 
-  parseObjectToInstance = object => {
+  parseObjectToInstance(object) {
     //TODO: "parseFindResponse" method must be moved to dataStore
     return parseFindResponse(object, this.dataStore.model)
   }

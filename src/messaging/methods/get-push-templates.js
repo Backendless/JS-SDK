@@ -1,9 +1,6 @@
-import Urls from '../../urls'
-import Request from '../../request'
-
 export function getPushTemplates(deviceType, asyncHandler) {
-  return Request.get({
-    url         : Urls.messagingPushTemplates(deviceType),
+  return this.app.request.get({
+    url         : this.app.urls.messagingPushTemplates(deviceType),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

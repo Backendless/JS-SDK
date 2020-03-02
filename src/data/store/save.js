@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request'
 
 import { parseFindResponse } from './parse'
 
@@ -49,8 +47,8 @@ export function save(obj, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, this.model))
   }
 
-  const result = Request.put({
-    url         : Urls.dataTable(this.className),
+  const result = this.app.request.put({
+    url         : this.app.urls.dataTable(this.className),
     data        : obj,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

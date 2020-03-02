@@ -21,7 +21,7 @@ const namespaceLabel = 'Backendless.Data.of(<ClassName>)'
 
 class DataStore {
 
-  constructor(model, classToTableMap) {
+  constructor(model, classToTableMap, app) {
     this.classToTableMap = classToTableMap
 
     if (Utils.isString(model)) {
@@ -36,10 +36,12 @@ class DataStore {
     if (!this.className) {
       throw new Error('Class name should be specified')
     }
+
+    this.app = app
   }
 
   rt() {
-    return this.eventHandler = this.eventHandler || new EventHandler(this)
+    return this.eventHandler = this.eventHandler || new EventHandler(this, this.app)
   }
 
   async clearLocalDatabase() {

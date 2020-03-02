@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 import { parseResponse } from './utils'
 
@@ -15,8 +13,8 @@ function roleHelper(identity, rolename, asyncHandler, operation) {
 
   const responder = Utils.extractResponder(arguments)
 
-  return Request.post({
-    url         : Urls.userRoleOperation(operation),
+  return this.app.request.post({
+    url         : this.app.urls.userRoleOperation(operation),
     isAsync     : !!responder,
     asyncHandler: responder,
     data        : { user: identity, roleName: rolename }
@@ -27,19 +25,19 @@ export function getUserRoles(/** async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  const result = Request.get({
-    url         : Urls.userRoles(),
+  const result = this.app.request.get({
+    url         : this.app.urls.userRoles(),
     isAsync     : isAsync,
     asyncHandler: responder
   })
 
-  return isAsync ? result : parseResponse(result)
+  return isAsync ? result : parseResponse.call(this, result)
 }
 
-export const assignRole = (identity, rolename, asyncHandler) => {
-  return roleHelper(identity, rolename, asyncHandler, 'assignRole')
+export function assignRole(identity, rolename, asyncHandler) {
+  return roleHelper.call(this, identity, rolename, asyncHandler, 'assignRole')
 }
 
-export const unassignRole = (identity, rolename, asyncHandler) => {
-  return roleHelper(identity, rolename, asyncHandler, 'unassignRole')
+export function unassignRole(identity, rolename, asyncHandler) {
+  return roleHelper.call(this, identity, rolename, asyncHandler, 'unassignRole')
 }

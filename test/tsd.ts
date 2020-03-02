@@ -13,6 +13,7 @@ function testMain() {
     const dataRetrievalPolicy: object = Backendless.DataRetrievalPolicy;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
+    Backendless.initApp({ appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
 }
 
 function testLocalCache() {
@@ -61,6 +62,7 @@ function testDataQueryClass() {
 
 function testDataQueryBuilderClass() {
     let dataQuery: Backendless.DataQueryBuilder = new Backendless.DataQueryBuilder();
+    dataQuery = Backendless.DataQueryBuilder.create();
 
     let str: string = 'str';
     let num: number = 123;
@@ -101,6 +103,8 @@ function testDataQueryBuilderClass() {
 
     dataQuery = dataQuery.setRelationsDepth(num);
     num = dataQuery.getRelationsDepth();
+
+    const query: Backendless.DataQueryValueI = dataQuery.build();
     num = dataQuery.getPageSize();
     num = dataQuery.getOffset();
     const paging:object = dataQuery.getPaging();
@@ -124,47 +128,6 @@ function testLoadRelationsQueryBuilder() {
 
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.preparePreviousPage();
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
-}
-
-function testDataQueryBuilder() {
-    let strings: Array<string>;
-    let str: string;
-    let num: number;
-
-    let dataQueryBuilder: Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
-
-    dataQueryBuilder = dataQueryBuilder.setPageSize(123);
-    dataQueryBuilder = dataQueryBuilder.setOffset(123);
-    dataQueryBuilder = dataQueryBuilder.prepareNextPage();
-    dataQueryBuilder = dataQueryBuilder.preparePreviousPage();
-
-    strings = dataQueryBuilder.getProperties();
-
-    dataQueryBuilder = dataQueryBuilder.setProperties('str');
-    dataQueryBuilder = dataQueryBuilder.setProperties(strings);
-
-    dataQueryBuilder = dataQueryBuilder.addProperty('str');
-
-    str = dataQueryBuilder.getWhereClause();
-    dataQueryBuilder = dataQueryBuilder.setWhereClause('str');
-
-    strings = dataQueryBuilder.getSortBy();
-    dataQueryBuilder = dataQueryBuilder.setSortBy('str');
-    dataQueryBuilder = dataQueryBuilder.setSortBy(strings);
-
-    strings = dataQueryBuilder.getRelated();
-    dataQueryBuilder = dataQueryBuilder.setRelated('str');
-    dataQueryBuilder = dataQueryBuilder.setRelated(strings);
-    dataQueryBuilder = dataQueryBuilder.addRelated('str');
-    dataQueryBuilder = dataQueryBuilder.addRelated(strings);
-
-    num = dataQueryBuilder.getRelationsDepth();
-    dataQueryBuilder = dataQueryBuilder.setRelationsDepth(num);
-
-    num = dataQueryBuilder.getRelationsPageSize();
-    dataQueryBuilder = dataQueryBuilder.setRelationsPageSize(num);
-
-    const query: Backendless.DataQueryValueI = dataQueryBuilder.build();
 }
 
 function testDataStoreClass() {

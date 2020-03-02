@@ -1,61 +1,70 @@
-import { deprecated } from '../decorators'
 import Utils from '../utils'
 
-import { describe } from './describe'
-import GeoJSONParser from './geo/geo-json-parser'
-import Geometry from './geo/geometry'
-import LineString from './geo/linestring'
+import { deprecated } from '../decorators'
 
-import Point from './geo/point'
-import Polygon from './geo/polygon'
-import SpatialReferenceSystem from './geo/spatial-reference-system'
-import WKTParser from './geo/wkt-parser'
+import Permissions from './permissions'
+import Store from './store'
+import QueryBuilder from './query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
+
+import { describe } from './describe'
+
 import { DBManager, idbConnection, SyncModes } from './offline/database-manager'
 import { DataRetrievalPolicy, LocalStoragePolicy } from './offline/policy'
 
-import Permissions from './permissions'
-import QueryBuilder from './query-builder'
-import Store from './store'
+import Point from './geo/point'
+import LineString from './geo/linestring'
+import Polygon from './geo/polygon'
+import Geometry from './geo/geometry'
+import SpatialReferenceSystem from './geo/spatial-reference-system'
+import WKTParser from './geo/wkt-parser'
+import GeoJSONParser from './geo/geo-json-parser'
 
-const classToTableMap = {}
+export default class Data {
+  constructor(app) {
+    this.app = app
+    this.classToTableMap = {}
 
-const Data = {
-  Permissions: Permissions,
+    this.Permissions = new Permissions(app)
+    this.QueryBuilder = QueryBuilder
+    this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
 
-  QueryBuilder             : QueryBuilder,
-  LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
+    this.RetrievalPolicy   = DataRetrievalPolicy.ONLINEONLY
+    this.LocalStoragePolicy = LocalStoragePolicy.DONOTSTOREANY
 
-  RetrievalPolicy   : DataRetrievalPolicy.ONLINEONLY,
-  LocalStoragePolicy: LocalStoragePolicy.DONOTSTOREANY,
+    this.Point = Point
+    this.LineString = LineString
+    this.Polygon = Polygon
+    this.Geometry = Geometry
 
-  Point     : Point,
-  LineString: LineString,
-  Polygon   : Polygon,
-  Geometry  : Geometry,
+    this.GeoJSONParser = GeoJSONParser
+    this.WKTParser = WKTParser
 
-  GeoJSONParser: GeoJSONParser,
-  WKTParser    : WKTParser,
+    this.SpatialReferenceSystem = SpatialReferenceSystem
+  }
 
-  SpatialReferenceSystem: SpatialReferenceSystem,
-
-  of: function (model) {
-    return new Store(model, classToTableMap)
-  },
+  of(model) {
+    return new Store(model, this.classToTableMap, this.app)
+  }
 
   @deprecated('Backendless.Data', 'Backendless.Data.describe')
-  describeSync: Utils.synchronized(describe),
-  describe    : Utils.promisified(describe),
+  describeSync(...args) {
+    return Utils.synchronized(describe).call(this, ...args)
+  }
+
+  describe(...args) {
+    return Utils.promisified(describe).call(this, ...args)
+  }
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   save(className, obj) {
     return this.of(className).save(obj)
-  },
+  }
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   saveSync(className, obj, asyncHandler) {
     return this.of(className).saveSync(obj, asyncHandler)
-  },
+  }
 
   mapTableToClass(tableName, clientClass) {
     if (!tableName) {
@@ -66,8 +75,8 @@ const Data = {
       throw new Error('Class is not specified')
     }
 
-    classToTableMap[tableName] = clientClass
-  },
+    this.classToTableMap[tableName] = clientClass
+  }
 
   async clearLocalDatabase() {
     if (!Utils.isBrowser) {
@@ -75,23 +84,21 @@ const Data = {
     }
 
     await idbConnection.dropDb()
-  },
+  }
 
   enableAutoSync() {
     DBManager.setGlobalSyncMode(SyncModes.AUTO)
-  },
+  }
 
   disableAutoSync() {
     DBManager.setGlobalSyncMode(null)
-  },
+  }
 
   startOfflineSync() {
     return DBManager.startOfflineSync()
-  },
+  }
 
   isAutoSyncEnabled() {
     return DBManager.getGlobalSyncMode() === SyncModes.AUTO
   }
 }
-
-export default Data

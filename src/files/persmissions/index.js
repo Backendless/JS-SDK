@@ -1,9 +1,11 @@
 import FilePermission from './persmission'
 
-const FilePermissions = {
-  READ  : new FilePermission('READ'),
-  DELETE: new FilePermission('DELETE'),
-  WRITE : new FilePermission('WRITE'),
-}
+export default class FilePermissions {
+  constructor(app) {
+    this.app = app
 
-export default FilePermissions
+    this.READ = new FilePermission('READ', app)
+    this.DELETE = new FilePermission('DELETE', app)
+    this.WRITE = new FilePermission('WRITE', app)
+  }
+}

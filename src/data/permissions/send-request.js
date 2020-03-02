@@ -1,7 +1,7 @@
-import Urls from '../../urls'
-import Request from '../../request'
+export function sendRequest(type, object, options, asyncHandler) {
+  const permission = this.permission
+  const url = this.app.urls.dataObjectPermission(object.___class, type, object.objectId)
 
-export function sendRequest(permission, type, object, options, asyncHandler) {
   const { userId, roleName } = options
 
   if (!object.___class || !object.objectId) {
@@ -18,10 +18,10 @@ export function sendRequest(permission, type, object, options, asyncHandler) {
     data.role = roleName
   }
 
-  return Request.put({
-    url         : Urls.dataObjectPermission(object.___class, type, object.objectId),
-    data        : data,
-    isAsync     : !!asyncHandler,
-    asyncHandler: asyncHandler
+  return this.app.request.put({
+    url,
+    data,
+    asyncHandler,
+    isAsync: !!asyncHandler
   })
 }

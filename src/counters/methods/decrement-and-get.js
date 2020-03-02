@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request/index'
 
 export function decrementAndGet(counterName, asyncHandler) {
   if (!counterName || !Utils.isString(counterName)) {
@@ -11,8 +9,8 @@ export function decrementAndGet(counterName, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.put({
-    url         : Urls.counterDecrementAndGet(counterName),
+  return this.app.request.put({
+    url         : this.app.urls.counterDecrementAndGet(counterName),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

@@ -17,7 +17,7 @@ describe('Data - Permissions', function() {
   beforeEach(async function() {
     Permissions = Backendless.Data.Permissions
 
-    user = await Backendless.Data.of(Backendless.User).save({
+    user = await Backendless.Data.of('Users').save({
       email   : `john-${Date.now()}-lennon@lennon.co`,
       name    : 'John Lennon',
       password: 'beatlesforever'

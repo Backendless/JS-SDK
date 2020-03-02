@@ -36,5 +36,4 @@ describe('Backendless.Logging', function() {
         return Backendless.Logging.flush()
       })
   })
-
 })

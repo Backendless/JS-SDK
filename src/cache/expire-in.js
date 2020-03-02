@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 export function expireIn(key, seconds, asyncHandler) {
   if (!key || !Utils.isString(key)) {
@@ -15,8 +13,8 @@ export function expireIn(key, seconds, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.put({
-    url         : Urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
+  return this.app.request.put({
+    url         : this.app.urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
     data        : {},
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
