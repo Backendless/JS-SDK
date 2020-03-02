@@ -8,7 +8,7 @@ const DEFAULT_PROPS = {
   appId         : null,
   apiKey        : null,
   serverURL     : 'https://api.backendless.com',
-  debugMode     : true,
+  debugMode     : false,
   standalone    : false,
   ServerCode    : null,
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
