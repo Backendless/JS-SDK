@@ -20,11 +20,21 @@ declare module Backendless {
      */
     let PublishOptionsHeaders: { [key: string]: string; };
 
+    interface InitAppConfig {
+        appId: string;
+        apiKey: string;
+        standalone?: boolean;
+        serverURL?: string;
+        debugMode?: boolean;
+        XMLHttpRequest?: XMLHttpRequest,
+    }
+
     /**
      * @public
      * @type: Function
      **/
-    function initApp(appId: string | Object, apiKey: string): void;
+    function initApp(appId: string, apiKey: string): void;
+    function initApp(config: InitAppConfig): void;
 
     /**
      * @public
@@ -163,9 +173,9 @@ declare module Backendless {
         class Geometry {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
-            static fromWKT(wellKnownText: string, srs?: SpatialReferenceSystem.SpatialType): Point|LineString|Polygon;
+            static fromWKT(wellKnownText: string, srs?: SpatialReferenceSystem.SpatialType): Point | LineString | Polygon;
 
-            static fromGeoJSON(geoJSON: string, srs?: SpatialReferenceSystem.SpatialType): Point|LineString|Polygon;
+            static fromGeoJSON(geoJSON: string, srs?: SpatialReferenceSystem.SpatialType): Point | LineString | Polygon;
 
             getSRS(): SpatialReferenceSystem.SpatialType;
 
@@ -261,7 +271,7 @@ declare module Backendless {
         class GeoJSONParser {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
-            read(geoJSON: string): Point|LineString|Polygon;
+            read(geoJSON: string): Point | LineString | Polygon;
         }
 
         /**
@@ -271,7 +281,7 @@ declare module Backendless {
         class WKTParser {
             constructor(srs: SpatialReferenceSystem.SpatialType);
 
-            read(wktString: string): Point|LineString|Polygon;
+            read(wktString: string): Point | LineString | Polygon;
         }
 
         function of(model: string | Object | Function): Backendless.DataStore;
