@@ -1,8 +1,6 @@
 import Utils from '../../utils'
 import { RTScopeConnector } from '../../rt'
 
-import Messaging from '../index'
-
 const ListenerTypes = Utils.mirrorKeys({
   MESSAGE: null
 })
@@ -12,6 +10,8 @@ export default class Channel extends RTScopeConnector {
     super(options)
 
     this.app = app
+
+    this.connect()
   }
 
   get connectSubscriber() {
@@ -38,8 +38,14 @@ export default class Channel extends RTScopeConnector {
     }
   }
 
+  connect() {
+    if (this.app) {
+      return super.connect()
+    }
+  }
+
   publish(message, publishOptions, deliveryTarget) {
-    return Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
+    return this.app.Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
   }
 
   @RTScopeConnector.connectionRequired()
