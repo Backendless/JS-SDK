@@ -13,6 +13,8 @@ export default class RemoteSharedObject extends RTScopeConnector {
 
     this.app = app
     this.invocationTarget = null
+
+    this.connect()
   }
 
   get connectSubscriber() {
@@ -42,6 +44,12 @@ export default class RemoteSharedObject extends RTScopeConnector {
       this.addSubscription(ListenerTypes.INVOKE, this.app.RT.subscriptions.onRSOInvoke, {
         callback: this.onInvoke
       })
+    }
+  }
+
+  connect() {
+    if (this.app) {
+      return super.connect()
     }
   }
 

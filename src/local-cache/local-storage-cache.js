@@ -60,7 +60,7 @@ export default class LocalStorageCache extends Cache {
   }
 
   get storage() {
-    return this.deserialize(this.__storage.getItem(this.__storageKey))
+    return this.deserialize(this.__storage.getItem(this.__storageKey)) || {}
   }
 
   set storage(storage) {
