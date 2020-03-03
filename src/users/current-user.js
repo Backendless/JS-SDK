@@ -47,9 +47,9 @@ export function getCurrentUser(asyncHandler) {
       .then(result => {
         this.currentUserRequest = null
 
-        this.currentUser = getUserFromResponse(result)
+        this.currentUser = getUserFromResponse.call(this, result)
 
-        return asyncHandler.success(currentUser)
+        return asyncHandler.success(this.currentUser)
       })
       .catch(error => {
         this.currentUserRequest = null
