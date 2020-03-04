@@ -1,11 +1,11 @@
-import { getOrder, getPaging, getWhereClause, sanitizeRecords } from './utils'
+import { getOrder, getPaging, getWhereClause, parseObjects } from './utils'
 
 export async function findAll(from, dataQuery) {
   const where = getWhereClause(dataQuery)
   const { pageSize: limit, offset: skip } = getPaging(dataQuery)
   const order = getOrder(dataQuery)
 
-  const records = await this.app.OfflineDBManager.connection.select({
+  const objects = await this.app.OfflineDBManager.connection.select({
     from,
     where,
     order,
@@ -13,5 +13,5 @@ export async function findAll(from, dataQuery) {
     skip
   })
 
-  return sanitizeRecords(records)
+  return parseObjects(objects)
 }

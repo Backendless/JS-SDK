@@ -1,5 +1,5 @@
 import { ActionTypes, callbackManager } from '../offline/callback-manager'
-import { convertBooleansToStrings } from '../offline/database-manager/utils'
+import { convertObject } from '../offline/database-manager/utils'
 import { isOnline } from '../offline/network'
 import Operations from '../offline/operations'
 import { remove as deleteFromRemoteDB } from './remove'
@@ -8,7 +8,7 @@ function updateObjectPendingOperation(object) {
   return this.app.OfflineDBManager.connection.update({
     in   : this.className,
     set  : {
-      ...convertBooleansToStrings(object),
+      ...convertObject(object),
       blLocalId         : object.objectId,
       blPendingOperation: Operations.DELETE
     },

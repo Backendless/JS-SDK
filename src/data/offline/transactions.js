@@ -1,6 +1,6 @@
 import Utils from '../../utils'
 import { ActionTypes, callbackManager } from './callback-manager'
-import { sanitizeRecord } from './database-manager/utils'
+import { parseObject } from './database-manager/utils'
 import Operations from './operations'
 
 async function saveObject(tableName, object) {
@@ -8,7 +8,7 @@ async function saveObject(tableName, object) {
   const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.SAVE, tableName)
 
   try {
-    const objectToSave = Utils.omit(sanitizeRecord(object), ['blPendingOperation', 'blLocalId'])
+    const objectToSave = Utils.omit(parseObject(object), ['blPendingOperation', 'blLocalId'])
     const savedObject = await this.app.Data.of(tableName).save(objectToSave)
 
     await this.app.OfflineDBManager.replaceLocalObject(tableName, {
@@ -40,11 +40,11 @@ async function deleteObject(tableName, object) {
 
     await this.app.OfflineDBManager.deleteLocalObject(tableName, object)
 
-    const sanitizedObject = sanitizeRecord(object)
+    const parseObject = parseObject(object)
 
-    onSuccess(sanitizedObject)
+    onSuccess(parseObject)
 
-    return { blPendingOperation, object: sanitizedObject, status: 'success' }
+    return { blPendingOperation, object: parseObject, status: 'success' }
   } catch (error) {
     const errorMessage = error.message || error
 

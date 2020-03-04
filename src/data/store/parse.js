@@ -1,17 +1,11 @@
 import Utils from '../../utils'
-import { resolveModelClassFromString } from '../utils'
+import { geoClasses } from '../geo/constants'
 import constructGeoObject from '../geo/geo-constructor'
+import { resolveModelClassFromString } from '../utils'
 
 function isObject(item) {
   return typeof item === 'object' && item !== null
 }
-
-const geoClasses = [
-  'com.backendless.persistence.Polygon',
-  'com.backendless.persistence.LineString',
-  'com.backendless.persistence.Point',
-  'com.backendless.persistence.Geometry',
-]
 
 function parseCircularDependencies(obj) {
   const result = new obj.constructor()

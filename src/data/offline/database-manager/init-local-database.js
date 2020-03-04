@@ -1,8 +1,8 @@
 import Utils from '../../../utils'
 import { DataType } from '../database-manager'
-import { convertBooleansToStrings, sanitizeRecords } from './utils'
+import { convertObject, parseObjects } from './utils'
 
-const StringTypes = ['STRING', 'STRING_ID', 'TEXT', 'FILE_REF']
+const StringTypes = ['STRING', 'STRING_ID', 'TEXT', 'FILE_REF', 'BOOLEAN', 'POINT', 'LINESTRING', 'POLYGON', 'GEOMETRY']
 const NumberTypes = ['DOUBLE', 'INT', 'DATETIME']
 
 const getColumnType = backendlessType => {
@@ -13,13 +13,9 @@ const getColumnType = backendlessType => {
   if (NumberTypes.includes(backendlessType)) {
     return DataType.Number
   }
-
-  if (backendlessType === 'BOOLEAN') {
-    return DataType.String // 'true', 'false'
-  }
 }
 
-const enrichRecord = r => ({ ...convertBooleansToStrings(r), blLocalId: r.objectId })
+const enrichObject = r => ({ ...convertObject(r), blLocalId: r.objectId })
 
 const prepareColumns = schema => {
   const columns = {}
@@ -71,18 +67,18 @@ export async function initLocalDatabase(whereClause, callback) {
   }
 
   if (!(await shouldFetchData.call(this, this.className))) {
-    const records = await this.app.OfflineDBManager.connection.select({ from: this.className })
+    const objects = await this.app.OfflineDBManager.connection.select({ from: this.className })
 
-    const sanitizedRecords = sanitizeRecords(records)
+    const parsedObjects = parseObjects(objects)
 
     if (callback) {
-      callback(sanitizedRecords)
+      callback(parsedObjects)
     }
 
-    return sanitizedRecords
+    return parsedObjects
   }
 
-  const [tableRecords, tableSchema] = await Promise.all([
+  const [tableObjects, tableSchema] = await Promise.all([
     this.app.Data.of(this.className).fetchAll(whereClause),
     this.app.Data.describe(this.className)
   ])
@@ -91,13 +87,13 @@ export async function initLocalDatabase(whereClause, callback) {
 
   await this.app.OfflineDBManager.connection.insert({
     into  : this.className,
-    values: tableRecords.map(enrichRecord),
+    values: tableObjects.map(enrichObject),
     upsert: true,
   })
 
   if (callback) {
-    callback(tableRecords)
+    callback(tableObjects)
   }
 
-  return tableRecords
+  return tableObjects
 }

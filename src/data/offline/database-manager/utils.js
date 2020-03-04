@@ -1,15 +1,16 @@
 import monitor from 'backendless-where-clause-monitor'
+import Geometry from '../../geo/geometry'
 import QueryBuilder from '../../query-builder'
+
+const DefaultPaging = {
+  pageSize: 10,
+  offset  : 0
+}
 
 export const getWhereClause = dataQuery => {
   const whereClauseString = dataQuery instanceof QueryBuilder && dataQuery.getWhereClause()
 
   return whereClauseString ? monitor.createJSStoreVisitor(dataQuery.getWhereClause()) : undefined
-}
-
-const DefaultPaging = {
-  pageSize: 10,
-  offset  : 0
 }
 
 export const getPaging = dataQuery => dataQuery instanceof QueryBuilder ? dataQuery.getPaging() : DefaultPaging
@@ -31,30 +32,34 @@ const BooleanOptions = {
   'false': false,
 }
 
-export const parseBooleans = record => {
-  for (const field in record) {
-    if (BooleanOptions.hasOwnProperty(record[field])) {
-      record[field] = BooleanOptions[record[field]]
+export const parseBooleans = object => {
+  for (const field in object) {
+    if (BooleanOptions.hasOwnProperty(object[field])) {
+      object[field] = BooleanOptions[object[field]]
     }
   }
 
-  return record
+  return object
 }
 
-export const convertBooleansToStrings = record => {
-  for (const field in record) {
-    if (typeof record[field] === 'boolean') {
-      record[field] = `${ record[field] }`
+export const convertObject = object => {
+  for (const field in object) {
+    if (typeof object[field] === 'boolean') {
+      object[field] = `${ object[field] }`
+    }
+
+    if (object[field] instanceof Geometry) {
+      object[field] = object[field].asWKT()
     }
   }
 
-  return record
+  return object
 }
 
-export function sanitizeRecords(records) {
-  return records.map(sanitizeRecord)
+export function parseObjects(objects) {
+  return objects.map(parseObject)
 }
 
-export function sanitizeRecord(record) {
-  return parseBooleans(record)
+export function parseObject(object) {
+  return parseBooleans(object)
 }

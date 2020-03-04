@@ -8,7 +8,7 @@ import { findAll } from './find-all'
 import { findById } from './find-by-id'
 import { findFirst } from './find-first'
 import { findLast } from './find-last'
-import { convertBooleansToStrings } from './utils'
+import { convertObject } from './utils'
 
 if (Utils.isBrowser) {
   window['JsStoreWorker'] = require('jsstore/dist/jsstore.worker.commonjs2')
@@ -136,15 +136,15 @@ export default class OfflineDBManager {
     await this.initJsStore(dbTables)
   }
 
-  upsertObject(tableName, record) {
+  upsertObject(tableName, object) {
     return this.connection.insert({
       into  : tableName,
-      values: [convertBooleansToStrings(record)],
+      values: [convertObject(object)],
       upsert: true
     })
   }
 
-  replaceLocalObject(tableName, record, blLocalId) {
+  replaceLocalObject(tableName, object, blLocalId) {
     return Promise.all([
       this.connection.remove({
         from : tableName,
@@ -155,15 +155,15 @@ export default class OfflineDBManager {
 
       this.connection.insert({
         into  : tableName,
-        values: [convertBooleansToStrings(record)]
+        values: [convertObject(object)]
       })
     ])
   }
 
-  deleteLocalObject(tableName, record) {
+  deleteLocalObject(tableName, object) {
     return this.connection.remove({
       from : tableName,
-      where: { blLocalId: record.blLocalId || record.objectId }
+      where: { blLocalId: object.blLocalId || object.objectId }
     })
   }
 
@@ -188,7 +188,7 @@ export default class OfflineDBManager {
     return findAll.call(this, tableName, dataQuery)
   }
 
-  async storeFindResult(tableName, records, localStoragePolicy) {
+  async storeFindResult(tableName, objects, localStoragePolicy) {
     if (localStoragePolicy !== LocalStoragePolicy.DONOTSTOREANY) {
       const tableExists = await this.isTableExist(tableName)
 
@@ -200,17 +200,17 @@ export default class OfflineDBManager {
     }
 
     if (localStoragePolicy === LocalStoragePolicy.STOREALL) {
-      await this.storeAllFindResults(tableName, records)
+      await this.storeAllFindResults(tableName, objects)
     }
 
     if (localStoragePolicy === LocalStoragePolicy.STOREUPDATED) {
-      await this.storeUpdatedFindResults(tableName, records)
+      await this.storeUpdatedFindResults(tableName, objects)
     }
   }
 
-  storeAllFindResults(tableName, records) {
-    const objectsToStore = Utils.castArray(records).map(record => {
-      return convertBooleansToStrings({ ...record, blLocalId: record.objectId })
+  storeAllFindResults(tableName, objects) {
+    const objectsToStore = Utils.castArray(objects).map(object => {
+      return convertObject({ ...object, blLocalId: object.objectId })
     })
 
     return this.connection.insert({
@@ -220,11 +220,11 @@ export default class OfflineDBManager {
     })
   }
 
-  storeUpdatedFindResults(tableName, records) {
-    return Promise.all(Utils.castArray(records).map(record => this.connection.update({
+  storeUpdatedFindResults(tableName, objects) {
+    return Promise.all(Utils.castArray(objects).map(object => this.connection.update({
       in   : tableName,
-      set  : { ...convertBooleansToStrings(record), blLocalId: record.objectId },
-      where: { objectId: record.objectId }
+      set  : { ...convertObject(object), blLocalId: object.objectId },
+      where: { objectId: object.objectId }
     })))
   }
 
