@@ -115,7 +115,7 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     query.push('props=' + Utils.encodeArrayToUriComponent(dataQuery.properties))
   }
 
-  let url = this.urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
+  let url = this.app.urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
 
   if (asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, dataQuery.relationModel))
