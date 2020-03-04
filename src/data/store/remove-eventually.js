@@ -1,14 +1,14 @@
 import { ActionTypes, callbackManager } from '../offline/callback-manager'
-import { DBManager, idbConnection } from '../offline/database-manager'
+import { convertBooleansToStrings } from '../offline/database-manager/utils'
 import { isOnline } from '../offline/network'
 import Operations from '../offline/operations'
 import { remove as deleteFromRemoteDB } from './remove'
 
-const updateObjectPendingOperation = (tableName, object) => {
-  return idbConnection.update({
-    in   : tableName,
+function updateObjectPendingOperation(object) {
+  return this.app.OfflineDBManager.connection.update({
+    in   : this.className,
     set  : {
-      ...object,
+      ...convertBooleansToStrings(object),
       blLocalId         : object.objectId,
       blPendingOperation: Operations.DELETE
     },
@@ -19,9 +19,9 @@ const updateObjectPendingOperation = (tableName, object) => {
 async function tryRemoveFromLocal(object, offlineAwareCallback = {}) {
   try {
     if (object.objectId) {
-      await updateObjectPendingOperation(this.className, object)
+      await updateObjectPendingOperation.call(this, object)
     } else {
-      await DBManager.deleteLocalObject(this.className, object)
+      await this.app.OfflineDBManager.deleteLocalObject(this.className, object)
     }
 
     if (offlineAwareCallback.handleLocalResponse) {
@@ -48,8 +48,8 @@ export async function removeEventually(object, offlineAwareCallback = {}) {
   const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.DELETE, this.className)
 
   try {
-    await deleteFromRemoteDB(object)
-    await DBManager.deleteLocalObject(this.className, object)
+    await deleteFromRemoteDB.call(this, object)
+    await this.app.OfflineDBManager.deleteLocalObject(this.className, object)
 
     if (offlineAwareCallback.handleRemoteResponse) {
       offlineAwareCallback.handleRemoteResponse(object)

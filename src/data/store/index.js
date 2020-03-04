@@ -1,7 +1,7 @@
 import { deprecated } from '../../decorators'
 import Utils from '../../utils'
 import { ActionTypes, callbackManager } from '../offline/callback-manager'
-import { DBManager, idbConnection, SyncModes } from '../offline/database-manager'
+import { SyncModes } from '../offline/database-manager'
 import { initLocalDatabase } from '../offline/database-manager/init-local-database'
 import EventHandler from '../rt-store'
 import { resolveModelClassFromString } from '../utils'
@@ -16,11 +16,16 @@ import { removeEventually } from './remove-eventually'
 import { save } from './save'
 import { saveEventually } from './save-eventually'
 
+const checkIfOfflineEnabled = () => {
+  if (!Utils.isBrowser) {
+    throw new Error('Offline DB is not available outside of browser')
+  }
+}
+
 //TODO: will be removed when remove sync methods
 const namespaceLabel = 'Backendless.Data.of(<ClassName>)'
 
 class DataStore {
-
   constructor(model, classToTableMap, app) {
     this.classToTableMap = classToTableMap
 
@@ -45,11 +50,9 @@ class DataStore {
   }
 
   async clearLocalDatabase() {
-    if (!Utils.isBrowser) {
-      throw new Error('Offline DB is not available outside of browser')
-    }
+    checkIfOfflineEnabled()
 
-    await idbConnection.clear(this.className)
+    await this.app.OfflineDBManager.connection.clear(this.className)
   }
 
   onSave(onSuccess, onError) {
@@ -61,19 +64,27 @@ class DataStore {
   }
 
   enableAutoSync() {
-    DBManager.setTableSyncMode(this.className, SyncModes.AUTO)
+    checkIfOfflineEnabled()
+
+    this.app.OfflineDBManager.setTableSyncMode(this.className, SyncModes.AUTO)
   }
 
   disableAutoSync() {
-    DBManager.setTableSyncMode(this.className, null)
+    checkIfOfflineEnabled()
+
+    this.app.OfflineDBManager.setTableSyncMode(this.className, null)
   }
 
   isAutoSyncEnabled() {
-    return DBManager.getTableSyncMode(this.className) === SyncModes.AUTO
+    checkIfOfflineEnabled()
+
+    return this.app.OfflineDBManager.getTableSyncMode(this.className) === SyncModes.AUTO
   }
 
   startOfflineSync() {
-    return DBManager.startOfflineSync(this.className)
+    checkIfOfflineEnabled()
+
+    return this.app.OfflineDBManager.startOfflineSync(this.className)
   }
 }
 

@@ -16,6 +16,7 @@ async function fetchAll(whereClause) {
   do {
     whereClause.setPageSize(MAX_PAGE_SIZE)
     whereClause.setOffset(offset)
+    whereClause.setStoragePolicy('DONOTSTOREANY')
 
     const items = await this.find(whereClause)
 

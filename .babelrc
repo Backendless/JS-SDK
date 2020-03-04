@@ -6,6 +6,11 @@
   ],
   "plugins": [
     "@babel/plugin-transform-object-assign",
+    ["@babel/plugin-transform-runtime",
+      {
+        "regenerator": true
+      }
+    ],
     ["@babel/plugin-proposal-decorators", {
        "legacy": true
     }],

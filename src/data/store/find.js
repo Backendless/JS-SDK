@@ -1,8 +1,6 @@
-import Data from '../../data'
 import Async from '../../request/async'
 import Utils from '../../utils'
 
-import { DBManager } from '../offline/database-manager'
 import { isOnline } from '../offline/network'
 import { DataRetrievalPolicy, LocalStoragePolicy } from '../offline/policy'
 
@@ -13,51 +11,30 @@ import { parseFindResponse } from './parse'
 
 //TODO: refactor me
 
-const getRetrievalPolicy = dataQuery => {
+function getRetrievalPolicy(dataQuery) {
   return dataQuery instanceof QueryBuilder
     ? dataQuery.getRetrievalPolicy()
-    : Data.RetrievalPolicy
+    : this.app.Data.RetrievalPolicy
 }
 
-const getLocalStoragePolicy = dataQuery => {
+function getLocalStoragePolicy(dataQuery) {
   return dataQuery instanceof QueryBuilder
     ? dataQuery.getStoragePolicy()
-    : Data.LocalStoragePolicy
+    : this.app.Data.LocalStoragePolicy
 }
 
-const shouldSearchLocally = dataQuery => {
-  const retrievalPolicy = getRetrievalPolicy(dataQuery)
+function shouldSearchLocally(dataQuery) {
+  if (!Utils.isBrowser) {
+    return false
+  }
+
+  const retrievalPolicy = getRetrievalPolicy.call(this, dataQuery)
 
   return retrievalPolicy === DataRetrievalPolicy.OFFLINEONLY
     || (!isOnline() && retrievalPolicy === DataRetrievalPolicy.DYNAMIC)
 }
 
-export function findUtil(url, Model, dataQuery, asyncHandler) {
-  const searchLocally = shouldSearchLocally(dataQuery)
-  const localStoragePolicy = getLocalStoragePolicy(dataQuery)
-  const shouldStoreResult = !searchLocally && localStoragePolicy !== LocalStoragePolicy.DONOTSTOREANY
-
-  if (asyncHandler) {
-    asyncHandler = Utils.wrapAsync(asyncHandler, resp => {
-      if (shouldStoreResult) {
-        DBManager
-          .storeFindResult(this.className, resp, localStoragePolicy)
-          .catch(err => console.log(err))
-      }
-
-      return parseFindResponse(resp, Model, this.classToTableMap)
-    })
-  }
-
-  if (searchLocally) {
-    return DBManager
-      .find(this.className, dataQuery)
-      .then(result => asyncHandler.success(result))
-      .catch(error => asyncHandler.fault(error))
-  }
-
-  dataQuery = dataQuery || {}
-
+function buildURL(dataQuery) {
   const dataQueryURL = dataQuery.url
 
   if (dataQuery instanceof QueryBuilder) {
@@ -82,6 +59,8 @@ export function findUtil(url, Model, dataQuery, asyncHandler) {
     query.push('props=' + Utils.encodeArrayToUriComponent(dataQuery.properties))
   }
 
+  let url = this.app.urls.dataTable(this.className)
+
   if (dataQueryURL) {
     url += '/' + dataQueryURL
   }
@@ -89,6 +68,37 @@ export function findUtil(url, Model, dataQuery, asyncHandler) {
   if (query.length) {
     url += '?' + query.join('&')
   }
+
+  return url
+}
+
+export function findUtil(dataQuery, asyncHandler) {
+  const searchLocally = shouldSearchLocally.call(this, dataQuery)
+  const localStoragePolicy = getLocalStoragePolicy.call(this, dataQuery)
+  const shouldStoreResult = Utils.isBrowser && !searchLocally && localStoragePolicy !== LocalStoragePolicy.DONOTSTOREANY
+
+  if (asyncHandler) {
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => {
+      if (shouldStoreResult) {
+        this.app.OfflineDBManager
+          .storeFindResult(this.className, resp, localStoragePolicy)
+          .catch(err => console.log(err))
+      }
+
+      return parseFindResponse(resp, this.model, this.classToTableMap)
+    })
+  }
+
+  if (searchLocally) {
+    return this.app.OfflineDBManager
+      .find(this.className, dataQuery)
+      .then(result => asyncHandler.success(result))
+      .catch(error => asyncHandler.fault(error))
+  }
+
+  dataQuery = dataQuery || {}
+
+  const url = buildURL.call(this, dataQuery)
 
   const result = this.app.request.get({
     url,
@@ -101,7 +111,7 @@ export function findUtil(url, Model, dataQuery, asyncHandler) {
     return result
   }
 
-  return parseFindResponse(result, Model, this.classToTableMap)
+  return parseFindResponse(result, this.model, this.classToTableMap)
 }
 
 export function find(queryBuilder, asyncHandler) {
@@ -112,62 +122,59 @@ export function find(queryBuilder, asyncHandler) {
     queryBuilder = undefined
   }
 
-  if (queryBuilder && !(queryBuilder instanceof QueryBuilder)) {
-    throw new Error('The first argument should be instance of Backendless.DataQueryBuilder')
-  }
-
-  const dataQuery = queryBuilder ? queryBuilder.build() : {}
-  const url = this.app.urls.dataTable(this.className)
-
-  return findUtil.call(this, url, this.model, dataQuery, asyncHandler, this.classToTableMap)
+  return findUtil.call(this, queryBuilder, asyncHandler)
 }
 
 export function findById() {
-  let argsObj
-  let responder = Utils.extractResponder(arguments)
+  let dataQuery
+  let asyncHandler = Utils.extractResponder(arguments)
 
   const url = this.app.urls.dataTable(this.className)
 
   if (Utils.isString(arguments[0])) {
-    argsObj = !(arguments[1] instanceof Async) ? (arguments[1] || {}) : {}
-    argsObj.url = arguments[0]
+    dataQuery = !(arguments[1] instanceof Async) ? (arguments[1] || {}) : {}
+    dataQuery.url = arguments[0]
 
-    if (!argsObj.url) {
+    if (!dataQuery.url) {
       throw new Error('missing argument "object ID" for method findById()')
     }
 
-    return findUtil.call(this, url, this.model, argsObj, responder, this.classToTableMap)
-  } else if (Utils.isObject(arguments[0])) {
-    argsObj = arguments[0]
-    const isAsync = !!responder
-    let send = '/pk?'
+    return findUtil.call(this, dataQuery, asyncHandler)
+  }
 
-    for (const key in argsObj) {
-      send += key + '=' + argsObj[key] + '&'
+  if (Utils.isObject(arguments[0])) {
+    dataQuery = arguments[0]
+    const isAsync = !!asyncHandler
+    let query = '/pk?'
+
+    for (const key in dataQuery) {
+      query += key + '=' + dataQuery[key] + '&'
     }
 
-    if (responder) {
-      responder = Utils.wrapAsync(responder, resp => parseFindResponse(resp, this.model))
+    if (asyncHandler) {
+      asyncHandler = Utils.wrapAsync(asyncHandler, resp => {
+        return parseFindResponse(resp, this.model, this.classToTableMap)
+      })
     }
 
     let result
 
     if (Utils.getClassName(arguments[0]) === 'Object') {
       result = this.app.request.get({
-        url         : url + send.replace(/&$/, ''),
+        url         : url + query.replace(/&$/, ''),
         isAsync     : isAsync,
-        asyncHandler: responder
+        asyncHandler: asyncHandler
       })
     } else {
       result = this.app.request.put({
         url         : url,
-        data        : argsObj,
+        data        : dataQuery,
         isAsync     : isAsync,
-        asyncHandler: responder
+        asyncHandler: asyncHandler
       })
     }
 
-    return isAsync ? result : parseFindResponse(result, this.model)
+    return isAsync ? result : parseFindResponse(result, this.model, this.classToTableMap)
   }
 }
 
@@ -179,9 +186,7 @@ export function findFirst(dataQuery, asyncHandler) {
 
   dataQuery.url = 'first'
 
-  const url = this.app.urls.dataTable(this.className)
-
-  return findUtil.call(this, url, this.model, dataQuery, asyncHandler, this.classToTableMap)
+  return findUtil.call(this, dataQuery, asyncHandler)
 }
 
 export function findLast(dataQuery, asyncHandler) {
@@ -192,7 +197,5 @@ export function findLast(dataQuery, asyncHandler) {
 
   dataQuery.url = 'last'
 
-  const url = this.app.urls.dataTable(this.className)
-
-  return findUtil.call(this, url, this.model, dataQuery, asyncHandler, this.classToTableMap)
+  return findUtil.call(this, dataQuery, asyncHandler)
 }

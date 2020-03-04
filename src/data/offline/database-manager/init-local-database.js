@@ -1,6 +1,5 @@
 import Utils from '../../../utils'
-import { describe } from '../../describe'
-import { DataType, DBManager, DBName, idbConnection } from '../database-manager'
+import { DataType } from '../database-manager'
 import { convertBooleansToStrings, sanitizeRecords } from './utils'
 
 const StringTypes = ['STRING', 'STRING_ID', 'TEXT', 'FILE_REF']
@@ -46,24 +45,20 @@ const prepareColumns = schema => {
   return columns
 }
 
-const shouldFetchData = async tableName => {
-  const dbList = await idbConnection.getDbList()
+async function shouldFetchData(tableName) {
+  const dbExist = await this.app.OfflineDBManager.isDbExist()
 
-  if (!dbList.includes(DBName)) {
+  if (!dbExist) {
     return true
   }
 
-  const dbSchema = await idbConnection.getDbSchema(DBName)
-
-  const tableExist = dbSchema.tables.find(table => table.name === tableName)
+  const tableExist = await this.app.OfflineDBManager.isTableExist(tableName)
 
   if (!tableExist) {
     return true
   }
 
-  await idbConnection.openDb(DBName)
-
-  const objectsCount = await idbConnection.count({
+  const objectsCount = await this.app.OfflineDBManager.connection.count({
     from: tableName
   })
 
@@ -75,8 +70,9 @@ export async function initLocalDatabase(whereClause, callback) {
     throw new Error('Offline DB is not available outside of browser')
   }
 
-  if (!(await shouldFetchData(this.className))) {
-    const records = await idbConnection.select({ from: this.className })
+  if (!(await shouldFetchData.call(this, this.className))) {
+    const records = await this.app.OfflineDBManager.connection.select({ from: this.className })
+
     const sanitizedRecords = sanitizeRecords(records)
 
     if (callback) {
@@ -87,13 +83,13 @@ export async function initLocalDatabase(whereClause, callback) {
   }
 
   const [tableRecords, tableSchema] = await Promise.all([
-    this.fetchAll(whereClause),
-    describe(this.className)
+    this.app.Data.of(this.className).fetchAll(whereClause),
+    this.app.Data.describe(this.className)
   ])
 
-  await DBManager.addTable(this.className, prepareColumns(tableSchema))
+  await this.app.OfflineDBManager.addTable(this.className, prepareColumns(tableSchema))
 
-  await idbConnection.insert({
+  await this.app.OfflineDBManager.connection.insert({
     into  : this.className,
     values: tableRecords.map(enrichRecord),
     upsert: true,

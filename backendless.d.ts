@@ -306,8 +306,8 @@ declare module Backendless {
 
         function mapTableToClass(tableName: string, clientClass: Function);
 
-        const RetrievalPolicy: string;
-        const LocalStoragePolicy: string;
+        let RetrievalPolicy: string;
+        let LocalStoragePolicy: string;
 
         function clearLocalDatabase(): Promise<void>;
         function enableAutoSync(): void;

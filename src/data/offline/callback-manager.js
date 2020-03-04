@@ -1,9 +1,6 @@
 const noop = () => {}
 
-const noopCallbacks = {
-  onSuccess: noop,
-  onError  : noop,
-}
+const noopCallbacks = [noop, noop]
 
 class CallbackManager {
   constructor() {

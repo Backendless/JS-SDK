@@ -1,4 +1,3 @@
-import { idbConnection } from '../database-manager'
 import { getOrder, getPaging, getWhereClause, sanitizeRecords } from './utils'
 
 export async function findAll(from, dataQuery) {
@@ -6,7 +5,7 @@ export async function findAll(from, dataQuery) {
   const { pageSize: limit, offset: skip } = getPaging(dataQuery)
   const order = getOrder(dataQuery)
 
-  const records = await idbConnection.select({
+  const records = await this.app.OfflineDBManager.connection.select({
     from,
     where,
     order,

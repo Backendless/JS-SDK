@@ -1,24 +1,23 @@
+import { deprecated } from '../decorators'
 import Utils from '../utils'
 
-import { deprecated } from '../decorators'
-
-import Permissions from './permissions'
-import Store from './store'
-import QueryBuilder from './query-builder'
-import LoadRelationsQueryBuilder from './load-relations-query-builder'
-
 import { describe } from './describe'
-
-import { DBManager, idbConnection, SyncModes } from './offline/database-manager'
-import { DataRetrievalPolicy, LocalStoragePolicy } from './offline/policy'
+import GeoJSONParser from './geo/geo-json-parser'
+import Geometry from './geo/geometry'
+import LineString from './geo/linestring'
 
 import Point from './geo/point'
-import LineString from './geo/linestring'
 import Polygon from './geo/polygon'
-import Geometry from './geo/geometry'
 import SpatialReferenceSystem from './geo/spatial-reference-system'
 import WKTParser from './geo/wkt-parser'
-import GeoJSONParser from './geo/geo-json-parser'
+import LoadRelationsQueryBuilder from './load-relations-query-builder'
+
+import { SyncModes } from './offline/database-manager'
+import { DataRetrievalPolicy, LocalStoragePolicy } from './offline/policy'
+
+import Permissions from './permissions'
+import QueryBuilder from './query-builder'
+import Store from './store'
 
 export default class Data {
   constructor(app) {
@@ -29,7 +28,7 @@ export default class Data {
     this.QueryBuilder = QueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
 
-    this.RetrievalPolicy   = DataRetrievalPolicy.ONLINEONLY
+    this.RetrievalPolicy = DataRetrievalPolicy.ONLINEONLY
     this.LocalStoragePolicy = LocalStoragePolicy.DONOTSTOREANY
 
     this.Point = Point
@@ -83,22 +82,24 @@ export default class Data {
       throw new Error('Offline DB is not available outside of browser')
     }
 
-    await idbConnection.dropDb()
+    if (await this.app.OfflineDBManager.isDbExist()) {
+      await this.app.OfflineDBManager.connection.dropDb()
+    }
   }
 
   enableAutoSync() {
-    DBManager.setGlobalSyncMode(SyncModes.AUTO)
+    this.app.OfflineDBManager.setGlobalSyncMode(SyncModes.AUTO)
   }
 
   disableAutoSync() {
-    DBManager.setGlobalSyncMode(null)
+    this.app.OfflineDBManager.setGlobalSyncMode(null)
   }
 
   startOfflineSync() {
-    return DBManager.startOfflineSync()
+    return this.app.OfflineDBManager.startOfflineSync(this.app)
   }
 
   isAutoSyncEnabled() {
-    return DBManager.getGlobalSyncMode() === SyncModes.AUTO
+    return this.app.OfflineDBManager.getGlobalSyncMode() === SyncModes.AUTO
   }
 }

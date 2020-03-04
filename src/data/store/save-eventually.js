@@ -1,24 +1,23 @@
 import Utils from '../../utils'
 import { ActionTypes, callbackManager } from '../offline/callback-manager'
-import { DBManager } from '../offline/database-manager'
 import { convertBooleansToStrings } from '../offline/database-manager/utils'
 import { isOnline } from '../offline/network'
 import Operations from '../offline/operations'
 import { save as saveToRemoteDB } from './save'
 
-const storeLocally = async (tableName, object) => {
+async function storeLocally(object) {
   const objectToSave = convertBooleansToStrings({
     ...object,
     blPendingOperation: object.objectId ? Operations.UPDATE : Operations.CREATE,
     blLocalId         : object.objectId || object.blLocalId || Utils.uuid()
   })
 
-  await DBManager.upsertObject(tableName, objectToSave)
+  await this.app.OfflineDBManager.upsertObject(this.className, objectToSave)
 }
 
 async function tryStoreLocally(object, offlineAwareCallback = {}) {
   try {
-    await storeLocally(this.className, object)
+    await storeLocally.call(this, object)
 
     if (offlineAwareCallback.handleLocalResponse) {
       offlineAwareCallback.handleLocalResponse(object)
@@ -46,7 +45,7 @@ export async function saveEventually(object, offlineAwareCallback = {}) {
   try {
     const savedObject = await saveToRemoteDB.call(this, object)
 
-    await DBManager.upsertObject(this.className, {
+    await this.app.OfflineDBManager.upsertObject(this.className, {
       ...savedObject,
       blLocalId         : savedObject.objectId,
       blPendingOperation: null

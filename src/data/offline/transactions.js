@@ -1,19 +1,17 @@
-import Data from '../../data'
 import Utils from '../../utils'
 import { ActionTypes, callbackManager } from './callback-manager'
-import { DBManager, idbConnection } from './database-manager'
 import { sanitizeRecord } from './database-manager/utils'
 import Operations from './operations'
 
-const saveObject = async (tableName, object) => {
+async function saveObject(tableName, object) {
   const { blLocalId, blPendingOperation } = object
   const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.SAVE, tableName)
 
   try {
     const objectToSave = Utils.omit(sanitizeRecord(object), ['blPendingOperation', 'blLocalId'])
-    const savedObject = await Data.of(tableName).save(objectToSave)
+    const savedObject = await this.app.Data.of(tableName).save(objectToSave)
 
-    await DBManager.replaceLocalObject(tableName, {
+    await this.app.OfflineDBManager.replaceLocalObject(tableName, {
       ...savedObject,
       blPendingOperation: null,
       blLocalId         : savedObject.objectId
@@ -31,16 +29,16 @@ const saveObject = async (tableName, object) => {
   }
 }
 
-const deleteObject = async (tableName, object) => {
+async function deleteObject(tableName, object) {
   const [onSuccess, onError] = callbackManager.getCallbacks(ActionTypes.DELETE, tableName)
   const { blPendingOperation } = object
 
   try {
     if (object.objectId) {
-      await Data.of(tableName).remove(object)
+      await this.app.Data.of(tableName).remove(object)
     }
 
-    await DBManager.deleteLocalObject(tableName, object)
+    await this.app.OfflineDBManager.deleteLocalObject(tableName, object)
 
     const sanitizedObject = sanitizeRecord(object)
 
@@ -68,8 +66,8 @@ const transactionsMap = {
   },
 }
 
-const getUnsavedObjects = tableName => {
-  return idbConnection.select({
+function getUnsavedObjects(tableName) {
+  return this.app.OfflineDBManager.connection.select({
     from : tableName,
     where: {
       blPendingOperation: {
@@ -119,12 +117,12 @@ const getSyncStatus = result => {
 }
 
 export async function executeTransactions(tableName) {
-  const unsavedObjects = await getUnsavedObjects(tableName)
+  const unsavedObjects = await getUnsavedObjects.call(this, tableName)
 
   const result = await Promise.all(unsavedObjects.map(object => {
     const transaction = transactionsMap[object.blPendingOperation]
 
-    return transaction.run(tableName, object)
+    return transaction.run.call(this, tableName, object)
   }))
 
   return getSyncStatus(result)

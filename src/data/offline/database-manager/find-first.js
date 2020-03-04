@@ -1,8 +1,7 @@
-import { idbConnection } from '../database-manager'
 import { sanitizeRecords } from './utils'
 
 export async function findFirst(tableName) {
-  const records = await idbConnection.select({
+  const records = await this.app.OfflineDBManager.connection.select({
     from : tableName,
     order: {
       by  : 'created',
