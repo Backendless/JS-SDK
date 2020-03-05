@@ -1,21 +1,19 @@
 import Utils from '../utils'
-import LocalCache from '../local-cache'
-import { getLocalCurrentUser, setLocalCurrentUser } from './current-user'
 
 import { parseResponse, getUserFromResponse, wrapAsync } from './utils'
 
 export function loginAsGuest(stayLoggedIn, /** async */) {
   stayLoggedIn = stayLoggedIn === true
 
-  LocalCache.remove('user-token')
-  LocalCache.remove('current-user-id')
-  LocalCache.set('stayLoggedIn', false)
+  this.app.LocalCache.remove('user-token')
+  this.app.LocalCache.remove('current-user-id')
+  this.app.LocalCache.set('stayLoggedIn', false)
 
   let responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
   if (responder) {
-    responder = wrapAsync(responder, stayLoggedIn)
+    responder = wrapAsync.call(this, responder, stayLoggedIn)
   }
 
   let result = this.app.request.post({
@@ -25,9 +23,9 @@ export function loginAsGuest(stayLoggedIn, /** async */) {
   })
 
   if (!isAsync && result) {
-    setLocalCurrentUser(parseResponse(result, stayLoggedIn))
+    this.setLocalCurrentUser(parseResponse(result, stayLoggedIn))
 
-    result = getUserFromResponse(getLocalCurrentUser())
+    result = getUserFromResponse.call(this, this.getLocalCurrentUser())
   }
 
   return result

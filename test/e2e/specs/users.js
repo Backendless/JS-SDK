@@ -291,6 +291,23 @@ describe('Backendless.Users', function() {
           .and.eventually.have.property('code', 3036)
         )
     })
+
+    it('login as guest user', async function() {
+      const user = await Backendless.UserService.loginAsGuest()
+
+      expect(user instanceof Backendless.User).to.equal(true)
+      expect(user.___class).to.equal('Users')
+      expect(user.userStatus).to.equal('GUEST')
+      expect(user.objectId).to.be.a('string')
+      expect(user['user-token']).to.be.a('string')
+
+      const testObj = await Backendless.Data.of('TestTable').save({})
+
+      expect(testObj.___class).to.equal('TestTable')
+      expect(testObj.objectId).to.be.a('string')
+      expect(testObj.ownerId).to.equal(user.objectId)
+    })
+
   })
 
   it('logout', function() {
