@@ -40,6 +40,8 @@ const Urls = {
   dataBulkTableDelete    : tableName => `${Urls.dataBulkTable(tableName)}/delete`,
   dataObjectPermission   : (tableName, permissionType, objectId) => `${Urls.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`,
 
+  transactions: () => `${Urls.root()}/transaction/unit-of-work`,
+
   messaging                  : () => `${Urls.root()}/messaging`,
   messagingPush              : () => `${Urls.messaging()}/push`,
   messagingPushTemplates     : deviceType => `${Urls.messaging()}/pushtemplates/${deviceType}`,

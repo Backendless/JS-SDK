@@ -127,7 +127,7 @@ describe('Data - Bulk Operations', function() {
 
   })
 
-  xdescribe('Delete Operation', function() {
+  describe('Delete Operation', function() {
     beforeEach(() => {
       testDataItems = []
 

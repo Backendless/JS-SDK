@@ -167,6 +167,10 @@ const Backendless = {
     return require('./rso').default
   },
 
+  get UnitOfWork() {
+    return require('./unit-of-work').default
+  },
+
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
 

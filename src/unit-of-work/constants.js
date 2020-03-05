@@ -1,0 +1,20 @@
+export const OperationType = {
+  CREATE         : 'CREATE',
+  CREATE_BULK    : 'CREATE_BULK',
+  UPDATE         : 'UPDATE',
+  UPDATE_BULK    : 'UPDATE_BULK',
+  DELETE         : 'DELETE',
+  DELETE_BULK    : 'DELETE_BULK',
+  FIND           : 'FIND',
+  ADD_RELATION   : 'ADD_RELATION',
+  SET_RELATION   : 'SET_RELATION',
+  DELETE_RELATION: 'DELETE_RELATION',
+}
+
+export const IsolationLevelEnum = {
+  REPEATABLE_READ: 'REPEATABLE_READ',
+  READ_COMMITTED : 'READ_COMMITTED',
+  READ_UNCOMMITED: 'READ_UNCOMMITED',
+  SERIALZABLE    : 'SERIALZABLE',
+}
+
