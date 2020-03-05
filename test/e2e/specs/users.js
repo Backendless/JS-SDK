@@ -21,12 +21,16 @@ describe('Backendless.Users', function() {
   let loginRandomUser
   let setDynamicSchema
 
+  let app
+
   before(function() {
+    app = this.app
+
     loginRandomUser = () => {
       const user = randUser()
 
       return Backendless.UserService.register(user)
-        //TODO Backendless does login on register but doesn't return 'user-token'
+      //TODO Backendless does login on register but doesn't return 'user-token'
         .then(() => Backendless.UserService.logout())
         .then(() => Backendless.UserService.login(user.email, user.password, true))
         .then(serverUser => Object.assign(user, serverUser))
@@ -218,7 +222,7 @@ describe('Backendless.Users', function() {
 
     describe('when multiple logins', function() {
       describe('disabled (default rule)', function() {
-        xit('second login should logout previously logged in user', function() {
+        it('second login should logout previously logged in user', function() {
           const Backendless1 = BackendlessCopy()
           const Backendless2 = BackendlessCopy()
 
@@ -306,6 +310,39 @@ describe('Backendless.Users', function() {
       expect(testObj.___class).to.equal('TestTable')
       expect(testObj.objectId).to.be.a('string')
       expect(testObj.ownerId).to.equal(user.objectId)
+    })
+
+    it('login by user\'s objectId with BL API_KEY', async function() {
+      const blBackendless = Backendless.initApp({
+        appId     : app.id,
+        apiKey    : app.apiKeysMap.BL,
+        standalone: true
+      })
+
+      const savedUser = await blBackendless.Data.of(Backendless.User).save(randUser())
+      const loggedUser = await blBackendless.UserService.login(savedUser.objectId)
+
+      expect(loggedUser['user-token']).to.be.a('string')
+      expect(loggedUser.objectId).to.be.a('string')
+      expect(loggedUser.objectId).to.equal(savedUser.objectId)
+      expect(loggedUser.email).to.equal(savedUser.email)
+    })
+
+    it('login by user\'s objectId with non BL API_KEY', async function() {
+      const savedUser = await Backendless.Data.of(Backendless.User).save(randUser())
+
+      expect(savedUser.objectId).to.be.a('string')
+
+      let error
+
+      try {
+        await Backendless.UserService.login(savedUser.objectId)
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.code).to.equal(2014)
+      expect(error.message).to.equal('Login by object id is allowed only for Code Runner API key')
     })
 
   })
