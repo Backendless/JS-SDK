@@ -16,7 +16,7 @@ export const DataTypes = {
   UNKNOWN: 'UNKNOWN'
 }
 
-export const RelTypes = {
+export const RelationTypes = {
   ONE_TO_ONE : 'ONE_TO_ONE',
   ONE_TO_MANY: 'ONE_TO_MANY',
 }
@@ -30,8 +30,8 @@ export class TablesAPI {
     return DataTypes
   }
 
-  get RelTypes() {
-    return RelTypes
+  get RelationTypes() {
+    return RelationTypes
   }
 
   get consoleApi() {

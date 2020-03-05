@@ -57,7 +57,7 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
     ])
 
     await Promise.all([
-      tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ADDRESSES_COLUMN, ADDRESSES_TABLE_NAME, tablesAPI.RelTypes.ONE_TO_MANY)
+      tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ADDRESSES_COLUMN, ADDRESSES_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_MANY)
     ])
 
     personsStore = Backendless.Data.of(Person)

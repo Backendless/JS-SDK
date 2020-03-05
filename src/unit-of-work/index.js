@@ -6,10 +6,6 @@ import { OperationType, IsolationLevelEnum } from './constants'
 import { OpResult } from './op-result'
 import { OpResultValueReference } from './op-result-value-reference'
 
-function resolveTableName(obj) {
-  return Utils.getClassName(obj)
-}
-
 class UnitOfWork {
   static IsolationLevelEnum = IsolationLevelEnum
 
@@ -149,7 +145,7 @@ class UnitOfWork {
     let changes
 
     if (args.length === 1) {
-      tableName = resolveTableName(args[0])
+      tableName = Utils.getClassName(args[0])
       changes = args[0]
     } else if (args.length === 2) {
       tableName = args[0]
@@ -178,7 +174,7 @@ class UnitOfWork {
     let payload
 
     if (args.length === 1) {
-      tableName = resolveTableName(args[0])
+      tableName = Utils.getClassName(args[0])
       payload = args[0]
 
     } else if (typeof args[0] === 'string') {
@@ -223,7 +219,7 @@ class UnitOfWork {
   delete(tableName, object) {
     if (tableName && typeof tableName === 'object') {
       object = tableName
-      tableName = resolveTableName(tableName)
+      tableName = Utils.getClassName(tableName)
     }
 
     let objectId = object
@@ -242,7 +238,7 @@ class UnitOfWork {
   bulkCreate(tableName, objects) {
     if (Array.isArray(tableName)) {
       objects = tableName
-      tableName = resolveTableName(objects[0])
+      tableName = Utils.getClassName(objects[0])
     }
 
     return this.addOperations(OperationType.CREATE_BULK, tableName, objects)
@@ -273,7 +269,7 @@ class UnitOfWork {
           throw new Error('Invalid arguments')
         }
       } else if (args.length === 2) {
-        tableName = resolveTableName(args[1])
+        tableName = Utils.getClassName(args[1])
 
         payload.conditional = args[0]
         payload.changes = args[1]
@@ -320,7 +316,7 @@ class UnitOfWork {
       tableName = args[0].getTable()
       payload.unconditional = args[0]
     } else if (Array.isArray(args[0])) {
-      tableName = resolveTableName(args[0][0])
+      tableName = Utils.getClassName(args[0][0])
       payload.unconditional = args[0].map(o => o.objectId || o)
     } else {
       throw new Error('Invalid arguments')
@@ -373,7 +369,7 @@ class UnitOfWork {
       if (parentObject instanceof OpResult || parentObject instanceof OpResultValueReference) {
         tableName = parentObject.getTable()
       } else if (parentObject && typeof parentObject === 'object') {
-        tableName = resolveTableName(parentObject)
+        tableName = Utils.getClassName(parentObject)
       } else {
         throw new Error(
           'Invalid the first argument, it must be an instance of [OpResult|OpResultValueReference|Object]'

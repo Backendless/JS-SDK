@@ -55,7 +55,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
     ])
 
     await Promise.all([
-      tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ORDER_COLUMN, ORDERS_TABLE_NAME, tablesAPI.RelTypes.ONE_TO_ONE),
+      tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ORDER_COLUMN, ORDERS_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_ONE),
     ])
 
     personsStore = Backendless.Data.of(Person)

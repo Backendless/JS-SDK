@@ -1455,10 +1455,9 @@ declare module Backendless {
     enum IsolationLevelEnum {
         REPEATABLE_READ,
         READ_COMMITTED,
-        READ_UNCOMMITED,
-        SERIALZABLE
+        READ_UNCOMMITTED,
+        SERIALIZABLE
     }
-
 
     class UnitOfWork {
         constructor(isolation?: IsolationLevelEnum);
