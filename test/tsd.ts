@@ -1284,3 +1284,270 @@ function RTChannel() {
     const promiseSend: Promise<void> = channel.send('MY_COMMAND', {foo: 'string', bar: []})
 
 }
+
+function testBaseTransactions() {
+    class Person {
+        foo?: string = 'bar'
+    }
+
+    const personInst: Person = new Person()
+    const personObj: object = {foo: 'bar'}
+    const personClassName: string = 'Persons'
+    const personObjectId: string = 'PersonId'
+    const propertyName: string = 'propName'
+    const columnName: string = 'columnName'
+    const whereClause: string = 'whereClause';
+
+    const dataQueryBuilder: Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
+
+    const uow: Backendless.UnitOfWork = new Backendless.UnitOfWork()
+
+    let opResult: Backendless.OpResult;
+    let opResultValueReference: Backendless.OpResultValueReference;
+    let promiseResult: Promise<Backendless.UnitOfWorkResult>;
+    let changesObj: object;
+    let propertyValueObj: object;
+
+    opResultValueReference = opResult.resolvedTo(1)
+    opResultValueReference = opResult.resolvedTo(1, 'propName')
+    opResultValueReference = opResult.resolvedTo('propName')
+
+    promiseResult = uow.execute()
+
+    ///
+    opResult = uow.create(personInst);
+    opResult = uow.create(personClassName, personObj);
+    ///
+    opResult = uow.update(personInst);
+    opResult = uow.update(personClassName, personObj);
+    opResult = uow.update(opResult, personObj);
+    opResult = uow.update(opResult, propertyName, propertyValueObj);
+    opResult = uow.update(opResultValueReference, changesObj);
+    opResult = uow.update(opResultValueReference, propertyName, propertyValueObj);
+    ///
+    opResult = uow.delete(opResult);
+    opResult = uow.delete(opResultValueReference);
+    opResult = uow.delete(personInst);
+    opResult = uow.delete(personClassName, personObjectId);
+    ///
+    opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
+    opResult = uow.bulkCreate([personInst, personInst, personInst]);
+    ///
+    opResult = uow.bulkUpdate(whereClause, personInst);
+    opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
+    opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);
+    opResult = uow.bulkUpdate(personClassName, [personObj, personObj, personObj], changesObj);
+    opResult = uow.bulkUpdate(personClassName, [personInst, personInst, personInst], changesObj);
+    opResult = uow.bulkUpdate(opResult, changesObj);
+    ///
+    opResult = uow.bulkDelete(personClassName, [changesObj, changesObj, changesObj]);
+    opResult = uow.bulkDelete([personInst, personInst, personInst]);
+    opResult = uow.bulkDelete(personClassName, [personObjectId, personObjectId, personObjectId]);
+    opResult = uow.bulkDelete(opResult);
+    opResult = uow.bulkDelete(personClassName, whereClause);
+    ///
+    opResult = uow.find(personClassName, dataQueryBuilder);
+    ///
+    opResult = uow.addToRelation(opResult, columnName, whereClause);
+    opResult = uow.addToRelation(opResult, columnName, personInst);
+    opResult = uow.addToRelation(opResult, columnName, personObj);
+    opResult = uow.addToRelation(opResult, columnName, opResult);
+    opResult = uow.addToRelation(opResult, columnName, opResultValueReference);
+    opResult = uow.addToRelation(opResult, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(opResult, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(opResult, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(opResult, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(opResult, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(opResultValueReference, columnName, whereClause);
+    opResult = uow.addToRelation(opResultValueReference, columnName, personInst);
+    opResult = uow.addToRelation(opResultValueReference, columnName, personObj);
+    opResult = uow.addToRelation(opResultValueReference, columnName, opResult);
+    opResult = uow.addToRelation(opResultValueReference, columnName, opResultValueReference);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personInst, columnName, whereClause);
+    opResult = uow.addToRelation(personInst, columnName, personInst);
+    opResult = uow.addToRelation(personInst, columnName, personObj);
+    opResult = uow.addToRelation(personInst, columnName, opResult);
+    opResult = uow.addToRelation(personInst, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personClassName, personInst, columnName, whereClause);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, personInst);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, personObj);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, opResult);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personClassName, personObj, columnName, whereClause);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, personInst);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, personObj);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, opResult);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, whereClause);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, personInst);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, personObj);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, opResult);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [personObjectId, personObjectId, personObjectId]);
+    ///
+
+    ///
+    opResult = uow.setRelation(opResult, columnName, whereClause);
+    opResult = uow.setRelation(opResult, columnName, personInst);
+    opResult = uow.setRelation(opResult, columnName, personObj);
+    opResult = uow.setRelation(opResult, columnName, opResult);
+    opResult = uow.setRelation(opResult, columnName, opResultValueReference);
+    opResult = uow.setRelation(opResult, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(opResult, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(opResult, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(opResult, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(opResult, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(opResultValueReference, columnName, whereClause);
+    opResult = uow.setRelation(opResultValueReference, columnName, personInst);
+    opResult = uow.setRelation(opResultValueReference, columnName, personObj);
+    opResult = uow.setRelation(opResultValueReference, columnName, opResult);
+    opResult = uow.setRelation(opResultValueReference, columnName, opResultValueReference);
+    opResult = uow.setRelation(opResultValueReference, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personInst, columnName, whereClause);
+    opResult = uow.setRelation(personInst, columnName, personInst);
+    opResult = uow.setRelation(personInst, columnName, personObj);
+    opResult = uow.setRelation(personInst, columnName, opResult);
+    opResult = uow.setRelation(personInst, columnName, opResultValueReference);
+    opResult = uow.setRelation(personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personClassName, personInst, columnName, whereClause);
+    opResult = uow.setRelation(personClassName, personInst, columnName, personInst);
+    opResult = uow.setRelation(personClassName, personInst, columnName, personObj);
+    opResult = uow.setRelation(personClassName, personInst, columnName, opResult);
+    opResult = uow.setRelation(personClassName, personInst, columnName, opResultValueReference);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personClassName, personObj, columnName, whereClause);
+    opResult = uow.setRelation(personClassName, personObj, columnName, personInst);
+    opResult = uow.setRelation(personClassName, personObj, columnName, personObj);
+    opResult = uow.setRelation(personClassName, personObj, columnName, opResult);
+    opResult = uow.setRelation(personClassName, personObj, columnName, opResultValueReference);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, whereClause);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, personInst);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, personObj);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, opResult);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, opResultValueReference);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [personObjectId, personObjectId, personObjectId]);
+    ///
+
+    ///
+    opResult = uow.deleteRelation(opResult, columnName, whereClause);
+    opResult = uow.deleteRelation(opResult, columnName, personInst);
+    opResult = uow.deleteRelation(opResult, columnName, personObj);
+    opResult = uow.deleteRelation(opResult, columnName, opResult);
+    opResult = uow.deleteRelation(opResult, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(opResult, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(opResult, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(opResult, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(opResult, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(opResult, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(opResultValueReference, columnName, whereClause);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, personInst);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, personObj);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, opResult);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personInst, columnName, whereClause);
+    opResult = uow.deleteRelation(personInst, columnName, personInst);
+    opResult = uow.deleteRelation(personInst, columnName, personObj);
+    opResult = uow.deleteRelation(personInst, columnName, opResult);
+    opResult = uow.deleteRelation(personInst, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, whereClause);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, personInst);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, personObj);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, opResult);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, whereClause);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, personInst);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, personObj);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, opResult);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, whereClause);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, personInst);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, personObj);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, opResult);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [personObjectId, personObjectId, personObjectId]);
+    ///
+}

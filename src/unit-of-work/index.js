@@ -140,6 +140,10 @@ export default class UnitOfWork {
     return this.addOperations(OperationType.FIND, tableName, payload)
   }
 
+  /**
+   * create(object: object): OpResult;
+   * create(tableName: string, object: object): OpResult;
+   * **/
   create(...args) {
     let tableName
     let changes
@@ -161,15 +165,14 @@ export default class UnitOfWork {
     return this.addOperations(OperationType.CREATE, tableName, changes)
   }
 
-  bulkCreate(tableName, objects) {
-    if (Array.isArray(tableName)) {
-      objects = tableName
-      tableName = resolveTableName(objects[0])
-    }
-
-    return this.addOperations(OperationType.CREATE_BULK, tableName, objects)
-  }
-
+  /**
+   * update(object: object): OpResult;
+   * update(tableName: string, object: object): OpResult;
+   * update(opResult: OpResult | OpResultValueReference, object: object): OpResult;
+   * update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
+   * update(index: number, changesObj: object): OpResult;
+   * update(index: number, propertyName: string, propertyValueObj: object): OpResult;
+   * **/
   update(...args) {
     let tableName
     let payload
@@ -177,19 +180,24 @@ export default class UnitOfWork {
     if (args.length === 1) {
       tableName = resolveTableName(args[0])
       payload = args[0]
+
     } else if (typeof args[0] === 'string') {
       tableName = args[0]
       payload = args[1]
+
     } else if (args[0] instanceof OpResult || args[0] instanceof OpResultValueReference) {
       tableName = args[0].getTable()
+
       payload = {
         objectId: args[0]
       }
 
       if (args.length === 3) {
         payload[args[1]] = args[2]
+
       } else if (args.length === 2) {
         payload = { ...payload, ...args[1] }
+
       } else {
         throw new Error('Invalid arguments')
       }
@@ -205,6 +213,13 @@ export default class UnitOfWork {
     return this.addOperations(OperationType.UPDATE, tableName, payload)
   }
 
+  /**
+   * delete(object: object): OpResult;
+   * delete(opResult: OpResult): OpResult;
+   * delete(index: number): OpResult;
+   * delete(tableName: string, object: object): OpResult;
+   * delete(tableName: string, objectId: string): OpResult;
+   * **/
   delete(tableName, object) {
     if (tableName && typeof tableName === 'object') {
       object = tableName
@@ -220,6 +235,26 @@ export default class UnitOfWork {
     return this.addOperations(OperationType.DELETE, tableName, objectId)
   }
 
+  /**
+   * bulkCreate(tableName: string, objects: object[]): OpResult;
+   * bulkCreate(objects: object[]): OpResult;
+   * **/
+  bulkCreate(tableName, objects) {
+    if (Array.isArray(tableName)) {
+      objects = tableName
+      tableName = resolveTableName(objects[0])
+    }
+
+    return this.addOperations(OperationType.CREATE_BULK, tableName, objects)
+  }
+
+  /**
+   * bulkUpdate(whereClause: string, object: object): OpResult;
+   * bulkUpdate(tableName: string, whereClause: string, changesObj: object): OpResult;
+   * bulkUpdate(tableName: string, objectIds: string[], changesObj: object): OpResult;
+   * bulkUpdate(tableName: string, objects: object[], changesObj: object): OpResult;
+   * bulkUpdate(opResult: OpResult, changesObj: object): OpResult;
+   * **/
   bulkUpdate(...args) {
     let tableName
 
@@ -257,7 +292,16 @@ export default class UnitOfWork {
     return this.addOperations(OperationType.UPDATE_BULK, tableName, payload)
   }
 
+  /**
+   * bulkDelete(opResult: OpResult): OpResult;
+   * bulkDelete(objects: object[]): OpResult;
+   * bulkDelete(tableName: string, objects: object[]): OpResult;
+   * bulkDelete(tableName: string, objectIds: string[]): OpResult;
+   * bulkDelete(tableName: string, whereClause: string): OpResult;
+   * **/
   bulkDelete(...args) {
+    const payload = {}
+
     let tableName
 
     if (typeof args[0] === 'string') {
@@ -297,6 +341,22 @@ export default class UnitOfWork {
     return this.relationsOperation(OperationType.DELETE_RELATION, args)
   }
 
+  /**
+   *
+   *  uow.[...]Relation(
+   *      parentObject: OpResult|OpResultValue|Class,
+   *      columnName: String,
+   *      children: String|Class|OpResult|OpResultValue|List<String|Class|OpResult|OpResultValue>
+   *    )
+   *
+   *  uow.[...]Relation(
+   *      tableName: String,
+   *      parentObject: String|Class|Object,
+   *      columnName: String,
+   *      children: String|Class|OpResult|OpResultValue|List<String|Class|OpResult|OpResultValue>
+   *    )
+   *
+   * */
   relationsOperation(operationType, args) {
     let tableName
     let relationColumn
