@@ -1,10 +1,8 @@
 import GeoUtils from '../utils'
-import GeoTracker from './tracker'
-
 
 //TODO: refactor me
-export function stopMonitoring(geofenceName) {
-  const tracker = GeoTracker.get()
+export default function stopMonitoring(geofenceName) {
+  const tracker = this.geoTracker
 
   if (geofenceName) {
     for (let i = 0; i < tracker._trackedFences.length; i++) {

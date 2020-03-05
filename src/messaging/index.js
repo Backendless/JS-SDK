@@ -25,18 +25,22 @@ import {
   sendEmailFromTemplate
 } from './methods'
 
-const Messaging = {
+class Messaging {
+  constructor(app) {
+    this.app = app
 
-  Bodyparts            : Bodyparts,
-  PublishOptions       : PublishOptions,
-  DeliveryOptions      : DeliveryOptions,
-  PublishOptionsHeaders: PublishOptionsHeaders,
-  EmailEnvelope        : EmailEnvelope,
+    this.Bodyparts = Bodyparts
+    this.PublishOptions = PublishOptions
+    this.DeliveryOptions = DeliveryOptions
+    this.PublishOptionsHeaders = PublishOptionsHeaders
+    this.EmailEnvelope = EmailEnvelope
 
-  /** @deprecated */
-  SubscriptionOptions: SubscriptionOptions,
+    /** @deprecated */
+    this.SubscriptionOptions = SubscriptionOptions
 
-  subscribe: function (channelName) {
+  }
+
+  subscribe(channelName) {
     if (!channelName || typeof channelName !== 'string') {
       throw new Error('"channelName" must be non empty string')
     }
@@ -45,9 +49,11 @@ const Messaging = {
       throw new Error('"channelName" can not contains slash chars')
     }
 
-    return new Channel({ name: channelName.trim() })
-  },
+    return new Channel({ name: channelName.trim() }, this.app)
+  }
+}
 
+Object.assign(Messaging.prototype, {
   @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
   publishSync: Utils.synchronized(publish),
   publish    : Utils.promisified(publish),
@@ -84,6 +90,6 @@ const Messaging = {
 
   getPushTemplates: Utils.promisified(getPushTemplates),
 
-}
+})
 
 export default Messaging

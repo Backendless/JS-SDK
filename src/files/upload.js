@@ -1,10 +1,6 @@
 import Async from '../request/async'
 
-import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
-
-const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
+import { sendFile } from './send'
 
 const getFileName = file => {
   if (file.name) {
@@ -36,16 +32,11 @@ export function upload(file, filePath, overwrite, asyncHandler) {
     overwrite = undefined
   }
 
-  const query = {}
-
-  if (Utils.isBoolean(overwrite)) {
-    query.overwrite = overwrite
-  }
-
-  return Request.post({
-    url : `${Urls.filePath(filePath)}/${sanitizeFileName(fileName)}`,
-    query,
-    form: { file },
-    asyncHandler
+  return sendFile.call(this, {
+    overwrite   : overwrite,
+    path        : filePath,
+    fileName    : fileName,
+    file        : file,
+    asyncHandler: asyncHandler
   })
 }

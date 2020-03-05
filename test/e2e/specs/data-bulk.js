@@ -30,8 +30,12 @@ describe('Data - Bulk Operations', function() {
 
   sandbox.forTest()
 
-  beforeEach(() => {
+  beforeEach(async function() {
     TestTable = Backendless.Data.of(TEST_TABLE_NAME)
+
+    await this.tablesAPI.createTable(TEST_TABLE_NAME)
+    await this.tablesAPI.createColumn(TEST_TABLE_NAME, 'name', this.tablesAPI.DataTypes.STRING)
+    await this.tablesAPI.createColumn(TEST_TABLE_NAME, 'kind', this.tablesAPI.DataTypes.STRING)
   })
 
   describe('Create Operation', function() {

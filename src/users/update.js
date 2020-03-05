@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
 
 import User from './user'
@@ -10,8 +8,8 @@ export function update(user /** async */) {
 
   const isAsync = !!responder
 
-  const result = Request.put({
-    url         : Urls.userObject(user.objectId),
+  const result = this.app.request.put({
+    url         : this.app.urls.userObject(user.objectId),
     isAsync     : isAsync,
     asyncHandler: responder && wrapAsync(responder),
     data        : user

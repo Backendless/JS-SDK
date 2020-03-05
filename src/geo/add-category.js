@@ -1,13 +1,10 @@
-import Urls from '../urls'
-import Request from '../request'
-
 export function addCategory(name, asyncHandler) {
   if (!name) {
     throw new Error('Category name is required.')
   }
 
-  const result = Request.put({
-    url         : Urls.geoCategory(name),
+  const result = this.app.request.put({
+    url         : this.app.urls.geoCategory(name),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

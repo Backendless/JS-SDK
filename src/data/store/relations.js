@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Request from '../../request'
-import Urls from '../../urls'
 
 import LoadRelationsQueryBuilder from '../load-relations-query-builder'
 
@@ -30,8 +28,7 @@ function collectRelationObject(parent, columnName, children) {
   return relation
 }
 
-function manageRelation(method, className, parent, columnName, children, asyncHandler) {
-  const relation = collectRelationObject(parent, columnName, children)
+function manageRelation(method, url, relation, asyncHandler) {
   const responder = asyncHandler
 
   if (!relation.parentId) {
@@ -56,9 +53,9 @@ function manageRelation(method, className, parent, columnName, children, asyncHa
     )
   }
 
-  return Request.send({
-    method      : method,
-    url         : buildRelationUrl(className, relation),
+  return this.app.request.send({
+    method,
+    url,
     isAsync     : !!responder,
     asyncHandler: responder,
     data        : relation.childrenIds
@@ -66,7 +63,7 @@ function manageRelation(method, className, parent, columnName, children, asyncHa
 }
 
 function buildRelationUrl(className, relation) {
-  let url = Urls.dataTableObjectRelation(className, relation.parentId, relation.columnName)
+  let url = this.app.urls.dataTableObjectRelation(className, relation.parentId, relation.columnName)
 
   if (relation.whereClause) {
     url += '?' + Utils.toQueryParams({ whereClause: relation.whereClause })
@@ -118,7 +115,7 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     query.push('props=' + Utils.encodeArrayToUriComponent(dataQuery.properties))
   }
 
-  let url = Urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
+  let url = this.app.urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
 
   if (asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, dataQuery.relationModel))
@@ -128,7 +125,7 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     url += '?' + query.join('&')
   }
 
-  const result = Request.get({
+  const result = this.app.request.get({
     url         : url,
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
@@ -142,13 +139,22 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
 }
 
 export function setRelation(parent, columnName, children, asyncHandler) {
-  return manageRelation('POST', this.className, parent, columnName, children, asyncHandler)
+  const relation = collectRelationObject(parent, columnName, children)
+  const url = buildRelationUrl.call(this, this.className, relation)
+
+  return manageRelation.call(this, 'POST', url, relation, asyncHandler)
 }
 
 export function addRelation(parent, columnName, children, asyncHandler) {
-  return manageRelation('PUT', this.className, parent, columnName, children, asyncHandler)
+  const relation = collectRelationObject(parent, columnName, children)
+  const url = buildRelationUrl.call(this, this.className, relation)
+
+  return manageRelation.call(this, 'PUT', url, relation, asyncHandler)
 }
 
 export function deleteRelation(parent, columnName, children, asyncHandler) {
-  return manageRelation('DELETE', this.className, parent, columnName, children, asyncHandler)
+  const relation = collectRelationObject(parent, columnName, children)
+  const url = buildRelationUrl.call(this, this.className, relation)
+
+  return manageRelation.call(this, 'DELETE', url, relation, asyncHandler)
 }

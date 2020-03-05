@@ -1,28 +1,33 @@
 import Utils from '../../utils'
-import { RTClient, RTScopeConnector, disallowInBusinessLogic } from '../../rt'
-
-import Messaging from '../index'
+import { RTScopeConnector } from '../../rt'
 
 const ListenerTypes = Utils.mirrorKeys({
   MESSAGE: null
 })
 
 export default class Channel extends RTScopeConnector {
+  constructor(options, app) {
+    super(options)
+
+    this.app = app
+
+    this.connect()
+  }
 
   get connectSubscriber() {
-    return RTClient.subscriptions.connectToPubSub
+    return this.app.RT.subscriptions.connectToPubSub
   }
 
   get usersSubscriber() {
-    return RTClient.subscriptions.onPubSubUserStatus
+    return this.app.RT.subscriptions.onPubSubUserStatus
   }
 
   get commandSubscriber() {
-    return RTClient.subscriptions.onPubSubCommand
+    return this.app.RT.subscriptions.onPubSubCommand
   }
 
   get commandSender() {
-    return RTClient.methods.sendPubSubCommand
+    return this.app.RT.methods.sendPubSubCommand
   }
 
   getScopeOptions() {
@@ -33,11 +38,16 @@ export default class Channel extends RTScopeConnector {
     }
   }
 
-  publish(message, publishOptions, deliveryTarget) {
-    return Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
+  connect() {
+    if (this.app) {
+      return super.connect()
+    }
   }
 
-  @disallowInBusinessLogic('MessagingChannel.addMessageListener')
+  publish(message, publishOptions, deliveryTarget) {
+    return this.app.Messaging.publish(this.options.name, message, publishOptions, deliveryTarget)
+  }
+
   @RTScopeConnector.connectionRequired()
   addMessageListener(selector, callback, onError) {
     if (typeof selector === 'function') {
@@ -46,7 +56,7 @@ export default class Channel extends RTScopeConnector {
       selector = undefined
     }
 
-    this.addSubscription(ListenerTypes.MESSAGE, RTClient.subscriptions.onPubSubMessage, {
+    this.addSubscription(ListenerTypes.MESSAGE, this.app.RT.subscriptions.onPubSubMessage, {
       callback,
       onError,
       params: {
@@ -96,12 +106,10 @@ export default class Channel extends RTScopeConnector {
     this.stopSubscription(ListenerTypes.MESSAGE, {})
   }
 
-  @disallowInBusinessLogic('MessagingChannel.addCommandListener')
   addCommandListener() {
     return super.addCommandListener.apply(this, arguments)
   }
 
-  @disallowInBusinessLogic('MessagingChannel.addUserStatusListener')
   addUserStatusListener() {
     return super.addUserStatusListener.apply(this, arguments)
   }

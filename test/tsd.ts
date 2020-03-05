@@ -11,6 +11,7 @@ function testMain() {
     const browser: { browser: string, version: string } = Backendless.browser;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
+    Backendless.initApp({ appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
 }
 
 function testLocalCache() {

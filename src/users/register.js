@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
 
 import User from './user'
@@ -10,8 +8,8 @@ export function register(user /** async */) {
 
   const isAsync = !!responder
 
-  const result = Request.post({
-    url         : Urls.userRegister(),
+  const result = this.app.request.post({
+    url         : this.app.urls.userRegister(),
     isAsync     : isAsync,
     asyncHandler: responder && wrapAsync(responder),
     data        : enrichWithLocaleInfo(user)

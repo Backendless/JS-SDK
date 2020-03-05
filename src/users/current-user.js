@@ -1,65 +1,58 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
-import LocalCache from '../local-cache'
-import { updateRTUserTokenIfNeeded } from '../rt'
 
 import { getUserFromResponse } from './utils'
 
-let currentUser = null
-let currentUserRequest = null
-
 export function setLocalCurrentUser(user) {
-  currentUser = user || null
+  this.currentUser = user || null
 
-  updateRTUserTokenIfNeeded()
+  this.app.RT.updateUserTokenIfNeeded()
 }
 
 export function getLocalCurrentUser() {
-  return currentUser
+  return this.currentUser
 }
 
 export function getCurrentUserToken() {
-  if (currentUser && currentUser['user-token']) {
-    return currentUser['user-token'] || null
+  if (this.currentUser && this.currentUser['user-token']) {
+    return this.currentUser['user-token'] || null
   }
 
-  return LocalCache.get('user-token') || null
+  return this.app.LocalCache.get('user-token') || null
 }
 
-export const getCurrentUser = asyncHandler => {
-  if (currentUser) {
-    const userFromResponse = getUserFromResponse(currentUser)
+export function getCurrentUser(asyncHandler) {
+  if (this.currentUser) {
+    const userFromResponse = getUserFromResponse.call(this, this.currentUser)
 
     return asyncHandler ? asyncHandler.success(userFromResponse) : userFromResponse
   }
 
-  if (currentUserRequest && asyncHandler) {
-    currentUserRequest
+  if (this.currentUserRequest && asyncHandler) {
+    this.currentUserRequest
       .then(result => asyncHandler.success(result))
       .catch(error => asyncHandler.fault(error))
 
-    return currentUserRequest
+    return this.currentUserRequest
   }
 
-  const stayLoggedIn = LocalCache.get('stayLoggedIn')
-  const currentUserId = stayLoggedIn && LocalCache.get('current-user-id')
+  const stayLoggedIn = this.app.LocalCache.get('stayLoggedIn')
+  const currentUserId = stayLoggedIn && this.app.LocalCache.get('current-user-id')
 
   if (currentUserId) {
-    const { default: Data } = require('../data')
-    const { default: User } = require('./user')
+    const Data = this.app.Data
+    const User = this.app.User
 
-    return currentUserRequest = Data.of(User).findById(currentUserId)
+    return this.currentUserRequest = Data.of(User).findById(currentUserId)
       .then(result => {
-        currentUserRequest = null
+        this.currentUserRequest = null
 
-        currentUser = getUserFromResponse(result)
+        this.currentUser = getUserFromResponse.call(this, result)
 
-        return asyncHandler.success(currentUser)
+        return asyncHandler.success(this.currentUser)
       })
       .catch(error => {
-        currentUserRequest = null
+        this.currentUserRequest = null
 
         asyncHandler.fault(error)
 
@@ -67,19 +60,21 @@ export const getCurrentUser = asyncHandler => {
       })
   }
 
-  return asyncHandler ? asyncHandler.success(null) : null
+  return asyncHandler
+    ? asyncHandler.success(null)
+    : null
 }
 
 export function isValidLogin(/** async */) {
-  const userToken = getCurrentUserToken()
+  const userToken = this.getCurrentUserToken()
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
   if (userToken) {
     if (!isAsync) {
       try {
-        const result = Request.get({
-          url: Urls.userTokenCheck(userToken)
+        const result = this.app.request.get({
+          url: this.app.urls.userTokenCheck(userToken)
         })
         return !!result
       } catch (e) {
@@ -87,20 +82,20 @@ export function isValidLogin(/** async */) {
       }
     }
 
-    return Request.get({
-      url         : Urls.userTokenCheck(userToken),
+    return this.app.request.get({
+      url         : this.app.urls.userTokenCheck(userToken),
       isAsync     : isAsync,
       asyncHandler: responder
     })
   }
 
   if (!isAsync) {
-    return !!getCurrentUser()
+    return !!this.getCurrentUser()
   }
 
-  getCurrentUser(new Async(user => responder.success(!!user), () => responder.success(false)))
+  this.getCurrentUser(new Async(user => responder.success(!!user), () => responder.success(false)))
 }
 
-export const loggedInUser = () => {
-  return LocalCache.get('current-user-id')
+export function loggedInUser() {
+  return this.app.LocalCache.get('current-user-id')
 }

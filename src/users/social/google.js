@@ -4,16 +4,18 @@ import Utils from '../../utils'
 import { loginSocial } from './login'
 import { sendSocialLoginRequest } from './request'
 
-export const loginWithGooglePlus = (fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) => {
-  console.warn(
+export function loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) {
+  console.warn( // eslint-disable-line no-console
     'Method "loginWithGooglePlus" is deprecated. and will be removed in the nearest release.\n' +
     'Use method "loginWithGooglePlusSdk" instead.'
   )
 
-  return loginSocial('GooglePlus', fieldsMapping, permissions, container, stayLoggedIn, asyncHandler)
+  return loginSocial.call(this, 'GooglePlus', fieldsMapping, permissions, container, stayLoggedIn, asyncHandler)
 }
 
-export const loginWithGooglePlusSdk = (accessToken, fieldsMapping, stayLoggedIn) => {
+export function loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
+  const context = this
+
   Utils.checkPromiseSupport()
 
   if (typeof accessToken !== 'string') {
@@ -24,14 +26,19 @@ export const loginWithGooglePlusSdk = (accessToken, fieldsMapping, stayLoggedIn)
 
   return new Promise((resolve, reject) => {
     function loginRequest() {
-      sendSocialLoginRequest(accessToken, 'googleplus', fieldsMapping, stayLoggedIn, new Async(resolve, reject))
+      const asyncHandler = new Async(resolve, reject)
+
+      return sendSocialLoginRequest.call(context, accessToken, 'googleplus', fieldsMapping, stayLoggedIn, asyncHandler)
     }
 
     if (accessToken || !fieldsMapping) {
       return loginRequest()
     }
 
-    console.warn('You must pass "accessToken" as the first argument into "loginWithGooglePlusSdk(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method')
+    console.warn(// eslint-disable-line no-console
+      'You must pass "accessToken" as the first argument into ' +
+      '"loginWithGooglePlusSdk(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method'
+    )
 
     if (!gapi) {
       return reject(new Error('Google Plus SDK not found'))

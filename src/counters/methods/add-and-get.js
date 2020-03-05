@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request/index'
 
 export function addAndGet(counterName, value, asyncHandler) {
   if (!counterName || !Utils.isString(counterName)) {
@@ -15,8 +13,8 @@ export function addAndGet(counterName, value, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.put({
-    url         : Urls.counterAddAndGet(counterName),
+  return this.app.request.put({
+    url         : this.app.urls.counterAddAndGet(counterName),
     query       : { value },
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler

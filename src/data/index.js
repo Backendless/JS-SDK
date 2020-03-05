@@ -1,4 +1,5 @@
 import Utils from '../utils'
+
 import { deprecated } from '../decorators'
 
 import Permissions from './permissions'
@@ -16,41 +17,48 @@ import SpatialReferenceSystem from './geo/spatial-reference-system'
 import WKTParser from './geo/wkt-parser'
 import GeoJSONParser from './geo/geo-json-parser'
 
-const classToTableMap = {}
+export default class Data {
+  constructor(app) {
+    this.app = app
+    this.classToTableMap = {}
 
-const Data = {
-  Permissions: Permissions,
+    this.Permissions = new Permissions(app)
+    this.QueryBuilder = QueryBuilder
+    this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
 
-  QueryBuilder             : QueryBuilder,
-  LoadRelationsQueryBuilder: LoadRelationsQueryBuilder,
+    this.Point = Point
+    this.LineString = LineString
+    this.Polygon = Polygon
+    this.Geometry = Geometry
 
-  Point     : Point,
-  LineString: LineString,
-  Polygon   : Polygon,
-  Geometry  : Geometry,
+    this.GeoJSONParser = GeoJSONParser
+    this.WKTParser = WKTParser
 
-  GeoJSONParser: GeoJSONParser,
-  WKTParser    : WKTParser,
+    this.SpatialReferenceSystem = SpatialReferenceSystem
+  }
 
-  SpatialReferenceSystem: SpatialReferenceSystem,
-
-  of: function (model) {
-    return new Store(model, classToTableMap)
-  },
+  of(model) {
+    return new Store(model, this.classToTableMap, this.app)
+  }
 
   @deprecated('Backendless.Data', 'Backendless.Data.describe')
-  describeSync: Utils.synchronized(describe),
-  describe    : Utils.promisified(describe),
+  describeSync(...args) {
+    return Utils.synchronized(describe).call(this, ...args)
+  }
+
+  describe(...args) {
+    return Utils.promisified(describe).call(this, ...args)
+  }
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   save(className, obj) {
     return this.of(className).save(obj)
-  },
+  }
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   saveSync(className, obj, asyncHandler) {
     return this.of(className).saveSync(obj, asyncHandler)
-  },
+  }
 
   mapTableToClass(tableName, clientClass) {
     if (!tableName) {
@@ -61,8 +69,6 @@ const Data = {
       throw new Error('Class is not specified')
     }
 
-    classToTableMap[tableName] = clientClass
+    this.classToTableMap[tableName] = clientClass
   }
 }
-
-export default Data

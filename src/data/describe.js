@@ -1,12 +1,10 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 export function describe(className, asyncHandler) {
   className = Utils.isString(className) ? className : Utils.getClassName(className)
 
-  return Request.get({
-    url         : Urls.dataTableProps(className),
+  return this.app.request.get({
+    url         : this.app.urls.dataTableProps(className),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

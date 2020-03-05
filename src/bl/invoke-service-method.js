@@ -1,5 +1,3 @@
-import Urls from '../urls'
-import Request from '../request'
 import Async from '../request/async'
 
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
@@ -27,8 +25,8 @@ export function invokeServiceMethod(serviceName, method, parameters, executionTy
     headers[EXECUTION_TYPE_HEADER] = executionType
   }
 
-  return Request.post({
-    url         : Urls.blServiceMethod(serviceName, method),
+  return this.app.request.post({
+    url         : this.app.urls.blServiceMethod(serviceName, method),
     data        : parameters,
     isAsync     : !!asyncHandler,
     headers     : headers,

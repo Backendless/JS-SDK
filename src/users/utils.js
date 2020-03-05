@@ -1,38 +1,39 @@
 import Utils from '../utils'
 import Async from '../request/async'
-import LocalCache from '../local-cache'
 
 import User from './user'
-import { getLocalCurrentUser, setLocalCurrentUser } from './current-user'
 
-export const parseResponse = (data, stayLoggedIn) => {
+export function parseResponse(data, stayLoggedIn) {
   const user = new User()
+
   Utils.deepExtend(user, data)
 
   if (stayLoggedIn) {
-    LocalCache.set('stayLoggedIn', stayLoggedIn)
+    this.app.LocalCache.set('stayLoggedIn', stayLoggedIn)
   }
 
   return user
 }
 
-export const getUserFromResponse = user => {
-  LocalCache.set('current-user-id', user.objectId)
+export function getUserFromResponse(user) {
+  this.app.LocalCache.set('current-user-id', user.objectId)
 
   const userToken = user['user-token']
 
-  if (userToken && LocalCache.get('stayLoggedIn')) {
-    LocalCache.set('user-token', userToken)
+  if (userToken && this.app.LocalCache.get('stayLoggedIn')) {
+    this.app.LocalCache.set('user-token', userToken)
   }
 
   return new User(user)
 }
 
-export const wrapAsync = (asyncHandler, stayLoggedIn) => {
-  const success = data => {
-    setLocalCurrentUser(parseResponse(Utils.tryParseJSON(data), stayLoggedIn))
+export function wrapAsync(asyncHandler, stayLoggedIn) {
+  const context = this
 
-    asyncHandler.success(getUserFromResponse(getLocalCurrentUser()))
+  const success = data => {
+    context.setLocalCurrentUser(parseResponse.call(context, Utils.tryParseJSON(data), stayLoggedIn))
+
+    asyncHandler.success(getUserFromResponse.call(context, context.getLocalCurrentUser()))
   }
 
   const error = data => {

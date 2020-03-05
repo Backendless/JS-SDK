@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 export function contains(key, asyncHandler) {
   if (!key || !Utils.isString(key)) {
@@ -11,8 +9,8 @@ export function contains(key, asyncHandler) {
     asyncHandler = Utils.wrapAsync(asyncHandler)
   }
 
-  return Request.get({
-    url         : Urls.cacheItemCheck(key),
+  return this.app.request.get({
+    url         : this.app.urls.cacheItemCheck(key),
     isAsync     : !!asyncHandler,
     asyncHandler: asyncHandler
   })

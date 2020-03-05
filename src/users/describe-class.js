@@ -1,13 +1,11 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 
 export function describeUserClass(/** async */) {
   const responder = Utils.extractResponder(arguments)
   const isAsync = !!responder
 
-  return Request.get({
-    url         : Urls.userClassProps(),
+  return this.app.request.get({
+    url         : this.app.urls.userClassProps(),
     isAsync     : isAsync,
     asyncHandler: responder
   })
