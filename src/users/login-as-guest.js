@@ -1,6 +1,4 @@
 import Utils from '../utils'
-import Urls from '../urls'
-import Request from '../request'
 import LocalCache from '../local-cache'
 import { getLocalCurrentUser, setLocalCurrentUser } from './current-user'
 
@@ -20,8 +18,8 @@ export function loginAsGuest(stayLoggedIn, /** async */) {
     responder = wrapAsync(responder, stayLoggedIn)
   }
 
-  let result = Request.post({
-    url         : Urls.guestLogin(),
+  let result = this.app.request.post({
+    url         : this.app.urls.guestLogin(),
     isAsync     : isAsync,
     asyncHandler: responder,
   })

@@ -1,6 +1,4 @@
 import Utils from '../../utils'
-import Urls from '../../urls'
-import Request from '../../request'
 import EmailEnvelope from '../helpers/email-envelope'
 
 export function sendEmailFromTemplate(templateName, envelopeObject, templateValues/**, async */) {
@@ -23,8 +21,8 @@ export function sendEmailFromTemplate(templateName, envelopeObject, templateValu
     data['template-values'] = templateValues
   }
 
-  return Request.post({
-    url         : Urls.emailTemplateSend(),
+  return this.app.request.post({
+    url         : this.app.urls.emailTemplateSend(),
     isAsync     : isAsync,
     asyncHandler: responder,
     data        : data
