@@ -134,7 +134,7 @@ export default class Urls {
   }
 
   transactions() {
-    return `${this.root()}/transaction/unit-of-work`,
+    return `${this.root()}/transaction/unit-of-work`
   }
 
   //messaging

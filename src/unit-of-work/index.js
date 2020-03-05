@@ -1,6 +1,4 @@
-import Urls from '../urls'
 import Utils from '../utils'
-import Request from '../request'
 import Async from '../request/async'
 import DataQueryBuilder from '../data/query-builder'
 
@@ -12,10 +10,12 @@ function resolveTableName(obj) {
   return Utils.getClassName(obj)
 }
 
-export default class UnitOfWork {
+class UnitOfWork {
   static IsolationLevelEnum = IsolationLevelEnum
 
-  constructor(isolationLevelEnum) {
+  constructor(isolationLevelEnum, app) {
+    this.app = app
+
     this.payload = {
       isolationLevelEnum,
       operations: []
@@ -66,8 +66,8 @@ export default class UnitOfWork {
   execute() {
     return Promise.resolve()
       .then(() => new Promise((resolve, reject) => {
-        return Request.post({
-          url         : Urls.transactions(),
+        return this.app.request.post({
+          url         : this.app.urls.transactions(),
           data        : this.composePayload(),
           asyncHandler: new Async(resolve, reject),
         })
@@ -469,4 +469,12 @@ export default class UnitOfWork {
     return this.addOperations(operationType, tableName, payload)
   }
 
+}
+
+export default function UnitOfWorkService(app) {
+  return class extends UnitOfWork {
+    constructor(isolationLevelEnum) {
+      super(isolationLevelEnum, app)
+    }
+  }
 }

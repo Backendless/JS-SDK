@@ -53,6 +53,7 @@ const SERVICES = {
   'RT'          : () => require('./rt').default,
   'SharedObject': () => require('./rso').default,
   'LocalCache'  : () => require('./local-cache').default,
+  'UnitOfWork'  : () => require('./unit-of-work').default,
 }
 
 class Backendless {
@@ -324,8 +325,8 @@ class Backendless {
   }
 
   get UnitOfWork() {
-    return require('./unit-of-work').default
-  },
+    return this.__getService('UnitOfWork')
+  }
 
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
