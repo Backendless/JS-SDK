@@ -11,13 +11,14 @@ export default class RT extends BackendlessRTClient {
 
     const clientId = Utils.uuid()
     const lookupPath = `${appPath}/rt/lookup`
-    const userToken = app.getCurrentUserToken()
 
     super({
       appId,
       lookupPath,
       debugMode,
       connectQuery() {
+        const userToken = app.getCurrentUserToken()
+
         return {
           apiKey,
           clientId,
