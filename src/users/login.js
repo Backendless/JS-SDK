@@ -1,13 +1,25 @@
 import Utils from '../utils'
+import Async from '../request/async'
+
 import { parseResponse, getUserFromResponse, wrapAsync } from './utils'
 
 export function login(login, password, stayLoggedIn, /** async */) {
-  if (!login) {
-    throw new Error('Login can not be empty')
-  }
+  const data = {}
 
-  if (!password) {
-    throw new Error('Password can not be empty')
+  if (typeof login === 'string' && arguments.length === 2 && password instanceof Async) {
+    data.objectId = login
+
+  } else {
+    if (!login) {
+      throw new Error('Login can not be empty')
+    }
+
+    if (!password) {
+      throw new Error('Password can not be empty')
+    }
+
+    data.login = login
+    data.password = password
   }
 
   stayLoggedIn = stayLoggedIn === true
@@ -21,11 +33,6 @@ export function login(login, password, stayLoggedIn, /** async */) {
 
   if (responder) {
     responder = wrapAsync.call(this, responder, stayLoggedIn)
-  }
-
-  const data = {
-    login   : login,
-    password: password
   }
 
   let result = this.app.request.post({
