@@ -10,6 +10,8 @@ const TEST_APP_NAME_PATTERN = /^test_.{32}$/
 const USE_PERSISTED_LOCAL_DEV = true
 const DESTROY_APPS_AFTER_TESTS = false
 
+let loggedInUser
+
 const generateDev = () => ({
   firstName: 'Test',
   lastName : 'Test',
@@ -62,11 +64,15 @@ const createSandbox = async api => {
   }
 
   await Promise.resolve()
-    .then(() => api.user.login(dev.email, dev.pwd))
-    .then(({ id, name, authKey }) => {
-      dev.id = id
-      dev.name = name
-      dev.authKey = authKey
+    .then(() => loggedInUser || api.user.login(dev.email, dev.pwd))
+    .then(user => {
+      if (USE_PERSISTED_LOCAL_DEV) {
+        loggedInUser = user
+      }
+
+      dev.id = user.id
+      dev.name = user.name
+      dev.authKey = user.authKey
     })
 
   if (!DESTROY_APPS_AFTER_TESTS) {
@@ -129,6 +135,12 @@ const createSandboxFor = each => () => {
         if (!this.app.ready) {
           throw new Error('App was created with error!')
         }
+
+        console.log('___________________________________________')
+        console.log('===========================================')
+        console.log('========  APP IS READY FOR TEST  ==========')
+        console.log('===========================================')
+        console.log('===========================================')
       })
   })
 
