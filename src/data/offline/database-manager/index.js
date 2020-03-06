@@ -35,7 +35,7 @@ export default class OfflineDBManager {
     this.#tablesSyncMode = {}
     this.#isDbOpened = false
 
-    this.openDb().then(() => {
+    this.#openDb().then(() => {
       this.#isDbOpened = true
     })
 
@@ -84,7 +84,7 @@ export default class OfflineDBManager {
 
   async addTable(tableName, columns) {
     if (!this.#isDbOpened) {
-      await this.openDb()
+      await this.#openDb()
 
       this.#isDbOpened = true
     }
@@ -241,7 +241,7 @@ export default class OfflineDBManager {
     return prepareOfflineSyncResponse(dbTables, response)
   }
 
-  async openDb() {
+  async #openDb() {
     if (await this.connection.isDbExist(this.#DBName)) {
       await this.connection.openDb(this.#DBName)
     }
