@@ -1,6 +1,6 @@
 'use strict';
 
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 const path = require('path')
 
 const isProd = process.env.NODE_ENV === 'production'
@@ -42,5 +42,10 @@ module.exports = {
     filename     : isProd ? 'backendless.min.js' : 'backendless.js'
   },
 
-  plugins: isProd ? [new UglifyJsPlugin()] : []
+  plugins: isProd ? [new TerserPlugin({
+    parallel: true,
+    terserOptions: {
+      ecma: 6,
+    },
+  })] : []
 }
