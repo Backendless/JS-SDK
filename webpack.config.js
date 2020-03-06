@@ -1,33 +1,26 @@
 'use strict';
 
-const webpack = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
+const path = require('path')
 
 const isProd = process.env.NODE_ENV === 'production'
 
-const uglify = new webpack.optimize.UglifyJsPlugin({
-  compressor: {
-    pure_getters: true,
-    unsafe      : true,
-    unsafe_comps: true,
-    warnings    : false,
-    screw_ie8   : false
-  },
-  mangle    : {
-    screw_ie8: false
-  },
-  output    : {
-    screw_ie8: false
-  },
-  sourceMap : true
-})
-
 module.exports = {
-  devtool: 'source-map',
+  devtool: isProd ? false : 'source-map',
 
-  target : 'web',
+  target: 'web',
+
+  mode: process.env.NODE_ENV,
+
+  performance: { hints: false },
+
+  entry: {
+    'bundle': './src/index.js'
+  },
 
   node: {
-    Buffer: false
+    Buffer: false,
+    fs    : 'empty'
   },
 
   module: {
@@ -42,10 +35,20 @@ module.exports = {
     ]
   },
 
-  output: {
-    library      : 'Backendless',
-    libraryTarget: 'umd'
+  optimization: {
+    minimize : isProd,
+    minimizer: [new TerserPlugin({
+      parallel     : true,
+      terserOptions: {
+        ecma: 6,
+      },
+    })],
   },
 
-  plugins: isProd ? [uglify] : []
+  output: {
+    library      : 'Backendless',
+    libraryTarget: 'umd',
+    path         : path.resolve('./dist'),
+    filename     : isProd ? 'backendless.min.js' : 'backendless.js'
+  }
 }
