@@ -35,17 +35,20 @@ module.exports = {
     ]
   },
 
+  optimization: {
+    minimize : isProd,
+    minimizer: [new TerserPlugin({
+      parallel     : true,
+      terserOptions: {
+        ecma: 6,
+      },
+    })],
+  },
+
   output: {
     library      : 'Backendless',
     libraryTarget: 'umd',
     path         : path.resolve('./dist'),
     filename     : isProd ? 'backendless.min.js' : 'backendless.js'
-  },
-
-  plugins: isProd ? [new TerserPlugin({
-    parallel: true,
-    terserOptions: {
-      ecma: 6,
-    },
-  })] : []
+  }
 }
