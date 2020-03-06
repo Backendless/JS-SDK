@@ -2,7 +2,7 @@ module.exports = function(config) {
   config.set({
     files: [
       //Emulate a full ES2015 environment
-      'node_modules/babel-polyfill/dist/polyfill.js',
+      'node_modules/@babel/polyfill/dist/polyfill.js',
       'test/e2e/specs/**/*.js'
     ],
 
