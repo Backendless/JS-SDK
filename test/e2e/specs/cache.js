@@ -1,6 +1,7 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
 import { wait } from '../helpers/promise'
+import * as Utils from "../helpers/utils";
 
 const Backendless = sandbox.Backendless
 
@@ -21,7 +22,13 @@ const cacheKeys = Object.keys(cacheValues)
 
 describe('Backendless.Cache', function() {
 
+  let testCaseMarker
+
   sandbox.forSuite()
+
+  beforeEach(async function() {
+    testCaseMarker = Utils.uidShort()
+  })
 
   it('put and get', function() {
     return Promise.resolve()
@@ -59,30 +66,41 @@ describe('Backendless.Cache', function() {
       .then(() => expect(Cache.get('foo')).to.eventually.be.null)
   })
 
-  // TODO: this test gives floating results, need to be discovered
-  it('ttl', function() {
-    const a = 'a'
-    const b = 'b'
+  it('ttl expireIn', async () => {
+    const key = `a-${testCaseMarker}`
+    const value = 'a'
 
-    this.timeout(10000)
+    await Backendless.Cache.put(key, value)
 
-    return Promise.resolve()
-      .then(() => Backendless.Cache.put('a', a))
-      .then(() => Backendless.Cache.put('b', b))
-      .then(() => Backendless.Cache.expireIn('a', 2)) //2 seconds to live
-      .then(() => Backendless.Cache.expireAt('b', new Date().getTime() + 5000)) //5 seconds to live
+    await Backendless.Cache.expireIn(key, 2) //2 seconds to live
 
-      //check keys are still alive
-      .then(() => expect(Backendless.Cache.get('a')).to.eventually.equal(a))
-      .then(() => expect(Backendless.Cache.get('b')).to.eventually.equal(b))
+    //check keys are still alive
+    expect(await Backendless.Cache.get(key)).to.equal(value)
 
-      .then(() => wait(2000))
+    await wait(1000)
 
-      //a should gone, b should still be alive
-      .then(() => expect(Backendless.Cache.get('a')).to.eventually.be.null)
-      .then(() => expect(Backendless.Cache.get('b')).to.eventually.equal(b))
+    //a should gone, b should still be alive
+    expect(await Backendless.Cache.get(key)).to.equal(null)
+  })
 
-      .then(() => wait(3000))
-      .then(() => expect(Backendless.Cache.get('b')).to.eventually.be.null)
+  it('ttl expireAt', async () => {
+    const key = `b-${testCaseMarker}`
+    const value = 'b'
+
+    await Backendless.Cache.put(key, value)
+
+    await Backendless.Cache.expireAt(key, new Date().getTime() + 5000) //5 seconds to live
+
+    //check keys are still alive
+    expect(await Backendless.Cache.get(key)).to.equal(value)
+
+    await wait(1000)
+
+    //a should gone, b should still be alive
+    expect(await Backendless.Cache.get(key)).to.equal(value)
+
+    await wait(6000)
+
+    expect(await Backendless.Cache.get(key)).to.equal(null)
   })
 })

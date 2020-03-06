@@ -328,7 +328,9 @@ describe('Backendless.Users', function() {
       expect(loggedUser.email).to.equal(savedUser.email)
     })
 
-    it('login by user\'s objectId with non BL API_KEY', async function() {
+    xit('login by user\'s objectId with non BL API_KEY', async function() {
+      //TODO: waits BKNDLSS-20473
+
       const savedUser = await Backendless.Data.of(Backendless.User).save(randUser())
 
       expect(savedUser.objectId).to.be.a('string')
@@ -428,16 +430,12 @@ describe('Backendless.Users', function() {
   })
 
   it('restore password', function() {
-    this.timeout(15000)
-
     return Backendless.UserService.register(randUser())
       .then(user => Backendless.UserService.restorePassword(user.email))
       .catch(err => expect(err.code).to.equal(5050))
   })
 
   it('restore password for a wrong login', function() {
-    this.timeout(15000)
-
     return Backendless.UserService.restorePassword(randUser().email)
       .catch(err => expect(err.code).to.be.oneOf([5050, 3020]))
   })
