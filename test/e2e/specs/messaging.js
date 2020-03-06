@@ -4,18 +4,17 @@ import sandbox from '../helpers/sandbox'
 const Backendless = sandbox.Backendless
 
 describe('Messaging', function() {
-  sandbox.forTest()
+  sandbox.forSuite()
 
-  it('Create new table', function() {
-    return Backendless.Messaging.publish('my-channel', { foo: 'bar' })
-      .then(result => {
-        expect(result.messageId).to.be.a('string')
-        expect(result.status).to.be.equal('scheduled')
-        expect(result.errorMessage).to.be.null
-      })
+  it('Create new table', async () => {
+    const result = await Backendless.Messaging.publish('my-channel', { foo: 'bar' })
+
+    expect(result.status).to.be.equal('scheduled')
+    expect(result.messageId).to.be.a('string')
+    expect(result.errorMessage).to.equal(null)
   })
 
-  it('Send Email from "nonexistent-template" template', async function() {
+  it('Send Email from "nonexistent-template" template', async () => {
     const envelope = new Backendless.Messaging.EmailEnvelope({ query: 'foo=\'bar\'' })
 
     let error

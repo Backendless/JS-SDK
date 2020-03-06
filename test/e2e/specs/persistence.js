@@ -1,469 +1,470 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
+import * as Utils from '../helpers/utils'
 
 const Backendless = sandbox.Backendless
 
-function Foo() {
+class Foo {
+  constructor(data) {
+    data = data || {}
+
+    this.firstName = data.firstName
+    this.lastName = data.lastName
+  }
 }
 
-const users = {
-  john  : {
-    email   : 'john@lennon.co',
-    name    : 'John Lennon',
-    password: 'beatlesforever'
-  },
-  paul  : {
-    email   : 'paul@mccartney.co',
-    name    : 'Paul Mccartney',
-    password: 'beatlesforever'
-  },
-  george: {
-    email   : 'george@harrison.co',
-    name    : 'George Harrison',
-    password: 'beatlesforever'
+class Order {
+  constructor(data) {
+    data = data || {}
+
+    this.title = data.title
+    this.price = data.price
+    this.ordered = data.ordered
+    this.delivered = data.delivered
+    this.discount = data.discount
   }
 }
 
 describe('Data', function() {
-  let consoleApi
-  let appId
+  let fooDataStore
+  let usersDataStore
+  let ordersDataStore
+  let contactsDataStore
 
-  const insertRecord = (tableName, record) =>
-    consoleApi.tables.createRecord(appId, { name: tableName }, record)
+  let testCaseMarker
 
-  const insertUsers = () =>
-    Promise.resolve()
-      .then(() => insertRecord('Users', users.john))
-      .then(() => insertRecord('Users', users.paul))
-      .then(() => insertRecord('Users', users.george))
+  const FOO_TABLE_NAME = 'Foo'
+  const ORDERS_TABLE_NAME = 'Order'
+  const CONTACTS_TABLE_NAME = 'Contact'
 
-  const createBigTable = () => {
+  sandbox.forSuite()
+
+  before(async function() {
+    fooDataStore = Backendless.Data.of(Foo)
+    usersDataStore = Backendless.Data.of(Backendless.User)
+    ordersDataStore = Backendless.Data.of(Order)
+    contactsDataStore = Backendless.Data.of(CONTACTS_TABLE_NAME)
+
+    await this.tablesAPI.createTable(FOO_TABLE_NAME)
+    await this.tablesAPI.createTable(ORDERS_TABLE_NAME)
+    await this.tablesAPI.createTable(CONTACTS_TABLE_NAME)
+
+    await this.tablesAPI.createColumn(FOO_TABLE_NAME, 'firstName', this.tablesAPI.DataTypes.STRING)
+    await this.tablesAPI.createColumn(FOO_TABLE_NAME, 'lastName', this.tablesAPI.DataTypes.STRING)
+
+    await this.tablesAPI.createColumn(ORDERS_TABLE_NAME, 'title', this.tablesAPI.DataTypes.STRING)
+    await this.tablesAPI.createColumn(ORDERS_TABLE_NAME, 'price', this.tablesAPI.DataTypes.INT)
+    await this.tablesAPI.createColumn(ORDERS_TABLE_NAME, 'discount', this.tablesAPI.DataTypes.DOUBLE)
+    await this.tablesAPI.createColumn(ORDERS_TABLE_NAME, 'ordered', this.tablesAPI.DataTypes.DATETIME)
+    await this.tablesAPI.createColumn(ORDERS_TABLE_NAME, 'delivered', this.tablesAPI.DataTypes.BOOLEAN)
+
+    await this.tablesAPI.createColumn(CONTACTS_TABLE_NAME, 'name', this.tablesAPI.DataTypes.STRING)
+    await this.tablesAPI.createColumn(CONTACTS_TABLE_NAME, 'counter', this.tablesAPI.DataTypes.INT)
+
     const paginationTestData = [...Array(100).keys()].map(i => ({ counter: i + 1, name: 'John ' + (i + 1) }))
 
-    return Promise.resolve()
-      .then(() => insertRecord('TableWithPagination', { counter: 0, name: 'Initial' }))
-      .then(() => Promise.all(paginationTestData.map(record => insertRecord('TableWithPagination', record))))
-  }
-
-  sandbox.forTest()
-
-  beforeEach(function() {
-    consoleApi = this.consoleApi
-    appId = this.app.id
+    await contactsDataStore.bulkCreate(paginationTestData)
   })
 
-  it('Create new table', function() {
-    const entity = new Foo()
-    entity.firstName = 'First'
-    entity.lastName = 'Last'
+  beforeEach(async function() {
+    testCaseMarker = Utils.uidShort()
+  })
 
-    return Backendless.Data.of(Foo).save(entity).then(result => {
+  describe('CRUD', function() {
+    it('Create new table', async () => {
+      const entity = new Foo({
+        firstName: 'First',
+        lastName : 'Last',
+      })
+
+      const result = await fooDataStore.save(entity)
+
       expect(result).to.be.instanceof(Foo)
       expect(result.objectId).to.be.a('string')
       expect(result.firstName).to.be.equal(entity.firstName)
       expect(result.lastName).to.be.equal(entity.lastName)
     })
+
+    it('Update record', async () => {
+      const entity = new Foo({
+        firstName: 'Bill',
+        lastName : 'Gates',
+      })
+
+      await fooDataStore.save(entity)
+
+      entity.firstName = 'Ron'
+
+      const updated = await fooDataStore.save(entity)
+
+      expect(updated.firstName).to.be.equal(entity.firstName)
+      expect(updated.lastName).to.be.equal(entity.lastName)
+    })
+
+    it('Remove record', async () => {
+      const entity = new Foo({
+        firstName: 'First',
+        lastName : 'Last',
+      })
+
+      const createdResult = await fooDataStore.save(entity)
+
+      const findResult = await fooDataStore.findById(createdResult.objectId)
+
+      expect(findResult).to.be.instanceof(Foo)
+      expect(findResult.objectId).to.be.equal(createdResult.objectId)
+      expect(findResult.firstName).to.be.equal(entity.firstName)
+      expect(findResult.lastName).to.be.equal(entity.lastName)
+
+      const deleteResult = await fooDataStore.remove(findResult.objectId)
+
+      expect(deleteResult.deletionTime).to.be.a('number')
+
+      let error
+
+      try {
+        await fooDataStore.findById(findResult.objectId)
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.message).to.be.equal(`Entity with ID ${findResult.objectId} not found`)
+    })
   })
 
-  it('Update record', function() {
-    const entity = new Foo()
-    entity.firstName = 'Bill'
-    entity.lastName = 'Gates'
+  describe('Users', function() {
+    it('Add record to Users table', async () => {
+      const user = {
+        email   : `ringo${testCaseMarker}@starr.co`,
+        name    : 'Ringo Starr',
+        password: 'beatlesforever'
+      }
 
-    const db = Backendless.Data.of(Foo)
+      const result = await usersDataStore.save(user)
 
-    return db.save(entity)
-      .then(() => entity.firstName = 'Ron')
-      .then(() => db.save(entity))
-      .then(updated => {
-        expect(updated.firstName).to.be.equal(entity.firstName)
-        expect(updated.lastName).to.be.equal(entity.lastName)
-      })
-  })
+      expect(result).to.be.an.instanceof(Backendless.User)
+      expect(result).to.have.property('email').that.equal(user.email)
+      expect(result).to.have.property('name').that.equal(user.name)
+      expect(result).to.not.have.property('password')
+    })
 
-  it('Remove record', function() {
-    const db = Backendless.Data.of('TableToTestDeletion')
-    let toRemove
+    it('Possible to get persistence of Users using string signature and instances', async () => {
+      await usersDataStore.bulkCreate([
+        { email: `ringo${testCaseMarker}-${Utils.uid()}@starr.co`, name: 'test', password: 'test' },
+        { email: `ringo${testCaseMarker}-${Utils.uid()}@starr.co`, name: 'test', password: 'test' },
+        { email: `ringo${testCaseMarker}-${Utils.uid()}@starr.co`, name: 'test', password: 'test' },
+        { email: `ringo${testCaseMarker}-${Utils.uid()}@starr.co`, name: 'test', password: 'test' },
+      ])
 
-    return Promise.resolve()
-      .then(() => insertRecord('TableToTestDeletion', { evil: 'Justin Bieber' })) // let destroy the evil
-      .then(() => db.findFirst())
-      .then(result => {
-        toRemove = result
+      const check = async store => {
+        const users = await store.find()
 
-        return db.remove(result.objectId)
-      })
-      .then(() => db.findById(toRemove.objectId))
-      .catch(error => {
-        expect(error.message).to.be.equal(`Entity with ID ${toRemove.objectId} not found`)
-      })
-      .then(() => db.find())
-      .then(result => {
-        expect(result.length).to.be.equal(0) // the world is saved
-      })
-  })
-
-  it('Add record to Users table', function() {
-    const db = Backendless.Data.of(Backendless.User)
-
-    const user = {
-      email   : 'ringo@starr.co',
-      name    : 'Ringo Starr',
-      password: 'beatlesforever'
-    }
-
-    return Promise.resolve()
-      .then(insertUsers)
-      .then(() => db.save(user))
-      .then(result => {
-        expect(result).to.be.an.instanceof(Backendless.User)
-        expect(result).to.have.property('email').that.equal(user.email)
-        expect(result).to.have.property('name').that.equal(user.name)
-        expect(result).to.not.have.property('password')
-      })
-  })
-
-  it('Possible to get persistence of Users using string signature', function() {
-    const db = Backendless.Data.of('Users')
-
-    return Promise.resolve()
-      .then(insertUsers)
-      .then(() => db.find())
-      .then(users => {
-        users.forEach(object => {
-          expect(object).to.be.an.instanceof(Backendless.User)
+        users.forEach(user => {
+          expect(user).to.be.an.instanceof(Backendless.User)
+          expect(user).to.have.property('email').that.equal(user.email)
+          expect(user).to.have.property('name').that.equal(user.name)
+          expect(user).to.not.have.property('password')
         })
+      }
+
+      await check(Backendless.Data.of('Users'))
+      await check(usersDataStore)
+    })
+  })
+
+  describe('Data Types', function() {
+    it('Update table record with invalid data type for properties', async () => {
+      const savedOrder = await ordersDataStore.save({
+        title    : `test-${testCaseMarker}`,
+        price    : 1234,
+        discount : Math.random() * 10,
+        ordered  : Date.now(),
+        delivered: true,
       })
+
+      expect(typeof savedOrder.title === 'string').to.be.equal(true)
+      expect(typeof savedOrder.price === 'number').to.be.equal(true)
+      expect(typeof savedOrder.discount === 'number').to.be.equal(true)
+      expect(typeof savedOrder.ordered === 'number').to.be.equal(true)
+      expect(typeof savedOrder.delivered === 'boolean').to.be.equal(true)
+
+      const check = async (prop, value, errorMessage) => {
+        let error
+
+        try {
+          await ordersDataStore.save({ ...savedOrder, [prop]: value })
+        } catch (e) {
+          error = e
+        }
+
+        expect(error.message).to.equal(errorMessage)
+      }
+
+      await check('price', 'invalid number', 'Unable to save object - invalid data type for properties - price. You can change the property type in developer console.')
+      await check('discount', 'invalid number', 'Unable to save object - invalid data type for properties - discount. You can change the property type in developer console.')
+      await check('ordered', 'invalid number', 'Invalid date format for property ordered')
+      await check('delivered', 'invalid number', 'Unable to save object - invalid data type for properties - delivered. You can change the property type in developer console.')
+    })
+
+    it('Remove object with wrong type of objectId', async () => {
+      let error
+
+      try {
+        await ordersDataStore.remove(9999)
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.message).to.be.equal('Invalid value for the "value" argument. The argument must contain only string or object values')
+    })
+
   })
 
-  it('Check instance of objects from Users table', function() {
-    const db = Backendless.Data.of(Backendless.User)
-
-    return Promise.resolve()
-      .then(insertUsers)
-      .then(() => db.find())
-      .then(result => {
-        result.forEach(object => expect(object).to.be.an.instanceof(Backendless.User))
+  describe('Retrieving', function() {
+    it('Find Record By objectId', async () => {
+      const entity = new Foo({
+        firstName: 'test',
+        lastName : 'test',
       })
+
+      const createdResult = await fooDataStore.save(entity)
+
+      const findResult = await fooDataStore.findById(createdResult.objectId)
+
+      expect(findResult).to.be.instanceof(Foo)
+      expect(findResult.objectId).to.be.equal(createdResult.objectId)
+      expect(findResult.firstName).to.be.equal(entity.firstName)
+      expect(findResult.lastName).to.be.equal(entity.lastName)
+    })
+
+    it('Find Record By Non Existing objectId', async () => {
+      let error
+
+      try {
+        await fooDataStore.findById('NonExistingObjectId')
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.message).to.be.equal('Entity with ID NonExistingObjectId not found')
+    })
+
+    it('Find with Where clause', async () => {
+      await fooDataStore.bulkCreate([
+        { firstName: `${Utils.uid()}-find-where-bar-${Utils.uid()}` },
+        { firstName: `${Utils.uid()}-find-where-bar-${Utils.uid()}` },
+        { firstName: `${Utils.uid()}-find-where-bar-${Utils.uid()}` },
+        { firstName: `${Utils.uid()}-find-where-foo-${Utils.uid()}` },
+      ])
+
+      const query = Backendless.DataQueryBuilder.create()
+        .setWhereClause('firstName like \'%find-where-bar%\'')
+
+      const result = await fooDataStore.find(query)
+
+      expect(result.length).to.be.equal(3)
+      expect(result[0].firstName).to.match(/find-where-bar/)
+      expect(result[1].firstName).to.match(/find-where-bar/)
+      expect(result[2].firstName).to.match(/find-where-bar/)
+    })
+
+    it('Find with properties', async function() {
+      let query
+      let result
+
+      query = Backendless.DataQueryBuilder.create()
+        .setProperties(['name'])
+
+      result = await contactsDataStore.find(query)
+
+      expect(result[0]).to.not.have.property('counter')
+      expect(result[0]).to.have.property('name')
+
+      query = Backendless.DataQueryBuilder.create()
+        .addProperties('name', 'created')
+
+      result = await contactsDataStore.find(query)
+
+      expect(result[0]).to.not.have.property('counter')
+      expect(result[0]).to.not.have.property('updated')
+      expect(result[0]).to.have.property('name')
+      expect(result[0]).to.have.property('created')
+
+      query = Backendless.DataQueryBuilder.create()
+        .addProperties(['name', 'created'])
+
+      result = await contactsDataStore.find(query)
+
+      expect(result[0]).to.not.have.property('counter')
+      expect(result[0]).to.not.have.property('updated')
+      expect(result[0]).to.have.property('name')
+      expect(result[0]).to.have.property('created')
+
+      query = Backendless.DataQueryBuilder.create()
+        .addProperties('name')
+        .addProperties('created')
+
+      result = await contactsDataStore.find(query)
+
+      expect(result[0]).to.not.have.property('counter')
+      expect(result[0]).to.not.have.property('updated')
+      expect(result[0]).to.have.property('name')
+      expect(result[0]).to.have.property('created')
+    })
+
+    it('Find with non existing properties', async () => {
+      let error
+
+      try {
+        const query = Backendless.DataQueryBuilder.create()
+          .setProperties(['nonExistingProp'])
+
+        await contactsDataStore.find(query)
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.message).to.be.equal('Column \'nonExistingProp\' does not exist in table \'Contact\'')
+    })
+
+    it('Find First and Last', async () => {
+      const db = Backendless.Data.of('TestFindFirst')
+
+      await db.save({ counter: 0, name: 'First' })
+      await db.save({ counter: 1, name: 'Last' })
+
+      const [first, last] = await Promise.all([
+        db.findFirst(),
+        db.findLast(),
+      ])
+
+      expect(first.counter).to.be.equal(0)
+      expect(first.name).to.be.equal('First')
+
+      expect(last.counter).to.be.equal(1)
+      expect(last.name).to.be.equal('Last')
+    })
+
+    it('Find first in not existed table', async () => {
+      let error
+
+      try {
+        await Backendless.Data.of('EmptyTable').findFirst()
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.code).to.be.equal(1009)
+      expect(error.message).to.be.equal(
+        'Table not found by name \'Table not found by name \'EmptyTable\'. ' +
+        'Make sure the client class referenced in the API call ' +
+        'has the same literal name as the table in Backendless console\''
+      )
+    })
+
+    it('Find with offset greater than the max number of records', async () => {
+      const query = Backendless.DataQueryBuilder.create()
+        .setOffset(500)
+
+      const result = await contactsDataStore.find(query)
+
+      expect(result).to.be.an('Array')
+      expect(result.length).to.be.equal(0)
+    })
+
+    it('max page size', async () => {
+      const query = Backendless.DataQueryBuilder.create()
+        .setPageSize(100)
+
+      const result = await contactsDataStore.find(query)
+
+      expect(result).to.have.lengthOf(100)
+    })
+
+    it('sorting', async () => {
+      const check = async (sorting, expected) => {
+        const query = Backendless.DataQueryBuilder.create()
+          .setSortBy(sorting)
+          .setPageSize(5)
+
+        const result = await contactsDataStore.find(query)
+        const counters = result.map(o => o.counter)
+
+        expect(counters).to.have.lengthOf(5)
+
+        expect(counters).to.eql(expected)
+      }
+
+      await check('counter', [1, 2, 3, 4, 5])
+      await check('counter asc', [1, 2, 3, 4, 5])
+      await check('counter desc', [100, 99, 98, 97, 96])
+    })
+
+    it('Retrieving nextPage', async () => {
+      const query = Backendless.DataQueryBuilder.create()
+        .setSortBy('counter')
+
+      let result
+
+      result = await contactsDataStore.find(query)
+
+      expect(result).to.have.lengthOf(10)
+      expect(result.map(o => o.counter)).to.eql([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+      query.prepareNextPage()
+
+      result = await contactsDataStore.find(query)
+
+      expect(result).to.have.lengthOf(10)
+      expect(result.map(o => o.counter)).to.eql([11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+    })
+
+    it('Retrieve object count', async () => {
+      let count
+
+      const query = Backendless.DataQueryBuilder.create()
+        .setWhereClause('counter <= 50')
+
+      count = await contactsDataStore.getObjectCount(query)
+
+      expect(count).to.be.equal(50)
+
+      count = await contactsDataStore.getObjectCount()
+
+      expect(count).to.be.equal(100)
+    })
   })
 
-  it('Update table record with invalid data type for properties', function() {
-    const db = Backendless.Data.of('Blackstar')
+  describe('Schema', function() {
+    it('Retrieves Properties of table', async () => {
+      const result = await Backendless.Data.describe(ORDERS_TABLE_NAME)
 
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => db.findFirst())
-      .then(result => {
-        result.integerCol = 'String value' // column type is Number
-        result.boolCol = 'String value' // column type is Boolean
+      expect(result.map(o => o.name).sort())
+        .to.eql(['title', 'ownerId', 'delivered', 'updated', 'discount', 'objectId', 'ordered', 'created', 'price'].sort())
 
-        return result
-      })
-      .then(result => db.save(result))
-      .catch(error => {
-        expect(error.message).to.match(/Unable to save object - invalid data type for properties/)
-      })
-  })
-
-  it('Remove object with wrong type of objectId', function() {
-    const db = Backendless.Data.of('Blackstar')
-    const expectedError = 'Invalid value for the "value" argument. ' +
-      'The argument must contain only string or object values'
-
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => db.remove(9999)) // remove expect only string parameter
-      .catch(error => expect(error.message).to.be.equal(expectedError))
-  })
-
-  it('Save object with Backendless.Data.save() notation', function() {
-    const record = {
-      name : 'David',
-      email: 'david@bowie.co.ua'
-    }
-
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => Backendless.Data.save('Blackstar', record))
-      .then(result => {
-        expect(result.name).to.be.equal(record.name)
-        expect(result.email).to.be.equal(record.email)
-        expect(result.___class).to.be.equal('Blackstar')
-      })
-  })
-
-  it('Save object with boolean property', function() {
-    const db = Backendless.Data.of('Blackstar')
-    const record = {
-      boolCol: true
-    }
-
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => db.save(record))
-      .then(result => {
-        expect(result.boolCol).to.be.a('boolean')
-        expect(result.boolCol).to.be.true
-      })
-  })
-
-  it('Save object with int property', function() {
-    const db = Backendless.Data.of('Blackstar')
-    const record = {
-      integerCol: 42
-    }
-
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => db.save(record))
-      .then(result => {
-        expect(result.integerCol).to.be.a('number')
-        expect(result.integerCol).to.be.equal(record.integerCol)
-      })
-  })
-
-  it('Save object with double property', function() {
-    const db = Backendless.Data.of('Blackstar')
-    const record = {
-      doubleCol: Math.random() * 10
-    }
-
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => db.save(record))
-      .then(result => {
-        expect(result.doubleCol).to.be.a('number')
-        expect(result.doubleCol).to.be.equal(record.doubleCol)
-      })
-  })
-
-  it('Save object with String property', function() {
-    const db = Backendless.Data.of('Blackstar')
-    const record = {
-      stringCol: 'string value'
-    }
-
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => db.save(record))
-      .then(result => {
-        expect(result.stringCol).to.be.a('string')
-        expect(result.stringCol).to.be.equal(record.stringCol)
-      })
-  })
-
-  it('Find Record By objectId', function() {
-    let entity = new Foo()
-    entity.firstName = 'Bill'
-    entity.lastName = 'Gates'
-
-    const db = Backendless.Data.of(Foo)
-
-    return db.save(entity)
-      .then(result => entity = result)
-      .then(() => db.findById(entity.objectId))
-      .then(serverEntity => {
-        expect(serverEntity.objectId).to.be.equal(entity.objectId)
-        expect(serverEntity.firstName).to.be.equal(entity.firstName)
-        expect(serverEntity.lastName).to.be.equal(entity.lastName)
-      })
-  })
-
-  it('Find Record By Non Existing objectId', function() {
-    const db = Backendless.Data.of('Blackstar')
-
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => db.findById('NonExistingObjectId'))
-      .catch(error => {
-        expect(error.message).to.be.equal('Entity with ID NonExistingObjectId not found')
-      })
-  })
-
-  it('Find with Where clause', function() {
-    const db = Backendless.Data.of(Backendless.User)
-    const query = Backendless.DataQueryBuilder.create().setWhereClause('name like \'%Lennon%\'')
-
-    return Promise.resolve()
-      .then(insertUsers)
-      .then(() => db.find(query))
-      .then(result => {
-        expect(result.length).to.be.equal(1)
-        expect(result[0].name).to.match(/Lennon/)
-      })
-  })
-
-  it('Find with properties', async function() {
-    const db = Backendless.Data.of('TableWithPagination')
-
-    await createBigTable()
-
-    let query
-    let result
-
-    query = Backendless.DataQueryBuilder.create()
-    query.setProperties(['name'])
-
-    result = await db.find(query)
-
-    expect(result[0]).to.not.have.property('counter')
-    expect(result[0]).to.have.property('name')
-
-    query = Backendless.DataQueryBuilder.create()
-    query.addProperties('name', 'created')
-
-    result = await db.find(query)
-
-    expect(result[0]).to.not.have.property('counter')
-    expect(result[0]).to.not.have.property('updated')
-    expect(result[0]).to.have.property('name')
-    expect(result[0]).to.have.property('created')
-
-    query = Backendless.DataQueryBuilder.create()
-    query.addProperties(['name', 'created'])
-
-    result = await db.find(query)
-
-    expect(result[0]).to.not.have.property('counter')
-    expect(result[0]).to.not.have.property('updated')
-    expect(result[0]).to.have.property('name')
-    expect(result[0]).to.have.property('created')
-
-    query = Backendless.DataQueryBuilder.create()
-    query.addProperties('name')
-    query.addProperties( 'created')
-
-    result = await db.find(query)
-
-    expect(result[0]).to.not.have.property('counter')
-    expect(result[0]).to.not.have.property('updated')
-    expect(result[0]).to.have.property('name')
-    expect(result[0]).to.have.property('created')
-  })
-
-  it('Find with non existing properties', function() {
-    const db = Backendless.Data.of('TableWithPagination')
-    const query = Backendless.DataQueryBuilder.create().setProperties(['nonExistingProp']) //.setSortBy('counter').setPageSize(50)
-
-    return Promise.resolve()
-      .then(createBigTable)
-      .then(() => db.find(query))
-      .catch(error => {
-        expect(error.message).to.be.equal('Column \'nonExistingProp\' does not exist in table \'TableWithPagination\'')
-      })
-  })
-
-  it('Find First', function() {
-    const db = Backendless.Data.of('TestFindFirst')
-
-    return Promise.resolve()
-      .then(() => insertRecord('TestFindFirst', { counter: 0, name: 'First' }))
-      .then(() => insertRecord('TestFindFirst', { counter: 1, name: 'Last' }))
-      .then(() => db.findFirst())
-      .then(result => {
-        expect(result.counter).to.be.equal(0)
-        expect(result.name).to.be.equal('First')
-      })
-  })
-
-  it('Find Last', function() {
-    const db = Backendless.Data.of('TestFindLast')
-
-    return Promise.resolve()
-      .then(() => insertRecord('TestFindLast', { counter: 0, name: 'First' }))
-      .then(() => insertRecord('TestFindLast', { counter: 1, name: 'Last' }))
-      .then(() => db.findLast())
-      .then(result => {
-        expect(result.counter).to.be.equal(1)
-        expect(result.name).to.be.equal('Last')
-      })
-  })
-
-  it('Find first/last on empty table', function() {
-    const db = Backendless.Data.of('EmptyTable')
-
-    return Promise.resolve()
-      .then(() => db.findFirst())
-      .catch(error => {
-        expect(error.code).to.be.equal(1009)
-      })
-  })
-
-  it('Find with offset greater than the max number of records', function() {
-    const db = Backendless.Data.of('TableWithPagination')
-    const query = Backendless.DataQueryBuilder.create().setOffset(500)
-
-    return Promise.resolve()
-      .then(createBigTable)
-      .then(() => db.find(query))
-      .then(result => {
-        expect(result).to.be.an('Array')
-        expect(result.length).to.be.equal(0)
-      })
-  })
-
-  it('Retrieves Properties of table', function() {
-    return Promise.resolve()
-      .then(() => insertRecord('Blackstar', { integerCol: 1, boolCol: false }))
-      .then(() => Backendless.Data.describe('Blackstar'))
-      .then(schema => {
-        schema.forEach(schemaObject => expect(schemaObject).to.have.all.keys([
+      result.forEach(schemaObject => {
+        expect(schemaObject).to.have.all.keys([
           'name', 'required', 'type', 'defaultValue', 'relatedTable', 'customRegex', 'autoLoad', 'isPrimaryKey'
-        ]))
+        ])
       })
+    })
+
+    it('Retrieves Properties of non existing table', async () => {
+      let error
+
+      try {
+        await Backendless.Data.describe('NonExistingTable')
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.code).to.be.equal(1009)
+      expect(error.message).to.be.equal(
+        'Table not found by name \'Table not found by name \'NonExistingTable\'. ' +
+        'Make sure the client class referenced in the API call ' +
+        'has the same literal name as the table in Backendless console\''
+      )
+    })
   })
-
-  it('Retrieves Properties of non existing table', function() {
-    return expect(Backendless.Data.describe('NonExistingTable'))
-      .to.eventually.be.rejected
-      .and.eventually.to.have.property('code', 1009)
-  })
-
-  it('Sort by', function() {
-    const db = Backendless.Data.of('TableWithPagination')
-    const query = Backendless.DataQueryBuilder.create().setSortBy('counter').setPageSize(100)
-
-    return Promise.resolve()
-      .then(createBigTable)
-      .then(() => db.find(query))
-      .then(result => {
-        expect(result).to.have.lengthOf(100)
-        result.forEach((record, idx) => {
-          expect(result[idx]).to.have.property('counter').that.equal(idx)
-        })
-      })
-  })
-
-  it('Retrieve object count', function() {
-    const db = Backendless.Data.of('TableWithPagination')
-    const whereClause = Backendless.DataQueryBuilder.create().setWhereClause('counter < 50')
-
-    return Promise.resolve()
-      .then(createBigTable)
-      .then(() => db.getObjectCount())
-      .then(count => expect(count).to.be.equal(101))
-      .then(() => db.getObjectCount(whereClause))
-      .then(count => expect(count).to.be.equal(50))
-  })
-
-  it('Retrieving nextPage', function() {
-    const db = Backendless.Data.of('TableWithPagination')
-    const query = Backendless.DataQueryBuilder.create().setSortBy('counter')
-
-    return Promise.resolve()
-      .then(createBigTable)
-      .then(() => db.find(query))
-      .then(result => {
-        expect(result).to.have.lengthOf(10)
-        expect(result[9]).to.have.property('counter').that.equal(9)
-      })
-      .then(() => query.prepareNextPage())
-      .then(() => db.find(query))
-      .then(result => {
-        expect(result).to.have.lengthOf(10)
-        expect(result[9]).to.have.property('counter').that.equal(19)
-      })
-  })
-
 
 })
