@@ -2,13 +2,13 @@ import * as JsStore from 'jsstore'
 import Utils from '../../../utils'
 import DataQueryBuilder from '../../query-builder'
 import { onOnline } from '../network'
-import { LocalStoragePolicy } from '../policy'
+import { LocalStoragePolicy, SyncModes } from '../constants'
 import { executeTransactions } from '../transactions'
 import { findAll } from './find-all'
 import { findById } from './find-by-id'
 import { findFirst } from './find-first'
 import { findLast } from './find-last'
-import { convertObject } from './utils'
+import { convertObject, prepareOfflineSyncResponse } from './utils'
 
 if (Utils.isBrowser) {
   window['JsStoreWorker'] = require('jsstore/dist/jsstore.worker.commonjs2')
@@ -16,93 +16,82 @@ if (Utils.isBrowser) {
 
 export const DataType = JsStore.DATA_TYPE
 
-export const SyncModes = {
-  AUTO     : 'AUTO',
-  SEMI_AUTO: 'SEMI_AUTO',
-  MANUAL   : 'MANUAL',
-}
-
-function prepareOfflineSyncResponse(dbTables, response) {
-  const syncStatus = {
-    successfulCompletion: {},
-    failedCompletion    : {},
-  }
-
-  return response.forEach((status, i) => {
-    syncStatus.successfulCompletion[dbTables[i]] = status.successfulCompletion
-    syncStatus.failedCompletion[dbTables[i]] = status.failedCompletion
-  })
-}
-
 export default class OfflineDBManager {
+  #idbConnection
+  #DBName
+  #globalSyncMode
+  #tablesSyncMode
+  #isDbOpened
+
   constructor(app) {
     if (!Utils.isBrowser) {
       throw new Error('Offline DB is not available outside of browser')
     }
 
-    this.__idbConnection = new JsStore.Connection()
+    this.#idbConnection = new JsStore.Connection()
     this.app = app
-    this.DBName = `backendless_${ app.applicationId }`
-    this.globalSyncMode = SyncModes.AUTO
-    this.tablesSyncMode = {}
-    this.isDbOpened = false
+    this.#DBName = `backendless_${app.applicationId}`
+    this.#globalSyncMode = SyncModes.AUTO
+    this.#tablesSyncMode = {}
+    this.#isDbOpened = false
 
     this.openDb().then(() => {
-      this.isDbOpened = true
+      this.#isDbOpened = true
     })
 
-    onOnline(this.onNetworkEnabled.bind(this))
+    onOnline(this.#onNetworkEnabled.bind(this))
   }
 
   get connection() {
-    return this.__idbConnection
+    return this.#idbConnection
   }
 
   isDbExist() {
-    return this.connection.isDbExist(this.DBName)
+    return this.connection.isDbExist(this.#DBName)
   }
 
   async isTableExist(tableName) {
-    const dbSchema = await this.connection.getDbSchema(this.DBName)
+    const dbSchema = await this.connection.getDbSchema(this.#DBName)
 
-    return dbSchema && !!dbSchema.tables.find(table => table.name === tableName)
+    return dbSchema && dbSchema.tables.some(table => table.name === tableName)
   }
 
   setGlobalSyncMode(globalSyncMode) {
-    this.globalSyncMode = globalSyncMode
+    this.#globalSyncMode = globalSyncMode
   }
 
   getGlobalSyncMode() {
-    return this.globalSyncMode
+    return this.#globalSyncMode
   }
 
   setTableSyncMode(tableName, syncMode) {
-    this.tablesSyncMode[tableName] = syncMode
+    this.#tablesSyncMode[tableName] = syncMode
   }
 
   getTableSyncMode(tableName) {
-    if (this.tablesSyncMode[tableName] !== undefined) {
-      return this.tablesSyncMode[tableName]
+    if (this.#tablesSyncMode[tableName] !== undefined) {
+      return this.#tablesSyncMode[tableName]
     }
 
-    return this.globalSyncMode
+    return this.#globalSyncMode
   }
 
-  async getDBTablesList() {
-    const dbSchema = await this.connection.getDbSchema(this.DBName)
+  async #getDBTablesList() {
+    const dbSchema = await this.connection.getDbSchema(this.#DBName)
 
     return dbSchema ? dbSchema.tables : []
   }
 
   async addTable(tableName, columns) {
-    if (!this.isDbOpened) {
+    if (!this.#isDbOpened) {
       await this.openDb()
-      this.isDbOpened = true
+
+      this.#isDbOpened = true
     }
 
     const [dbVersion, dbSchema] = await Promise.all([
-      this.connection.getDbVersion(this.DBName),
-      this.connection.getDbSchema(this.DBName)
+      this.connection.getDbVersion(this.#DBName),
+      this.connection.getDbSchema(this.#DBName)
     ])
 
     const dbTables = dbSchema ? dbSchema.tables : []
@@ -133,7 +122,7 @@ export default class OfflineDBManager {
       dbTables.push(table)
     }
 
-    await this.initJsStore(dbTables)
+    await this.#initJsStore(dbTables)
   }
 
   upsertObject(tableName, object) {
@@ -169,20 +158,17 @@ export default class OfflineDBManager {
 
   async find(tableName, dataQuery) {
     const url = dataQuery && dataQuery.url
-    const first = url === 'first'
-    const last = url === 'last'
-    const byId = url && !first && !last
 
-    if (first) {
+    if (url === 'first') {
       return findFirst.call(this, tableName)
     }
 
-    if (last) {
+    if (url === 'last') {
       return findLast.call(this, tableName)
     }
 
-    if (byId) {
-      return findById.call(this, tableName, dataQuery.url)
+    if (url) {
+      return findById.call(this, tableName, url)
     }
 
     return findAll.call(this, tableName, dataQuery)
@@ -200,15 +186,15 @@ export default class OfflineDBManager {
     }
 
     if (localStoragePolicy === LocalStoragePolicy.STOREALL) {
-      await this.storeAllFindResults(tableName, objects)
+      await this.#storeAllFindResults(tableName, objects)
     }
 
     if (localStoragePolicy === LocalStoragePolicy.STOREUPDATED) {
-      await this.storeUpdatedFindResults(tableName, objects)
+      await this.#storeUpdatedFindResults(tableName, objects)
     }
   }
 
-  storeAllFindResults(tableName, objects) {
+  #storeAllFindResults(tableName, objects) {
     const objectsToStore = Utils.castArray(objects).map(object => {
       return convertObject({ ...object, blLocalId: object.objectId })
     })
@@ -220,7 +206,7 @@ export default class OfflineDBManager {
     })
   }
 
-  storeUpdatedFindResults(tableName, objects) {
+  #storeUpdatedFindResults(tableName, objects) {
     return Promise.all(Utils.castArray(objects).map(object => this.connection.update({
       in   : tableName,
       set  : { ...convertObject(object), blLocalId: object.objectId },
@@ -228,8 +214,8 @@ export default class OfflineDBManager {
     })))
   }
 
-  async onNetworkEnabled() {
-    const dbTables = await this.getDBTablesList()
+  async #onNetworkEnabled() {
+    const dbTables = await this.#getDBTablesList()
     const tablesToSync = []
 
     dbTables.forEach(table => {
@@ -248,23 +234,23 @@ export default class OfflineDBManager {
       return executeTransactions.call(this, tableName)
     }
 
-    const dbTables = await this.getDBTablesList()
+    const dbTables = await this.#getDBTablesList()
 
     const response = await Promise.all(dbTables.map(table => executeTransactions.call(this, table.name)))
 
     return prepareOfflineSyncResponse(dbTables, response)
   }
 
-  async initJsStore(tables = []) {
-    await this.connection.initDb({
-      name: this.DBName,
-      tables
-    })
+  async openDb() {
+    if (await this.connection.isDbExist(this.#DBName)) {
+      await this.connection.openDb(this.#DBName)
+    }
   }
 
-  async openDb() {
-    if (await this.connection.isDbExist(this.DBName)) {
-      await this.connection.openDb(this.DBName)
-    }
+  async #initJsStore(tables = []) {
+    await this.connection.initDb({
+      name: this.#DBName,
+      tables
+    })
   }
 }

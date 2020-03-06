@@ -1,3 +1,9 @@
+export const DBOperations = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE'
+}
+
 export const DataRetrievalPolicy = {
   OFFLINEONLY: 'OFFLINEONLY', // Retrieve from the local db only, regardless of the connection status
   ONLINEONLY : 'ONLINEONLY', // Retrieve from the remote db only regardless of the connection status
@@ -9,4 +15,10 @@ export const LocalStoragePolicy = {
   DONOTSTOREANY: 'DONOTSTOREANY', // Do not store any data retrieved from remote in the local database
   STOREUPDATED : 'STOREUPDATED', // Stores in the local db only those objects retrieved from remote,
   // which already exist in local
+}
+
+export const SyncModes = {
+  AUTO     : 'AUTO',
+  SEMI_AUTO: 'SEMI_AUTO',
+  MANUAL   : 'MANUAL',
 }

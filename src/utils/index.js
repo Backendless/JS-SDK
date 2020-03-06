@@ -1,4 +1,4 @@
-import Async from './request/async'
+import Async from '../request/async'
 
 const Utils = {
   isObject(obj) {

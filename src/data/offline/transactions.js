@@ -1,7 +1,7 @@
 import Utils from '../../utils'
 import { ActionTypes, callbackManager } from './callback-manager'
 import { parseObject } from './database-manager/utils'
-import Operations from './operations'
+import { DBOperations } from './constants'
 
 async function saveObject(tableName, object) {
   const { blLocalId, blPendingOperation } = object
@@ -55,13 +55,13 @@ async function deleteObject(tableName, object) {
 }
 
 const transactionsMap = {
-  [Operations.CREATE]: {
+  [DBOperations.CREATE]: {
     run: saveObject
   },
-  [Operations.UPDATE]: {
+  [DBOperations.UPDATE]: {
     run: saveObject
   },
-  [Operations.DELETE]: {
+  [DBOperations.DELETE]: {
     run: deleteObject
   },
 }
@@ -93,9 +93,9 @@ const getSyncStatus = result => {
 
   result.forEach(({ object, status, blPendingOperation, errorMessage }) => {
     if (status === 'success') {
-      const prop = blPendingOperation === Operations.CREATE
+      const prop = blPendingOperation === DBOperations.CREATE
         ? 'created'
-        : blPendingOperation === Operations.UPDATE
+        : blPendingOperation === DBOperations.UPDATE
           ? 'updated'
           : 'deleted'
 
@@ -103,9 +103,9 @@ const getSyncStatus = result => {
     }
 
     if (status === 'error') {
-      const prop = blPendingOperation === Operations.CREATE
+      const prop = blPendingOperation === DBOperations.CREATE
         ? 'createErrors'
-        : blPendingOperation === Operations.UPDATE
+        : blPendingOperation === DBOperations.UPDATE
           ? 'updateErrors'
           : 'deleteErrors'
 

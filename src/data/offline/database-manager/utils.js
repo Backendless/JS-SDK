@@ -10,7 +10,7 @@ const DefaultPaging = {
 export const getWhereClause = dataQuery => {
   const whereClauseString = dataQuery instanceof QueryBuilder && dataQuery.getWhereClause()
 
-  return whereClauseString ? monitor.createJSStoreVisitor(dataQuery.getWhereClause()) : undefined
+  return whereClauseString ? monitor.createJSStoreVisitor(whereClauseString) : undefined
 }
 
 export const getPaging = dataQuery => dataQuery instanceof QueryBuilder ? dataQuery.getPaging() : DefaultPaging
@@ -45,7 +45,7 @@ export const parseBooleans = object => {
 export const convertObject = object => {
   for (const field in object) {
     if (typeof object[field] === 'boolean') {
-      object[field] = `${ object[field] }`
+      object[field] = `${object[field]}`
     }
 
     if (object[field] instanceof Geometry) {
@@ -62,4 +62,16 @@ export function parseObjects(objects) {
 
 export function parseObject(object) {
   return parseBooleans(object)
+}
+
+export function prepareOfflineSyncResponse(dbTables, response) {
+  const syncStatus = {
+    successfulCompletion: {},
+    failedCompletion    : {},
+  }
+
+  return response.forEach((status, i) => {
+    syncStatus.successfulCompletion[dbTables[i]] = status.successfulCompletion
+    syncStatus.failedCompletion[dbTables[i]] = status.failedCompletion
+  })
 }

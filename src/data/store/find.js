@@ -2,7 +2,7 @@ import Async from '../../request/async'
 import Utils from '../../utils'
 
 import { isOnline } from '../offline/network'
-import { DataRetrievalPolicy, LocalStoragePolicy } from '../offline/policy'
+import { DataRetrievalPolicy, LocalStoragePolicy } from '../offline/constants'
 
 import QueryBuilder from '../query-builder'
 import { extractQueryOptions } from './extract-query-options'

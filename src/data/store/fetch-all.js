@@ -1,31 +1,30 @@
 import QueryBuilder from '../query-builder'
 
-const MAX_PAGE_SIZE = 100 // max allowed value
+async function fetchAll(queryBuilder) {
+  queryBuilder = queryBuilder || new QueryBuilder()
 
-async function fetchAll(whereClause) {
-  whereClause = whereClause || new QueryBuilder()
-
-  if (!(whereClause instanceof QueryBuilder)) {
-    throw new Error('whereClause should be an instance of Backendless.DataQueryBuilder')
+  if (!(queryBuilder instanceof QueryBuilder)) {
+    throw new Error('queryBuilder should be an instance of Backendless.DataQueryBuilder')
   }
 
   let offset = 0
   let lastPageSize = 0
   const itemsCollection = []
+  const maxPageSize = this.app.Config.getPageSize()
 
   do {
-    whereClause.setPageSize(MAX_PAGE_SIZE)
-    whereClause.setOffset(offset)
-    whereClause.setStoragePolicy('DONOTSTOREANY')
+    queryBuilder.setPageSize(maxPageSize)
+    queryBuilder.setOffset(offset)
+    queryBuilder.setStoragePolicy(this.app.LocalStoragePolicy.DONOTSTOREANY)
 
-    const items = await this.find(whereClause)
+    const items = await this.find(queryBuilder)
 
     lastPageSize = items.length
 
     itemsCollection.push(...items)
 
-    offset += MAX_PAGE_SIZE
-  } while (lastPageSize >= MAX_PAGE_SIZE)
+    offset += maxPageSize
+  } while (lastPageSize >= maxPageSize)
 
   return itemsCollection
 }

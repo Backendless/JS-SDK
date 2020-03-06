@@ -54,6 +54,7 @@ const SERVICES = {
   'SharedObject'    : () => require('./rso').default,
   'LocalCache'      : () => require('./local-cache').default,
   'OfflineDBManager': () => require('./data/offline/database-manager').default,
+  'Config'          : () => require('./config').default,
 }
 
 class Backendless {
@@ -72,7 +73,7 @@ class Backendless {
   initConfig(config) {
     for (const key in DEFAULT_PROPS) {
       if (DEFAULT_PROPS.hasOwnProperty(key)) {
-        const privateKey = `__${ key }`
+        const privateKey = `__${key}`
 
         const defaultValue = this[privateKey] === undefined
           ? DEFAULT_PROPS[key]
@@ -108,7 +109,7 @@ class Backendless {
   }
 
   __getService(name) {
-    const privateName = `__${ name }`
+    const privateName = `__${name}`
 
     if (!this[privateName]) {
       const Service = SERVICES[name]()
@@ -129,7 +130,7 @@ class Backendless {
   set standalone(standalone) {
     throw new Error(
       'Setting value to Backendless.standalone directly is not possible, ' +
-      `instead you must use Backendless.initApp({ appId: [APP_ID], apiKey: [API_KEY], standalone: ${ standalone } })`
+      `instead you must use Backendless.initApp({ appId: [APP_ID], apiKey: [API_KEY], standalone: ${standalone} })`
     )
   }
 
@@ -140,8 +141,8 @@ class Backendless {
 
   set applicationId(appId) {
     throw new Error(
-      `Setting '${ appId }' value to Backendless.applicationId directly is not possible, ` +
-      `instead you must use Backendless.initApp('${ appId }', API_KEY)`
+      `Setting '${appId}' value to Backendless.applicationId directly is not possible, ` +
+      `instead you must use Backendless.initApp('${appId}', API_KEY)`
     )
   }
 
@@ -152,8 +153,8 @@ class Backendless {
 
   set secretKey(apiKey) {
     throw new Error(
-      `Setting '${ apiKey }' value to Backendless.secretKey directly is not possible, ` +
-      `instead you must use Backendless.initApp(APP_ID, '${ apiKey }')`
+      `Setting '${apiKey}' value to Backendless.secretKey directly is not possible, ` +
+      `instead you must use Backendless.initApp(APP_ID, '${apiKey}')`
     )
   }
 
@@ -173,7 +174,7 @@ class Backendless {
 
   set appPath(appPath) {
     throw new Error(
-      `Setting '${ appPath }' value to Backendless.appPath directly is not possible, ` +
+      `Setting '${appPath}' value to Backendless.appPath directly is not possible, ` +
       'instead you must use Backendless.initApp(APP_ID, API_KEY) for setup the value'
     )
   }
@@ -324,16 +325,20 @@ class Backendless {
     return this.__getService('LocalCache')
   }
 
-  get LocalStoragePolicy() {
-    return require('./data/offline/policy').LocalStoragePolicy
-  }
-
   get OfflineDBManager() {
     return this.__getService('OfflineDBManager')
   }
 
+  get LocalStoragePolicy() {
+    return require('./data/offline/constants').LocalStoragePolicy
+  }
+
   get DataRetrievalPolicy() {
-    return require('./data/offline/policy').DataRetrievalPolicy
+    return require('./data/offline/constants').DataRetrievalPolicy
+  }
+
+  get Config() {
+    return this.__getService('Config')
   }
 
   ///-------------- SERVICES -------------///

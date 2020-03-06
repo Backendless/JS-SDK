@@ -1,7 +1,7 @@
 import { ActionTypes, callbackManager } from '../offline/callback-manager'
 import { convertObject } from '../offline/database-manager/utils'
 import { isOnline } from '../offline/network'
-import Operations from '../offline/operations'
+import { DBOperations } from '../offline/constants'
 import { remove as deleteFromRemoteDB } from './remove'
 
 function updateObjectPendingOperation(object) {
@@ -10,7 +10,7 @@ function updateObjectPendingOperation(object) {
     set  : {
       ...convertObject(object),
       blLocalId         : object.objectId,
-      blPendingOperation: Operations.DELETE
+      blPendingOperation: DBOperations.DELETE
     },
     where: { blLocalId: object.objectId }
   })

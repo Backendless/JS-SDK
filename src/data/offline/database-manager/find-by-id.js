@@ -1,4 +1,5 @@
 import { parseObjects } from './utils'
+import { BackendlessError } from '../../../utils/error'
 
 export async function findById(tableName, objectId) {
   const objects = await this.app.OfflineDBManager.connection.select({
@@ -8,10 +9,7 @@ export async function findById(tableName, objectId) {
   })
 
   if (!objects.length) {
-    throw new Error(JSON.stringify({
-      code   : 1000,
-      message: `Entity with ID ${ objectId } not found`
-    }))
+    throw new BackendlessError(1000, `Entity with ID ${objectId} not found`, { tableName, objectId })
   }
 
   const [object] = parseObjects(objects)

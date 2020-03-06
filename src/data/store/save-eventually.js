@@ -2,13 +2,13 @@ import Utils from '../../utils'
 import { ActionTypes, callbackManager } from '../offline/callback-manager'
 import { convertObject } from '../offline/database-manager/utils'
 import { isOnline } from '../offline/network'
-import Operations from '../offline/operations'
+import { DBOperations } from '../offline/constants'
 import { save as saveToRemoteDB } from './save'
 
 async function storeLocally(object) {
   const objectToSave = convertObject({
     ...object,
-    blPendingOperation: object.objectId ? Operations.UPDATE : Operations.CREATE,
+    blPendingOperation: object.objectId ? DBOperations.UPDATE : DBOperations.CREATE,
     blLocalId         : object.objectId || object.blLocalId || Utils.uuid()
   })
 

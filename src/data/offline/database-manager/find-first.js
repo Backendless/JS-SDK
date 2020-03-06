@@ -1,4 +1,5 @@
 import { parseObjects } from './utils'
+import { BackendlessError } from '../../../utils/error'
 
 export async function findFirst(tableName) {
   const objects = await this.app.OfflineDBManager.connection.select({
@@ -11,10 +12,7 @@ export async function findFirst(tableName) {
   })
 
   if (!objects.length) {
-    throw new Error(JSON.stringify({
-      code   : 1010,
-      message: 'Unable to retrieve data - object store is empty'
-    }))
+    throw new BackendlessError(1010, 'Unable to retrieve data - object store is empty', { tableName })
   }
 
   const [object] = parseObjects(objects)

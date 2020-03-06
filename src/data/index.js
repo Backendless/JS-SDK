@@ -13,7 +13,7 @@ import WKTParser from './geo/wkt-parser'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import { SyncModes } from './offline/database-manager'
-import { DataRetrievalPolicy, LocalStoragePolicy } from './offline/policy'
+import { DataRetrievalPolicy, LocalStoragePolicy } from './offline/constants'
 
 import Permissions from './permissions'
 import QueryBuilder from './query-builder'
