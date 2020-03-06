@@ -77,8 +77,6 @@ const createSandbox = async api => {
 
   Object.assign(app, createApp)
 
-  await waitUntilAppIsConfigured(api, app)
-
   const appSettings = await api.settings.getAppSettings(app.id)
 
   Object.assign(app, appSettings)
@@ -86,19 +84,27 @@ const createSandbox = async api => {
   return sandbox
 }
 
-const waitUntilAppIsConfigured = async (api, app) => {
+const waitUntilAppIsConfigured = async app => {
   try {
-    await api.tables.get(app.id)
+    await Promise.all([
+      Backendless.Data.of('Users').find(),
+      Backendless.Data.of('Loggers').find(),
+      Backendless.Data.of('DeviceRegistration').find(),
+    ])
 
   } catch (e) {
+    console.log('App is not ready yet', e)
+
     await wait(5000)
 
-    await waitUntilAppIsConfigured(api, app)
+    await waitUntilAppIsConfigured(app)
   }
+
+  app.ready = true
 }
 
-const apiServerURL = 'https://apitest.backendless.com' || process.env.API_SERVER || 'http://localhost:9000'
-const consoleServerURL = 'https://devtest.backendless.com' || process.env.CONSOLE_SERVER || 'http://localhost:3000'
+const apiServerURL = process.env.API_SERVER || 'http://localhost:9000'
+const consoleServerURL = process.env.CONSOLE_SERVER || 'http://localhost:3000'
 
 const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
@@ -109,14 +115,21 @@ const createSandboxFor = each => () => {
     this.consoleApi = createClient(consoleServerURL)
     this.tablesAPI = new TablesAPI(this)
 
-    return createSandbox(this.consoleApi).then(sandbox => {
-      this.sandbox = sandbox
-      this.dev = sandbox.dev
-      this.app = sandbox.app
+    return createSandbox(this.consoleApi)
+      .then(sandbox => {
+        this.sandbox = sandbox
+        this.dev = sandbox.dev
+        this.app = sandbox.app
 
-      Backendless.serverURL = apiServerURL
-      Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
-    })
+        Backendless.serverURL = apiServerURL
+        Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
+      })
+      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(3000)]))
+      .then(() => {
+        if (!this.app.ready) {
+          throw new Error('App was created with error!')
+        }
+      })
   })
 
   afterHook(function() {
