@@ -10,8 +10,6 @@ const TEST_APP_NAME_PATTERN = /^test_.{32}$/
 const USE_PERSISTED_LOCAL_DEV = true
 const DESTROY_APPS_AFTER_TESTS = false
 
-let loggedInUser
-
 const generateDev = () => ({
   firstName: 'Test',
   lastName : 'Test',
@@ -63,17 +61,11 @@ const createSandbox = async api => {
       .then(result => dev.id = result.id)
   }
 
-  await Promise.resolve()
-    .then(() => loggedInUser || api.user.login(dev.email, dev.pwd))
-    .then(user => {
-      if (USE_PERSISTED_LOCAL_DEV) {
-        loggedInUser = user
-      }
+  const user = await api.user.login(dev.email, dev.pwd)
 
-      dev.id = user.id
-      dev.name = user.name
-      dev.authKey = user.authKey
-    })
+  dev.id = user.id
+  dev.name = user.name
+  dev.authKey = user.authKey
 
   if (!DESTROY_APPS_AFTER_TESTS) {
     await destroyAllTestApps(api)
@@ -130,7 +122,7 @@ const createSandboxFor = each => () => {
         Backendless.serverURL = apiServerURL
         Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
       })
-      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(30000)]))
+      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(120000)]))
       .then(() => {
         if (!this.app.ready) {
           throw new Error('App was created with error!')
