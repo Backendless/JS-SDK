@@ -124,7 +124,7 @@ const createSandboxFor = each => () => {
         Backendless.serverURL = apiServerURL
         Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
       })
-      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(3000)]))
+      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(30000)]))
       .then(() => {
         if (!this.app.ready) {
           throw new Error('App was created with error!')
