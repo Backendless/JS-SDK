@@ -3,7 +3,6 @@ import sandbox from '../helpers/sandbox'
 
 const Backendless = sandbox.Backendless
 
-
 describe('Backendless.Counters', function() {
 
   sandbox.forSuite()
@@ -97,7 +96,7 @@ describe('Backendless.Counters', function() {
     })
 
     it('incrementAndGet', function() {
-      const counter = Backendless.Counters.of('instance_instance_incrementAndGet')
+      const counter = Backendless.Counters.of('instance_incrementAndGet')
 
       return Promise.resolve()
         .then(() => expect(counter.incrementAndGet()).to.eventually.be.equal(1))
@@ -106,7 +105,7 @@ describe('Backendless.Counters', function() {
     })
 
     it('getAndIncrement', function() {
-      const counter = Backendless.Counters.of('instance_instance_getAndIncrement')
+      const counter = Backendless.Counters.of('instance_getAndIncrement')
 
       return Promise.resolve()
         .then(() => expect(counter.getAndIncrement()).to.eventually.be.equal(0))
@@ -116,7 +115,7 @@ describe('Backendless.Counters', function() {
     })
 
     it('decrementAndGet', function() {
-      const counter = Backendless.Counters.of('instance_instance_decrementAndGet')
+      const counter = Backendless.Counters.of('instance_decrementAndGet')
 
       return Promise.resolve()
         .then(() => expect(counter.decrementAndGet()).to.eventually.be.equal(-1))
@@ -126,7 +125,7 @@ describe('Backendless.Counters', function() {
     })
 
     it('getAndDecrement', function() {
-      const counter = Backendless.Counters.of('instance_instance_getAndDecrement')
+      const counter = Backendless.Counters.of('instance_getAndDecrement')
 
       return Promise.resolve()
         .then(() => expect(counter.getAndDecrement()).to.eventually.be.equal(0))
@@ -136,7 +135,7 @@ describe('Backendless.Counters', function() {
     })
 
     it('addAndGet', function() {
-      const counter = Backendless.Counters.of('instance_instance_addAndGet')
+      const counter = Backendless.Counters.of('instance_addAndGet')
 
       return Promise.resolve()
         .then(() => expect(counter.addAndGet(10)).to.eventually.be.equal(10, 'method should respond with new initial value'))

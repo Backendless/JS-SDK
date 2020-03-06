@@ -1,6 +1,7 @@
 import { createClient } from 'backendless-console-sdk'
 import { TablesAPI } from './tables'
-import * as Utils  from './utils'
+import { wait } from './promise'
+import * as Utils from './utils'
 // import Backendless from '../../../src/backendless'
 const Backendless = require('../../../lib')
 
@@ -72,18 +73,32 @@ const createSandbox = async api => {
     await destroyAllTestApps(api)
   }
 
-  return Promise.resolve()
-    .then(() => api.apps.createApp({ appName: app.name, refCode: null }))
-    .then(result => Object.assign(app, result))
+  const createApp = await api.apps.createApp({ appName: app.name, refCode: null })
 
-    .then(() => api.settings.getAppSettings(app.id))
-    .then(appSettings => Object.assign(app, appSettings))
+  Object.assign(app, createApp)
 
-    .then(() => sandbox)
+  await waitUntilAppIsConfigured(api, app)
+
+  const appSettings = await api.settings.getAppSettings(app.id)
+
+  Object.assign(app, appSettings)
+
+  return sandbox
 }
 
-const apiServerURL = process.env.API_SERVER || 'http://localhost:9000'
-const consoleServerURL = process.env.CONSOLE_SERVER || 'http://localhost:3000'
+const waitUntilAppIsConfigured = async (api, app) => {
+  try {
+    await api.tables.get(app.id)
+
+  } catch (e) {
+    await wait(5000)
+
+    await waitUntilAppIsConfigured(api, app)
+  }
+}
+
+const apiServerURL = 'https://apitest.backendless.com' || process.env.API_SERVER || 'http://localhost:9000'
+const consoleServerURL = 'https://devtest.backendless.com' || process.env.CONSOLE_SERVER || 'http://localhost:3000'
 
 const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
