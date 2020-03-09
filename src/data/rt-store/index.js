@@ -143,7 +143,7 @@ export default class EventHandler extends RTListeners {
     this.addSubscription(event, this.app.RT.subscriptions.onObjectsChanges, {
       callback,
       onError,
-      parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance : undefined,
+      parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance.bind(this) : undefined,
       params: {
         event,
         whereClause
