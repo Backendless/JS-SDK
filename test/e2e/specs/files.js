@@ -101,12 +101,14 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.exists(path)).to.eventually.be.false)
     })
 
-    it('existing non-empty directory', function() {
-      return this.consoleApi.files.createFile(this.app.id, 'dir/file', '')
-        .then(() => expect(Files.exists('dir')).to.eventually.be.true)
-        .then(() => Files.remove('dir'))
-        .then(() => Files.listing('/'))
-        .then(() => expect(Files.exists('dir')).to.eventually.be.false)
+    it('existing non-empty directory', async () => {
+      await createFile('dir/file')
+
+      expect(await Files.exists('dir')).to.equal(true)
+
+      await Files.remove('dir')
+
+      expect(await Files.exists('dir')).to.equal(false)
     })
 
     it('non-existing path', function() {
@@ -128,15 +130,18 @@ describe('Backendless.Files', function() {
         .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
     })
 
-    it('empty folder', function() {
+    it('empty folder', async () => {
       const beforeRename = '/rename/empty/dir-before'
       const afterRename = '/rename/empty/dir-after'
 
-      return createDir('', beforeRename)
-        .then(() => expect(Files.renameFile(beforeRename, 'dir-after')).to.eventually.have.string(afterRename))
-        .then(() => Files.listing('/'))
-        .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
-        .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
+      await createDir('', beforeRename)
+
+      const renamingResult = await Files.renameFile(beforeRename, 'dir-after')
+
+      expect(renamingResult).to.equal(`${Backendless.urls.files()}${afterRename}`)
+
+      expect(await Files.exists(beforeRename)).to.equal(false)
+      expect(await Files.exists(afterRename)).to.equal(true)
     })
 
     it('non empty folder', function() {

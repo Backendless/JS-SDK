@@ -390,19 +390,22 @@ describe('Backendless.Users', function() {
         })
     })
 
-    it('neighbor', function() {
-      const firstUser = randUser()
-      const secondUser = randUser()
-      secondUser.email = 'test@email.com'
+    it('neighbor', async () => {
+      const firstUser = {
+        email   : 'neighbor-1@email.com',
+        password: 'password'
+      }
 
-      return Backendless.UserService.register(firstUser).then(neighbor => {
-          return Backendless.UserService.register(secondUser).then(() => {
-            expect(Backendless.UserService.update(neighbor))
-              .to.eventually.be.rejected
-              .and.eventually.have.property('code', 3029)
-          })
-        }
-      )
+      const secondUser = {
+        email   : 'neighbor-2@email.com',
+        password: 'password'
+      }
+
+      const neighbor = await Backendless.UserService.register(firstUser)
+
+      await Backendless.UserService.register(secondUser)
+
+      await Backendless.UserService.update(neighbor)
     })
 
     it('updating an another user should not override currentUser', function() {

@@ -5,6 +5,7 @@ import * as Utils from './utils'
 // import Backendless from '../../../src/backendless'
 const Backendless = require('../../../lib')
 
+const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS === 'true'
 const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
 const CONSOLE_SERVER = process.env.CONSOLE_SERVER || 'http://localhost:3000'
 const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'foo@foo.com'
@@ -13,7 +14,7 @@ const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'secret'
 const TEST_APP_NAME_PATTERN = /^test_.{32}$/
 
 const USE_PERSISTED_LOCAL_DEV = true
-const DESTROY_APPS_AFTER_TESTS = false
+const DESTROY_APP_AFTER_TEST = false
 
 const generateDev = () => ({
   firstName: 'Test',
@@ -31,18 +32,29 @@ const generateApp = () => ({
   name: `test_${Utils.uid()}`
 })
 
-const destroyAllTestApps = async api => {
-  const apps = await api.apps.getApps()
+const destroyAllTestApps = (() => {
+  let prevRequest = null
 
-  await Promise.all(apps.map(app => {
-    if (TEST_APP_NAME_PATTERN.test(app.name)) {
-      return api.apps.deleteApp(app.id)
+  return async api => {
+    if (prevRequest) {
+      return prevRequest
     }
-  }))
-}
+
+    return prevRequest = Promise.resolve()
+      .then(async () => {
+        const apps = await api.apps.getApps()
+
+        await Promise.all(apps.map(app => {
+          if (TEST_APP_NAME_PATTERN.test(app.name)) {
+            return api.apps.deleteApp(app.id)
+          }
+        }))
+      })
+  }
+})()
 
 const createDestroyer = sandbox => async () => {
-  if (DESTROY_APPS_AFTER_TESTS) {
+  if (DESTROY_APP_AFTER_TEST || !USE_PERSISTED_LOCAL_DEV) {
     await sandbox.api.apps.deleteApp(sandbox.app.id)
   }
 
@@ -72,7 +84,7 @@ const createSandbox = async api => {
   dev.name = user.name
   dev.authKey = user.authKey
 
-  if (!DESTROY_APPS_AFTER_TESTS) {
+  if (DESTROY_ALL_PREV_APPS && USE_PERSISTED_LOCAL_DEV) {
     await destroyAllTestApps(api)
   }
 
@@ -127,13 +139,6 @@ const createSandboxFor = each => () => {
         if (!this.app.ready) {
           throw new Error('App was created with error!')
         }
-
-        console.log('________________________________________________________________________________')
-        console.log('================================================================================')
-        console.log('================================================================================')
-        console.log(`=========  APP:${this.app.id} IS READY FOR TEST  =========`)
-        console.log('================================================================================')
-        console.log('================================================================================')
       })
   })
 
