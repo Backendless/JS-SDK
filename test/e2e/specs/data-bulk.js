@@ -1,5 +1,6 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
+import * as Utils from '../helpers/utils'
 
 const Backendless = sandbox.Backendless
 
@@ -27,10 +28,11 @@ describe('Data - Bulk Operations', function() {
 
   let testDataItems
   let TestTable
+  let testCaseMarker
 
-  sandbox.forTest()
+  sandbox.forSuite()
 
-  beforeEach(async function() {
+  before(async function() {
     TestTable = Backendless.Data.of(TEST_TABLE_NAME)
 
     await this.tablesAPI.createTable(TEST_TABLE_NAME)
@@ -38,38 +40,61 @@ describe('Data - Bulk Operations', function() {
     await this.tablesAPI.createColumn(TEST_TABLE_NAME, 'kind', this.tablesAPI.DataTypes.STRING)
   })
 
+  beforeEach(async () => {
+    testCaseMarker = Utils.uidShort()
+  })
+
   describe('Create Operation', function() {
 
     describe('should save successful when', function() {
-      it('passed non empty objects in array', function() {
-        return TestTable.bulkCreate(TEST_DATA)
-          .then(result => {
-            expect(result).to.be.an('array')
 
-            TEST_DATA.forEach((item, index) => {
-              expect(result[index]).to.be.an('string')
-            })
-          })
-          .then(() => TestTable.find())
-          .then(result => {
-            expect(result.length).to.be.equal(TEST_DATA.length)
-          })
+      it('passed non empty objects in array', async function() {
+        const sourceItems = [
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'cat' }
+        ]
+
+        const result = await TestTable.bulkCreate(sourceItems)
+
+        expect(result).to.be.an('array')
+        expect(result).to.have.length(4)
+
+        expect(result[0]).to.be.an('string')
+        expect(result[1]).to.be.an('string')
+        expect(result[2]).to.be.an('string')
+        expect(result[3]).to.be.an('string')
+
+        const query = Backendless.Data.QueryBuilder.create()
+          .setWhereClause('name like \'non-empty-%\'')
+
+        const savedItems = await TestTable.find(query)
+
+        expect(savedItems).to.be.an('array')
+        expect(savedItems).to.have.length(4)
       })
 
-      it('passed a few empty objects in array', function() {
-        return TestTable.bulkCreate([TEST_DATA[1], {}, TEST_DATA[2], {}])
-          .then(result => {
-            expect(result).to.be.an('array')
+      it('passed a few empty objects in array', async function() {
+        const sourceItems = [
+          { name: `few-empty-${Utils.uid()}`, kind: 'dog' },
+          {},
+          { name: `few-empty-${Utils.uid()}`, kind: 'dog' },
+          {}
+        ]
 
-            expect(result[0]).to.be.an('string')
-            expect(result[1]).to.be.an('string')
-            expect(result[2]).to.be.an('string')
-            expect(result[3]).to.be.an('string')
-          })
-          .then(() => TestTable.find())
-          .then(result => {
-            expect(result.length).to.be.equal(4)
-          })
+        const result = await TestTable.bulkCreate(sourceItems)
+
+        expect(result).to.be.an('array')
+        expect(result).to.have.length(4)
+
+        const query = Backendless.Data.QueryBuilder.create()
+          .setWhereClause(`objectId in (${result.map(o => `'${o}'`).join(',')})`)
+
+        const savedItems = await TestTable.find(query)
+
+        expect(savedItems).to.be.an('array')
+        expect(savedItems).to.have.length(4)
       })
     })
 
@@ -132,17 +157,19 @@ describe('Data - Bulk Operations', function() {
   })
 
   describe('Delete Operation', function() {
-    beforeEach(() => {
-      testDataItems = []
 
-      return TEST_DATA.reduce((promise, data) => {
-        return promise.then(() => TestTable.save(data).then(item => testDataItems.push(item)))
-      }, Promise.resolve())
+    beforeEach(async () => {
+      testDataItems = await Promise.all([
+        TestTable.save({ name: `update-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'dog' }),
+        TestTable.save({ name: `update-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'dog' }),
+        TestTable.save({ name: `update-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'dog' }),
+        TestTable.save({ name: `update-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'cat' }),
+      ])
     })
 
     describe('should delete successful when', function() {
       it('used where clause', function() {
-        return TestTable.bulkDelete('kind=\'dog\'')
+        return TestTable.bulkDelete(`name like '%${testCaseMarker}%' and kind='dog'`)
           .then(result => {
             expect(result).to.be.equal(3)
           })
@@ -241,25 +268,30 @@ describe('Data - Bulk Operations', function() {
   })
 
   describe('Update Operation', function() {
-    beforeEach(() => {
-      testDataItems = []
 
-      return TEST_DATA.reduce((promise, data) => {
-        return promise.then(() => TestTable.save(data).then(item => testDataItems.push(item)))
-      }, Promise.resolve())
+    beforeEach(async () => {
+      testDataItems = await Promise.all([
+        TestTable.save({ name: `delete-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'dog' }),
+        TestTable.save({ name: `delete-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'dog' }),
+        TestTable.save({ name: `delete-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'dog' }),
+        TestTable.save({ name: `delete-operation-${testCaseMarker}-${Utils.uid()}`, kind: 'cat' }),
+      ])
     })
 
     describe('should update successful when', function() {
 
-      it('used where clause', function() {
-        return TestTable.bulkUpdate('kind=\'dog\'', { kind: 'cat' })
-          .then(result => {
-            expect(result).to.be.equal(3)
-          })
-          .then(() => TestTable.find(Backendless.DataQueryBuilder.create().setWhereClause('kind=\'cat\'')))
-          .then(result => {
-            expect(result.length).to.be.equal(4)
-          })
+      it('used where clause', async function() {
+        const result = await TestTable.bulkUpdate(`name like '%${testCaseMarker}%' and kind='dog'`, { kind: 'cat' })
+
+        expect(result).to.be.equal(3)
+
+        const query = Backendless.DataQueryBuilder.create()
+          .setWhereClause(`name like '%${testCaseMarker}%' and kind='cat'`)
+
+        const savedItems = await TestTable.find(query)
+
+        expect(savedItems).to.be.an('array')
+        expect(savedItems.length).to.be.equal(4)
       })
 
     })

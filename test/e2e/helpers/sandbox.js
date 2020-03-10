@@ -1,8 +1,14 @@
 import { createClient } from 'backendless-console-sdk'
 import { TablesAPI } from './tables'
-import * as Utils  from './utils'
+import { wait } from './promise'
+import * as Utils from './utils'
 // import Backendless from '../../../src/backendless'
 const Backendless = require('../../../lib')
+
+const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
+const CONSOLE_SERVER = process.env.CONSOLE_SERVER || 'http://localhost:3000'
+const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'foo@foo.com'
+const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'secret'
 
 const TEST_APP_NAME_PATTERN = /^test_.{32}$/
 
@@ -17,8 +23,8 @@ const generateDev = () => ({
 })
 
 const persistedLocalDev = () => ({
-  email: 'foo@foo.com',
-  pwd  : 'secret'
+  email: TEST_USER_EMAIL,
+  pwd  : TEST_USER_PASSWORD
 })
 
 const generateApp = () => ({
@@ -60,30 +66,43 @@ const createSandbox = async api => {
       .then(result => dev.id = result.id)
   }
 
-  await Promise.resolve()
-    .then(() => api.user.login(dev.email, dev.pwd))
-    .then(({ id, name, authKey }) => {
-      dev.id = id
-      dev.name = name
-      dev.authKey = authKey
-    })
+  const user = await api.user.login(dev.email, dev.pwd)
+
+  dev.id = user.id
+  dev.name = user.name
+  dev.authKey = user.authKey
 
   if (!DESTROY_APPS_AFTER_TESTS) {
     await destroyAllTestApps(api)
   }
 
-  return Promise.resolve()
-    .then(() => api.apps.createApp({ appName: app.name, refCode: null }))
-    .then(result => Object.assign(app, result))
+  const createApp = await api.apps.createApp({ appName: app.name, refCode: null })
 
-    .then(() => api.settings.getAppSettings(app.id))
-    .then(appSettings => Object.assign(app, appSettings))
+  Object.assign(app, createApp)
 
-    .then(() => sandbox)
+  const appSettings = await api.settings.getAppSettings(app.id)
+
+  Object.assign(app, appSettings)
+
+  return sandbox
 }
 
-const apiServerURL = process.env.API_SERVER || 'http://localhost:9000'
-const consoleServerURL = process.env.CONSOLE_SERVER || 'http://localhost:3000'
+const waitUntilAppIsConfigured = async app => {
+  try {
+    await Promise.all([
+      Backendless.Data.of('Users').find(),
+    ])
+
+  } catch (e) {
+    console.log('App is not ready yet', e)
+
+    await wait(5000)
+
+    await waitUntilAppIsConfigured(app)
+  }
+
+  app.ready = true
+}
 
 const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
@@ -91,17 +110,31 @@ const createSandboxFor = each => () => {
 
   beforeHook(function() {
     this.timeout(120000)
-    this.consoleApi = createClient(consoleServerURL)
+    this.consoleApi = createClient(CONSOLE_SERVER)
     this.tablesAPI = new TablesAPI(this)
 
-    return createSandbox(this.consoleApi).then(sandbox => {
-      this.sandbox = sandbox
-      this.dev = sandbox.dev
-      this.app = sandbox.app
+    return createSandbox(this.consoleApi)
+      .then(sandbox => {
+        this.sandbox = sandbox
+        this.dev = sandbox.dev
+        this.app = sandbox.app
 
-      Backendless.serverURL = apiServerURL
-      Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
-    })
+        Backendless.serverURL = API_SERVER
+        Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
+      })
+      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(120000)]))
+      .then(() => {
+        if (!this.app.ready) {
+          throw new Error('App was created with error!')
+        }
+
+        console.log('________________________________________________________________________________')
+        console.log('================================================================================')
+        console.log('================================================================================')
+        console.log(`=========  APP:${this.app.id} IS READY FOR TEST  =========`)
+        console.log('================================================================================')
+        console.log('================================================================================')
+      })
   })
 
   afterHook(function() {

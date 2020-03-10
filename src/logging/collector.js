@@ -8,8 +8,6 @@ class LoggingCollector {
   constructor(app) {
     this.app = app
 
-    this.url = this.app.urls.logging()
-
     this.flush = Utils.promisified(this.flush)
     this.flushSync = Utils.synchronized(this.flush)
 
@@ -102,7 +100,7 @@ class LoggingCollector {
       this.app.request.put({
         isAsync     : !!asyncHandler,
         asyncHandler: asyncHandler && new Async(cb('success'), cb('fault')),
-        url         : this.url,
+        url         : this.app.urls.logging(),
         data        : this.pool
       })
 

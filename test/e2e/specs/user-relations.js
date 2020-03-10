@@ -1,104 +1,76 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
+import * as Utils from '../helpers/utils'
 
 const Backendless = sandbox.Backendless
 
 describe('User - Relations', function() {
-  let consoleApi
-  let appId
+  let testCaseMarker
 
-  sandbox.forTest()
+  const USERS_TABLE = 'Users'
 
-  const createRelationColumn = (tableName, columnName, toTableName, relationshipType) => {
-    return consoleApi.tables.createColumn(appId, { name: tableName }, {
-      dataType: 'DATA_REF',
-      name    : columnName,
-      toTableName,
-      relationshipType
-    })
-  }
+  let usersStore
 
-  beforeEach(function() {
-    consoleApi = this.consoleApi
-    appId = this.app.id
+  sandbox.forSuite()
+
+  before(async function() {
+    usersStore = Backendless.Data.of(Backendless.User)
+
+    await this.tablesAPI.createRelationColumn(USERS_TABLE, 'friends', USERS_TABLE, this.tablesAPI.RelationTypes.ONE_TO_MANY)
+    await this.tablesAPI.createRelationColumn(USERS_TABLE, 'blocked', USERS_TABLE, this.tablesAPI.RelationTypes.ONE_TO_MANY)
   })
 
-  it('Circular Users relations', function() {
-    const usersStore = Backendless.Data.of(Backendless.User)
+  beforeEach(async function() {
+    testCaseMarker = Utils.uidShort()
+  })
 
-    let user1 = { email: 'user1@bar.com', password: '123456' }
-    let user2 = { email: 'user2@bar.com', password: '123456' }
-    let user3 = { email: 'user3@bar.com', password: '123456' }
-    let user4 = { email: 'user4@bar.com', password: '123456' }
-    let user5 = { email: 'user5@bar.com', password: '123456' }
-    let user6 = { email: 'user6@bar.com', password: '123456' }
+  it('Circular Users relations', async () => {
+    const [user1Id, user2Id, user3Id, user4Id, user5Id, user6Id] = await usersStore.bulkCreate([
+      { email: `user-${testCaseMarker}-1@bar.com`, password: '123456' },
+      { email: `user-${testCaseMarker}-2@bar.com`, password: '123456' },
+      { email: `user-${testCaseMarker}-3@bar.com`, password: '123456' },
+      { email: `user-${testCaseMarker}-4@bar.com`, password: '123456' },
+      { email: `user-${testCaseMarker}-5@bar.com`, password: '123456' },
+      { email: `user-${testCaseMarker}-6@bar.com`, password: '123456' },
+    ])
 
-    return Promise.resolve()
-      .then(() => {
-        return Promise.resolve()
-          .then(() => usersStore.save(user1))
-          .then(() => usersStore.save(user2))
-          .then(() => usersStore.save(user3))
-          .then(() => usersStore.save(user4))
-          .then(() => usersStore.save(user5))
-          .then(() => usersStore.save(user6))
-          .then(() => usersStore.find(Backendless.DataQueryBuilder.create().setSortBy('created')))
-      })
-      .then(users => {
-        user1 = users[0]
-        user2 = users[1]
-        user3 = users[2]
-        user4 = users[3]
-        user5 = users[4]
-        user6 = users[5]
-      })
-      .then(() => {
-        return Promise.all([
-          createRelationColumn('Users', 'friends', 'Users', 'ONE_TO_MANY'),
-          createRelationColumn('Users', 'blocked', 'Users', 'ONE_TO_MANY'),
-        ])
-      })
-      .then(() => {
-        return Promise.all([
-          usersStore.addRelation(user1.objectId, 'friends', [user2, user3, user6]),
-          usersStore.addRelation(user1.objectId, 'blocked', [user2, user3, user4, user5]),
-        ])
-      })
-      .then(() => {
-        const query = Backendless.DataQueryBuilder
-          .create()
-          .setWhereClause(`objectId = '${user1.objectId}'`)
-          .setRelated(['friends', 'blocked'])
-          .setSortBy('created')
+    await Promise.all([
+      usersStore.addRelation(user1Id, 'friends', [user2Id, user3Id, user6Id]),
+      usersStore.addRelation(user1Id, 'blocked', [user2Id, user3Id, user4Id, user5Id]),
+    ])
 
-        return Backendless.Data.of('Users').find(query)
-      })
-      .then(users => {
-        expect(users[0].objectId).to.be.equal(user1.objectId)
+    const query = Backendless.DataQueryBuilder
+      .create()
+      .setWhereClause(`objectId = '${user1Id}'`)
+      .setRelated(['friends', 'blocked'])
+      .setSortBy('created')
 
-        expect(users[0].friends.length).to.be.equal(3)
-        expect(users[0].blocked.length).to.be.equal(4)
+    const users = await usersStore.find(query)
 
-        const friendsUser2 = users[0].friends.find(o => o.objectId === user2.objectId)
-        const friendsUser3 = users[0].friends.find(o => o.objectId === user3.objectId)
-        const friendsUser6 = users[0].friends.find(o => o.objectId === user6.objectId)
+    expect(users[0].objectId).to.be.equal(user1Id)
 
-        const blockedUser2 = users[0].blocked.find(o => o.objectId === user2.objectId)
-        const blockedUser3 = users[0].blocked.find(o => o.objectId === user3.objectId)
-        const blockedUser4 = users[0].blocked.find(o => o.objectId === user4.objectId)
-        const blockedUser5 = users[0].blocked.find(o => o.objectId === user5.objectId)
+    expect(users[0].friends.length).to.be.equal(3)
+    expect(users[0].blocked.length).to.be.equal(4)
 
-        expect(friendsUser2.objectId).to.be.equal(user2.objectId)
-        expect(friendsUser3.objectId).to.be.equal(user3.objectId)
-        expect(friendsUser6.objectId).to.be.equal(user6.objectId)
+    const friendsUser2 = users[0].friends.find(o => o.objectId === user2Id)
+    const friendsUser3 = users[0].friends.find(o => o.objectId === user3Id)
+    const friendsUser6 = users[0].friends.find(o => o.objectId === user6Id)
 
-        expect(blockedUser2.objectId).to.be.equal(user2.objectId)
-        expect(blockedUser3.objectId).to.be.equal(user3.objectId)
-        expect(blockedUser4.objectId).to.be.equal(user4.objectId)
-        expect(blockedUser5.objectId).to.be.equal(user5.objectId)
+    const blockedUser2 = users[0].blocked.find(o => o.objectId === user2Id)
+    const blockedUser3 = users[0].blocked.find(o => o.objectId === user3Id)
+    const blockedUser4 = users[0].blocked.find(o => o.objectId === user4Id)
+    const blockedUser5 = users[0].blocked.find(o => o.objectId === user5Id)
 
-        expect(friendsUser2).to.deep.equal(blockedUser2)
-        expect(friendsUser3).to.deep.equal(blockedUser3)
-      })
+    expect(friendsUser2.objectId).to.be.equal(user2Id)
+    expect(friendsUser3.objectId).to.be.equal(user3Id)
+    expect(friendsUser6.objectId).to.be.equal(user6Id)
+
+    expect(blockedUser2.objectId).to.be.equal(user2Id)
+    expect(blockedUser3.objectId).to.be.equal(user3Id)
+    expect(blockedUser4.objectId).to.be.equal(user4Id)
+    expect(blockedUser5.objectId).to.be.equal(user5Id)
+
+    expect(friendsUser2).to.deep.equal(blockedUser2)
+    expect(friendsUser3).to.deep.equal(blockedUser3)
   })
 })
