@@ -193,8 +193,6 @@ describe('Backendless.Geo', function() {
           .then(points => expect(points).to.have.lengthOf(1))
       })
 
-      it('with 100% metadata threshold coincidence')
-
       it('by radius', function() {
         const metersPerDegree = 111319.9
         const degreesToMeters = degrees => degrees * metersPerDegree

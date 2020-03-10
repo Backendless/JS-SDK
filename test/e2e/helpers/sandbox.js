@@ -1,89 +1,99 @@
 import { createClient } from 'backendless-console-sdk'
 import { TablesAPI } from './tables'
-import * as Utils  from './utils'
+import { wait } from './promise'
+import * as Utils from './utils'
 // import Backendless from '../../../src/backendless'
 const Backendless = require('../../../lib')
 
+const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
+const CONSOLE_SERVER = process.env.CONSOLE_SERVER || 'http://localhost:3000'
+const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'foo@foo.com'
+const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'secret'
+const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS === 'true'
+const DESTROY_APP_AFTER_TEST = process.env.DESTROY_APP_AFTER_TEST !== 'false'
+
 const TEST_APP_NAME_PATTERN = /^test_.{32}$/
 
-const USE_PERSISTED_LOCAL_DEV = true
-const DESTROY_APPS_AFTER_TESTS = false
-
-const generateDev = () => ({
-  firstName: 'Test',
-  lastName : 'Test',
-  email    : `${Utils.uid()}@test`,
-  pwd      : Utils.uid()
-})
-
 const persistedLocalDev = () => ({
-  email: 'foo@foo.com',
-  pwd  : 'secret'
+  email: TEST_USER_EMAIL,
+  pwd  : TEST_USER_PASSWORD
 })
 
 const generateApp = () => ({
   name: `test_${Utils.uid()}`
 })
 
-const destroyAllTestApps = async api => {
-  const apps = await api.apps.getApps()
+const destroyAllTestApps = (() => {
+  let prevRequest = null
 
-  await Promise.all(apps.map(app => {
-    if (TEST_APP_NAME_PATTERN.test(app.name)) {
-      return api.apps.deleteApp(app.id)
+  return async api => {
+    if (prevRequest) {
+      return prevRequest
     }
-  }))
-}
+
+    return prevRequest = Promise.resolve()
+      .then(async () => {
+        const apps = await api.apps.getApps()
+
+        await Promise.all(apps.map(app => {
+          if (TEST_APP_NAME_PATTERN.test(app.name)) {
+            return api.apps.deleteApp(app.id)
+          }
+        }))
+      })
+  }
+})()
 
 const createDestroyer = sandbox => async () => {
-  if (DESTROY_APPS_AFTER_TESTS) {
+  if (DESTROY_APP_AFTER_TEST) {
     await sandbox.api.apps.deleteApp(sandbox.app.id)
-  }
-
-  if (!USE_PERSISTED_LOCAL_DEV) {
-    await sandbox.api.user.suicide()
   }
 }
 
 const createSandbox = async api => {
   const app = generateApp()
-  const dev = USE_PERSISTED_LOCAL_DEV
-    ? persistedLocalDev()
-    : generateDev()
+  const dev = persistedLocalDev()
 
   const sandbox = { app, api, dev }
   sandbox.destroy = createDestroyer(sandbox)
 
-  if (!USE_PERSISTED_LOCAL_DEV) {
-    await Promise.resolve()
-      .then(() => api.user.register(dev))
-      .then(result => dev.id = result.id)
-  }
+  const user = await api.user.login(dev.email, dev.pwd)
 
-  await Promise.resolve()
-    .then(() => api.user.login(dev.email, dev.pwd))
-    .then(({ id, name, authKey }) => {
-      dev.id = id
-      dev.name = name
-      dev.authKey = authKey
-    })
+  dev.id = user.id
+  dev.name = user.name
+  dev.authKey = user.authKey
 
-  if (!DESTROY_APPS_AFTER_TESTS) {
+  if (DESTROY_ALL_PREV_APPS) {
     await destroyAllTestApps(api)
   }
 
-  return Promise.resolve()
-    .then(() => api.apps.createApp({ appName: app.name, refCode: null }))
-    .then(result => Object.assign(app, result))
+  const createApp = await api.apps.createApp({ appName: app.name, refCode: null })
 
-    .then(() => api.settings.getAppSettings(app.id))
-    .then(appSettings => Object.assign(app, appSettings))
+  Object.assign(app, createApp)
 
-    .then(() => sandbox)
+  const appSettings = await api.settings.getAppSettings(app.id)
+
+  Object.assign(app, appSettings)
+
+  return sandbox
 }
 
-const apiServerURL = process.env.API_SERVER || 'http://localhost:9000'
-const consoleServerURL = process.env.CONSOLE_SERVER || 'http://localhost:3000'
+const waitUntilAppIsConfigured = async app => {
+  try {
+    await Promise.all([
+      Backendless.Data.of('Users').find(),
+    ])
+
+  } catch (e) {
+    console.log('App is not ready yet', e)
+
+    await wait(5000)
+
+    await waitUntilAppIsConfigured(app)
+  }
+
+  app.ready = true
+}
 
 const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
@@ -91,17 +101,24 @@ const createSandboxFor = each => () => {
 
   beforeHook(function() {
     this.timeout(120000)
-    this.consoleApi = createClient(consoleServerURL)
+    this.consoleApi = createClient(CONSOLE_SERVER)
     this.tablesAPI = new TablesAPI(this)
 
-    return createSandbox(this.consoleApi).then(sandbox => {
-      this.sandbox = sandbox
-      this.dev = sandbox.dev
-      this.app = sandbox.app
+    return createSandbox(this.consoleApi)
+      .then(sandbox => {
+        this.sandbox = sandbox
+        this.dev = sandbox.dev
+        this.app = sandbox.app
 
-      Backendless.serverURL = apiServerURL
-      Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
-    })
+        Backendless.serverURL = API_SERVER
+        Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
+      })
+      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(120000)]))
+      .then(() => {
+        if (!this.app.ready) {
+          throw new Error('App was created with error!')
+        }
+      })
   })
 
   afterHook(function() {

@@ -1,5 +1,6 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
+import { wait } from '../helpers/promise'
 
 const Backendless = sandbox.Backendless
 
@@ -13,6 +14,8 @@ describe('Backendless.Files', function() {
   let createDir
   let createFile
   let readFile
+
+  const waiter = () => wait(2000)
 
   before(function() {
     Files = Backendless.Files
@@ -87,7 +90,7 @@ describe('Backendless.Files', function() {
       return createFile(path)
         .then(() => expect(Files.exists(path)).to.eventually.be.true)
         .then(() => Files.remove(path))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(path)).to.eventually.be.false)
     })
 
@@ -97,16 +100,20 @@ describe('Backendless.Files', function() {
       return createDir('/', 'emptyDir')
         .then(() => expect(Files.exists(path)).to.eventually.be.true)
         .then(() => Files.remove(path))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(path)).to.eventually.be.false)
     })
 
-    it('existing non-empty directory', function() {
-      return this.consoleApi.files.createFile(this.app.id, 'dir/file', '')
-        .then(() => expect(Files.exists('dir')).to.eventually.be.true)
-        .then(() => Files.remove('dir'))
-        .then(() => Files.listing('/'))
-        .then(() => expect(Files.exists('dir')).to.eventually.be.false)
+    it('existing non-empty directory', async () => {
+      await createFile('dir/file')
+
+      expect(await Files.exists('dir')).to.equal(true)
+
+      await Files.remove('dir')
+
+      await waiter()
+
+      expect(await Files.exists('dir')).to.equal(false)
     })
 
     it('non-existing path', function() {
@@ -123,20 +130,25 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeRename)
         .then(() => expect(Files.renameFile(beforeRename, 'file-after')).to.eventually.have.string(afterRename))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
     })
 
-    it('empty folder', function() {
+    it('empty folder', async () => {
       const beforeRename = '/rename/empty/dir-before'
       const afterRename = '/rename/empty/dir-after'
 
-      return createDir('', beforeRename)
-        .then(() => expect(Files.renameFile(beforeRename, 'dir-after')).to.eventually.have.string(afterRename))
-        .then(() => Files.listing('/'))
-        .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
-        .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
+      await createDir('', beforeRename)
+
+      const renamingResult = await Files.renameFile(beforeRename, 'dir-after')
+
+      await waiter()
+
+      expect(renamingResult).to.equal(`${Backendless.urls.files()}${afterRename}`)
+
+      expect(await Files.exists(beforeRename)).to.equal(false)
+      expect(await Files.exists(afterRename)).to.equal(true)
     })
 
     it('non empty folder', function() {
@@ -145,7 +157,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeRename + '/file')
         .then(() => expect(Files.renameFile(beforeRename, 'dir-after')).to.eventually.have.string(afterRename))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeRename)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterRename)).to.eventually.be.true)
     })
@@ -166,7 +178,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeMove)
         .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
     })
@@ -177,7 +189,7 @@ describe('Backendless.Files', function() {
 
       return createDir('', beforeMove)
         .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
     })
@@ -188,7 +200,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeMove + '/file')
         .then(() => expect(Files.moveFile(beforeMove, afterMove)).to.eventually.have.string(afterMove))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeMove)).to.eventually.be.false)
         .then(() => expect(Files.exists(afterMove)).to.eventually.be.true)
     })
@@ -209,7 +221,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeCopy)
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
     })
@@ -220,7 +232,7 @@ describe('Backendless.Files', function() {
 
       return createDir('', beforeCopy)
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
     })
@@ -231,7 +243,7 @@ describe('Backendless.Files', function() {
 
       return createFile(beforeCopy + '/file')
         .then(() => expect(Files.copyFile(beforeCopy, afterCopy)).to.eventually.have.string(afterCopy))
-        .then(() => Files.listing('/'))
+        .then(() => waiter())
         .then(() => expect(Files.exists(beforeCopy)).to.eventually.be.true)
         .then(() => expect(Files.exists(afterCopy)).to.eventually.be.true)
     })

@@ -1,82 +1,108 @@
 import '../helpers/global'
 import sandbox from '../helpers/sandbox'
+import * as Utils from '../helpers/utils'
 
 const Backendless = sandbox.Backendless
 
 describe('Data - Relations', function() {
-  let consoleApi
-  let appId
 
-  let parent
-  let child
-  let grandchild
-  let ParentTable
-  let ChildTable
+  let parentTableStore
+  let childTableStore
+  let grandChildTableStore
 
-  sandbox.forTest()
+  let testCaseMarker
+  let savedParent
 
-  const save = name => Backendless.Data.of(name).save({})
-  const queryWithRelationDepth = depth => Backendless.DataQueryBuilder.create().setRelationsDepth(depth).build()
+  sandbox.forSuite()
 
-  const createRelationColumn = (tableName, columnName, toTableName, relationshipType) => {
-    return consoleApi.tables.createColumn(appId, { name: tableName }, {
-      dataType: 'DATA_REF',
-      name    : columnName,
-      toTableName,
-      relationshipType
+  const PARENT_TABLE_NAME = 'Parent'
+  const CHILD_TABLE_NAME = 'Child'
+  const GRAND_CHILD_TABLE_NAME = 'GrandChild'
+
+  before(async function() {
+    parentTableStore = Backendless.Data.of(PARENT_TABLE_NAME)
+    childTableStore = Backendless.Data.of(CHILD_TABLE_NAME)
+    grandChildTableStore = Backendless.Data.of(GRAND_CHILD_TABLE_NAME)
+
+    await this.tablesAPI.createTable(PARENT_TABLE_NAME)
+    await this.tablesAPI.createTable(CHILD_TABLE_NAME)
+    await this.tablesAPI.createTable(GRAND_CHILD_TABLE_NAME)
+
+    await this.tablesAPI.createColumn(PARENT_TABLE_NAME, 'name', this.tablesAPI.DataTypes.STRING)
+    await this.tablesAPI.createColumn(CHILD_TABLE_NAME, 'name', this.tablesAPI.DataTypes.STRING)
+    await this.tablesAPI.createColumn(GRAND_CHILD_TABLE_NAME, 'name', this.tablesAPI.DataTypes.STRING)
+
+    await this.tablesAPI.createRelationColumn(PARENT_TABLE_NAME, 'child', CHILD_TABLE_NAME, this.tablesAPI.RelationTypes.ONE_TO_ONE)
+    await this.tablesAPI.createRelationColumn(PARENT_TABLE_NAME, 'children', CHILD_TABLE_NAME, this.tablesAPI.RelationTypes.ONE_TO_MANY)
+    await this.tablesAPI.createRelationColumn(CHILD_TABLE_NAME, 'grandChild', GRAND_CHILD_TABLE_NAME, this.tablesAPI.RelationTypes.ONE_TO_ONE)
+  })
+
+  beforeEach(async function() {
+    testCaseMarker = Utils.uidShort()
+
+    await parentTableStore.bulkDelete('name like \'test-%\'')
+
+    savedParent = await parentTableStore.save({ name: `test-${testCaseMarker}` })
+  })
+
+  describe('Load with Relation Depth', function() {
+    const queryWithRelationDepth = depth => {
+      return Backendless.DataQueryBuilder.create()
+        .setRelationsDepth(depth)
+    }
+
+    let savedChild
+    let savedGrandChild
+
+    beforeEach(async function() {
+      const result = await Promise.all([
+        childTableStore.save({ name: `load-rel-depth-${testCaseMarker}` }),
+        grandChildTableStore.save({ name: `load-rel-depth-${testCaseMarker}` }),
+      ])
+
+      savedChild = result[0]
+      savedGrandChild = result[1]
+
+      await Promise.all([
+        parentTableStore.addRelation(savedParent, 'child', [savedChild]),
+        childTableStore.addRelation(savedChild, 'grandChild', [savedGrandChild]),
+      ])
     })
-  }
 
-  beforeEach(function() {
-    consoleApi = this.consoleApi
-    appId = this.app.id
+    it('Find with relations depth 0', function() {
+      const query = queryWithRelationDepth(0)
 
-    ParentTable = Backendless.Data.of('Parent')
-    ChildTable = Backendless.Data.of('Child')
+      return Promise.resolve()
+        .then(() => parentTableStore.findById(savedParent.objectId, query))
+        .then(result => {
+          expect(result).to.not.have.property('child')
+        })
+    })
 
-    return Promise.resolve()
-      .then(() => save('Parent').then(result => parent = result))
-      .then(() => save('Child').then(result => child = result))
-      .then(() => save('GrandChild').then(result => grandchild = result))
-      .then(() => createRelationColumn('Parent', 'child', 'Child', 'ONE_TO_ONE'))
-      .then(() => createRelationColumn('Child', 'grandChild', 'GrandChild', 'ONE_TO_ONE'))
-      .then(() => ParentTable.addRelation(parent.objectId, 'child', [child]))
-      .then(() => ChildTable.addRelation(child.objectId, 'grandChild', [grandchild]))
+    it('Find with relations depth 1', function() {
+      const query = queryWithRelationDepth(1)
+
+      return Promise.resolve()
+        .then(() => parentTableStore.findById(savedParent.objectId, query))
+        .then(result => {
+          expect(result).to.have.property('child').that.have.to.be.not.null
+          expect(result.child).to.not.have.property('grandChild')
+        })
+    })
+
+    it('Find with relations depth 2', function() {
+      const query = queryWithRelationDepth(2)
+
+      return Promise.resolve()
+        .then(() => parentTableStore.findById(savedParent.objectId, query))
+        .then(result => {
+          expect(result).to.have.property('child').that.have.to.be.not.null
+          expect(result.child).to.have.property('grandChild').that.have.to.be.not.null
+        })
+    })
   })
 
-  it('Find with relations depth 0', function() {
-    const query = queryWithRelationDepth(0)
-
-    return Promise.resolve()
-      .then(() => ParentTable.findById(parent.objectId, query))
-      .then(result => {
-        expect(result).to.not.have.property('child')
-      })
-  })
-
-  it('Find with relations depth 1', function() {
-    const query = queryWithRelationDepth(1)
-
-    return Promise.resolve()
-      .then(() => ParentTable.findById(parent.objectId, query))
-      .then(result => {
-        expect(result).to.have.property('child').that.have.to.be.not.null
-        expect(result.child).to.not.have.property('grandChild')
-      })
-  })
-
-  it('Find with relations depth 2', function() {
-    const query = queryWithRelationDepth(2)
-
-    return Promise.resolve()
-      .then(() => ParentTable.findById(parent.objectId, query))
-      .then(result => {
-        expect(result).to.have.property('child').that.have.to.be.not.null
-        expect(result.child).to.have.property('grandChild').that.have.to.be.not.null
-      })
-  })
-
-  it('Set relations', function() {
+  it('Set relations', async function() {
     const joeThePlumber = {
       name    : 'Joe',
       age     : 27,
@@ -95,45 +121,36 @@ describe('Data - Relations', function() {
     const contactStore = Backendless.Data.of('Contact')
     const addressStore = Backendless.Data.of('Address')
 
-    return Promise.all([
+    const [savedContact, savedAddress] = await Promise.all([
       contactStore.save(joeThePlumber),
       addressStore.save(address)
     ])
-      .then(([savedContact, savedAddress]) => {
-        return createRelationColumn('Contact', 'address_Address', 'Address', 'ONE_TO_ONE')
-          .then(() => contactStore.setRelation(savedContact, 'address_Address', [savedAddress]))
-      })
+
+    await this.tablesAPI.createRelationColumn('Contact', 'address_Address', 'Address', this.tablesAPI.RelationTypes.ONE_TO_ONE)
+
+    await contactStore.setRelation(savedContact, 'address_Address', [savedAddress])
   })
 
-  describe('Data - Relations ONE_TO_MANY', function() {
-    beforeEach(function() {
-      consoleApi = this.consoleApi
-      appId = this.app.id
+  describe('Load ONE_TO_MANY', async function() {
 
-      ParentTable = Backendless.Data.of('Parent')
-      ChildTable = Backendless.Data.of('Child')
+    beforeEach(async function() {
+      const children = []
 
-      return Promise.resolve()
-        .then(() => createRelationColumn('Parent', 'children', 'Child', 'ONE_TO_MANY'))
-        .then(() => {
-          const requests = []
+      for (let i = 0; i < 20; i++) {
+        children.push({ name: `load-one-to-many-${testCaseMarker}-${i}` })
+      }
 
-          for (let i = 0; i < 20; i++) {
-            requests.push(save('Child'))
-          }
+      const savedChildrenIds = await childTableStore.bulkCreate(children)
 
-          return Promise.all(requests)
-            .then(children => {
-              return ParentTable.addRelation(parent.objectId, 'children', children)
-            })
-        })
+      await parentTableStore.addRelation(savedParent, 'children', savedChildrenIds)
     })
 
     it('Find with default relations size', function() {
-      const query = Backendless.DataQueryBuilder.create().setRelationsDepth(1)
+      const query = Backendless.DataQueryBuilder.create()
+        .setRelationsDepth(1)
 
       return Promise.resolve()
-        .then(() => ParentTable.findById(parent.objectId, query))
+        .then(() => parentTableStore.findById(savedParent.objectId, query))
         .then(result => {
           expect(result.children).to.be.an('array')
           expect(result.children.length).to.equal(10)
@@ -146,7 +163,7 @@ describe('Data - Relations', function() {
         .setRelationsPageSize(5)
 
       return Promise.resolve()
-        .then(() => ParentTable.findById(parent.objectId, query))
+        .then(() => parentTableStore.findById(savedParent.objectId, query))
         .then(result => {
           expect(result.children).to.be.an('array')
           expect(result.children.length).to.equal(5)
@@ -159,7 +176,7 @@ describe('Data - Relations', function() {
         .setRelationsPageSize(20)
 
       return Promise.resolve()
-        .then(() => ParentTable.findById(parent.objectId, query))
+        .then(() => parentTableStore.findById(savedParent.objectId, query))
         .then(result => {
           expect(result.children).to.be.an('array')
           expect(result.children.length).to.equal(20)
@@ -168,11 +185,12 @@ describe('Data - Relations', function() {
 
     it('Find the first object with relations size', function() {
       const query = Backendless.DataQueryBuilder.create()
+        .setSortBy('create desc')
         .setRelationsDepth(1)
         .setRelationsPageSize(20)
 
       return Promise.resolve()
-        .then(() => ParentTable.findFirst(query))
+        .then(() => parentTableStore.findFirst(query))
         .then(result => {
           expect(result.children).to.be.an('array')
           expect(result.children.length).to.equal(20)
@@ -181,11 +199,12 @@ describe('Data - Relations', function() {
 
     it('Find the last object with relations size', function() {
       const query = Backendless.DataQueryBuilder.create()
+        .setSortBy('create desc')
         .setRelationsDepth(1)
         .setRelationsPageSize(20)
 
       return Promise.resolve()
-        .then(() => ParentTable.findLast(query))
+        .then(() => parentTableStore.findLast(query))
         .then(result => {
           expect(result.children).to.be.an('array')
           expect(result.children.length).to.equal(20)
@@ -198,7 +217,7 @@ describe('Data - Relations', function() {
         .setRelationsPageSize(20)
 
       return Promise.resolve()
-        .then(() => ParentTable.find(query))
+        .then(() => parentTableStore.find(query))
         .then(result => {
           expect(result[0].children).to.be.an('array')
           expect(result[0].children.length).to.equal(20)
