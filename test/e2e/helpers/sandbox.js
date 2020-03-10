@@ -5,23 +5,14 @@ import * as Utils from './utils'
 // import Backendless from '../../../src/backendless'
 const Backendless = require('../../../lib')
 
-const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS === 'true'
 const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
 const CONSOLE_SERVER = process.env.CONSOLE_SERVER || 'http://localhost:3000'
 const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'foo@foo.com'
 const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'secret'
+const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS === 'true'
+const DESTROY_APP_AFTER_TEST = process.env.DESTROY_APP_AFTER_TEST !== 'false'
 
 const TEST_APP_NAME_PATTERN = /^test_.{32}$/
-
-const USE_PERSISTED_LOCAL_DEV = true
-const DESTROY_APP_AFTER_TEST = false
-
-const generateDev = () => ({
-  firstName: 'Test',
-  lastName : 'Test',
-  email    : `${Utils.uid()}@test`,
-  pwd      : Utils.uid()
-})
 
 const persistedLocalDev = () => ({
   email: TEST_USER_EMAIL,
@@ -54,29 +45,17 @@ const destroyAllTestApps = (() => {
 })()
 
 const createDestroyer = sandbox => async () => {
-  if (DESTROY_APP_AFTER_TEST || !USE_PERSISTED_LOCAL_DEV) {
+  if (DESTROY_APP_AFTER_TEST) {
     await sandbox.api.apps.deleteApp(sandbox.app.id)
-  }
-
-  if (!USE_PERSISTED_LOCAL_DEV) {
-    await sandbox.api.user.suicide()
   }
 }
 
 const createSandbox = async api => {
   const app = generateApp()
-  const dev = USE_PERSISTED_LOCAL_DEV
-    ? persistedLocalDev()
-    : generateDev()
+  const dev = persistedLocalDev()
 
   const sandbox = { app, api, dev }
   sandbox.destroy = createDestroyer(sandbox)
-
-  if (!USE_PERSISTED_LOCAL_DEV) {
-    await Promise.resolve()
-      .then(() => api.user.register(dev))
-      .then(result => dev.id = result.id)
-  }
 
   const user = await api.user.login(dev.email, dev.pwd)
 
@@ -84,7 +63,7 @@ const createSandbox = async api => {
   dev.name = user.name
   dev.authKey = user.authKey
 
-  if (DESTROY_ALL_PREV_APPS && USE_PERSISTED_LOCAL_DEV) {
+  if (DESTROY_ALL_PREV_APPS) {
     await destroyAllTestApps(api)
   }
 
