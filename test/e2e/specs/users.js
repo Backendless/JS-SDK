@@ -328,7 +328,9 @@ describe('Backendless.Users', function() {
       expect(loggedUser.email).to.equal(savedUser.email)
     })
 
-    it('login by user\'s objectId with non BL API_KEY', async function() {
+    xit('login by user\'s objectId with non BL API_KEY', async function() {
+      //TODO: waits BKNDLSS-20473
+
       const savedUser = await Backendless.Data.of(Backendless.User).save(randUser())
 
       expect(savedUser.objectId).to.be.a('string')
@@ -388,19 +390,22 @@ describe('Backendless.Users', function() {
         })
     })
 
-    it('neighbor', function() {
-      const firstUser = randUser()
-      const secondUser = randUser()
-      secondUser.email = 'test@email.com'
+    it('neighbor', async () => {
+      const firstUser = {
+        email   : 'neighbor-1@email.com',
+        password: 'password'
+      }
 
-      return Backendless.UserService.register(firstUser).then(neighbor => {
-          return Backendless.UserService.register(secondUser).then(() => {
-            expect(Backendless.UserService.update(neighbor))
-              .to.eventually.be.rejected
-              .and.eventually.have.property('code', 3029)
-          })
-        }
-      )
+      const secondUser = {
+        email   : 'neighbor-2@email.com',
+        password: 'password'
+      }
+
+      const neighbor = await Backendless.UserService.register(firstUser)
+
+      await Backendless.UserService.register(secondUser)
+
+      await Backendless.UserService.update(neighbor)
     })
 
     it('updating an another user should not override currentUser', function() {
@@ -428,16 +433,12 @@ describe('Backendless.Users', function() {
   })
 
   it('restore password', function() {
-    this.timeout(15000)
-
     return Backendless.UserService.register(randUser())
       .then(user => Backendless.UserService.restorePassword(user.email))
       .catch(err => expect(err.code).to.equal(5050))
   })
 
   it('restore password for a wrong login', function() {
-    this.timeout(15000)
-
     return Backendless.UserService.restorePassword(randUser().email)
       .catch(err => expect(err.code).to.be.oneOf([5050, 3020]))
   })

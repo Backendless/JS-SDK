@@ -16,6 +16,11 @@ export const DataTypes = {
   UNKNOWN: 'UNKNOWN'
 }
 
+export const RelationTypes = {
+  ONE_TO_ONE : 'ONE_TO_ONE',
+  ONE_TO_MANY: 'ONE_TO_MANY',
+}
+
 export class TablesAPI {
   constructor(sandbox) {
     this.sandbox = sandbox
@@ -23,6 +28,10 @@ export class TablesAPI {
 
   get DataTypes() {
     return DataTypes
+  }
+
+  get RelationTypes() {
+    return RelationTypes
   }
 
   get consoleApi() {
