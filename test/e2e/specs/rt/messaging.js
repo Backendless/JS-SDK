@@ -124,7 +124,6 @@ describe('RT - Messaging', function() {
       }
 
       expect(rtHandler.results).to.have.length(2)
-      console.log(rtHandler.results)
 
       expect(rtHandler.results[0].message).to.be.equal('test message 1')
       expect(rtHandler.results[0].headers.foo).to.equal('20')
