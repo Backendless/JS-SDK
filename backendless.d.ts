@@ -1140,6 +1140,13 @@ declare module Backendless {
         count?: number;
     }
 
+    interface RTChangeRelationStatus {
+        parentObjectId: string;
+        isConditional: boolean;
+        whereClause?: string;
+        children?: string[];
+    }
+
     /**
      * @private
      * @class EventHandler
@@ -1203,6 +1210,22 @@ declare module Backendless {
         removeBulkDeleteListeners(): Backendless.EventHandler;
 
         removeBulkDeleteListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
+
+        addSetRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        addAddRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeSetRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        removeSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeAddRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        removeAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
         removeAllListeners(): Backendless.EventHandler;
     }

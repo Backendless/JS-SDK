@@ -12,6 +12,11 @@ const ChangesTypes = {
   BULK_DELETED: 'bulk-deleted',
 }
 
+const RelationsChangesTypes = {
+  ADD: 'add',
+  SET: 'set',
+}
+
 const SingleChangesTypes = [
   ChangesTypes.CREATED,
   ChangesTypes.UPDATED,
@@ -129,6 +134,22 @@ export default class EventHandler extends RTListeners {
     this.removeBulkDeleteListeners(undefined, callback)
   }
 
+  addSetRelationListener(relationColumnName, parentObjects, callback, onError) {
+    this.addRelationsChangesListener(RelationsChangesTypes.SET, relationColumnName, parentObjects, callback, onError)
+  }
+
+  removeSetRelationListener(relationColumnName, parentObjects, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.SET, relationColumnName, parentObjects, callback)
+  }
+
+  addAddRelationListener(relationColumnName, parentObjects, callback, onError) {
+    this.addRelationsChangesListener(RelationsChangesTypes.ADD, relationColumnName, parentObjects, callback, onError)
+  }
+
+  removeAddRelationListener(relationColumnName, parentObjects, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.ADD, relationColumnName, parentObjects, callback)
+  }
+
   addChangesListener(event, whereClause, callback, onError) {
     if (typeof whereClause === 'function') {
       onError = callback
@@ -143,7 +164,7 @@ export default class EventHandler extends RTListeners {
     this.addSubscription(event, this.app.RT.subscriptions.onObjectsChanges, {
       callback,
       onError,
-      parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance.bind(this) : undefined,
+      parser: SingleChangesTypes.includes(event) ? this.parseObjectToInstance.bind(this) : undefined,
       params: {
         event,
         whereClause
@@ -166,6 +187,54 @@ export default class EventHandler extends RTListeners {
 
       if (whereClause) {
         return params.whereClause === whereClause
+      }
+
+      if (callback) {
+        return subscription.callback === callback
+      }
+
+      return true
+    }
+
+    this.stopSubscription(event, { matcher })
+  }
+
+  addRelationsChangesListener(event, relationColumnName, parentObjects, callback, onError) {
+    if (typeof parentObjects === 'function') {
+      onError = callback
+      callback = parentObjects
+      parentObjects = undefined
+    }
+
+    if (typeof callback !== 'function') {
+      throw new Error('"callback" must be function.')
+    }
+
+    if (parentObjects) {
+      parentObjects = parentObjects.map(o => o.objectId || o)
+    }
+
+    this.addSubscription(event, this.app.RT.subscriptions.onRelationsChanges, {
+      callback,
+      onError,
+      params: {
+        event,
+        relationColumnName,
+        parentObjects
+      }
+    })
+  }
+
+  removeRelationsChangesListeners(event, relationColumnName, callback) {
+    const matcher = subscription => {
+      const params = subscription.params
+
+      if (params.event !== event) {
+        return false
+      }
+
+      if (params.relationColumnName !== relationColumnName) {
+        return false
       }
 
       if (callback) {

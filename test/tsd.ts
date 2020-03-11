@@ -75,13 +75,13 @@ function testDataQueryBuilderClass() {
     str = dataQuery.getWhereClause();
 
     dataQuery = dataQuery.setProperties('abc');
-    dataQuery = dataQuery.setProperties(['abc','abc','abc']);
+    dataQuery = dataQuery.setProperties(['abc', 'abc', 'abc']);
     dataQuery = dataQuery.addProperty(str);
     dataQuery = dataQuery.addProperties(str, str, str, str);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc'], ['abc','abc','abc'], ['abc','abc','abc']);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc'], str, str);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc'], str, str);
     dataQuery = dataQuery.addProperties(str);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc']);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc']);
 
     strs = dataQuery.getProperties();
 
@@ -1243,6 +1243,26 @@ function RTData() {
         .removeBulkDeleteListeners('whereClause')
         .removeBulkDeleteListeners()
         .removeBulkDeleteListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
+
+    eventHandler
+        .addSetRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addSetRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .addAddRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addAddRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .removeSetRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeSetRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .removeAddRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeAddRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
 
     eventHandler
         .removeAllListeners()
