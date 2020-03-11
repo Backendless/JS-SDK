@@ -12,8 +12,6 @@ describe('RT - Messaging', function() {
   sandbox.forSuite()
 
   beforeEach(async function() {
-    Backendless.debugMode = true
-
     testCaseMarker = Utils.uidShort()
 
     await beforeHook(Backendless)
