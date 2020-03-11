@@ -60,7 +60,6 @@
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-flow": "^7.8.3",
     "@babel/register": "^7.8.6",
-    "@babel/runtime": "^7.8.4",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.6",
     "babelify": "^10.0.0",
@@ -87,6 +86,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@babel/runtime": "^7.8.7",
     "backendless-request": "~0.1.0",
     "backendless-rt-client": "0.0.17"
   }
