@@ -13,8 +13,9 @@ const ChangesTypes = {
 }
 
 const RelationsChangesTypes = {
-  ADD: 'add',
-  SET: 'set',
+  ADD   : 'add',
+  SET   : 'set',
+  DELETE: 'delete',
 }
 
 const SingleChangesTypes = [
@@ -148,6 +149,14 @@ export default class EventHandler extends RTListeners {
 
   removeAddRelationListener(relationColumnName, parentObjects, callback) {
     this.removeRelationsChangesListeners(RelationsChangesTypes.ADD, relationColumnName, parentObjects, callback)
+  }
+
+  addDeleteRelationListener(relationColumnName, parentObjects, callback, onError) {
+    this.addRelationsChangesListener(RelationsChangesTypes.DELETE, relationColumnName, parentObjects, callback, onError)
+  }
+
+  removeDeleteRelationListener(relationColumnName, parentObjects, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.DELETE, relationColumnName, parentObjects, callback)
   }
 
   addChangesListener(event, whereClause, callback, onError) {

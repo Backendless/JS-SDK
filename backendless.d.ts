@@ -1221,11 +1221,19 @@ declare module Backendless {
         addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
+        addDeleteRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
         removeSetRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
         removeSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
         removeAddRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
         removeAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeDeleteRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        removeDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
         removeAllListeners(): Backendless.EventHandler;
     }
