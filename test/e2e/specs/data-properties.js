@@ -31,11 +31,6 @@ describe('Data - Properties', function() {
     await parentTableStore.setRelation(parent, 'children', [child1, child2, child3])
   })
 
-  after(async function() {
-    await this.tablesAPI.removeTable(PARENT_TABLE_NAME)
-    await this.tablesAPI.removeTable(CHILD_TABLE_NAME)
-  })
-
   beforeEach(async function() {
     queryBuilder = Backendless.DataQueryBuilder.create()
   })
