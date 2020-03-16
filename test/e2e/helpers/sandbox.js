@@ -11,16 +11,13 @@ const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'foo@foo.com'
 const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'secret'
 const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS === 'true'
 const DESTROY_APP_AFTER_TEST = process.env.DESTROY_APP_AFTER_TEST !== 'false'
+const PERSISTED_APP_ID = process.env.PERSISTED_APP_ID
 
 const TEST_APP_NAME_PATTERN = /^test_.{32}$/
 
 const persistedLocalDev = () => ({
   email: TEST_USER_EMAIL,
   pwd  : TEST_USER_PASSWORD
-})
-
-const generateApp = () => ({
-  name: `test_${Utils.uid()}`
 })
 
 const destroyAllTestApps = (() => {
@@ -50,8 +47,18 @@ const createDestroyer = sandbox => async () => {
   }
 }
 
+const provideApp = api => {
+  if (PERSISTED_APP_ID) {
+    return {
+      id: PERSISTED_APP_ID
+    }
+  }
+
+  return api.apps.createApp({ appName: `test_${Utils.uid()}`, refCode: null })
+}
+
 const createSandbox = async api => {
-  const app = generateApp()
+  const app = {}
   const dev = persistedLocalDev()
 
   const sandbox = { app, api, dev }
@@ -67,7 +74,7 @@ const createSandbox = async api => {
     await destroyAllTestApps(api)
   }
 
-  const createApp = await api.apps.createApp({ appName: app.name, refCode: null })
+  const createApp = await provideApp(api)
 
   Object.assign(app, createApp)
 

@@ -11,7 +11,7 @@ function testMain() {
     const browser: { browser: string, version: string } = Backendless.browser;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
-    Backendless.initApp({ appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
+    Backendless.initApp({appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
 }
 
 function testLocalCache() {
@@ -75,15 +75,26 @@ function testDataQueryBuilderClass() {
     str = dataQuery.getWhereClause();
 
     dataQuery = dataQuery.setProperties('abc');
-    dataQuery = dataQuery.setProperties(['abc','abc','abc']);
+    dataQuery = dataQuery.setProperties(['abc', 'abc', 'abc']);
     dataQuery = dataQuery.addProperty(str);
     dataQuery = dataQuery.addProperties(str, str, str, str);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc'], ['abc','abc','abc'], ['abc','abc','abc']);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc'], str, str);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc'], str, str);
     dataQuery = dataQuery.addProperties(str);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc']);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc']);
 
     strs = dataQuery.getProperties();
+
+    dataQuery = dataQuery.addAllProperties();
+
+    dataQuery = dataQuery.excludeProperty(str);
+    dataQuery = dataQuery.excludeProperties('abc');
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc']);
+    dataQuery = dataQuery.excludeProperties(str, str, str, str);
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc'], str, str);
+    dataQuery = dataQuery.excludeProperties(str);
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc']);
 
     dataQuery = dataQuery.setSortBy(str);
     dataQuery = dataQuery.setSortBy(strs);

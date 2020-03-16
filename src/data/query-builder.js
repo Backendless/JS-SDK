@@ -61,6 +61,22 @@ export default class DataQueryBuilder {
     return this
   }
 
+  addAllProperties() {
+    this.addProperty('*')
+  }
+
+  excludeProperty(property) {
+    this._query.excludeProperties(property)
+
+    return this
+  }
+
+  excludeProperties(...properties) {
+    this._query.excludeProperties(...properties)
+
+    return this
+  }
+
   getWhereClause() {
     return this._query.condition
   }
