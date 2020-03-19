@@ -63,6 +63,8 @@ export default class DataQueryBuilder {
 
   addAllProperties() {
     this.addProperty('*')
+
+    return this
   }
 
   excludeProperty(property) {

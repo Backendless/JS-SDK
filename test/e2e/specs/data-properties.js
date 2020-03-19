@@ -202,4 +202,21 @@ describe('Data - Properties', function() {
     })
   })
 
+  describe('Composition', function() {
+    it('ALL | !name | TIME(created)', async () => {
+      queryBuilder
+        .addAllProperties()
+        .excludeProperties('name')
+        .addProperty('TIME(created)')
+
+      const result = await parentTableStore.find(queryBuilder)
+
+      expect(Object.keys(result[0]).sort())
+        .to.eql(['Time', '___class', 'age', 'blocked', 'created', 'objectId', 'ownerId', 'updated'].sort())
+
+      expect(result[0].created).to.be.a('number')
+      expect(result[0].Time).to.be.a('string')
+    })
+  })
+
 })
