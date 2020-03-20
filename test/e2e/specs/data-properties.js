@@ -164,44 +164,6 @@ describe('Data - Properties', function() {
       .to.eql(['Age', 'Blocked', '___class', 'age', 'blocked', 'created', 'name', 'objectId', 'ownerId', 'updated'].sort())
   })
 
-  describe('Relations', function() {
-    it('loads properties in relations', async () => {
-      queryBuilder
-        .addRelated('child')
-        .addRelated('children')
-        .addProperties(['name', 'child.name', 'children.name'])
-
-      const result = await parentTableStore.find(queryBuilder)
-
-      expect(Object.keys(result[0]).sort())
-        .to.eql(['___class', 'name', 'child', 'children', 'objectId'].sort())
-
-      expect(Object.keys(result[0].child).sort())
-        .to.eql(['___class', 'name', 'objectId'].sort())
-
-      expect(Object.keys(result[0].children[0]).sort())
-        .to.eql(['___class', 'name', 'objectId'].sort())
-    })
-
-    it('excludes properties in relations', async () => {
-      queryBuilder
-        .addRelated('child')
-        .addRelated('children')
-        .excludeProperties(['name', 'child.name', 'children.name'])
-
-      const result = await parentTableStore.find(queryBuilder)
-
-      expect(Object.keys(result[0]).sort())
-        .to.eql(['___class', 'age', 'blocked', 'child', 'children', 'created', 'objectId', 'ownerId', 'updated'].sort())
-
-      expect(Object.keys(result[0].child).sort())
-        .to.eql(['___class', 'age', 'created', 'objectId', 'ownerId', 'updated'].sort())
-
-      expect(Object.keys(result[0].children[0]).sort())
-        .to.eql(['___class', 'age', 'created', 'objectId', 'ownerId', 'updated'].sort())
-    })
-  })
-
   describe('Composition', function() {
     it('ALL | !name | TIME(created)', async () => {
       queryBuilder
