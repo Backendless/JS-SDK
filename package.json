@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "5.8.5",
+  "version": "5.8.6",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -60,16 +60,14 @@
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-flow": "^7.8.3",
     "@babel/register": "^7.8.6",
-    "@babel/runtime": "^7.8.4",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.6",
     "babelify": "^10.0.0",
-    "backendless-console-sdk": "^2.8.1",
+    "backendless-console-sdk": "^2.8.3",
     "bannerize": "^1.1.4",
     "browserify": "^16.5.0",
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "copyfiles": "^1.1.0",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "karma": "^4.4.1",
@@ -87,6 +85,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@babel/runtime": "^7.8.7",
     "backendless-request": "~0.1.0",
     "backendless-rt-client": "0.0.17"
   }
