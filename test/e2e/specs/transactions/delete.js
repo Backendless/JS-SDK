@@ -124,8 +124,8 @@ describe('Transactions - Delete Operation', function() {
     ])
   })
 
-  it('deletes lots of objects', async function() {
-    const limit = 200
+  it('deletes 20 objects', async function() {
+    const limit = 20
 
     for (let i = 0; i < limit; i++) {
       uow.create(PERSONS_TABLE_NAME, { name: `p-many-${Utils.uid()}` })
@@ -136,15 +136,13 @@ describe('Transactions - Delete Operation', function() {
     const query = Backendless.Data.QueryBuilder
       .create()
       .setWhereClause('name like \'p-many-%\'')
-      .setPageSize(100)
+      .setPageSize(limit)
 
     const savedPerson = await personsStore.find(query)
 
     query.prepareNextPage()
 
-    savedPerson.push(...(await personsStore.find(query)))
-
-    expect(savedPerson.length).to.be.equal(200)
+    expect(savedPerson.length).to.be.equal(limit)
 
     uow = new Backendless.UnitOfWork()
 
@@ -165,7 +163,7 @@ describe('Transactions - Delete Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(Object.keys(uowResult.results).length).to.equal(200)
+    expect(Object.keys(uowResult.results).length).to.equal(limit)
   })
 
   describe('Fails', function() {

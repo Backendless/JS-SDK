@@ -133,8 +133,8 @@ describe('Transactions - Update Operation', function() {
     ])
   })
 
-  it('updates lots of objects', async function() {
-    const limit = 200
+  it('updates 20 objects', async function() {
+    const limit = 20
 
     for (let i = 0; i < limit; i++) {
       uow.create(PERSONS_TABLE_NAME, { name: `p-many-${Utils.uid()}` })
@@ -145,15 +145,11 @@ describe('Transactions - Update Operation', function() {
     const query = Backendless.Data.QueryBuilder
       .create()
       .setWhereClause('name like \'p-many-%\'')
-      .setPageSize(100)
+      .setPageSize(limit)
 
     const savedPerson = await personsStore.find(query)
 
-    query.prepareNextPage()
-
-    savedPerson.push(...(await personsStore.find(query)))
-
-    expect(savedPerson.length).to.be.equal(200)
+    expect(savedPerson.length).to.be.equal(limit)
 
     uow = new Backendless.UnitOfWork()
 
@@ -169,12 +165,12 @@ describe('Transactions - Update Operation', function() {
 
     const personsCount = await personsStore.getObjectCount(query2)
 
-    expect(personsCount).to.be.equal(200)
+    expect(personsCount).to.be.equal(limit)
 
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(Object.keys(uowResult.results).length).to.equal(200)
+    expect(Object.keys(uowResult.results).length).to.equal(limit)
   })
 
   it('creates object and updates using OpResult', async function() {
@@ -235,12 +231,10 @@ describe('Transactions - Update Operation', function() {
 
       expect(uowResult.results).to.equal(null)
       expect(uowResult.success).to.equal(false)
-      expect(uowResult.error.operation).to.eql({
-        operationType: 'UPDATE',
-        table        : 'Person',
-        opResultId   : 'updatePerson1',
-        payload      : obj
-      })
+      expect(uowResult.error.operation.operationType).to.eql('UPDATE')
+      expect(uowResult.error.operation.table).to.eql('Person')
+      expect(uowResult.error.operation.opResultId).to.eql('updatePerson1')
+      expect(uowResult.error.operation.payload).to.eql(obj)
 
       expect(uowResult.error.message).to.equal(
         'Column \'missedColumn\' in table \'Person\' not exists. ' +

@@ -1436,7 +1436,18 @@ declare module Backendless {
         units: string;
     }
 
+    class TransactionOperationError extends Error {
+        operation: OpResult;
+    }
+
     class UnitOfWorkResult {
+        setIsolationLevel(isolationLevel: IsolationLevelEnum): UnitOfWorkResult;
+
+        isSuccess(): boolean;
+
+        getError(): TransactionOperationError;
+
+        getResults(): object;
     }
 
     class OpResultValueReference {
@@ -1446,6 +1457,10 @@ declare module Backendless {
     class OpResult {
         opResultId: string;
 
+        getTableName(): string;
+
+        getOpResultId(): string;
+
         setOpResultId(opResultId: string): void;
 
         resolvedTo(index: number, property?: string): OpResultValueReference
@@ -1453,9 +1468,9 @@ declare module Backendless {
     }
 
     enum IsolationLevelEnum {
-        REPEATABLE_READ,
-        READ_COMMITTED,
         READ_UNCOMMITTED,
+        READ_COMMITTED,
+        REPEATABLE_READ,
         SERIALIZABLE
     }
 

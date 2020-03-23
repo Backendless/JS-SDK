@@ -16,7 +16,7 @@ class Person {
   }
 }
 
-describe('Transactions - Operation Result', function() {
+describe('Transactions - Results', function() {
 
   let tablesAPI
 
@@ -46,7 +46,92 @@ describe('Transactions - Operation Result', function() {
     uow = new Backendless.UnitOfWork()
   })
 
-  describe('Result Assigning', function() {
+  describe('UnitOfWorkResult', function() {
+
+    it('isSuccess method returns boolean value', async function() {
+      let result
+
+      uow.create(PERSONS_TABLE_NAME, { tag: 's-2', name: 'Bob-2', age: 123 })
+
+      result = await uow.execute()
+
+      expect(result.success).to.equal(true)
+      expect(result.isSuccess()).to.equal(true)
+
+      uow = new Backendless.UnitOfWork()
+
+      uow.create(PERSONS_TABLE_NAME, { unknownColumn: 'unknownColumn' })
+
+      result = await uow.execute()
+
+      expect(result.success).to.equal(false)
+      expect(result.isSuccess()).to.equal(false)
+    })
+
+    it('has an TransactionOperationError', async function() {
+      let result
+
+      const opResult = uow.create(PERSONS_TABLE_NAME, { unknownColumn: 'unknownColumn' })
+
+      result = await uow.execute()
+
+      const error = result.getError()
+
+      expect(error instanceof Error).to.equal(true)
+
+      expect(error).to.equal(result.error)
+      expect(error).to.equal(opResult.getError())
+
+      expect(error.message).to.equal(
+        'Column \'unknownColumn\' in table \'Person\' not exists. ' +
+        'Transaction accepts only DML operations (Data Manipulation Language)'
+      )
+
+      expect(error.operation.operationType).to.equal('CREATE')
+      expect(error.operation.table).to.equal('Person')
+      expect(error.operation.opResultId).to.equal('createPerson1')
+      expect(error.operation.payload).to.eql({ unknownColumn: 'unknownColumn' })
+    })
+
+  })
+
+  describe('OpResult', function() {
+
+    it('has an access to opResultId', async function() {
+      const customOpResultId = 'My Test Operation ID'
+
+      const operation = uow.create(PERSONS_TABLE_NAME, { tag: 's-1', name: 'Bob-1', age: 123 })
+
+      operation.setOpResultId(customOpResultId)
+
+      expect(operation.getOpResultId()).to.equal(customOpResultId)
+
+      const result = await uow.execute()
+
+      expect(result.results[customOpResultId].type).to.equal('CREATE')
+      expect(result.results[customOpResultId].result.___class).to.equal('Person')
+      expect(result.results[customOpResultId].result.age).to.equal(123)
+      expect(result.results[customOpResultId].result.name).to.equal('Bob-1')
+      expect(result.results[customOpResultId].result.tag).to.equal('s-1')
+    })
+
+    it('has an access to tableName', async function() {
+      expect(uow.create(PERSONS_TABLE_NAME, {}).getTableName()).to.equal(PERSONS_TABLE_NAME)
+      expect(uow.find(PERSONS_TABLE_NAME, {}).resolvedTo(0).getTableName()).to.equal(PERSONS_TABLE_NAME)
+    })
+
+    it('has an access to operationType', async function() {
+      expect(uow.create(PERSONS_TABLE_NAME, {}).getType()).to.equal('CREATE')
+      expect(uow.bulkCreate(PERSONS_TABLE_NAME, {}).getType()).to.equal('CREATE_BULK')
+      expect(uow.update(PERSONS_TABLE_NAME, {}).getType()).to.equal('UPDATE')
+      expect(uow.bulkUpdate(PERSONS_TABLE_NAME, {}).getType()).to.equal('UPDATE_BULK')
+      expect(uow.delete(PERSONS_TABLE_NAME, {}).getType()).to.equal('DELETE')
+      expect(uow.bulkDelete(PERSONS_TABLE_NAME, '1=1').getType()).to.equal('DELETE_BULK')
+      expect(uow.find(PERSONS_TABLE_NAME, {}).getType()).to.equal('FIND')
+      expect(uow.addToRelation(PERSONS_TABLE_NAME, {}, 'columnName', []).getType()).to.equal('ADD_RELATION')
+      expect(uow.setRelation(PERSONS_TABLE_NAME, {}, 'columnName', []).getType()).to.equal('SET_RELATION')
+      expect(uow.deleteRelation(PERSONS_TABLE_NAME, {}, 'columnName', []).getType()).to.equal('DELETE_RELATION')
+    })
 
     it('"create" operation', async function() {
       const operation = uow.create(PERSONS_TABLE_NAME, { tag: 'r-a', name: 'Bob-1', age: 12 })

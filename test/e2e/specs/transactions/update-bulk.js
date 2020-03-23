@@ -197,12 +197,11 @@ describe('Transactions - Update-Bulk Operation', function() {
 
       expect(uowResult.results).to.equal(null)
       expect(uowResult.success).to.equal(false)
-      expect(uowResult.error.operation).to.eql({
-        operationType: 'UPDATE_BULK',
-        table        : 'Person',
-        opResultId   : 'update_bulkPerson1',
-        payload      : { changes, conditional, unconditional: null }
-      })
+
+      expect(uowResult.error.operation.operationType).to.equal('UPDATE_BULK')
+      expect(uowResult.error.operation.table).to.equal('Person')
+      expect(uowResult.error.operation.opResultId).to.equal('update_bulkPerson1')
+      expect(uowResult.error.operation.payload).to.eql({ changes, conditional })
 
       expect(uowResult.error.message).to.equal(
         'Column \'missedColumn\' in table \'Person\' not exists. ' +

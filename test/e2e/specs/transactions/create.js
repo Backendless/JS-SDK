@@ -123,8 +123,8 @@ describe('Transactions - Create Operation', function() {
     ])
   })
 
-  it('creates lots of objects', async function() {
-    const limit = 200
+  it('creates 20 of objects', async function() {
+    const limit = 20
 
     for (let i = 0; i < limit; i++) {
       uow.create(PERSONS_TABLE_NAME, { name: `p-many-${Utils.uid()}` })
@@ -138,7 +138,7 @@ describe('Transactions - Create Operation', function() {
 
     const personsCount = await personsStore.getObjectCount(query)
 
-    expect(personsCount).to.be.equal(200)
+    expect(personsCount).to.be.equal(20)
   })
 
   describe('Fails', function() {
@@ -155,12 +155,10 @@ describe('Transactions - Create Operation', function() {
 
       expect(uowResult.results).to.equal(null)
       expect(uowResult.success).to.equal(false)
-      expect(uowResult.error.operation).to.eql({
-        operationType: 'CREATE',
-        table        : 'Person',
-        opResultId   : 'createPerson1',
-        payload      : obj
-      })
+      expect(uowResult.error.operation.operationType).to.eql('CREATE')
+      expect(uowResult.error.operation.table).to.eql('Person')
+      expect(uowResult.error.operation.opResultId).to.eql('createPerson1')
+      expect(uowResult.error.operation.payload).to.eql(obj)
 
       expect(uowResult.error.message).to.equal(
         'Column \'missedColumn\' in table \'Person\' not exists. ' +
@@ -176,10 +174,10 @@ describe('Transactions - Create Operation', function() {
       expect(persons).to.have.length(0)
     })
 
-    it('has many create operations and one with missed column', async function() {
-      const limit = 200
+    it('has 20 create operations and one with missed column', async function() {
+      const limit = 20
 
-      for (let i = 0; i < limit; i++) {
+      for (let i = 0; i < (limit - 1); i++) {
         uow.create(PERSONS_TABLE_NAME, { name: `p-many-one-missed-${Utils.uid()}` })
       }
 
@@ -200,7 +198,7 @@ describe('Transactions - Create Operation', function() {
 
       expect(uowResult.results).to.equal(null)
       expect(uowResult.success).to.equal(false)
-      expect(uowResult.error.operation.opResultId).to.equal(`createPerson${limit + 1}`)
+      expect(uowResult.error.operation.opResultId).to.equal(`createPerson${limit}`)
       expect(uowResult.error.message).to.equal(
         'Column \'missedColumn\' in table \'Person\' not exists. ' +
         'Transaction accepts only DML operations (Data Manipulation Language)'

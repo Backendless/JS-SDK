@@ -6,6 +6,35 @@ import { OperationType, IsolationLevelEnum } from './constants'
 import { OpResult } from './op-result'
 import { OpResultValueReference } from './op-result-value-reference'
 
+class TransactionOperationError extends Error {
+  constructor(message, operation) {
+    super(message);
+
+    this.operation = operation
+  }
+
+}
+
+class UnitOfWorkResult {
+  constructor({ success, error, results }) {
+    this.success = success
+    this.error = error
+    this.results = results
+  }
+
+  isSuccess() {
+    return this.success
+  }
+
+  getError() {
+    return this.error
+  }
+
+  getResults() {
+    return this.results
+  }
+}
+
 class UnitOfWork {
   static IsolationLevelEnum = IsolationLevelEnum
 
@@ -18,6 +47,10 @@ class UnitOfWork {
     }
 
     this.usedOpIds = {}
+  }
+
+  setIsolationLevel(isolationLevelEnum) {
+    this.payload.isolationLevelEnum = isolationLevelEnum
   }
 
   getOpStackName(operationType, table) {
@@ -68,20 +101,29 @@ class UnitOfWork {
           asyncHandler: new Async(resolve, reject),
         })
       }))
-      .then(result => {
-        if (result.results) {
+      .then(({ success, error, results }) => {
+        if (results) {
           this.payload.operations.forEach(operation => {
             const opResultId = operation.meta.opResult.getOpResultId()
 
-            if (result.results[opResultId]) {
-              operation.meta.opResult.setResult(result.results[opResultId].result)
+            if (results[opResultId]) {
+              operation.meta.opResult.setResult(results[opResultId].result)
             }
           })
         }
 
-        return result
-      })
+        if (error) {
+          const operation = this.payload.operations.find(op => {
+            return error.operation.opResultId === op.meta.opResult.getOpResultId()
+          })
 
+          error = new TransactionOperationError(error.message, operation.meta.opResult)
+
+          operation.meta.opResult.setError(error)
+        }
+
+        return new UnitOfWorkResult({ success, results, error })
+      })
   }
 
   find(tableName, queryBuilder) {
@@ -182,7 +224,7 @@ class UnitOfWork {
       payload = args[1]
 
     } else if (args[0] instanceof OpResult || args[0] instanceof OpResultValueReference) {
-      tableName = args[0].getTable()
+      tableName = args[0].getTableName()
 
       payload = {
         objectId: args[0]
@@ -277,7 +319,7 @@ class UnitOfWork {
         throw new Error('Invalid arguments')
       }
     } else if (args[0] instanceof OpResult) {
-      tableName = args[0].getTable()
+      tableName = args[0].getTableName()
 
       payload.unconditional = args[0]
       payload.changes = args[1]
@@ -313,7 +355,7 @@ class UnitOfWork {
       }
 
     } else if (args[0] instanceof OpResult) {
-      tableName = args[0].getTable()
+      tableName = args[0].getTableName()
       payload.unconditional = args[0]
     } else if (Array.isArray(args[0])) {
       tableName = Utils.getClassName(args[0][0])
@@ -367,7 +409,7 @@ class UnitOfWork {
       children = args[2]
 
       if (parentObject instanceof OpResult || parentObject instanceof OpResultValueReference) {
-        tableName = parentObject.getTable()
+        tableName = parentObject.getTableName()
       } else if (parentObject && typeof parentObject === 'object') {
         tableName = Utils.getClassName(parentObject)
       } else {

@@ -1286,7 +1286,7 @@ function RTChannel() {
 
 }
 
-function testBaseTransactions() {
+async function testBaseTransactions() {
     class Person {
         foo?: string = 'bar'
     }
@@ -1306,14 +1306,35 @@ function testBaseTransactions() {
     let opResult: Backendless.OpResult;
     let opResultValueReference: Backendless.OpResultValueReference;
     let promiseResult: Promise<Backendless.UnitOfWorkResult>;
+    let unitOfWorkResult: Backendless.UnitOfWorkResult;
     let changesObj: object;
     let propertyValueObj: object;
+    let opResultId: string;
+    let tableName: string;
+    let isSuccess: boolean;
+    let results: object
+    let transactionOperationError: Backendless.TransactionOperationError;
+
+    opResultId = opResult.getOpResultId()
+    opResult.setOpResultId(opResultId)
+
+    tableName = opResult.getTableName()
 
     opResultValueReference = opResult.resolvedTo(1)
     opResultValueReference = opResult.resolvedTo(1, 'propName')
     opResultValueReference = opResult.resolvedTo('propName')
 
     promiseResult = uow.execute()
+    unitOfWorkResult = await uow.execute()
+
+    isSuccess = unitOfWorkResult.isSuccess()
+    transactionOperationError = unitOfWorkResult.getError()
+    results = unitOfWorkResult.getResults()
+
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_UNCOMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_COMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.REPEATABLE_READ)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.SERIALIZABLE)
 
     ///
     opResult = uow.create(personInst);

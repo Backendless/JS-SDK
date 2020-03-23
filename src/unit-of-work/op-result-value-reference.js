@@ -6,8 +6,8 @@ export class OpResultValueReference {
     this.propName = propName
   }
 
-  getTable() {
-    return this.opResult.getTable()
+  getTableName() {
+    return this.opResult.getTableName()
   }
 
   toJSON() {

@@ -22,6 +22,22 @@ export class OpResult {
     this.result = result
   }
 
+  getResult() {
+    return this.result
+  }
+
+  setError(error) {
+    this.error = error
+  }
+
+  getError() {
+    return this.error
+  }
+
+  getType() {
+    return this.operationType
+  }
+
   isFindRef() {
     return this.operationType === OperationType.FIND
   }
@@ -42,7 +58,7 @@ export class OpResult {
     return this.opResultId
   }
 
-  getTable() {
+  getTableName() {
     return this.table
   }
 
