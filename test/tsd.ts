@@ -11,7 +11,7 @@ function testMain() {
     const browser: { browser: string, version: string } = Backendless.browser;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
-    Backendless.initApp({ appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
+    Backendless.initApp({appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
 }
 
 function testLocalCache() {
@@ -75,13 +75,13 @@ function testDataQueryBuilderClass() {
     str = dataQuery.getWhereClause();
 
     dataQuery = dataQuery.setProperties('abc');
-    dataQuery = dataQuery.setProperties(['abc','abc','abc']);
+    dataQuery = dataQuery.setProperties(['abc', 'abc', 'abc']);
     dataQuery = dataQuery.addProperty(str);
     dataQuery = dataQuery.addProperties(str, str, str, str);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc'], ['abc','abc','abc'], ['abc','abc','abc']);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc'], str, str);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc'], str, str);
     dataQuery = dataQuery.addProperties(str);
-    dataQuery = dataQuery.addProperties(['abc','abc','abc']);
+    dataQuery = dataQuery.addProperties(['abc', 'abc', 'abc']);
 
     strs = dataQuery.getProperties();
 
@@ -790,7 +790,7 @@ function testMessaging() {
     promiseObject = Backendless.Messaging.getPushTemplates('ios');
 
     promiseObject = Backendless.Messaging.pushWithTemplate('templateName');
-
+    promiseObject = Backendless.Messaging.pushWithTemplate('templateName', {foo: 'bar'});
 }
 
 function testFilesService() {
