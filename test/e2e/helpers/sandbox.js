@@ -1,3 +1,4 @@
+import Request from 'backendless-request'
 import { createClient } from 'backendless-console-sdk'
 import { TablesAPI } from './tables'
 import { wait } from './promise'
@@ -95,9 +96,49 @@ const waitUntilAppIsConfigured = async app => {
   app.ready = true
 }
 
+let mockRequests = []
+const nativeRequestSend = Request.send
+
+Request.send = function fakeRequestSend(path, method, headers, body, encoding) {
+  const mockRequest = mockRequests.shift()
+
+  if (!mockRequest) {
+    return nativeRequestSend.call(Request, path, method, headers, body, encoding)
+  }
+
+  Object.assign(mockRequest, { path, method, headers, body, encoding })
+
+  try {
+    mockRequest.body = JSON.parse(body)
+  } catch (e) {
+    //
+  }
+
+  const responseFn = mockRequest.responseFn || Promise.resolve()
+
+  return responseFn
+    .then(response => {
+      return Object.assign({ status: 200, body: undefined, headers: {} }, response)
+    })
+}
+
+function prepareMockRequest(responseFn) {
+  const mockRequest = {
+    responseFn
+  }
+
+  mockRequests.push(mockRequest)
+
+  return mockRequest
+}
+
 const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
   const afterHook = each ? afterEach : after
+
+  beforeEach(() => {
+    mockRequests = []
+  })
 
   beforeHook(function() {
     this.timeout(120000)
@@ -130,6 +171,7 @@ const createSandboxFor = each => () => {
 
 export default {
   Backendless,
+  prepareMockRequest,
   forTest : createSandboxFor(true),
   forSuite: createSandboxFor(false)
 }
