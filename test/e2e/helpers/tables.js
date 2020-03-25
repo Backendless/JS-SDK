@@ -51,10 +51,16 @@ export class TablesAPI {
   }
 
   createColumn(tableName, columnName, dataType, options) {
-    return this.consoleApi.tables.createColumn(this.appId, { name: tableName }, Object.assign({}, {
+    const column = Object.assign({}, {
       name: columnName,
       dataType,
-    }, options))
+    }, options)
+
+    if (column.dataType === DataTypes.STRING) {
+      column.dataSize = 500
+    }
+
+    return this.consoleApi.tables.createColumn(this.appId, { name: tableName }, column)
   }
 
   createRelationColumn(tableName, columnName, toTableName, relationshipType) {

@@ -1441,6 +1441,218 @@ declare module Backendless {
         radius: number;
         units: string;
     }
+
+    class TransactionOperationError extends Error {
+        operation: OpResult;
+    }
+
+    class UnitOfWorkResult {
+        setIsolationLevel(isolationLevel: IsolationLevelEnum): UnitOfWorkResult;
+
+        isSuccess(): boolean;
+
+        getError(): TransactionOperationError;
+
+        getResults(): object;
+    }
+
+    class OpResultValueReference {
+
+    }
+
+    class OpResult {
+        opResultId: string;
+
+        getTableName(): string;
+
+        getOpResultId(): string;
+
+        setOpResultId(opResultId: string): void;
+
+        resolvedTo(index: number, property?: string): OpResultValueReference
+        resolvedTo(property: string): OpResultValueReference
+    }
+
+    enum IsolationLevelEnum {
+        READ_UNCOMMITTED,
+        READ_COMMITTED,
+        REPEATABLE_READ,
+        SERIALIZABLE
+    }
+
+    class UnitOfWork {
+        constructor(isolation?: IsolationLevelEnum);
+
+        find(tableName: string, dataQueryBuilder: DataQueryBuilder): OpResult;
+
+        create(object: object): OpResult;
+        create(tableName: string, object: object): OpResult;
+
+        update(object: object): OpResult;
+        update(tableName: string, object: object): OpResult;
+        update(opResult: OpResult | OpResultValueReference, object: object): OpResult;
+        update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
+        update(index: number, changesObj: object): OpResult;
+        update(index: number, propertyName: string, propertyValueObj: object): OpResult;
+
+        delete(object: object): OpResult;
+        delete(opResult: OpResult): OpResult;
+        delete(index: number): OpResult;
+        delete(tableName: string, object: object): OpResult;
+        delete(tableName: string, objectId: string): OpResult;
+
+        bulkCreate(tableName: string, objects: object[]): OpResult;
+        bulkCreate(objects: object[]): OpResult;
+
+        bulkUpdate(whereClause: string, object: object): OpResult;
+        bulkUpdate(tableName: string, whereClause: string, changesObj: object): OpResult;
+        bulkUpdate(tableName: string, objectIds: string[], changesObj: object): OpResult;
+        bulkUpdate(tableName: string, objects: object[], changesObj: object): OpResult;
+        bulkUpdate(opResult: OpResult, changesObj: object): OpResult;
+
+        bulkDelete(opResult: OpResult): OpResult;
+        bulkDelete(objects: object[]): OpResult;
+        bulkDelete(tableName: string, objects: object[]): OpResult;
+        bulkDelete(tableName: string, objectIds: string[]): OpResult;
+        bulkDelete(tableName: string, whereClause: string): OpResult;
+
+        addToRelation(parentObject: OpResult, columnName: string, whereClause: string): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, child: OpResult): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, child: object): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, children: object[]): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(parentObject: OpResultValueReference, columnName: string, whereClause: string): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, child: OpResult): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, child: object): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, children: object[]): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(parentObject: object, columnName: string, whereClause: string): OpResult;
+        addToRelation(parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(parentObject: object, columnName: string, child: OpResult): OpResult;
+        addToRelation(parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(parentObject: object, columnName: string, child: object): OpResult;
+        addToRelation(parentObject: object, columnName: string, children: object[]): OpResult;
+        addToRelation(parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(tableName: string, parentObject: object, columnName: string, whereClause: string): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, child: OpResult): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, child: object): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, children: object[]): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, whereClause: string): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResult): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, child: object): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, children: object[]): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(parentObject: OpResult, columnName: string, whereClause: string): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, objectIds: string[]): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, child: OpResult): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, child: object): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, children: object[]): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, children: OpResult[]): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(parentObject: OpResultValueReference, columnName: string, whereClause: string): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, objectIds: string[]): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, child: OpResult): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, child: object): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, children: object[]): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, children: OpResult[]): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(parentObject: object, columnName: string, whereClause: string): OpResult;
+        setRelation(parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        setRelation(parentObject: object, columnName: string, child: OpResult): OpResult;
+        setRelation(parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(parentObject: object, columnName: string, child: object): OpResult;
+        setRelation(parentObject: object, columnName: string, children: object[]): OpResult;
+        setRelation(parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        setRelation(parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(tableName: string, parentObject: object, columnName: string, whereClause: string): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, child: OpResult): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, child: object): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, children: object[]): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(tableName: string, parentObjectId: string, columnName: string, whereClause: string): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, objectIds: string[]): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResult): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, child: object): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, children: object[]): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResult[]): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(parentObject: OpResult, columnName: string, whereClause: string): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, child: OpResult): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, child: object): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, children: object[]): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, whereClause: string): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, child: OpResult): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, child: object): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, children: object[]): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(parentObject: object, columnName: string, whereClause: string): OpResult;
+        deleteRelation(parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(parentObject: object, columnName: string, child: OpResult): OpResult;
+        deleteRelation(parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(parentObject: object, columnName: string, child: object): OpResult;
+        deleteRelation(parentObject: object, columnName: string, children: object[]): OpResult;
+        deleteRelation(parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(tableName: string, parentObject: object, columnName: string, whereClause: string): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, child: OpResult): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, child: object): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, children: object[]): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, whereClause: string): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResult): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, child: object): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, children: object[]): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        execute(): Promise<UnitOfWorkResult>
+    }
 }
 
 declare module 'backendless' {

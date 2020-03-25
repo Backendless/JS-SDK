@@ -133,6 +133,10 @@ export default class Urls {
     return `${this.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`
   }
 
+  transactions() {
+    return `${this.root()}/transaction/unit-of-work`
+  }
+
   //messaging
 
   messaging() {
