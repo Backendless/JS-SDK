@@ -46,6 +46,10 @@ export class TablesAPI {
     return this.consoleApi.tables.create(this.appId, { name: tableName })
   }
 
+  removeTable(tableName) {
+    return this.consoleApi.tables.remove(this.appId, { name: tableName })
+  }
+
   createColumn(tableName, columnName, dataType, options) {
     return this.consoleApi.tables.createColumn(this.appId, { name: tableName }, Object.assign({}, {
       name: columnName,
