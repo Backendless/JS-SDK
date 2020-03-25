@@ -444,7 +444,15 @@ describe('Data', function() {
 
       result.forEach(schemaObject => {
         expect(schemaObject).to.have.all.keys([
-          'name', 'required', 'type', 'defaultValue', 'expression', 'relatedTable', 'customRegex', 'autoLoad', 'isPrimaryKey'
+          'name',
+          'required',
+          'type',
+          'defaultValue',
+          'expression',
+          'relatedTable',
+          'customRegex',
+          'autoLoad',
+          'isPrimaryKey'
         ])
       })
     })

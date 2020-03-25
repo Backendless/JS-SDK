@@ -526,7 +526,7 @@ declare module Backendless {
 
         function getPushTemplates(deviceType: string): Promise<Object>;
 
-        function pushWithTemplate(templateName: string): Promise<Object>;
+        function pushWithTemplate(templateName: string, templateValues?: object): Promise<Object>;
     }
 
     /**
