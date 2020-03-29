@@ -21,7 +21,6 @@ describe('Backendless.Logging', function() {
   })
 
   it('send messages pool', async () => {
-    Backendless.debugMode = true
     Backendless.Logging.setLogReportingPolicy(100, 100)
 
     const logger = Backendless.Logging.getLogger('MyLogger')
@@ -36,7 +35,5 @@ describe('Backendless.Logging', function() {
     logger.debug('I\'m debug message')
 
     await Backendless.Logging.flush()
-
-    Backendless.debugMode = false
   })
 })
