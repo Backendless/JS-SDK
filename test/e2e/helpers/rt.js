@@ -1,6 +1,6 @@
-export const TIMEOUT_ERROR = 'RT Callback has not been called!'
+export const RT_TIMEOUT_ERROR = 'RT Callback has not been called!'
 
-export function beforeHook(Backendless) {
+export function beforeRTHook(Backendless) {
   new Promise((resolve, reject) => {
     Backendless.RT.addConnectEventListener(resolve)
     Backendless.RT.addConnectErrorEventListener(reject)
@@ -9,7 +9,7 @@ export function beforeHook(Backendless) {
   })
 }
 
-export function afterHook(Backendless) {
+export function afterRTHook(Backendless) {
   Backendless.resetRT()
 }
 
@@ -47,7 +47,7 @@ export async function runRTHandler(subscriber) {
     results,
 
     next() {
-      const timeoutError = new Error(TIMEOUT_ERROR)
+      const timeoutError = new Error(RT_TIMEOUT_ERROR)
 
       let resolved = false
 

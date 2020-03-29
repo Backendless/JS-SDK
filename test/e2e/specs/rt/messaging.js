@@ -1,7 +1,7 @@
 import '../../helpers/global'
 import sandbox from '../../helpers/sandbox'
 import * as Utils from '../../helpers/utils'
-import { runRTHandler, TIMEOUT_ERROR, beforeHook, afterHook } from '../../helpers/rt'
+import { runRTHandler, RT_TIMEOUT_ERROR, beforeRTHook, afterRTHook } from '../../helpers/rt'
 
 const Backendless = sandbox.Backendless
 
@@ -14,11 +14,11 @@ describe('RT - Messaging', function() {
   beforeEach(async function() {
     testCaseMarker = Utils.uidShort()
 
-    await beforeHook(Backendless)
+    await beforeRTHook(Backendless)
   })
 
   afterEach(async function() {
-    await afterHook(Backendless)
+    await afterRTHook(Backendless)
   })
 
   const createChannel = (channelName = 'default') => {
@@ -44,7 +44,7 @@ describe('RT - Messaging', function() {
       try {
         await rtHandler.next()
       } catch (e) {
-        expect(e.message).to.be.equal(TIMEOUT_ERROR)
+        expect(e.message).to.be.equal(RT_TIMEOUT_ERROR)
       }
 
       expect(rtHandler.results).to.have.length(1)
@@ -79,7 +79,7 @@ describe('RT - Messaging', function() {
       try {
         await rtHandler.next()
       } catch (e) {
-        expect(e.message).to.be.equal(TIMEOUT_ERROR)
+        expect(e.message).to.be.equal(RT_TIMEOUT_ERROR)
       }
 
       expect(rtHandler.results).to.have.length(1)
@@ -120,7 +120,7 @@ describe('RT - Messaging', function() {
       try {
         await rtHandler.next()
       } catch (e) {
-        expect(e.message).to.be.equal(TIMEOUT_ERROR)
+        expect(e.message).to.be.equal(RT_TIMEOUT_ERROR)
       }
 
       expect(rtHandler.results).to.have.length(2)
