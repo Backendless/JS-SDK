@@ -9,7 +9,6 @@ class LoggingCollector {
     this.app = app
 
     this.flush = Utils.promisified(this.flush)
-    this.flushSync = Utils.synchronized(this.flush)
 
     this.reset()
   }

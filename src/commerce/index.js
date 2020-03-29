@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { deprecated } from '../decorators'
 
 import { validatePlayPurchase } from './validate-play-purchase'
 import { cancelPlaySubscription } from './cancel-play-subscription'
@@ -12,17 +11,11 @@ class Commerce {
 }
 
 Object.assign(Commerce.prototype, {
-  @deprecated('Backendless.Commerce', 'Backendless.Commerce.validatePlayPurchase')
-  validatePlayPurchaseSync: Utils.synchronized(validatePlayPurchase),
-  validatePlayPurchase    : Utils.promisified(validatePlayPurchase),
+  validatePlayPurchase: Utils.promisified(validatePlayPurchase),
 
-  @deprecated('Backendless.Commerce', 'Backendless.Commerce.cancelPlaySubscription')
-  cancelPlaySubscriptionSync: Utils.synchronized(cancelPlaySubscription),
-  cancelPlaySubscription    : Utils.promisified(cancelPlaySubscription),
+  cancelPlaySubscription: Utils.promisified(cancelPlaySubscription),
 
-  @deprecated('Backendless.Commerce', 'Backendless.Commerce.getPlaySubscriptionStatus')
-  getPlaySubscriptionStatusSync: Utils.synchronized(getPlaySubscriptionStatus),
-  getPlaySubscriptionStatus    : Utils.promisified(getPlaySubscriptionStatus),
+  getPlaySubscriptionStatus: Utils.promisified(getPlaySubscriptionStatus),
 
 })
 

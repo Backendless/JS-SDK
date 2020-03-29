@@ -24,18 +24,8 @@ export default class GeoTrackerMonitor {
       .call(this.geoFenceActions, ...args)
   }
 
-  runOnEnterActionSync(...args) {
-    return Utils.synchronized(this.geoFenceActions.enter)
-      .call(this.geoFenceActions, ...args)
-  }
-
   runOnStayAction(...args) {
     return Utils.promisified(this.geoFenceActions.stay)
-      .call(this.geoFenceActions, ...args)
-  }
-
-  runOnStayActionSync(...args) {
-    return Utils.synchronized(this.geoFenceActions.stay)
       .call(this.geoFenceActions, ...args)
   }
 
@@ -44,25 +34,12 @@ export default class GeoTrackerMonitor {
       .call(this.geoFenceActions, ...args)
   }
 
-  runOnExitActionSync(...args) {
-    return Utils.synchronized(this.geoFenceActions.exit)
-      .call(this.geoFenceActions, ...args)
-  }
-
   startGeofenceMonitoringWithInAppCallback(...args) {
     return Utils.promisified(startMonitoring).call(this, ...args)
   }
 
-  startGeofenceMonitoringWithInAppCallbackSync(...args) {
-    return Utils.synchronized(startMonitoring).call(this, ...args)
-  }
-
   startGeofenceMonitoringWithRemoteCallback(...args) {
     return Utils.promisified(startMonitoring).call(this, ...args)
-  }
-
-  startGeofenceMonitoringWithRemoteCallbackSync(...args) {
-    return Utils.synchronized(startMonitoring).call(this, ...args)
   }
 
   stopGeofenceMonitoring(...args) {

@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { deprecated } from '../decorators'
 
 import Channel from './channel'
 
@@ -54,39 +53,23 @@ class Messaging {
 }
 
 Object.assign(Messaging.prototype, {
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
-  publishSync: Utils.synchronized(publish),
-  publish    : Utils.promisified(publish),
+  publish: Utils.promisified(publish),
 
   pushWithTemplate: Utils.promisified(pushWithTemplate),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
-  sendEmailSync: Utils.synchronized(sendEmail),
-  sendEmail    : Utils.promisified(sendEmail),
+  sendEmail: Utils.promisified(sendEmail),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmailFromTemplate')
-  sendEmailFromTemplateSync: Utils.synchronized(sendEmailFromTemplate),
-  sendEmailFromTemplate    : Utils.promisified(sendEmailFromTemplate),
+  sendEmailFromTemplate: Utils.promisified(sendEmailFromTemplate),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.cancel')
-  cancelSync: Utils.synchronized(cancel),
-  cancel    : Utils.promisified(cancel),
+  cancel: Utils.promisified(cancel),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.registerDevice')
-  registerDeviceSync: Utils.synchronized(registerDevice),
-  registerDevice    : Utils.promisified(registerDevice),
+  registerDevice: Utils.promisified(registerDevice),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.getRegistrations')
-  getRegistrationsSync: Utils.synchronized(getRegistrations),
-  getRegistrations    : Utils.promisified(getRegistrations),
+  getRegistrations: Utils.promisified(getRegistrations),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.unregisterDevice')
-  unregisterDeviceSync: Utils.synchronized(unregisterDevice),
-  unregisterDevice    : Utils.promisified(unregisterDevice),
+  unregisterDevice: Utils.promisified(unregisterDevice),
 
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.getMessageStatus')
-  getMessageStatusSync: Utils.synchronized(getMessageStatus),
-  getMessageStatus    : Utils.promisified(getMessageStatus),
+  getMessageStatus: Utils.promisified(getMessageStatus),
 
   getPushTemplates: Utils.promisified(getPushTemplates),
 

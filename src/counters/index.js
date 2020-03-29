@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { deprecated } from '../decorators'
 
 import Counter from './counter'
 import {
@@ -25,41 +24,23 @@ class Counters {
 }
 
 Object.assign(Counters.prototype, {
-  @deprecated('Backendless.Counters', 'Backendless.Counters.incrementAndGet')
-  incrementAndGetSync: Utils.synchronized(incrementAndGet),
-  incrementAndGet    : Utils.promisified(incrementAndGet),
+  incrementAndGet: Utils.promisified(incrementAndGet),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.getAndIncrement')
-  getAndIncrementSync: Utils.synchronized(getAndIncrement),
-  getAndIncrement    : Utils.promisified(getAndIncrement),
+  getAndIncrement: Utils.promisified(getAndIncrement),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.decrementAndGet')
-  decrementAndGetSync: Utils.synchronized(decrementAndGet),
-  decrementAndGet    : Utils.promisified(decrementAndGet),
+  decrementAndGet: Utils.promisified(decrementAndGet),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.getAndDecrement')
-  getAndDecrementSync: Utils.synchronized(getAndDecrement),
-  getAndDecrement    : Utils.promisified(getAndDecrement),
+  getAndDecrement: Utils.promisified(getAndDecrement),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.reset')
-  resetSync: Utils.synchronized(reset),
-  reset    : Utils.promisified(reset),
+  reset: Utils.promisified(reset),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.get')
-  getSync: Utils.synchronized(get),
-  get    : Utils.promisified(get),
+  get: Utils.promisified(get),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.addAndGet')
-  addAndGetSync: Utils.synchronized(addAndGet),
-  addAndGet    : Utils.promisified(addAndGet),
+  addAndGet: Utils.promisified(addAndGet),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.getAndAdd')
-  getAndAddSync: Utils.synchronized(getAndAdd),
-  getAndAdd    : Utils.promisified(getAndAdd),
+  getAndAdd: Utils.promisified(getAndAdd),
 
-  @deprecated('Backendless.Counters', 'Backendless.Counters.compareAndSet')
-  compareAndSetSync: Utils.synchronized(compareAndSet),
-  compareAndSet    : Utils.promisified(compareAndSet),
+  compareAndSet: Utils.promisified(compareAndSet),
 })
 
 export default Counters

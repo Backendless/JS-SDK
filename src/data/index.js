@@ -41,11 +41,6 @@ export default class Data {
     return new Store(model, this.classToTableMap, this.app)
   }
 
-  @deprecated('Backendless.Data', 'Backendless.Data.describe')
-  describeSync(...args) {
-    return Utils.synchronized(describe).call(this, ...args)
-  }
-
   describe(...args) {
     return Utils.promisified(describe).call(this, ...args)
   }
@@ -53,11 +48,6 @@ export default class Data {
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
   save(className, obj) {
     return this.of(className).save(obj)
-  }
-
-  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  saveSync(className, obj, asyncHandler) {
-    return this.of(className).saveSync(obj, asyncHandler)
   }
 
   mapTableToClass(tableName, clientClass) {
