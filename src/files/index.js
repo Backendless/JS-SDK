@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import Async from '../request/async'
 
 import FilesUtils from './utils'
 import FilePermission from './persmission'
@@ -13,9 +12,22 @@ export default class Files {
       DELETE: new FilePermission('DELETE', app),
       WRITE : new FilePermission('WRITE', app),
     }
+
+    Utils.enableAsyncHandlers(this, [
+      'saveFile',
+      'upload',
+      'listing',
+      'renameFile',
+      'moveFile',
+      'copyFile',
+      'remove',
+      'exists',
+      'removeDirectory',
+      'getFileCount',
+    ])
   }
 
-  async saveFile(filePath, fileName, fileContent, overwrite, asyncHandler) {
+  async saveFile(filePath, fileName, fileContent, overwrite) {
 
     const toBase64 = content => {
       if (typeof Blob !== 'undefined') {
@@ -48,11 +60,6 @@ export default class Files {
       throw new Error('Missing value for the "fileName" argument. The argument must contain a string value')
     }
 
-    if (overwrite instanceof Async) {
-      asyncHandler = overwrite
-      overwrite = undefined
-    }
-
     return toBase64(fileContent)
       .then(fileContent => {
         const query = {}
@@ -66,12 +73,11 @@ export default class Files {
           query  : query,
           headers: { 'Content-Type': 'text/plain' },
           data   : fileContent,
-          asyncHandler
         })
       })
   }
 
-  async upload(file, filePath, overwrite, asyncHandler) {
+  async upload(file, filePath, overwrite) {
 
     const getFileName = file => {
       if (file.name) {
@@ -90,17 +96,11 @@ export default class Files {
       throw new Error('Wrong type of the file source object. Can not get file name')
     }
 
-    if (overwrite instanceof Async) {
-      asyncHandler = overwrite
-      overwrite = undefined
-    }
-
     const options = {
-      overwrite   : overwrite,
-      path        : filePath,
-      fileName    : fileName,
-      file        : file,
-      asyncHandler: asyncHandler
+      overwrite: overwrite,
+      path     : filePath,
+      fileName : fileName,
+      file     : file,
     }
 
     const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
@@ -113,37 +113,13 @@ export default class Files {
     }
 
     return this.app.request.post({
-      url         : url,
-      query       : query,
-      form        : { file: options.file },
-      asyncHandler: options.asyncHandler
+      url  : url,
+      query: query,
+      form : { file: options.file },
     })
   }
 
-  async listing(path, pattern, recursively, pagesize, offset, asyncHandler) {
-    if (offset instanceof Async) {
-      asyncHandler = offset
-      offset = undefined
-
-    } else if (pagesize instanceof Async) {
-      asyncHandler = pagesize
-      pagesize = undefined
-      offset = undefined
-
-    } else if (recursively instanceof Async) {
-      asyncHandler = recursively
-      recursively = undefined
-      pagesize = undefined
-      offset = undefined
-
-    } else if (pattern instanceof Async) {
-      asyncHandler = pattern
-      pattern = undefined
-      recursively = undefined
-      pagesize = undefined
-      offset = undefined
-    }
-
+  async listing(path, pattern, recursively, pagesize, offset) {
     const query = {}
 
     if (Utils.isString(pattern)) {
@@ -163,13 +139,12 @@ export default class Files {
     }
 
     return this.app.request.get({
-      url         : this.app.urls.filePath(path),
-      query       : query,
-      asyncHandler: asyncHandler
+      url  : this.app.urls.filePath(path),
+      query: query,
     })
   }
 
-  async renameFile(oldPathName, newName, asyncHandler) {
+  async renameFile(oldPathName, newName) {
     if (!oldPathName || !Utils.isString(oldPathName)) {
       throw new Error('Old File "path" must not be empty and must be String')
     }
@@ -184,39 +159,36 @@ export default class Files {
     }
 
     return this.app.request.put({
-      url         : this.app.urls.fileRename(),
-      data        : parameters,
-      asyncHandler: asyncHandler
+      url : this.app.urls.fileRename(),
+      data: parameters,
     })
   }
 
-  async moveFile(sourcePath, targetPath, asyncHandler) {
+  async moveFile(sourcePath, targetPath) {
     const parameters = {
       sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
       targetPath: FilesUtils.ensureSlashInPath(targetPath)
     }
 
     return this.app.request.put({
-      url         : this.app.urls.fileMove(),
-      data        : parameters,
-      asyncHandler: asyncHandler
+      url : this.app.urls.fileMove(),
+      data: parameters,
     })
   }
 
-  async copyFile(sourcePath, targetPath, asyncHandler) {
+  async copyFile(sourcePath, targetPath) {
     const parameters = {
       sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
       targetPath: FilesUtils.ensureSlashInPath(targetPath)
     }
 
     return this.app.request.put({
-      url         : this.app.urls.fileCopy(),
-      data        : parameters,
-      asyncHandler: asyncHandler
+      url : this.app.urls.fileCopy(),
+      data: parameters,
     })
   }
 
-  async remove(path, asyncHandler) {
+  async remove(path) {
     if (!path || !Utils.isString(path)) {
       throw new Error('File "path" must not be empty and must be String')
     }
@@ -226,52 +198,32 @@ export default class Files {
     }
 
     return this.app.request.delete({
-      url         : path,
-      asyncHandler: asyncHandler
+      url: path,
     })
   }
 
-  async exists(path, asyncHandler) {
+  async exists(path) {
     if (!path || !Utils.isString(path)) {
       throw new Error('Files "path" must not be empty and must be String')
     }
 
     return this.app.request.get({
-      url         : this.app.urls.filePath(path),
-      query       : { action: 'exists' },
-      asyncHandler: asyncHandler
+      url  : this.app.urls.filePath(path),
+      query: { action: 'exists' },
     })
   }
 
-  async removeDirectory(path, asyncHandler) {
+  async removeDirectory(path) {
     if (!path || !Utils.isString(path)) {
       throw new Error('Directory "path" must not be empty and must be String')
     }
 
     this.app.request.delete({
-      url         : this.app.urls.filePath(path),
-      asyncHandler: asyncHandler
+      url: this.app.urls.filePath(path),
     })
   }
 
-  async getFileCount(path, pattern, recursive, countDirectories, asyncHandler) {
-
-    if (countDirectories instanceof Async) {
-      asyncHandler = countDirectories
-      countDirectories = undefined
-
-    } else if (recursive instanceof Async) {
-      asyncHandler = recursive
-      recursive = undefined
-      countDirectories = undefined
-
-    } else if (pattern instanceof Async) {
-      asyncHandler = pattern
-      pattern = undefined
-      recursive = undefined
-      countDirectories = undefined
-    }
-
+  async getFileCount(path, pattern, recursive, countDirectories) {
     const query = {
       action          : 'count',
       pattern         : pattern !== undefined ? pattern : '*',
@@ -288,9 +240,8 @@ export default class Files {
     }
 
     return this.app.request.get({
-      url         : this.app.urls.filePath(path),
-      query       : query,
-      asyncHandler: asyncHandler
+      url  : this.app.urls.filePath(path),
+      query: query,
     })
   }
 

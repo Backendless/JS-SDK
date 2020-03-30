@@ -46,11 +46,10 @@ const TypesMapper = {
  * @param {GeoPoint} geoPoint
  * @param {Object} GeoFenceCallback
  * @param {Object} lastResults
- * @param {Object} asyncHandler
  */
 
 // eslint-disable-next-line max-len
-function checkPosition(tracker, fenceActions, geofenceName, coords, geoPoint, GeoFenceCallback, lastResults, asyncHandler) {
+function checkPosition(tracker, fenceActions, geofenceName, coords, geoPoint, GeoFenceCallback, lastResults) {
 
   for (let k = 0; k < tracker._trackedFences.length; k++) {
     const _trackedFences = tracker._trackedFences[k]
@@ -84,7 +83,7 @@ function checkPosition(tracker, fenceActions, geofenceName, coords, geoPoint, Ge
 
       const timeoutFuncRemote = (savedK, savedCoords, duration, geoPoint) => {
         const callBack = () => {
-          fenceActions.run('onstay', tracker._trackedFences[savedK][geofenceName], geoPoint, asyncHandler)
+          fenceActions.run('onstay', tracker._trackedFences[savedK][geofenceName], geoPoint)
         }
 
         tracker._timers[tracker._trackedFences[savedK][geofenceName]] = setTimeout(callBack, duration)
@@ -113,25 +112,25 @@ function checkPosition(tracker, fenceActions, geofenceName, coords, geoPoint, Ge
         geoPoint.longitude = coords.longitude
 
         if (rule === 'onenter') {
-          fenceActions.run(rule, tracker._trackedFences[k][geofenceName], geoPoint, asyncHandler)
+          fenceActions.run(rule, tracker._trackedFences[k][geofenceName], geoPoint)
 
           if (duration > -1) {
             (function(k, coords, duration, geoPoint) {
               return timeoutFuncRemote(k, coords, duration, geoPoint)
             })(k, coords, duration, geoPoint)
           } else {
-            fenceActions.run('onstay', tracker._trackedFences[k][geofenceName], geoPoint, asyncHandler)
+            fenceActions.run('onstay', tracker._trackedFences[k][geofenceName], geoPoint)
           }
         } else {
           clearTimeout(tracker._timers[tracker._trackedFences[k][geofenceName]])
-          fenceActions.run(rule, tracker._trackedFences[k][geofenceName], geoPoint, asyncHandler)
+          fenceActions.run(rule, tracker._trackedFences[k][geofenceName], geoPoint)
         }
       }
     }
   }
 }
 
-export default async function startMonitoring(geofenceName, secondParam, asyncHandler) {
+export default async function startMonitoring(geofenceName, secondParam) {
   const tracker = this.geoTracker
   const fenceActions = this.fenceActions
   const fences = this.getFences(geofenceName)
@@ -168,7 +167,7 @@ export default async function startMonitoring(geofenceName, secondParam, asyncHa
     const callback = !isGeoPoint ? secondParam : null
 
     // eslint-disable-next-line max-len
-    checkPosition(tracker, fenceActions, geofenceName, position.coords, geoPoint, callback, tracker._lastResults, asyncHandler)
+    checkPosition(tracker, fenceActions, geofenceName, position.coords, geoPoint, callback, tracker._lastResults)
   }
 
   function errorCallback(error) {

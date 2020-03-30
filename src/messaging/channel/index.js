@@ -1,9 +1,8 @@
-import Utils from '../../utils'
 import { RTScopeConnector } from '../../rt'
 
-const ListenerTypes = Utils.mirrorKeys({
-  MESSAGE: null
-})
+const ListenerTypes = {
+  MESSAGE: 'MESSAGE'
+}
 
 export default class Channel extends RTScopeConnector {
   constructor(options, app) {

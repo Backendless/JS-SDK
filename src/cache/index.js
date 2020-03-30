@@ -1,25 +1,21 @@
 import Utils from '../utils'
-import Async from '../request/async'
 
 export default class Cache {
   constructor(app) {
     this.app = app
 
     this.parsers = {}
+
+    Utils.enableAsyncHandlers(this, ['put', 'get', 'remove', 'contains', 'expireIn', 'expireAt'])
   }
 
   setObjectFactory(objectName, factoryMethod) {
     this.parsers[objectName] = factoryMethod
   }
 
-  async put(key, value, timeToLive, asyncHandler) {
+  async put(key, value, timeToLive) {
     if (!key || !Utils.isString(key)) {
       throw new Error('Cache Key must be non empty String')
-    }
-
-    if (timeToLive instanceof Async) {
-      asyncHandler = timeToLive
-      timeToLive = undefined
     }
 
     if (timeToLive && !Utils.isNumber(timeToLive)) {
@@ -30,19 +26,14 @@ export default class Cache {
       value.___class = value.___class || Utils.getClassName(value)
     }
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
-    }
-
     return this.app.request.put({
-      url         : this.app.urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
-      headers     : { 'Content-Type': 'application/json' },
-      data        : JSON.stringify(value),
-      asyncHandler: asyncHandler
+      url    : this.app.urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+      headers: { 'Content-Type': 'application/json' },
+      data   : JSON.stringify(value),
     })
   }
 
-  async get(key, asyncHandler) {
+  async get(key) {
     function parseResult(result) {
       const className = result && result.___class
 
@@ -61,53 +52,33 @@ export default class Cache {
       throw new Error('Cache Key must be non empty String')
     }
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler, parseResult)
-    }
-
-    const result = this.app.request.get({
-      url         : this.app.urls.cacheItem(key),
-      asyncHandler: asyncHandler
+    return this.app.request.get({
+      url   : this.app.urls.cacheItem(key),
+      parser: parseResult,
     })
-
-    if (asyncHandler) {
-      return result
-    }
-
-    return parseResult(result)
   }
 
-  async remove(key, asyncHandler) {
+  async remove(key) {
     if (!key || !Utils.isString(key)) {
       throw new Error('Cache Key must be non empty String')
-    }
-
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
     }
 
     return this.app.request.delete({
-      url         : this.app.urls.cacheItem(key),
-      asyncHandler: asyncHandler
+      url: this.app.urls.cacheItem(key),
     })
   }
 
-  async contains(key, asyncHandler) {
+  async contains(key) {
     if (!key || !Utils.isString(key)) {
       throw new Error('Cache Key must be non empty String')
     }
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
-    }
-
     return this.app.request.get({
-      url         : this.app.urls.cacheItemCheck(key),
-      asyncHandler: asyncHandler
+      url: this.app.urls.cacheItemCheck(key),
     })
   }
 
-  async expireIn(key, seconds, asyncHandler) {
+  async expireIn(key, seconds) {
     if (!key || !Utils.isString(key)) {
       throw new Error('Cache Key must be non empty String')
     }
@@ -116,19 +87,14 @@ export default class Cache {
       throw new Error('Cache Expiration must be number of seconds')
     }
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
-    }
-
     return this.app.request.put({
-      url         : this.app.urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
-      data        : {},
-      asyncHandler: asyncHandler
+      url : this.app.urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
+      data: {},
     })
 
   }
 
-  async expireAt(key, timestamp, asyncHandler) {
+  async expireAt(key, timestamp) {
     if (!key || !Utils.isString(key)) {
       throw new Error('Cache Key must be non empty String')
     }
@@ -139,14 +105,9 @@ export default class Cache {
 
     timestamp = Utils.isDate(timestamp) ? timestamp.getTime() : timestamp
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
-    }
-
     return this.app.request.put({
-      url         : this.app.urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
-      data        : {},
-      asyncHandler: asyncHandler
+      url : this.app.urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
+      data: {},
     })
 
   }

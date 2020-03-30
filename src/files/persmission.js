@@ -1,3 +1,5 @@
+import Utils from '../utils'
+
 const PermissionTypes = {
   GRANT: 'GRANT',
   DENY : 'DENY',
@@ -6,7 +8,7 @@ const PermissionTypes = {
 const namespaceLabel = 'Backendless.Files.Permissions.{READ|DELETE|WRITE}'
 
 function backwardCompatibility(context, methodName, oldMethodName) {
-  return function() {
+  return () => {
     const mainMessage = `"${namespaceLabel}.${oldMethodName}" is deprecated and will be removed in the nearest release.`
     const helpMessage = `Please use "${namespaceLabel}.${methodName}" instead of.`
 
@@ -29,46 +31,59 @@ export default class FilePermission {
     this.denyRole = backwardCompatibility(this, 'denyForRole', 'denyRole')
     this.grant = backwardCompatibility(this, 'grantForAllUsers', 'grant')
     this.deny = backwardCompatibility(this, 'denyForAllUsers', 'deny')
+
+    Utils.enableAsyncHandlers(this, [
+      'grantForUser',
+      'denyForUser',
+      'grantForRole',
+      'denyForRole',
+      'grantForAllUsers',
+      'denyForAllUsers',
+      'grantUser',
+      'denyUser',
+      'grantRole',
+      'denyRole',
+      'grant',
+      'deny',
+    ])
   }
 
-  grantForUser(userId, url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, url, { userId }, asyncHandler)
+  grantForUser(userId, url) {
+    return this.sendRequest(PermissionTypes.GRANT, url, { userId })
   }
 
-  denyForUser(userId, url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, url, { userId }, asyncHandler)
+  denyForUser(userId, url) {
+    return this.sendRequest(PermissionTypes.DENY, url, { userId })
   }
 
-  grantForRole(roleName, url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, url, { roleName }, asyncHandler)
+  grantForRole(roleName, url) {
+    return this.sendRequest(PermissionTypes.GRANT, url, { roleName })
   }
 
-  denyForRole(roleName, url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, url, { roleName }, asyncHandler)
+  denyForRole(roleName, url) {
+    return this.sendRequest(PermissionTypes.DENY, url, { roleName })
   }
 
-  grantForAllUsers(url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, url, { userId: '*' }, asyncHandler)
+  grantForAllUsers(url) {
+    return this.sendRequest(PermissionTypes.GRANT, url, { userId: '*' })
   }
 
-  denyForAllUsers(url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, url, { userId: '*' }, asyncHandler)
+  denyForAllUsers(url) {
+    return this.sendRequest(PermissionTypes.DENY, url, { userId: '*' })
   }
 
-  grantForAllRoles(url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, url, { roleName: '*' }, asyncHandler)
+  grantForAllRoles(url) {
+    return this.sendRequest(PermissionTypes.GRANT, url, { roleName: '*' })
   }
 
-  denyForAllRoles(url, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, url, { roleName: '*' }, asyncHandler)
+  denyForAllRoles(url) {
+    return this.sendRequest(PermissionTypes.DENY, url, { roleName: '*' })
   }
 
-  sendRequest(type, path, options, asyncHandler) {
-    const { userId, roleName } = options
-    const permission = this.permission
+  sendRequest(type, path, { userId, roleName }) {
 
     const data = {
-      permission
+      permission: this.permission
     }
 
     if (userId) {
@@ -78,9 +93,8 @@ export default class FilePermission {
     }
 
     return this.app.request.put({
-      url         : this.app.urls.filePermission(type, path),
-      data        : data,
-      asyncHandler: asyncHandler
+      url : this.app.urls.filePermission(type, path),
+      data: data,
     })
   }
 }

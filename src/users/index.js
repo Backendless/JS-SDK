@@ -1,19 +1,41 @@
 import Utils from '../utils'
-import Async from '../request/async'
 
 import User from './user'
+import UsersRoles from './roles'
+import UsersSocial from './social'
 
 import { parseResponse, getUserFromResponse } from './utils'
-
-import { loginSocial } from './social/login'
-import { sendSocialLoginRequest } from './social/request'
 
 export default class Users {
   constructor(app) {
     this.app = app
+
+    this.roles = new UsersRoles(this)
+    this.social = new UsersSocial(this)
+
+    Utils.enableAsyncHandlers(this, [
+      'register',
+      'login',
+      'loginAsGuest',
+      'loginWithFacebook',
+      'loginWithFacebookSdk',
+      'loginWithGooglePlus',
+      'loginWithGooglePlusSdk',
+      'loginWithTwitter',
+      'logout',
+      'getCurrentUser',
+      'isValidLogin',
+      'restorePassword',
+      'resendEmailConfirmation',
+      'update',
+      'getUserRoles',
+      'assignRole',
+      'unassignRole',
+      'describeUserClass',
+    ])
   }
 
-  async register(user, asyncHandler) {
+  async register(user) {
     function enrichWithLocaleInfo(user) {
       if (!user.blUserLocale) {
         const clientUserLocale = getClientUserLocale()
@@ -47,32 +69,16 @@ export default class Users {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.userRegister(),
-      parser      : data => Utils.deepExtend(new User(), data),
-      asyncHandler: asyncHandler,
-      data        : enrichWithLocaleInfo(user)
+      url   : this.app.urls.userRegister(),
+      parser: data => Utils.deepExtend(new User(), data),
+      data  : enrichWithLocaleInfo(user)
     })
   }
 
-  async getUserRoles(asyncHandler) {
-    return this.app.request.get({
-      url         : this.app.urls.userRoles(),
-      asyncHandler: asyncHandler
-    })
-  }
-
-  async assignRole(identity, rolename, asyncHandler) {
-    return roleHelper.call(this, identity, rolename, asyncHandler, 'assignRole')
-  }
-
-  async unassignRole(identity, rolename, asyncHandler) {
-    return roleHelper.call(this, identity, rolename, asyncHandler, 'unassignRole')
-  }
-
-  async login(login, password, stayLoggedIn, /** async */) {
+  async login(login, password, stayLoggedIn) {
     const data = {}
 
-    if (typeof login === 'string' && (!password || password instanceof Async)) {
+    if (typeof login === 'string' && !password) {
       data.objectId = login
 
     } else {
@@ -94,13 +100,10 @@ export default class Users {
     this.app.LocalCache.remove('current-user-id')
     this.app.LocalCache.set('stayLoggedIn', false)
 
-    const asyncHandler = Utils.extractResponder(arguments)
-
     return this.app.request.post({
-      url         : this.app.urls.userLogin(),
-      data        : data,
-      asyncHandler: asyncHandler,
-      parser      : data => {
+      url   : this.app.urls.userLogin(),
+      data  : data,
+      parser: data => {
         this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
 
         return getUserFromResponse.call(this, this.getLocalCurrentUser())
@@ -108,20 +111,17 @@ export default class Users {
     })
   }
 
-  async loginAsGuest(stayLoggedIn, /** async */) {
+  async loginAsGuest(stayLoggedIn) {
     stayLoggedIn = stayLoggedIn === true
 
     this.app.LocalCache.remove('user-token')
     this.app.LocalCache.remove('current-user-id')
     this.app.LocalCache.set('stayLoggedIn', false)
 
-    const asyncHandler = Utils.extractResponder(arguments)
-
     return this.app.request
       .post({
-        url         : this.app.urls.guestLogin(),
-        asyncHandler: asyncHandler,
-        parser      : data => {
+        url   : this.app.urls.guestLogin(),
+        parser: data => {
           this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
 
           return getUserFromResponse.call(this, this.getLocalCurrentUser())
@@ -129,27 +129,27 @@ export default class Users {
       })
   }
 
-  async describeUserClass(asyncHandler) {
-    return this.app.request.get({
-      url         : this.app.urls.userClassProps(),
-      asyncHandler: asyncHandler
-    })
+  async loginWithFacebook(fieldsMapping, permissions, stayLoggedIn) {
+    return this.social.loginWithFacebook(fieldsMapping, permissions, stayLoggedIn)
   }
 
-  async restorePassword(emailAddress, asyncHandler) {
-    if (!emailAddress) {
-      throw new Error('emailAddress can not be empty')
-    }
-
-    const responder = Utils.extractResponder(arguments)
-
-    return this.app.request.get({
-      url         : this.app.urls.userRestorePassword(emailAddress),
-      asyncHandler: asyncHandler
-    })
+  async loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options) {
+    return this.social.loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options)
   }
 
-  async logout(asyncHandler) {
+  async loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn) {
+    return this.social.loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn)
+  }
+
+  async loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn)
+  }
+
+  async loginWithTwitter(fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithTwitter(fieldsMapping, stayLoggedIn)
+  }
+
+  async logout() {
     const logoutUser = () => {
       this.app.LocalCache.remove('user-token')
       this.app.LocalCache.remove('current-user-id')
@@ -160,12 +160,11 @@ export default class Users {
 
     return this.app.request
       .get({
-        url         : this.app.urls.userLogout(),
-        asyncHandler: asyncHandler
+        url: this.app.urls.userLogout(),
       })
       .then(logoutUser)
       .catch(error => {
-        if (Utils.isObject(error) && [3064, 3091, 3090, 3023].includes(error.code)) {
+        if ([3064, 3091, 3090, 3023].includes(error.code)) {
           logoutUser()
         }
 
@@ -173,7 +172,7 @@ export default class Users {
       })
   }
 
-  async getCurrentUser(asyncHandler) {
+  async getCurrentUser() {
     let request = null
 
     if (this.currentUser) {
@@ -210,162 +209,65 @@ export default class Users {
       request = Promise.resolve(null)
     }
 
-    if (asyncHandler) {
-      request.then(asyncHandler.success, asyncHandler.fault)
-    }
-
     return request
   }
 
-  async update(user, asyncHandler) {
-    return this.app.request.put({
-      url         : this.app.urls.userObject(user.objectId),
-      parser      : data => Utils.deepExtend(new User(), data),
-      asyncHandler: asyncHandler,
-      data        : user
-    })
-  }
-
-  async loginWithFacebook(fieldsMapping, permissions, stayLoggedIn, asyncHandler) {
-    console.warn( // eslint-disable-line no-console
-      'Method "loginWithFacebook" is deprecated. and will be removed in the nearest release.\n' +
-      'Use method "loginWithFacebookSdk" instead.'
-    )
-
-    return loginSocial.call(this, 'Facebook', fieldsMapping, permissions, null, stayLoggedIn, asyncHandler)
-  }
-
-  async loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options) {
-    const context = this
-
-    Utils.checkPromiseSupport()
-
-    if (typeof accessToken !== 'string') {
-      options = stayLoggedIn
-      stayLoggedIn = fieldsMapping
-      fieldsMapping = accessToken
-      accessToken = null
-    }
-
-    return new Promise((resolve, reject) => {
-      function loginRequest() {
-        const asyncHandler = new Async(resolve, reject)
-
-        return sendSocialLoginRequest.call(context, accessToken, 'facebook', fieldsMapping, stayLoggedIn, asyncHandler)
-      }
-
-      if (accessToken || !fieldsMapping) {
-        return loginRequest()
-      }
-
-      // eslint-disable-next-line no-console
-      console.warn(
-        'You must pass "accessToken" as the first argument into ' +
-        ' "loginWithFacebook(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method'
-      )
-
-      if (!FB) {
-        return reject(new Error('Facebook SDK not found'))
-      }
-
-      FB.getLoginStatus(response => {
-        if (response.status === 'connected') {
-          loginRequest(accessToken = response.authResponse.accessToken)
-
-        } else {
-          FB.login(response => loginRequest(accessToken = response.authResponse.accessToken), options)
-        }
-      })
-    })
-  }
-
-  async loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) {
-    console.warn( // eslint-disable-line no-console
-      'Method "loginWithGooglePlus" is deprecated. and will be removed in the nearest release.\n' +
-      'Use method "loginWithGooglePlusSdk" instead.'
-    )
-
-    return loginSocial.call(this, 'GooglePlus', fieldsMapping, permissions, container, stayLoggedIn, asyncHandler)
-  }
-
-  async loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
-    const context = this
-
-    Utils.checkPromiseSupport()
-
-    if (typeof accessToken !== 'string') {
-      stayLoggedIn = fieldsMapping
-      fieldsMapping = accessToken
-      accessToken = null
-    }
-
-    return new Promise((resolve, reject) => {
-      function loginRequest() {
-        const asyncHandler = new Async(resolve, reject)
-
-        return sendSocialLoginRequest.call(context, accessToken, 'googleplus', fieldsMapping, stayLoggedIn, asyncHandler)
-      }
-
-      if (accessToken || !fieldsMapping) {
-        return loginRequest()
-      }
-
-      console.warn(// eslint-disable-line no-console
-        'You must pass "accessToken" as the first argument into ' +
-        '"loginWithGooglePlusSdk(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method'
-      )
-
-      if (!gapi) {
-        return reject(new Error('Google Plus SDK not found'))
-      }
-
-      gapi.auth.authorize({
-        client_id: fieldsMapping.client_id,
-        scope    : 'https://www.googleapis.com/auth/plus.login'
-      }, ({ access_token, error }) => {
-        if (error) {
-          reject(error)
-        } else {
-          loginRequest(accessToken = access_token)
-        }
-      })
-    })
-  }
-
-  async loginWithTwitter(fieldsMapping, stayLoggedIn, asyncHandler) {
-    return loginSocial.call(this, 'Twitter', fieldsMapping, null, null, stayLoggedIn, asyncHandler)
-  }
-
-  async isValidLogin(asyncHandler) {
+  async isValidLogin() {
     const userToken = this.getCurrentUserToken()
 
     if (userToken) {
       return this.app.request.get({
-        url         : this.app.urls.userTokenCheck(userToken),
-        asyncHandler: asyncHandler
+        url: this.app.urls.userTokenCheck(userToken),
       })
     }
 
-    const result = this.getCurrentUser()
+    return this.getCurrentUser()
       .then(currentUser => !!currentUser)
-
-    if (asyncHandler) {
-      result.then(asyncHandler.success, asyncHandler.fault)
-    }
-
-    return result
   }
 
-  async resendEmailConfirmation(emailAddress /** async */) {
-    if (!emailAddress || emailAddress instanceof Async) {
+  async restorePassword(emailAddress) {
+    if (!emailAddress) {
+      throw new Error('emailAddress can not be empty')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.userRestorePassword(emailAddress),
+    })
+  }
+
+  async resendEmailConfirmation(emailAddress) {
+    if (!emailAddress) {
       throw new Error('Email cannot be empty')
     }
 
-    const responder = Utils.extractResponder(arguments)
-
     return this.app.request.post({
-      url         : this.app.urls.userResendConfirmation(emailAddress),
-      asyncHandler: responder
+      url: this.app.urls.userResendConfirmation(emailAddress),
+    })
+  }
+
+  async update(user) {
+    return this.app.request.put({
+      url   : this.app.urls.userObject(user.objectId),
+      parser: data => Utils.deepExtend(new User(), data),
+      data  : user
+    })
+  }
+
+  async getUserRoles() {
+    return this.roles.getUserRoles()
+  }
+
+  async assignRole(identity, rolename) {
+    return this.roles.assignRole(identity, rolename)
+  }
+
+  async unassignRole(identity, rolename) {
+    return this.roles.unassignRole(identity, rolename)
+  }
+
+  async describeUserClass() {
+    return this.app.request.get({
+      url: this.app.urls.userClassProps(),
     })
   }
 
@@ -391,22 +293,4 @@ export default class Users {
     this.app.RT.updateUserTokenIfNeeded()
   }
 
-}
-
-async function roleHelper(identity, rolename, asyncHandler, operation) {
-  if (!identity) {
-    throw new Error('User identity can not be empty')
-  }
-
-  if (!rolename) {
-    throw new Error('Rolename can not be empty')
-  }
-
-  const responder = Utils.extractResponder(arguments)
-
-  return this.app.request.post({
-    url         : this.app.urls.userRoleOperation(operation),
-    data        : { user: identity, roleName: rolename },
-    asyncHandler: responder,
-  })
 }

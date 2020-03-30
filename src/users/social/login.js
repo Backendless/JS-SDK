@@ -1,68 +1,75 @@
 import Utils from '../../utils'
-import Async from '../../request/async'
 
-import { wrapAsync } from '../utils'
+import { getUserFromResponse, parseResponse } from '../utils'
 
 import { SocialContainer } from './container'
 
-export function loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn, asyncHandler) {
+export async function loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn) {
   const socialContainer = new SocialContainer(socialType, container)
-  const serverURL = this.app.serverURL
 
-  asyncHandler = Utils.extractResponder(arguments)
-  asyncHandler = wrapAsync.call(this, asyncHandler, stayLoggedIn)
+  const resolveContainer = () => {
+    return new Promise((resolve, reject) => {
+      const onMessage = event => {
+        if (event.origin === this.app.serverURL) {
+          const result = JSON.parse(event.data)
 
-  addWindowEventListener('message', window, function(e) {
-    if (e.origin === serverURL) {
-      const result = JSON.parse(e.data)
+          if (result.fault) {
+            reject(result.fault)
+          } else {
+            resolve(result)
+          }
 
-      if (result.fault) {
-        asyncHandler.fault(result.fault)
-      } else {
-        asyncHandler.success(result)
+          removeWindowEventListener('message', window, onMessage)
+
+          socialContainer.closeContainer()
+        }
       }
 
-      removeWindowEventListener('message', window)
+      addWindowEventListener('message', window, onMessage)
+    })
+  }
+
+  const resolveUser = data => {
+    this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
+
+    return getUserFromResponse.call(this, this.getLocalCurrentUser())
+  }
+
+  return this.app.request
+    .post({
+      url : this.app.urls.userSocialOAuth(socialType),
+      data: {
+        fieldsMapping: fieldsMapping || {},
+        permissions  : permissions || [],
+      }
+    })
+    .then(authUrl => socialContainer.doAuthorizationActivity(authUrl))
+    .catch(error => {
       socialContainer.closeContainer()
-    }
-  })
 
-  const interimCallback = new Async(function(r) {
-    socialContainer.doAuthorizationActivity(r)
-  }, function(e) {
-    socialContainer.closeContainer()
-    asyncHandler.fault(e)
-  })
-
-  const request = {}
-  request.fieldsMapping = fieldsMapping || {}
-  request.permissions = permissions || []
-
-  this.app.request.post({
-    url         : this.app.urls.userSocialOAuth(socialType),
-    asyncHandler: interimCallback,
-    data        : request
-  })
+      throw error
+    })
+    .then(resolveContainer)
+    .then(resolveUser)
 }
 
-
-function addWindowEventListener(event, elem, func) {
+function addWindowEventListener(event, elem, callback) {
   if (elem.addEventListener) {
-    elem.addEventListener(event, func, false)
+    elem.addEventListener(event, callback, false)
 
   } else if (elem.attachEvent) {
-    elem.attachEvent('on' + event, func)
+    elem.attachEvent('on' + event, callback)
 
   } else {
-    elem[event] = func
+    elem[event] = callback
   }
 }
 
-function removeWindowEventListener(event, elem) {
+function removeWindowEventListener(event, elem, callback) {
   if (elem.removeEventListener) {
-    elem.removeEventListener(event, null, false)
+    elem.removeEventListener(event, callback, false)
   } else if (elem.detachEvent) {
-    elem.detachEvent('on' + event, null)
+    elem.detachEvent('on' + event, callback)
   }
 
   elem[event] = null

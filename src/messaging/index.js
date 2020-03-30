@@ -11,8 +11,6 @@ import {
   EmailEnvelope
 } from './helpers'
 
-import Async from '../request/async'
-
 export default class Messaging {
   constructor(app) {
     this.app = app
@@ -25,6 +23,19 @@ export default class Messaging {
 
     /** @deprecated */
     this.SubscriptionOptions = SubscriptionOptions
+
+    Utils.enableAsyncHandlers(this, [
+      'publish',
+      'pushWithTemplate',
+      'sendEmail',
+      'sendEmailFromTemplate',
+      'cancel',
+      'registerDevice',
+      'getRegistrations',
+      'unregisterDevice',
+      'getMessageStatus',
+      'getPushTemplates',
+    ])
   }
 
   subscribe(channelName) {
@@ -39,18 +50,7 @@ export default class Messaging {
     return new Channel({ name: channelName.trim() }, this.app)
   }
 
-  async publish(channelName, message, publishOptions, deliveryTarget, asyncHandler) {
-    if (publishOptions instanceof Async) {
-      asyncHandler = publishOptions
-      publishOptions = undefined
-      deliveryTarget = undefined
-    }
-
-    if (deliveryTarget instanceof Async) {
-      asyncHandler = deliveryTarget
-      deliveryTarget = undefined
-    }
-
+  async publish(channelName, message, publishOptions, deliveryTarget) {
     const data = {
       message: message
     }
@@ -72,18 +72,12 @@ export default class Messaging {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.messagingChannel(channelName),
-      asyncHandler: asyncHandler,
-      data        : data
+      url : this.app.urls.messagingChannel(channelName),
+      data: data
     })
   }
 
-  async pushWithTemplate(templateName, templateValues, asyncHandler) {
-    if (templateValues instanceof Async) {
-      asyncHandler = templateValues
-      templateValues = undefined
-    }
-
+  async pushWithTemplate(templateName, templateValues) {
     if (!templateName || !Utils.isString(templateName)) {
       throw new Error('Push Template Name must be non empty string!')
     }
@@ -96,55 +90,45 @@ export default class Messaging {
 
     return this.app.request.post({
       url: this.app.urls.messagingPushWithTemplate(templateName),
-      asyncHandler,
       data
     })
   }
 
-  async sendEmail(subject, bodyParts, recipients, attachments/**, async */) {
-    const responder = Utils.extractResponder(arguments)
+  async sendEmail(subject, bodyParts, recipients, attachments) {
     const data = {}
 
-    if (subject && !Utils.isEmpty(subject) && Utils.isString(subject)) {
+    if (subject && Utils.isString(subject)) {
       data.subject = subject
     } else {
       throw new Error('Subject is required parameter and must be a nonempty string')
     }
 
-    if ((bodyParts instanceof Bodyparts) && !Utils.isEmpty(bodyParts)) {
+    if (bodyParts instanceof Bodyparts) {
+      if (!bodyParts.textmessage && !bodyParts.htmlmessage) {
+        throw new Error('Use Bodyparts as bodyParts argument, must contain at least one property')
+      }
+
       data.bodyparts = bodyParts
-    } else {
-      throw new Error('Use Bodyparts as bodyParts argument, must contain at least one property')
     }
 
-    if (recipients && Utils.isArray(recipients) && !Utils.isEmpty(recipients)) {
+    if (Utils.isArray(recipients) && recipients.length) {
       data.to = recipients
     } else {
       throw new Error('Recipients is required parameter, must be a nonempty array')
     }
 
-    if (attachments) {
-      if (Utils.isArray(attachments)) {
-        if (!Utils.isEmpty(attachments)) {
-          data.attachment = attachments
-        }
-      }
-    }
-
-    function responseMessageStatus(res) {
-      return res.status
+    if (Utils.isArray(attachments) && attachments.length) {
+      data.attachment = attachments
     }
 
     return this.app.request.post({
-      url         : this.app.urls.messagingEmail(),
-      asyncHandler: Utils.wrapAsync(responder, responseMessageStatus),
-      data        : data
+      url   : this.app.urls.messagingEmail(),
+      parser: data => data.status,
+      data  : data
     })
   }
 
-  async sendEmailFromTemplate(templateName, envelopeObject, templateValues/**, async */) {
-    const responder = Utils.extractResponder(arguments)
-
+  async sendEmailFromTemplate(templateName, envelopeObject, templateValues) {
     if (typeof templateName !== 'string' || !templateName) {
       throw new Error('Template name is required and must be a string')
     }
@@ -162,23 +146,19 @@ export default class Messaging {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.emailTemplateSend(),
-      asyncHandler: responder,
-      data        : data
+      url : this.app.urls.emailTemplateSend(),
+      data: data
     })
   }
 
-  async cancel(messageId, asyncHandler) {
+  async cancel(messageId) {
     return this.app.request.delete({
-      url         : this.app.urls.messagingMessage(messageId),
-      asyncHandler: asyncHandler
+      url: this.app.urls.messagingMessage(messageId),
     })
   }
 
-  async registerDevice(deviceToken, channels, expiration, asyncHandler) {
+  async registerDevice(deviceToken, channels, expiration) {
     const device = this.app.device
-
-    asyncHandler = Utils.extractResponder(arguments)
 
     const data = {
       deviceToken: deviceToken,
@@ -198,45 +178,40 @@ export default class Messaging {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.messagingRegistrations(),
-      data        : data,
-      asyncHandler: asyncHandler
+      url : this.app.urls.messagingRegistrations(),
+      data: data,
     })
   }
 
-  async getRegistrations(asyncHandler) {
+  async getRegistrations() {
     const device = this.app.device
 
     return this.app.request.get({
-      url         : this.app.urls.messagingRegistrationDevice(device.uuid),
-      asyncHandler: asyncHandler
+      url: this.app.urls.messagingRegistrationDevice(device.uuid),
     })
   }
 
-  async unregisterDevice(asyncHandler) {
+  async unregisterDevice() {
     const device = this.app.device
 
     return this.app.request.delete({
-      url         : this.app.urls.messagingRegistrationDevice(device.uuid),
-      asyncHandler: asyncHandler
+      url: this.app.urls.messagingRegistrationDevice(device.uuid),
     })
   }
 
-  async getMessageStatus(messageId, asyncHandler) {
+  async getMessageStatus(messageId) {
     if (!messageId) {
       throw Error('Message ID is required.')
     }
 
     return this.app.request.get({
-      url         : this.app.urls.messagingMessage(messageId),
-      asyncHandler: asyncHandler
+      url: this.app.urls.messagingMessage(messageId),
     })
   }
 
-  async getPushTemplates(deviceType, asyncHandler) {
+  async getPushTemplates(deviceType) {
     return this.app.request.get({
-      url         : this.app.urls.messagingPushTemplates(deviceType),
-      asyncHandler: asyncHandler
+      url: this.app.urls.messagingPushTemplates(deviceType),
     })
   }
 

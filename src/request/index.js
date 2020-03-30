@@ -16,14 +16,12 @@ export default class Request {
   }
 
   send(config) {
-    const XMLHttpRequest = this.app.XMLHttpRequest
-    const userToken = this.app.getCurrentUserToken()
-
     BackendlessRequest.verbose = !!this.app.debugMode
-    BackendlessRequest.XMLHttpRequest = XMLHttpRequest
+    BackendlessRequest.XMLHttpRequest = this.app.XMLHttpRequest
 
     const method = (config.method || Methods.GET).toLowerCase()
     const headers = config.headers || {}
+    const userToken = this.app.getCurrentUserToken()
 
     if (userToken) {
       headers['user-token'] = userToken
@@ -35,11 +33,7 @@ export default class Request {
       .form(config.form)
 
     if (config.parser) {
-      request = request.then(config.parser ? config.parser : result => result)
-    }
-
-    if (config.asyncHandler) {
-      request.then(config.asyncHandler.success, config.asyncHandler.fault)
+      request = request.then(config.parser)
     }
 
     return request

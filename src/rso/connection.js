@@ -1,11 +1,10 @@
-import Utils from '../utils'
 import { RTScopeConnector } from '../rt'
 
-const ListenerTypes = Utils.mirrorKeys({
-  CHANGES: null,
-  CLEARED: null,
-  INVOKE : null,
-})
+const ListenerTypes = {
+  CHANGES: 'CHANGES',
+  CLEARED: 'CLEARED',
+  INVOKE : 'INVOKE',
+}
 
 export default class RemoteSharedObject extends RTScopeConnector {
   constructor(options, app) {

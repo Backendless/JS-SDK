@@ -21,7 +21,7 @@ export default class Data {
     this.classToTableMap = {}
 
     this.Permissions = {
-      FIND: new DataPermission('FIND', app),
+      FIND  : new DataPermission('FIND', app),
       REMOVE: new DataPermission('REMOVE', app),
       UPDATE: new DataPermission('UPDATE', app),
     }
@@ -38,20 +38,24 @@ export default class Data {
     this.WKTParser = WKTParser
 
     this.SpatialReferenceSystem = SpatialReferenceSystem
+
+    Utils.enableAsyncHandlers(this, [
+      'describe',
+      'save',
+    ])
   }
 
   of(model) {
     return new Store(model, this.classToTableMap, this.app)
   }
 
-  async describe(className, asyncHandler) {
+  async describe(className) {
     className = Utils.isString(className)
       ? className
       : Utils.getClassName(className)
 
     return this.app.request.get({
-      url         : this.app.urls.dataTableProps(className),
-      asyncHandler: asyncHandler
+      url: this.app.urls.dataTableProps(className),
     })
   }
 

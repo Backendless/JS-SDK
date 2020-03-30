@@ -1,5 +1,3 @@
-import Utils from '../../utils'
-
 import GeoTracker from './tracker'
 import GeoFenceActions from './fence-actions'
 
@@ -19,16 +17,16 @@ export default class GeoTrackerMonitor {
     this.geoTracker = new GeoTracker()
   }
 
-  runOnEnterAction(geoFenceName, geoPoint, asyncHandler) {
-    return this.geoFenceActions.enter(geoFenceName, geoPoint, asyncHandler)
+  runOnEnterAction(geoFenceName, geoPoint) {
+    return this.geoFenceActions.enter(geoFenceName, geoPoint)
   }
 
-  runOnStayAction(geoFenceName, geoPoint, asyncHandler) {
-    return this.geoFenceActions.stay(geoFenceName, geoPoint, asyncHandler)
+  runOnStayAction(geoFenceName, geoPoint) {
+    return this.geoFenceActions.stay(geoFenceName, geoPoint)
   }
 
-  runOnExitAction(geoFenceName, geoPoint, asyncHandler) {
-    return this.geoFenceActions.exit(geoFenceName, geoPoint, asyncHandler)
+  runOnExitAction(geoFenceName, geoPoint) {
+    return this.geoFenceActions.exit(geoFenceName, geoPoint)
   }
 
   startGeofenceMonitoringWithInAppCallback(...args) {

@@ -2,7 +2,6 @@ import Utils from '../../utils'
 import { resolveModelClassFromString } from '../utils'
 import EventHandler from '../rt-store'
 
-import Async from '../../request/async'
 import DataQueryBuilder from '../query-builder'
 import LoadRelationsQueryBuilder from '../load-relations-query-builder'
 import { extractQueryOptions } from './extract-query-options'
@@ -27,6 +26,24 @@ export default class DataStore {
     }
 
     this.app = app
+
+    Utils.enableAsyncHandlers(this, [
+      'save',
+      'remove',
+      'find',
+      'findById',
+      'loadRelations',
+      'findFirst',
+      'findLast',
+      'getObjectCount',
+      'setRelation',
+      'setRelation',
+      'addRelation',
+      'deleteRelation',
+      'bulkCreate',
+      'bulkUpdate',
+      'bulkDelete',
+    ])
   }
 
   rt() {
@@ -73,31 +90,24 @@ export default class DataStore {
     replCircDeps(obj)
 
     return this.app.request.put({
-      url         : this.app.urls.dataTable(this.className),
-      data        : obj,
-      parser      : result => parseFindResponse(result, this.model, this.classToTableMap),
-      asyncHandler: Utils.extractResponder(arguments)
+      url   : this.app.urls.dataTable(this.className),
+      data  : obj,
+      parser: result => parseFindResponse(result, this.model, this.classToTableMap),
     })
   }
 
-  async remove(object, asyncHandler) {
+  async remove(object) {
     if (!Utils.isObject(object) && !Utils.isString(object)) {
       throw new Error('Invalid value for the "value" argument. The argument must contain only string or object values')
     }
 
     return this.app.request.delete({
-      url         : this.app.urls.dataTableObject(this.className, object.objectId || object),
-      asyncHandler: Utils.extractResponder(arguments)
+      url: this.app.urls.dataTableObject(this.className, object.objectId || object),
     })
   }
 
-  async find(queryBuilder, asyncHandler) {
+  async find(queryBuilder) {
     //TODO: add an ability to get object as DataQueryBuilder
-
-    if (queryBuilder instanceof Async) {
-      asyncHandler = queryBuilder
-      queryBuilder = undefined
-    }
 
     if (queryBuilder && !(queryBuilder instanceof DataQueryBuilder)) {
       throw new Error('The first argument should be instance of Backendless.DataQueryBuilder')
@@ -106,24 +116,23 @@ export default class DataStore {
     const dataQuery = queryBuilder ? queryBuilder.build() : {}
     const url = this.app.urls.dataTable(this.className)
 
-    return findUtil.call(this, url, this.model, dataQuery, asyncHandler)
+    return findUtil.call(this, url, this.model, dataQuery)
   }
 
   async findById() {
     let argsObj
-    let responder = Utils.extractResponder(arguments)
 
     const url = this.app.urls.dataTable(this.className)
 
     if (Utils.isString(arguments[0])) {
-      argsObj = !(arguments[1] instanceof Async) ? (arguments[1] || {}) : {}
+      argsObj = arguments[1] || {}
       argsObj.url = arguments[0]
 
       if (!argsObj.url) {
         throw new Error('missing argument "object ID" for method findById()')
       }
 
-      return findUtil.call(this, url, this.model, argsObj, responder)
+      return findUtil.call(this, url, this.model, argsObj)
     }
 
     if (Utils.isObject(arguments[0])) {
@@ -137,22 +146,20 @@ export default class DataStore {
 
       if (Utils.getClassName(arguments[0]) === 'Object') {
         return this.app.request.get({
-          url         : url + send.replace(/&$/, ''),
-          parser      : resp => parseFindResponse(resp, this.model, this.classToTableMap),
-          asyncHandler: responder
+          url   : url + send.replace(/&$/, ''),
+          parser: resp => parseFindResponse(resp, this.model, this.classToTableMap),
         })
       }
 
       return this.app.request.put({
-        url         : url,
-        data        : argsObj,
-        parser      : resp => parseFindResponse(resp, this.model, this.classToTableMap),
-        asyncHandler: responder
+        url   : url,
+        data  : argsObj,
+        parser: resp => parseFindResponse(resp, this.model, this.classToTableMap),
       })
     }
   }
 
-  async loadRelations(parentObjectId, queryBuilder, asyncHandler) {
+  async loadRelations(parentObjectId, queryBuilder) {
     if (!parentObjectId || !Utils.isString(parentObjectId)) {
       throw new Error('The parentObjectId is required argument and must be a nonempty string')
     }
@@ -202,85 +209,62 @@ export default class DataStore {
     }
 
     return this.app.request.get({
-      url         : url,
-      parser      : resp => parseFindResponse(resp, dataQuery.relationModel),
-      asyncHandler: asyncHandler
+      url   : url,
+      parser: resp => parseFindResponse(resp, dataQuery.relationModel),
     })
   }
 
-  async findFirst(dataQuery, asyncHandler) {
-    if (dataQuery instanceof Async) {
-      asyncHandler = dataQuery
-      dataQuery = {}
-    }
-
-    if (!dataQuery) {
-      dataQuery = {}
-    }
-
+  async findFirst(dataQuery) {
+    dataQuery = dataQuery || {}
     dataQuery.url = 'first'
 
     const url = this.app.urls.dataTable(this.className)
 
-    return findUtil.call(this, url, this.model, dataQuery, asyncHandler)
+    return findUtil.call(this, url, this.model, dataQuery)
   }
 
-  async findLast(dataQuery, asyncHandler) {
-    if (dataQuery instanceof Async) {
-      asyncHandler = dataQuery
-      dataQuery = {}
-    }
-
-    if (!dataQuery) {
-      dataQuery = {}
-    }
-
+  async findLast(dataQuery) {
+    dataQuery = dataQuery || {}
     dataQuery.url = 'last'
 
     const url = this.app.urls.dataTable(this.className)
 
-    return findUtil.call(this, url, this.model, dataQuery, asyncHandler)
+    return findUtil.call(this, url, this.model, dataQuery)
   }
 
-  async getObjectCount(condition, asyncHandler) {
-    if (condition instanceof Async) {
-      asyncHandler = condition
-      condition = undefined
-    }
-
+  async getObjectCount(condition) {
     if (condition instanceof DataQueryBuilder) {
       condition = condition.build().condition || undefined
     }
 
     return this.app.request.get({
-      url         : this.app.urls.dataTableCount(this.className),
-      query       : { where: condition },
-      asyncHandler: asyncHandler
+      url  : this.app.urls.dataTableCount(this.className),
+      query: { where: condition },
     })
   }
 
-  async setRelation(parent, columnName, children, asyncHandler) {
+  async setRelation(parent, columnName, children) {
     const relation = collectRelationObject(parent, columnName, children)
     const url = buildRelationUrl.call(this, this.className, relation)
 
-    return manageRelation.call(this, 'POST', url, relation, asyncHandler)
+    return manageRelation.call(this, 'POST', url, relation)
   }
 
-  async addRelation(parent, columnName, children, asyncHandler) {
+  async addRelation(parent, columnName, children) {
     const relation = collectRelationObject(parent, columnName, children)
     const url = buildRelationUrl.call(this, this.className, relation)
 
-    return manageRelation.call(this, 'PUT', url, relation, asyncHandler)
+    return manageRelation.call(this, 'PUT', url, relation)
   }
 
-  async deleteRelation(parent, columnName, children, asyncHandler) {
+  async deleteRelation(parent, columnName, children) {
     const relation = collectRelationObject(parent, columnName, children)
     const url = buildRelationUrl.call(this, this.className, relation)
 
-    return manageRelation.call(this, 'DELETE', url, relation, asyncHandler)
+    return manageRelation.call(this, 'DELETE', url, relation)
   }
 
-  async bulkCreate(objects, asyncHandler) {
+  async bulkCreate(objects) {
     const MSG_ERROR = (
       'Invalid bulkCreate argument. ' +
       'The first argument must contain only array of objects.'
@@ -297,30 +281,28 @@ export default class DataStore {
     })
 
     return this.app.request.post({
-      url         : this.app.urls.dataBulkTable(this.className),
-      data        : objects,
-      asyncHandler: asyncHandler
+      url : this.app.urls.dataBulkTable(this.className),
+      data: objects,
     })
   }
 
-  async bulkUpdate(where, changes, asyncHandler) {
+  async bulkUpdate(where, changes) {
     if (!where || !Utils.isString(where)) {
       throw new Error('Invalid bulkUpdate argument. The first argument must be "whereClause" string.')
     }
 
-    if (!Utils.isObject(changes) || Array.isArray(changes) || (changes instanceof Async)) {
+    if (!Utils.isObject(changes) || Array.isArray(changes)) {
       throw new Error('Invalid bulkUpdate argument. The second argument must be object.')
     }
 
     return this.app.request.put({
-      url         : this.app.urls.dataBulkTable(this.className),
-      query       : { where },
-      data        : changes,
-      asyncHandler: asyncHandler
+      url  : this.app.urls.dataBulkTable(this.className),
+      query: { where },
+      data : changes,
     })
   }
 
-  async bulkDelete(where, asyncHandler) {
+  async bulkDelete(where) {
     if (!Utils.isArray(where) && !Utils.isString(where)) {
       throw new Error(
         'Invalid bulkDelete argument. ' +
@@ -348,9 +330,8 @@ export default class DataStore {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.dataBulkTableDelete(this.className),
-      asyncHandler: asyncHandler,
-      data        : queryData
+      url : this.app.urls.dataBulkTableDelete(this.className),
+      data: queryData
     })
   }
 }
@@ -376,9 +357,7 @@ function collectRelationObject(parent, columnName, children) {
   return relation
 }
 
-function manageRelation(method, url, relation, asyncHandler) {
-  const responder = asyncHandler
-
+function manageRelation(method, url, relation) {
   if (!relation.parentId) {
     throw new Error(
       'Invalid value for the "parent" argument. ' +
@@ -404,8 +383,7 @@ function manageRelation(method, url, relation, asyncHandler) {
   return this.app.request.send({
     method,
     url,
-    asyncHandler: responder,
-    data        : relation.childrenIds
+    data: relation.childrenIds
   })
 }
 
@@ -419,7 +397,7 @@ function buildRelationUrl(className, relation) {
   return url
 }
 
-function findUtil(url, Model, dataQuery, asyncHandler) {
+function findUtil(url, Model, dataQuery) {
   dataQuery = dataQuery || {}
 
   const dataQueryURL = dataQuery.url
@@ -462,8 +440,7 @@ function findUtil(url, Model, dataQuery, asyncHandler) {
 
   return this.app.request.get({
     url,
-    asyncHandler: asyncHandler,
-    parser      : resp => parseFindResponse(resp, Model, this.classToTableMap),
-    cachePolicy : dataQuery.cachePolicy
+    parser     : resp => parseFindResponse(resp, Model, this.classToTableMap),
+    cachePolicy: dataQuery.cachePolicy
   })
 }

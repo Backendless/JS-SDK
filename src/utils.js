@@ -41,24 +41,6 @@ const Utils = {
     return [value]
   },
 
-  isEmpty(obj) {
-    if (obj === null || obj === undefined) {
-      return true
-    }
-
-    if (Utils.isArray(obj) || Utils.isString(obj)) {
-      return obj.length === 0
-    }
-
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key) && obj[key] !== undefined && obj[key] !== null) {
-        return false
-      }
-    }
-
-    return true
-  },
-
   toQueryParams(params) {
     params = params || {}
     const result = []
@@ -121,71 +103,6 @@ const Utils = {
     return destination
   },
 
-  extractResponder(args) {
-    for (let i = 0; i < args.length; i++) {
-      if (args[i] instanceof Async) {
-        return args[i]
-      }
-    }
-  },
-
-  wrapAsync(asyncHandler, parser, context) {
-    //TODO: should we remove it?
-    if (asyncHandler instanceof Async && !parser) {
-      return asyncHandler
-    }
-
-    const success = data => {
-      if (parser) {
-        data = parser.call(context, data)
-      }
-
-      asyncHandler.success(data)
-    }
-
-    const error = data => {
-      asyncHandler.fault(data)
-    }
-
-    return new Async(success, error)
-  },
-
-  promisified(method) {
-    return function() {
-      Utils.checkPromiseSupport()
-
-      const args = [].slice.call(arguments)
-      const context = this
-      const fn = typeof method === 'function' ? method : context[method]
-
-      return new Promise(function(resolve, reject) {
-        args.push(new Async(resolve, reject, context))
-        fn.apply(context, args)
-      })
-    }
-  },
-
-  checkPromiseSupport() {
-    if (typeof Promise === 'undefined') {
-      throw new Error(
-        'This browser doesn\'t support Promise API. Please use polyfill.\n' +
-        'More info is in the Backendless JS-SDK docs: https://backendless.com/docs/js/doc.html#sync-and-async-calls'
-      )
-    }
-  },
-
-  mirrorKeys(obj) {
-    const mirroredObject = {}
-
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        mirroredObject[key] = key
-      }
-    }
-
-    return mirroredObject
-  },
-
   uuid() {
     const chr4 = () => Math.random().toString(16).slice(-4).toUpperCase()
     const chr8 = () => `${chr4()}${chr4()}`
@@ -194,6 +111,28 @@ const Utils = {
     return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
   },
 
+  enableAsyncHandlers(service, methods) {
+    //TODO: add warning
+    //TODO: add toggle to disable it
+    methods.forEach(methodName => {
+      const method = service[methodName]
+
+      service[methodName] = function(...args) {
+        const asyncHandler = (args[args.length - 1] instanceof Async)
+          ? args.pop()
+          : undefined
+
+        const result = method.apply(this, args)
+
+        if (asyncHandler) {
+          //TODO: add warning
+          result.then(asyncHandler.success, asyncHandler.fault)
+        }
+
+        return result
+      }
+    })
+  }
 }
 
 function isBrowser() {

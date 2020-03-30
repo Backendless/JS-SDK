@@ -1,6 +1,5 @@
-import Utils from '../utils'
-
 import Logger from './logger'
+import Utils from '../utils'
 
 export default class Logging {
 
@@ -8,6 +7,10 @@ export default class Logging {
     this.app = app
 
     this.reset()
+
+    Utils.enableAsyncHandlers(this, [
+      'flush',
+    ])
   }
 
   reset() {
@@ -18,7 +21,7 @@ export default class Logging {
   }
 
   getLogger(loggerName) {
-    if (!Utils.isString(loggerName)) {
+    if (typeof loggerName !== 'string') {
       throw new Error("Invalid 'loggerName' value. LoggerName must be a string value")
     }
 
@@ -29,13 +32,12 @@ export default class Logging {
     return this.loggers[loggerName]
   }
 
-  async flush(asyncHandler) {
+  async flush() {
     if (!this.flushRequest && this.pool.length) {
       this.stopFlushInterval()
 
       this.flushRequest = this.app.request
         .put({
-          asyncHandler: asyncHandler,
           url         : this.app.urls.logging(),
           data        : this.pool
         })
@@ -43,11 +45,6 @@ export default class Logging {
           this.pool = []
           delete this.flushRequest
         })
-    }
-
-    if (asyncHandler) {
-      (this.flushRequest || Promise.resolve())
-        .then(asyncHandler.success, asyncHandler.fault)
     }
 
     return this.flushRequest

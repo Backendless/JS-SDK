@@ -1,3 +1,5 @@
+import Utils from '../utils'
+
 const PermissionTypes = {
   GRANT: 'GRANT',
   DENY : 'DENY',
@@ -6,7 +8,7 @@ const PermissionTypes = {
 const namespaceLabel = 'Backendless.Data.Permissions.{FIND|REMOVE|UPDATE}'
 
 function backwardCompatibility(context, methodName, oldMethodName) {
-  return function() {
+  return () => {
     const mainMessage = `"${namespaceLabel}.${oldMethodName}" is deprecated and will be removed in the nearest release.`
     const helpMessage = `Please use "${namespaceLabel}.${methodName}" instead of.`
 
@@ -29,52 +31,62 @@ export default class DataPermission {
     this.denyRole = backwardCompatibility(this, 'denyForRole', 'denyRole')
     this.grant = backwardCompatibility(this, 'grantForAllUsers', 'grant')
     this.deny = backwardCompatibility(this, 'denyForAllUsers', 'deny')
+
+    Utils.enableAsyncHandlers(this, [
+      'grantForUser',
+      'denyForUser',
+      'grantForRole',
+      'denyForRole',
+      'grantForAllUsers',
+      'denyForAllUsers',
+      'grantUser',
+      'denyUser',
+      'grantRole',
+      'denyRole',
+      'grant',
+      'deny',
+    ])
   }
 
-  grantForUser(userId, object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, object, { userId }, asyncHandler)
+  grantForUser(userId, object) {
+    return this.sendRequest(PermissionTypes.GRANT, object, { userId })
   }
 
-  denyForUser(userId, object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, object, { userId }, asyncHandler)
+  denyForUser(userId, object) {
+    return this.sendRequest(PermissionTypes.DENY, object, { userId })
   }
 
-  grantForRole(roleName, object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, object, { roleName }, asyncHandler)
+  grantForRole(roleName, object) {
+    return this.sendRequest(PermissionTypes.GRANT, object, { roleName })
   }
 
-  denyForRole(roleName, object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, object, { roleName }, asyncHandler)
+  denyForRole(roleName, object) {
+    return this.sendRequest(PermissionTypes.DENY, object, { roleName })
   }
 
-  grantForAllUsers(object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, object, { userId: '*' }, asyncHandler)
+  grantForAllUsers(object) {
+    return this.sendRequest(PermissionTypes.GRANT, object, { userId: '*' })
   }
 
-  denyForAllUsers(object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, object, { userId: '*' }, asyncHandler)
+  denyForAllUsers(object) {
+    return this.sendRequest(PermissionTypes.DENY, object, { userId: '*' })
   }
 
-  grantForAllRoles(object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.GRANT, object, { roleName: '*' }, asyncHandler)
+  grantForAllRoles(object) {
+    return this.sendRequest(PermissionTypes.GRANT, object, { roleName: '*' })
   }
 
-  denyForAllRoles(object, asyncHandler) {
-    return this.sendRequest(PermissionTypes.DENY, object, { roleName: '*' }, asyncHandler)
+  denyForAllRoles(object) {
+    return this.sendRequest(PermissionTypes.DENY, object, { roleName: '*' })
   }
 
-  sendRequest(type, object, options, asyncHandler) {
-    const permission = this.permission
-    const url = this.app.urls.dataObjectPermission(object.___class, type, object.objectId)
-
-    const { userId, roleName } = options
-
+  sendRequest(type, object, { userId, roleName }) {
     if (!object.___class || !object.objectId) {
       throw new Error('"dataObject.___class" and "dataObject.objectId" need to be specified')
     }
 
     const data = {
-      permission
+      permission: this.permission
     }
 
     if (userId) {
@@ -84,9 +96,8 @@ export default class DataPermission {
     }
 
     return this.app.request.put({
-      url,
+      url: this.app.urls.dataObjectPermission(object.___class, type, object.objectId),
       data,
-      asyncHandler,
     })
   }
 }

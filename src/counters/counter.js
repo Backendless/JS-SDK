@@ -10,40 +10,40 @@ export default class Counter {
     this.counters = counters
   }
 
-  incrementAndGet(asyncHandler) {
-    return this.counters.incrementAndGet(this.name, asyncHandler)
+  incrementAndGet() {
+    return this.counters.incrementAndGet(this.name)
   }
 
-  getAndIncrement(asyncHandler) {
-    return this.counters.getAndIncrement(this.name, asyncHandler)
+  getAndIncrement() {
+    return this.counters.getAndIncrement(this.name)
   }
 
-  decrementAndGet(asyncHandler) {
-    return this.counters.decrementAndGet(this.name, asyncHandler)
+  decrementAndGet() {
+    return this.counters.decrementAndGet(this.name)
   }
 
-  getAndDecrement(asyncHandler) {
-    return this.counters.getAndDecrement(this.name, asyncHandler)
+  getAndDecrement() {
+    return this.counters.getAndDecrement(this.name)
   }
 
-  reset(asyncHandler) {
-    return this.counters.reset(this.name, asyncHandler)
+  reset() {
+    return this.counters.reset(this.name)
   }
 
-  get(asyncHandler) {
-    return this.counters.get(this.name, asyncHandler)
+  get() {
+    return this.counters.get(this.name)
   }
 
-  addAndGet(value, asyncHandler) {
-    return this.counters.addAndGet(this.name, value, asyncHandler)
+  addAndGet(value) {
+    return this.counters.addAndGet(this.name, value)
   }
 
-  getAndAdd(value, asyncHandler) {
-    return this.counters.getAndAdd(this.name, value, asyncHandler)
+  getAndAdd(value) {
+    return this.counters.getAndAdd(this.name, value)
   }
 
-  compareAndSet(expected, updated, asyncHandler) {
-    return this.counters.compareAndSet(this.name, expected, updated, asyncHandler)
+  compareAndSet(expected, updated) {
+    return this.counters.compareAndSet(this.name, expected, updated)
   }
 }
 

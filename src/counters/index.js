@@ -5,103 +5,85 @@ import Counter from './counter'
 export default class Counters {
   constructor(app) {
     this.app = app
+
+    Utils.enableAsyncHandlers(this, [
+      'incrementAndGet',
+      'getAndIncrement',
+      'decrementAndGet',
+      'getAndDecrement',
+      'reset',
+      'get',
+      'addAndGet',
+      'getAndAdd',
+      'compareAndSet',
+    ])
   }
 
   of(name) {
     return new Counter(name, this)
   }
 
-  async incrementAndGet(counterName, asyncHandler) {
+  async incrementAndGet(counterName) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
-    }
-
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
     }
 
     return this.app.request.put({
-      url         : this.app.urls.counterIncrementAndGet(counterName),
-      asyncHandler: asyncHandler
+      url: this.app.urls.counterIncrementAndGet(counterName),
     })
   }
 
-  async getAndIncrement(counterName, asyncHandler) {
+  async getAndIncrement(counterName) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
-    }
-
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
     }
 
     return this.app.request.put({
-      url         : this.app.urls.counterGetAndIncrement(counterName),
-      asyncHandler: asyncHandler
+      url: this.app.urls.counterGetAndIncrement(counterName),
     })
   }
 
-  async decrementAndGet(counterName, asyncHandler) {
+  async decrementAndGet(counterName) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
-    }
-
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
     }
 
     return this.app.request.put({
-      url         : this.app.urls.counterDecrementAndGet(counterName),
-      asyncHandler: asyncHandler
+      url: this.app.urls.counterDecrementAndGet(counterName),
     })
   }
 
-  async getAndDecrement(counterName, asyncHandler) {
+  async getAndDecrement(counterName) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
-    }
-
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
     }
 
     return this.app.request.put({
-      url         : this.app.urls.counterGetAndDecrement(counterName),
-      asyncHandler: asyncHandler
+      url: this.app.urls.counterGetAndDecrement(counterName),
     })
   }
 
-  async reset(counterName, asyncHandler) {
+  async reset(counterName) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
-    }
-
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
     }
 
     return this.app.request.put({
-      url         : this.app.urls.counterReset(counterName),
-      asyncHandler: asyncHandler
+      url: this.app.urls.counterReset(counterName),
     })
   }
 
-  async get(counterName, asyncHandler) {
+  async get(counterName) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
-    }
-
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
     }
 
     return this.app.request.get({
-      url         : this.app.urls.counter(counterName),
-      asyncHandler: asyncHandler
+      url: this.app.urls.counter(counterName),
     })
   }
 
-  async addAndGet(counterName, value, asyncHandler) {
+  async addAndGet(counterName, value) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
     }
@@ -110,18 +92,13 @@ export default class Counters {
       throw new Error('Counter Value must number')
     }
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
-    }
-
     return this.app.request.put({
-      url         : this.app.urls.counterAddAndGet(counterName),
-      query       : { value },
-      asyncHandler: asyncHandler
+      url  : this.app.urls.counterAddAndGet(counterName),
+      query: { value },
     })
   }
 
-  async getAndAdd(counterName, value, asyncHandler) {
+  async getAndAdd(counterName, value) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
     }
@@ -130,18 +107,13 @@ export default class Counters {
       throw new Error('Counter "value" must be Number')
     }
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
-    }
-
     return this.app.request.put({
-      url         : this.app.urls.counterGetAndAdd(counterName),
-      query       : { value },
-      asyncHandler: asyncHandler
+      url  : this.app.urls.counterGetAndAdd(counterName),
+      query: { value },
     })
   }
 
-  async compareAndSet(counterName, expected, updated, asyncHandler) {
+  async compareAndSet(counterName, expected, updated) {
     if (!counterName || !Utils.isString(counterName)) {
       throw new Error('Counter Name must be non empty String')
     }
@@ -154,14 +126,9 @@ export default class Counters {
       throw new Error('Counter "updated" value must be Number')
     }
 
-    if (asyncHandler) {
-      asyncHandler = Utils.wrapAsync(asyncHandler)
-    }
-
     return this.app.request.put({
-      url         : this.app.urls.counterCompareAndSet(counterName),
-      query       : { expected, updatedvalue: updated },
-      asyncHandler: asyncHandler
+      url  : this.app.urls.counterCompareAndSet(counterName),
+      query: { expected, updatedvalue: updated },
     })
   }
 }

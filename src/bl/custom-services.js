@@ -1,26 +1,16 @@
-import Async from '../request/async'
-
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
+import Utils from '../utils'
 
 export default class CustomServices {
   constructor(app) {
     this.app = app
+
+    Utils.enableAsyncHandlers(this, ['invoke'])
   }
 
-  async invoke(serviceName, method, parameters, executionType, asyncHandler) {
+  async invoke(serviceName, method, parameters, executionType) {
     if (typeof parameters === 'string' && isExecutionType(parameters)) {
-      asyncHandler = executionType
       executionType = parameters
-      parameters = undefined
-    }
-
-    if (executionType instanceof Async) {
-      asyncHandler = executionType
-      executionType = undefined
-    }
-
-    if (parameters instanceof Async) {
-      asyncHandler = parameters
       parameters = undefined
     }
 
@@ -31,10 +21,9 @@ export default class CustomServices {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.blServiceMethod(serviceName, method),
-      data        : parameters,
-      headers     : headers,
-      asyncHandler: asyncHandler
+      url    : this.app.urls.blServiceMethod(serviceName, method),
+      data   : parameters,
+      headers: headers
     })
   }
 }

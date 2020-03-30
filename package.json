@@ -59,7 +59,7 @@
     "@babel/polyfill": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
     "@babel/register": "^7.8.6",
-    "babel-eslint": "^9.0.0",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
     "babelify": "^10.0.0",
     "backendless-console-sdk": "^2.8.3",

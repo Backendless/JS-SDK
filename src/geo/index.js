@@ -9,7 +9,6 @@ import GeoPoint from './point'
 import GeoQuery from './query'
 
 import FindHelpers from './find-helpers'
-import Async from '../request/async'
 import { validateQueryObject } from './query-validator'
 import { toQueryParams } from './query-params'
 
@@ -25,14 +24,35 @@ export default class Geo {
     this.Cluster = GeoCluster
     this.Point = GeoPoint
     this.Query = GeoQuery
+
+    Utils.enableAsyncHandlers(this, [
+      'addPoint',
+      'savePoint',
+      'find',
+      'loadMetadata',
+      'getClusterPoints',
+      'relativeFind',
+      'addCategory',
+      'getCategories',
+      'deleteCategory',
+      'deletePoint',
+      'getFencePoints',
+      'getGeopointCount',
+      'runOnEnterAction',
+      'runOnStayAction',
+      'runOnExitAction',
+      'startGeofenceMonitoringWithInAppCallback',
+      'startGeofenceMonitoringWithRemoteCallback',
+      'stopGeofenceMonitoring',
+    ])
   }
 
   /** @deprecated */
-  addPoint(/** geopoint, async */) {
+  async addPoint(/** geopoint, async */) {
     return this.savePoint.apply(this, arguments)
   }
 
-  async savePoint(geoPoint, asyncHandler) {
+  async savePoint(geoPoint) {
     if (!Utils.isNumber(geoPoint.latitude) || !Utils.isNumber(geoPoint.longitude)) {
       throw new Error('Latitude or longitude not a number')
     }
@@ -52,7 +72,6 @@ export default class Geo {
       url,
       parser: parseResponse,
       data  : geoPoint,
-      asyncHandler
     })
 
     function parseResponse(resp) {
@@ -68,13 +87,13 @@ export default class Geo {
     }
   }
 
-  async find(query, asyncHandler) {
+  async find(query) {
     query.url = this.app.urls.geo()
 
-    return loadItems.call(this, query, asyncHandler)
+    return loadItems.call(this, query)
   }
 
-  async loadMetadata(geoObject, asyncHandler) {
+  async loadMetadata(geoObject) {
     const isCluster = geoObject instanceof GeoCluster
     const isPoint = geoObject instanceof GeoPoint
 
@@ -105,12 +124,11 @@ export default class Geo {
     }
 
     return this.app.request.get({
-      url         : url,
-      asyncHandler: asyncHandler
+      url: url,
     })
   }
 
-  async getClusterPoints(geoObject, asyncHandler) {
+  async getClusterPoints(geoObject) {
     if (!geoObject.objectId || !(geoObject instanceof GeoCluster)) {
       throw new Error('Method argument must be a valid instance of GeoCluster persisted on the server')
     }
@@ -136,18 +154,15 @@ export default class Geo {
       for (let i = 0; i < geoCollection.length; i++) {
         geoCollection[i] = new GeoPoint(geoCollection[i])
       }
-
-      asyncHandler.success(geoCollection)
     }
 
     return this.app.request.get({
-      url         : url,
-      parser      : parser,
-      asyncHandler: asyncHandler
+      url   : url,
+      parser: parser,
     })
   }
 
-  async relativeFind(query, asyncHandler) {
+  async relativeFind(query) {
     if (!(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
       throw new Error(
         'Inconsistent geo query. ' +
@@ -162,9 +177,8 @@ export default class Geo {
     const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
 
     return this.app.request.get({
-      url         : url,
-      parser      : resp => responseParser(resp),
-      asyncHandler: asyncHandler
+      url   : url,
+      parser: resp => responseParser(resp),
     })
 
     function responseParser(items) {
@@ -175,38 +189,35 @@ export default class Geo {
     }
   }
 
-  async addCategory(name, asyncHandler) {
+  async addCategory(name) {
     if (!name) {
       throw new Error('Category name is required.')
     }
 
     return this.app.request.put({
-      url         : this.app.urls.geoCategory(name),
-      parser      : data => data.result || data,
-      asyncHandler: asyncHandler
+      url   : this.app.urls.geoCategory(name),
+      parser: data => data.result || data,
     })
   }
 
-  async getCategories(asyncHandler) {
+  async getCategories() {
     return this.app.request.get({
-      url         : this.app.urls.geoCategories(),
-      asyncHandler: asyncHandler
+      url: this.app.urls.geoCategories(),
     })
   }
 
-  async deleteCategory(name, asyncHandler) {
+  async deleteCategory(name) {
     if (!name) {
       throw new Error('Category name is required.')
     }
 
     return this.app.request.delete({
-      url         : this.app.urls.geoCategory(name),
-      parser      : data => data.result || data,
-      asyncHandler: asyncHandler
+      url   : this.app.urls.geoCategory(name),
+      parser: data => data.result || data,
     })
   }
 
-  async deletePoint(point, asyncHandler) {
+  async deletePoint(point) {
     if (!point || Utils.isFunction(point)) {
       throw new Error('Point argument name is required, must be string (object Id), or point object')
     }
@@ -214,25 +225,23 @@ export default class Geo {
     const pointId = Utils.isString(point) ? point : point.objectId
 
     return this.app.request.delete({
-      url         : this.app.urls.geoPoint(pointId),
-      parser      : data => data.result || data,
-      asyncHandler: asyncHandler
+      url   : this.app.urls.geoPoint(pointId),
+      parser: data => data.result || data,
     })
 
   }
 
-  async getFencePoints(geoFenceName, query, asyncHandler) {
+  async getFencePoints(geoFenceName, query) {
     query = query || new GeoQuery()
 
     query.geoFence = geoFenceName
     query.url = this.app.urls.geo()
 
-    return loadItems.call(this, query, asyncHandler)
+    return loadItems.call(this, query)
   }
 
-  async getGeopointCount(fenceName, query, asyncHandler) {
+  async getGeopointCount(fenceName, query) {
     if (Utils.isObject(fenceName)) {
-      asyncHandler = query
       query = fenceName
       fenceName = undefined
     }
@@ -250,32 +259,31 @@ export default class Geo {
     const url = this.app.urls.geoCount() + '?' + toQueryParams(query)
 
     return this.app.request.get({
-      url         : url,
-      asyncHandler: asyncHandler
+      url: url,
     })
   }
 
-  runOnEnterAction(...args) {
+  async runOnEnterAction(...args) {
     return this.trackerMonitor.runOnEnterAction(...args)
   }
 
-  runOnStayAction(...args) {
+  async runOnStayAction(...args) {
     return this.trackerMonitor.runOnStayAction(...args)
   }
 
-  runOnExitAction(...args) {
+  async runOnExitAction(...args) {
     return this.trackerMonitor.runOnExitAction(...args)
   }
 
-  startGeofenceMonitoringWithInAppCallback(...args) {
+  async startGeofenceMonitoringWithInAppCallback(...args) {
     return this.trackerMonitor.startGeofenceMonitoringWithInAppCallback(...args)
   }
 
-  startGeofenceMonitoringWithRemoteCallback(...args) {
+  async startGeofenceMonitoringWithRemoteCallback(...args) {
     return this.trackerMonitor.startGeofenceMonitoringWithRemoteCallback(...args)
   }
 
-  stopGeofenceMonitoring(...args) {
+  async stopGeofenceMonitoring(...args) {
     return this.trackerMonitor.stopGeofenceMonitoring(...args)
   }
 
@@ -284,15 +292,14 @@ export default class Geo {
   }
 }
 
-function loadItems(query, asyncHandler) {
+function loadItems(query) {
   validateQueryObject(query)
 
   const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
 
   return this.app.request.get({
-    url         : url,
-    parser      : resp => responseParser(resp, query),
-    asyncHandler: asyncHandler
+    url   : url,
+    parser: resp => responseParser(resp, query),
   })
 
   function responseParser(resp, geoQuery) {
