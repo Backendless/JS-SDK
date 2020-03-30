@@ -19,27 +19,24 @@ export default class GeoTrackerMonitor {
     this.geoTracker = new GeoTracker()
   }
 
-  runOnEnterAction(...args) {
-    return Utils.promisified(this.geoFenceActions.enter)
-      .call(this.geoFenceActions, ...args)
+  runOnEnterAction(geoFenceName, geoPoint, asyncHandler) {
+    return this.geoFenceActions.enter(geoFenceName, geoPoint, asyncHandler)
   }
 
-  runOnStayAction(...args) {
-    return Utils.promisified(this.geoFenceActions.stay)
-      .call(this.geoFenceActions, ...args)
+  runOnStayAction(geoFenceName, geoPoint, asyncHandler) {
+    return this.geoFenceActions.stay(geoFenceName, geoPoint, asyncHandler)
   }
 
-  runOnExitAction(...args) {
-    return Utils.promisified(this.geoFenceActions.exit)
-      .call(this.geoFenceActions, ...args)
+  runOnExitAction(geoFenceName, geoPoint, asyncHandler) {
+    return this.geoFenceActions.exit(geoFenceName, geoPoint, asyncHandler)
   }
 
   startGeofenceMonitoringWithInAppCallback(...args) {
-    return Utils.promisified(startMonitoring).call(this, ...args)
+    return startMonitoring.call(this, ...args)
   }
 
   startGeofenceMonitoringWithRemoteCallback(...args) {
-    return Utils.promisified(startMonitoring).call(this, ...args)
+    return startMonitoring.call(this, ...args)
   }
 
   stopGeofenceMonitoring(...args) {

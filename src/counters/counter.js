@@ -1,56 +1,50 @@
 import Utils from '../utils'
 
-import {
-  incrementAndGet,
-  decrementAndGet,
-  get,
-  getAndIncrement,
-  getAndDecrement,
-  getAndAdd,
-  addAndGet,
-  compareAndSet,
-  reset
-} from './methods'
-
-class Counter {
-  constructor(name, app) {
+export default class Counter {
+  constructor(name, counters) {
     if (!name || !Utils.isString(name)) {
       throw new Error('Counter Name must be non empty String')
     }
 
     this.name = name
-    this.app = app
+    this.counters = counters
+  }
+
+  incrementAndGet(asyncHandler) {
+    return this.counters.incrementAndGet(this.name, asyncHandler)
+  }
+
+  getAndIncrement(asyncHandler) {
+    return this.counters.getAndIncrement(this.name, asyncHandler)
+  }
+
+  decrementAndGet(asyncHandler) {
+    return this.counters.decrementAndGet(this.name, asyncHandler)
+  }
+
+  getAndDecrement(asyncHandler) {
+    return this.counters.getAndDecrement(this.name, asyncHandler)
+  }
+
+  reset(asyncHandler) {
+    return this.counters.reset(this.name, asyncHandler)
+  }
+
+  get(asyncHandler) {
+    return this.counters.get(this.name, asyncHandler)
+  }
+
+  addAndGet(value, asyncHandler) {
+    return this.counters.addAndGet(this.name, value, asyncHandler)
+  }
+
+  getAndAdd(value, asyncHandler) {
+    return this.counters.getAndAdd(this.name, value, asyncHandler)
+  }
+
+  compareAndSet(expected, updated, asyncHandler) {
+    return this.counters.compareAndSet(this.name, expected, updated, asyncHandler)
   }
 }
 
-const withCounterName = method => function(...args) {
-  return method.call(this, this.name, ...args)
-}
-
-//TODO: will be removed when remove sync methods
-const namespaceLabel = 'Backendless.Counter.of(<CounterName>)'
-
-Object.assign(Counter.prototype, {
-
-  incrementAndGet: Utils.promisified(withCounterName(incrementAndGet)),
-
-  getAndIncrement: Utils.promisified(withCounterName(getAndIncrement)),
-
-  decrementAndGet: Utils.promisified(withCounterName(decrementAndGet)),
-
-  getAndDecrement: Utils.promisified(withCounterName(getAndDecrement)),
-
-  reset: Utils.promisified(withCounterName(reset)),
-
-  get: Utils.promisified(withCounterName(get)),
-
-  addAndGet: Utils.promisified(withCounterName(addAndGet)),
-
-  getAndAdd: Utils.promisified(withCounterName(getAndAdd)),
-
-  compareAndSet: Utils.promisified(withCounterName(compareAndSet)),
-
-})
-
-export default Counter
 

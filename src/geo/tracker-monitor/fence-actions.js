@@ -10,7 +10,7 @@ export default class GeoFenceActions {
     this.app = app
   }
 
-  run(action, geoFenceName, geoPoint, asyncHandler) {
+  async run(action, geoFenceName, geoPoint, asyncHandler) {
     if (geoPoint instanceof Async) {
       asyncHandler = geoPoint
       geoPoint = undefined
@@ -26,7 +26,6 @@ export default class GeoFenceActions {
 
     return this.app.request.post({
       url         : this.app.urls.geoFence(action, geoFenceName),
-      isAsync     : !!asyncHandler,
       data        : geoPoint,
       asyncHandler: asyncHandler
     })

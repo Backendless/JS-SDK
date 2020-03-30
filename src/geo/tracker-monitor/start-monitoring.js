@@ -131,7 +131,7 @@ function checkPosition(tracker, fenceActions, geofenceName, coords, geoPoint, Ge
   }
 }
 
-export default function startMonitoring(geofenceName, secondParam, asyncHandler) {
+export default async function startMonitoring(geofenceName, secondParam, asyncHandler) {
   const tracker = this.geoTracker
   const fenceActions = this.fenceActions
   const fences = this.getFences(geofenceName)

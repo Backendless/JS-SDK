@@ -22,7 +22,6 @@ export default class Request {
     BackendlessRequest.verbose = !!this.app.debugMode
     BackendlessRequest.XMLHttpRequest = XMLHttpRequest
 
-    const url = config.url
     const method = (config.method || Methods.GET).toLowerCase()
     const headers = config.headers || {}
 
@@ -30,14 +29,20 @@ export default class Request {
       headers['user-token'] = userToken
     }
 
-    const onError = config.asyncHandler.fault || (error => throw error)
-    const onSuccess = config.asyncHandler.success || (result => result)
-
-    return BackendlessRequest[method](url, config.data)
+    let request = BackendlessRequest[method](config.url, config.data)
       .set(headers)
       .query(config.query)
       .form(config.form)
-      .then(onSuccess, onError)
+
+    if (config.parser) {
+      request = request.then(config.parser ? config.parser : result => result)
+    }
+
+    if (config.asyncHandler) {
+      request.then(config.asyncHandler.success, config.asyncHandler.fault)
+    }
+
+    return request
   }
 
   get(config) {

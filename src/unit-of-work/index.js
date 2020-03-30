@@ -8,7 +8,7 @@ import { OpResultValueReference } from './op-result-value-reference'
 
 class TransactionOperationError extends Error {
   constructor(message, operation) {
-    super(message);
+    super(message)
 
     this.operation = operation
   }

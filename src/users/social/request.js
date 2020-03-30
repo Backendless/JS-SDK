@@ -20,7 +20,6 @@ export function sendSocialLoginRequest (accessToken, socialType, fieldsMapping, 
 
   this.app.request.post({
     url         : this.app.urls.userSocialLogin(socialType),
-    isAsync     : true,
     asyncHandler: interimCallback,
     data        : {
       accessToken,

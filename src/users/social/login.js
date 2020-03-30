@@ -40,7 +40,6 @@ export function loginSocial(socialType, fieldsMapping, permissions, container, s
 
   this.app.request.post({
     url         : this.app.urls.userSocialOAuth(socialType),
-    isAsync     : true,
     asyncHandler: interimCallback,
     data        : request
   })

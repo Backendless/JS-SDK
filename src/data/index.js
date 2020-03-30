@@ -2,12 +2,9 @@ import Utils from '../utils'
 
 import { deprecated } from '../decorators'
 
-import Permissions from './permissions'
 import Store from './store'
 import QueryBuilder from './query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
-
-import { describe } from './describe'
 
 import Point from './geo/point'
 import LineString from './geo/linestring'
@@ -16,13 +13,19 @@ import Geometry from './geo/geometry'
 import SpatialReferenceSystem from './geo/spatial-reference-system'
 import WKTParser from './geo/wkt-parser'
 import GeoJSONParser from './geo/geo-json-parser'
+import DataPermission from './persmission'
 
 export default class Data {
   constructor(app) {
     this.app = app
     this.classToTableMap = {}
 
-    this.Permissions = new Permissions(app)
+    this.Permissions = {
+      FIND: new DataPermission('FIND', app),
+      REMOVE: new DataPermission('REMOVE', app),
+      UPDATE: new DataPermission('UPDATE', app),
+    }
+
     this.QueryBuilder = QueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
 
@@ -41,8 +44,15 @@ export default class Data {
     return new Store(model, this.classToTableMap, this.app)
   }
 
-  describe(...args) {
-    return Utils.promisified(describe).call(this, ...args)
+  async describe(className, asyncHandler) {
+    className = Utils.isString(className)
+      ? className
+      : Utils.getClassName(className)
+
+    return this.app.request.get({
+      url         : this.app.urls.dataTableProps(className),
+      asyncHandler: asyncHandler
+    })
   }
 
   @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
