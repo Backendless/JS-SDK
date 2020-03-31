@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import { Validators } from "../validators";
+import { Validators } from '../validators'
 
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 

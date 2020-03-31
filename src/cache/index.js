@@ -83,7 +83,7 @@ export default class Cache {
 
   async expireIn(key, seconds) {
     Validators.requiredString('Cache Key', key)
-    Validators.positiveNumber('Cache Expiration', key, 'number of seconds')
+    Validators.positiveNumber('Cache Expiration', seconds, 'number of seconds')
 
     return this.app.request.put({
       url  : this.app.urls.cacheItemExpireIn(key),
