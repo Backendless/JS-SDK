@@ -67,12 +67,13 @@ export default class Geo {
       ? this.app.urls.geoPoint(geoPoint.objectId)
       : this.app.urls.geoPoints()
 
-    return this.app.request.send({
-      method,
-      url,
-      parser: parseResponse,
-      data  : geoPoint,
-    })
+    return this.app.request
+      .send({
+        method,
+        url,
+        data: geoPoint,
+      })
+      .then(parseResponse)
 
     function parseResponse(resp) {
       const geoPoint = new GeoPoint()
@@ -156,10 +157,11 @@ export default class Geo {
       }
     }
 
-    return this.app.request.get({
-      url   : url,
-      parser: parser,
-    })
+    return this.app.request
+      .get({
+        url: url,
+      })
+      .then(parser)
   }
 
   async relativeFind(query) {
@@ -176,10 +178,11 @@ export default class Geo {
 
     const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
 
-    return this.app.request.get({
-      url   : url,
-      parser: resp => responseParser(resp),
-    })
+    return this.app.request
+      .get({
+        url: url,
+      })
+      .then(resp => responseParser(resp))
 
     function responseParser(items) {
       return items.map(item => ({
@@ -194,10 +197,11 @@ export default class Geo {
       throw new Error('Category name is required.')
     }
 
-    return this.app.request.put({
-      url   : this.app.urls.geoCategory(name),
-      parser: data => data.result || data,
-    })
+    return this.app.request
+      .put({
+        url: this.app.urls.geoCategory(name),
+      })
+      .then(data => data.result || data)
   }
 
   async getCategories() {
@@ -211,10 +215,11 @@ export default class Geo {
       throw new Error('Category name is required.')
     }
 
-    return this.app.request.delete({
-      url   : this.app.urls.geoCategory(name),
-      parser: data => data.result || data,
-    })
+    return this.app.request
+      .delete({
+        url: this.app.urls.geoCategory(name),
+      })
+      .then(data => data.result || data)
   }
 
   async deletePoint(point) {
@@ -224,10 +229,11 @@ export default class Geo {
 
     const pointId = Utils.isString(point) ? point : point.objectId
 
-    return this.app.request.delete({
-      url   : this.app.urls.geoPoint(pointId),
-      parser: data => data.result || data,
-    })
+    return this.app.request
+      .delete({
+        url: this.app.urls.geoPoint(pointId),
+      })
+      .then(data => data.result || data)
 
   }
 
@@ -297,10 +303,11 @@ function loadItems(query) {
 
   const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
 
-  return this.app.request.get({
-    url   : url,
-    parser: resp => responseParser(resp, query),
-  })
+  return this.app.request
+    .get({
+      url: url,
+    })
+    .then(resp => responseParser(resp, query))
 
   function responseParser(resp, geoQuery) {
     return resp.map(geoObject => {

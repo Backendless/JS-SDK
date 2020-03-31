@@ -52,10 +52,11 @@ export default class Cache {
       throw new Error('Cache Key must be non empty String')
     }
 
-    return this.app.request.get({
-      url   : this.app.urls.cacheItem(key),
-      parser: parseResult,
-    })
+    return this.app.request
+      .get({
+        url: this.app.urls.cacheItem(key),
+      })
+      .then(parseResult)
   }
 
   async remove(key) {

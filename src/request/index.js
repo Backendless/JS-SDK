@@ -15,47 +15,41 @@ export default class Request {
     this.Methods = Methods
   }
 
-  send(config) {
+  send(options) {
     BackendlessRequest.verbose = !!this.app.debugMode
     BackendlessRequest.XMLHttpRequest = this.app.XMLHttpRequest
 
-    const method = (config.method || Methods.GET).toLowerCase()
-    const headers = config.headers || {}
+    const method = (options.method || Methods.GET).toLowerCase()
+    const headers = options.headers || {}
     const userToken = this.app.getCurrentUserToken()
 
     if (userToken) {
       headers['user-token'] = userToken
     }
 
-    let request = BackendlessRequest[method](config.url, config.data)
+    return BackendlessRequest[method](options.url, options.data)
       .set(headers)
-      .query(config.query)
-      .form(config.form)
-
-    if (config.parser) {
-      request = request.then(config.parser)
-    }
-
-    return request
+      .query(options.query)
+      .form(options.form)
   }
 
-  get(config) {
-    return this.send({ ...config, method: Methods.GET })
+  get(options) {
+    return this.send({ ...options, method: Methods.GET })
   }
 
-  post(config) {
-    return this.send({ ...config, method: Methods.POST })
+  post(options) {
+    return this.send({ ...options, method: Methods.POST })
   }
 
-  put(config) {
-    return this.send({ ...config, method: Methods.PUT })
+  put(options) {
+    return this.send({ ...options, method: Methods.PUT })
   }
 
-  patch(config) {
-    return this.send({ ...config, method: Methods.PATCH })
+  patch(options) {
+    return this.send({ ...options, method: Methods.PATCH })
   }
 
-  delete(config) {
-    return this.send({ ...config, method: Methods.DELETE })
+  delete(options) {
+    return this.send({ ...options, method: Methods.DELETE })
   }
 }

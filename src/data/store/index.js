@@ -89,11 +89,12 @@ export default class DataStore {
 
     replCircDeps(obj)
 
-    return this.app.request.put({
-      url   : this.app.urls.dataTable(this.className),
-      data  : obj,
-      parser: result => parseFindResponse(result, this.model, this.classToTableMap),
-    })
+    return this.app.request
+      .put({
+        url : this.app.urls.dataTable(this.className),
+        data: obj,
+      })
+      .then(result => parseFindResponse(result, this.model, this.classToTableMap))
   }
 
   async remove(object) {
@@ -145,17 +146,19 @@ export default class DataStore {
       }
 
       if (Utils.getClassName(arguments[0]) === 'Object') {
-        return this.app.request.get({
-          url   : url + send.replace(/&$/, ''),
-          parser: resp => parseFindResponse(resp, this.model, this.classToTableMap),
-        })
+        return this.app.request
+          .get({
+            url: url + send.replace(/&$/, ''),
+          })
+          .then(resp => parseFindResponse(resp, this.model, this.classToTableMap))
       }
 
-      return this.app.request.put({
-        url   : url,
-        data  : argsObj,
-        parser: resp => parseFindResponse(resp, this.model, this.classToTableMap),
-      })
+      return this.app.request
+        .put({
+          url : url,
+          data: argsObj,
+        })
+        .then(resp => parseFindResponse(resp, this.model, this.classToTableMap))
     }
   }
 
@@ -208,10 +211,11 @@ export default class DataStore {
       url += '?' + query.join('&')
     }
 
-    return this.app.request.get({
-      url   : url,
-      parser: resp => parseFindResponse(resp, dataQuery.relationModel),
-    })
+    return this.app.request
+      .get({
+        url: url,
+      })
+      .then(resp => parseFindResponse(resp, dataQuery.relationModel))
   }
 
   async findFirst(dataQuery) {
@@ -438,9 +442,10 @@ function findUtil(url, Model, dataQuery) {
     url += '?' + query.join('&')
   }
 
-  return this.app.request.get({
-    url,
-    parser     : resp => parseFindResponse(resp, Model, this.classToTableMap),
-    cachePolicy: dataQuery.cachePolicy
-  })
+  return this.app.request
+    .get({
+      url,
+      cachePolicy: dataQuery.cachePolicy
+    })
+    .then(resp => parseFindResponse(resp, Model, this.classToTableMap))
 }

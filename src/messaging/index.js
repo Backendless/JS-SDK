@@ -121,11 +121,12 @@ export default class Messaging {
       data.attachment = attachments
     }
 
-    return this.app.request.post({
-      url   : this.app.urls.messagingEmail(),
-      parser: data => data.status,
-      data  : data
-    })
+    return this.app.request
+      .post({
+        url : this.app.urls.messagingEmail(),
+        data: data
+      })
+      .then(data => data.status)
   }
 
   async sendEmailFromTemplate(templateName, envelopeObject, templateValues) {

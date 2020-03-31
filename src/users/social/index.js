@@ -86,7 +86,7 @@ export default class UsersSocial {
     )
 
     if (!gapi) {
-      return throw new Error('Google Plus SDK not found')
+      throw new Error('Google Plus SDK not found')
     }
 
     return new Promise((resolve, reject) => {

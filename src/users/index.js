@@ -68,11 +68,12 @@ export default class Users {
       return language.slice(0, 2).toLowerCase()
     }
 
-    return this.app.request.post({
-      url   : this.app.urls.userRegister(),
-      parser: data => Utils.deepExtend(new User(), data),
-      data  : enrichWithLocaleInfo(user)
-    })
+    return this.app.request
+      .post({
+        url : this.app.urls.userRegister(),
+        data: enrichWithLocaleInfo(user)
+      })
+      .then(data => Utils.deepExtend(new User(), data))
   }
 
   async login(login, password, stayLoggedIn) {
@@ -100,15 +101,16 @@ export default class Users {
     this.app.LocalCache.remove('current-user-id')
     this.app.LocalCache.set('stayLoggedIn', false)
 
-    return this.app.request.post({
-      url   : this.app.urls.userLogin(),
-      data  : data,
-      parser: data => {
+    return this.app.request
+      .post({
+        url : this.app.urls.userLogin(),
+        data: data,
+      })
+      .then(data => {
         this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
 
         return getUserFromResponse.call(this, this.getLocalCurrentUser())
-      },
-    })
+      })
   }
 
   async loginAsGuest(stayLoggedIn) {
@@ -120,12 +122,12 @@ export default class Users {
 
     return this.app.request
       .post({
-        url   : this.app.urls.guestLogin(),
-        parser: data => {
-          this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
+        url: this.app.urls.guestLogin(),
+      })
+      .then(data => {
+        this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
 
-          return getUserFromResponse.call(this, this.getLocalCurrentUser())
-        },
+        return getUserFromResponse.call(this, this.getLocalCurrentUser())
       })
   }
 
@@ -246,11 +248,12 @@ export default class Users {
   }
 
   async update(user) {
-    return this.app.request.put({
-      url   : this.app.urls.userObject(user.objectId),
-      parser: data => Utils.deepExtend(new User(), data),
-      data  : user
-    })
+    return this.app.request
+      .put({
+        url : this.app.urls.userObject(user.objectId),
+        data: user
+      })
+      .then(data => Utils.deepExtend(new User(), data))
   }
 
   async getUserRoles() {
