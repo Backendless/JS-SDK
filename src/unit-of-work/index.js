@@ -101,7 +101,7 @@ class UnitOfWork {
       this.payload.operations.forEach(operation => {
         const opResultId = operation.meta.opResult.getOpResultId()
 
-        if (results[opResultId]) {
+        if (result.results[opResultId]) {
           operation.meta.opResult.setResult(result.results[opResultId].result)
         }
       })
@@ -109,7 +109,7 @@ class UnitOfWork {
 
     if (result.error) {
       const operation = this.payload.operations.find(op => {
-        return error.operation.opResultId === op.meta.opResult.getOpResultId()
+        return result.error.operation.opResultId === op.meta.opResult.getOpResultId()
       })
 
       result.error = new TransactionOperationError(result.error.message, operation.meta.opResult)
