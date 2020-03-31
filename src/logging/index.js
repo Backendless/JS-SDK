@@ -1,5 +1,7 @@
-import Logger from './logger'
 import Utils from '../utils'
+import { Validators } from '../validators'
+
+import Logger from './logger'
 
 export default class Logging {
 
@@ -21,9 +23,7 @@ export default class Logging {
   }
 
   getLogger(loggerName) {
-    if (typeof loggerName !== 'string') {
-      throw new Error("Invalid 'loggerName' value. LoggerName must be a string value")
-    }
+    Validators.requiredString('Logger Name', loggerName)
 
     if (!this.loggers[loggerName]) {
       this.loggers[loggerName] = new Logger(loggerName, this)
@@ -38,11 +38,12 @@ export default class Logging {
 
       this.flushRequest = this.app.request
         .put({
-          url         : this.app.urls.logging(),
-          data        : this.pool
+          url : this.app.urls.logging(),
+          data: this.pool
         })
         .then(() => {
           this.pool = []
+
           delete this.flushRequest
         })
     }
@@ -64,16 +65,14 @@ export default class Logging {
 
   startFlushInterval() {
     if (!this.flushInterval) {
-      this.flushInterval = setTimeout(
-        () => this.flush(),
-        this.timeFrequency * 1000
-      )
+      this.flushInterval = setTimeout(() => this.flush(), this.timeFrequency * 1000)
     }
   }
 
   stopFlushInterval() {
     if (this.flushInterval) {
       clearTimeout(this.flushInterval)
+
       delete this.flushInterval
     }
   }

@@ -83,7 +83,7 @@ export default class Cache {
 
   async expireIn(key, seconds) {
     Validators.requiredString('Cache Key', key)
-    Validators.requiredNumber('Cache Expiration', key, 'number of seconds')
+    Validators.positiveNumber('Cache Expiration', key, 'number of seconds')
 
     return this.app.request.put({
       url  : this.app.urls.cacheItemExpireIn(key),
@@ -96,7 +96,7 @@ export default class Cache {
     timestamp = timestamp instanceof Date ? timestamp.getTime() : timestamp
 
     Validators.requiredString('Cache Key', key)
-    Validators.requiredNumber('Cache Expiration', timestamp, 'timestamp or instance of Date')
+    Validators.positiveNumber('Cache Expiration', timestamp, 'timestamp or instance of Date')
 
     return this.app.request.put({
       url  : this.app.urls.cacheItemExpireAt(key),

@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import { Validators } from '../validators'
 
 import Counter from './counter'
 
@@ -24,9 +25,7 @@ export default class Counters {
   }
 
   async incrementAndGet(counterName) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
+    Validators.requiredString('Counter Name', counterName)
 
     return this.app.request.put({
       url: this.app.urls.counterIncrementAndGet(counterName),
@@ -34,9 +33,7 @@ export default class Counters {
   }
 
   async getAndIncrement(counterName) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
+    Validators.requiredString('Counter Name', counterName)
 
     return this.app.request.put({
       url: this.app.urls.counterGetAndIncrement(counterName),
@@ -44,9 +41,7 @@ export default class Counters {
   }
 
   async decrementAndGet(counterName) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
+    Validators.requiredString('Counter Name', counterName)
 
     return this.app.request.put({
       url: this.app.urls.counterDecrementAndGet(counterName),
@@ -54,9 +49,7 @@ export default class Counters {
   }
 
   async getAndDecrement(counterName) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
+    Validators.requiredString('Counter Name', counterName)
 
     return this.app.request.put({
       url: this.app.urls.counterGetAndDecrement(counterName),
@@ -64,9 +57,7 @@ export default class Counters {
   }
 
   async reset(counterName) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
+    Validators.requiredString('Counter Name', counterName)
 
     return this.app.request.put({
       url: this.app.urls.counterReset(counterName),
@@ -74,9 +65,7 @@ export default class Counters {
   }
 
   async get(counterName) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
+    Validators.requiredString('Counter Name', counterName)
 
     return this.app.request.get({
       url: this.app.urls.counter(counterName),
@@ -84,13 +73,8 @@ export default class Counters {
   }
 
   async addAndGet(counterName, value) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
-
-    if (!Utils.isNumber(value)) {
-      throw new Error('Counter Value must number')
-    }
+    Validators.requiredString('Counter Name', counterName)
+    Validators.anyNumber('Counter Value', value)
 
     return this.app.request.put({
       url  : this.app.urls.counterAddAndGet(counterName),
@@ -99,13 +83,8 @@ export default class Counters {
   }
 
   async getAndAdd(counterName, value) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
-
-    if (!Utils.isNumber(value)) {
-      throw new Error('Counter "value" must be Number')
-    }
+    Validators.requiredString('Counter Name', counterName)
+    Validators.anyNumber('Counter Value', value)
 
     return this.app.request.put({
       url  : this.app.urls.counterGetAndAdd(counterName),
@@ -114,17 +93,9 @@ export default class Counters {
   }
 
   async compareAndSet(counterName, expected, updated) {
-    if (!counterName || !Utils.isString(counterName)) {
-      throw new Error('Counter Name must be non empty String')
-    }
-
-    if (!Utils.isNumber(expected)) {
-      throw new Error('Counter "expected" value must be Number')
-    }
-
-    if (!Utils.isNumber(updated)) {
-      throw new Error('Counter "updated" value must be Number')
-    }
+    Validators.requiredString('Counter Name', counterName)
+    Validators.anyNumber('Counter Expected Value', expected)
+    Validators.anyNumber('Counter Updated Value', updated)
 
     return this.app.request.put({
       url  : this.app.urls.counterCompareAndSet(counterName),

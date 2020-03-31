@@ -5,8 +5,14 @@ export const Validators = {
     }
   },
 
-  requiredNumber(key, value, message = 'a number') {
-    if (!value || typeof value !== 'number') {
+  anyNumber(key, value, message = 'a number') {
+    if (typeof value !== 'number') {
+      throw new Error(`${key} must be provided and must be ${message}!`)
+    }
+  },
+
+  positiveNumber(key, value, message = 'a number') {
+    if (typeof value !== 'number' || value <= 0) {
       throw new Error(`${key} must be provided and must be ${message}!`)
     }
   },
