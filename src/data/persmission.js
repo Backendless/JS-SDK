@@ -8,7 +8,7 @@ const PermissionTypes = {
 const namespaceLabel = 'Backendless.Data.Permissions.{FIND|REMOVE|UPDATE}'
 
 function backwardCompatibility(context, methodName, oldMethodName) {
-  return () => {
+  return function() {
     const mainMessage = `"${namespaceLabel}.${oldMethodName}" is deprecated and will be removed in the nearest release.`
     const helpMessage = `Please use "${namespaceLabel}.${methodName}" instead of.`
 
