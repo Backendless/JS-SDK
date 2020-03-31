@@ -73,7 +73,7 @@ export default class DataStore {
               objMap[pos]['__subID'] = objMap[pos]['__subID'] || genID()
               obj[prop] = { '__originSubID': objMap[pos]['__subID'] }
 
-            } else if (Utils.isDate(obj[prop])) {
+            } else if (obj[prop] instanceof Date) {
               obj[prop] = obj[prop].getTime()
 
             } else {

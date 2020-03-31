@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import { Validators } from '../validators'
 
 export default class Cache {
   constructor(app) {
@@ -6,63 +7,66 @@ export default class Cache {
 
     this.parsers = {}
 
-    Utils.enableAsyncHandlers(this, ['put', 'get', 'remove', 'contains', 'expireIn', 'expireAt'])
+    Utils.enableAsyncHandlers(this, [
+      'put',
+      'get',
+      'remove',
+      'contains',
+      'expireIn',
+      'expireAt'
+    ])
   }
 
   setObjectFactory(objectName, factoryMethod) {
     this.parsers[objectName] = factoryMethod
   }
 
+  parseItem(item) {
+    const className = item && item.___class
+
+    if (className) {
+      const Class = this.parsers[className]
+
+      if (Class) {
+        item = new Class(item)
+      }
+    }
+
+    return item
+  }
+
+  stringifyItem(item) {
+    if (Utils.isObject(item) && item.constructor !== Object) {
+      item.___class = item.___class || Utils.getClassName(item)
+    }
+
+    return JSON.stringify(item)
+  }
+
   async put(key, value, timeToLive) {
-    if (!key || !Utils.isString(key)) {
-      throw new Error('Cache Key must be non empty String')
-    }
-
-    if (timeToLive && !Utils.isNumber(timeToLive)) {
-      throw new Error('Cache timeToLive must be Number')
-    }
-
-    if (Utils.isObject(value) && value.constructor !== Object) {
-      value.___class = value.___class || Utils.getClassName(value)
-    }
+    Validators.requiredString('Cache Key', key)
+    Validators.optionalNumber('Cache TimeToLive', key)
 
     return this.app.request.put({
-      url    : this.app.urls.cacheItem(key) + ((timeToLive) ? '?timeout=' + timeToLive : ''),
+      url    : this.app.urls.cacheItem(key),
+      query  : { timeout: timeToLive },
       headers: { 'Content-Type': 'application/json' },
-      data   : JSON.stringify(value),
+      data   : this.stringifyItem(value),
     })
   }
 
   async get(key) {
-    function parseResult(result) {
-      const className = result && result.___class
-
-      if (className) {
-        const Class = this.parsers[className]
-
-        if (Class) {
-          result = new Class(result)
-        }
-      }
-
-      return result
-    }
-
-    if (!key || !Utils.isString(key)) {
-      throw new Error('Cache Key must be non empty String')
-    }
+    Validators.requiredString('Cache Key', key)
 
     return this.app.request
       .get({
         url: this.app.urls.cacheItem(key),
       })
-      .then(parseResult)
+      .then(item => this.parseItem(item))
   }
 
   async remove(key) {
-    if (!key || !Utils.isString(key)) {
-      throw new Error('Cache Key must be non empty String')
-    }
+    Validators.requiredString('Cache Key', key)
 
     return this.app.request.delete({
       url: this.app.urls.cacheItem(key),
@@ -70,9 +74,7 @@ export default class Cache {
   }
 
   async contains(key) {
-    if (!key || !Utils.isString(key)) {
-      throw new Error('Cache Key must be non empty String')
-    }
+    Validators.requiredString('Cache Key', key)
 
     return this.app.request.get({
       url: this.app.urls.cacheItemCheck(key),
@@ -80,37 +82,27 @@ export default class Cache {
   }
 
   async expireIn(key, seconds) {
-    if (!key || !Utils.isString(key)) {
-      throw new Error('Cache Key must be non empty String')
-    }
-
-    if (!seconds) {
-      throw new Error('Cache Expiration must be number of seconds')
-    }
+    Validators.requiredString('Cache Key', key)
+    Validators.requiredNumber('Cache Expiration', key, 'number of seconds')
 
     return this.app.request.put({
-      url : this.app.urls.cacheItemExpireIn(key) + '?timeout=' + seconds,
-      data: {},
+      url  : this.app.urls.cacheItemExpireIn(key),
+      query: { timeout: seconds },
+      data : {},
     })
-
   }
 
   async expireAt(key, timestamp) {
-    if (!key || !Utils.isString(key)) {
-      throw new Error('Cache Key must be non empty String')
-    }
+    timestamp = timestamp instanceof Date ? timestamp.getTime() : timestamp
 
-    if (!timestamp) {
-      throw new Error('Cache Expiration must be timestamp or instance of Date')
-    }
-
-    timestamp = Utils.isDate(timestamp) ? timestamp.getTime() : timestamp
+    Validators.requiredString('Cache Key', key)
+    Validators.requiredNumber('Cache Expiration', timestamp, 'timestamp or instance of Date')
 
     return this.app.request.put({
-      url : this.app.urls.cacheItemExpireAt(key) + '?timestamp=' + timestamp,
-      data: {},
+      url  : this.app.urls.cacheItemExpireAt(key),
+      query: { timestamp },
+      data : {},
     })
-
   }
 
 }

@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import { Validators } from '../validators'
 
 export default class Commerce {
   constructor(app) {
@@ -12,9 +13,9 @@ export default class Commerce {
   }
 
   async validatePlayPurchase(packageName, productId, token) {
-    validateStringArgument('Package Name', packageName)
-    validateStringArgument('Product Id', productId)
-    validateStringArgument('Token', token)
+    Validators.requiredString('Package Name', packageName)
+    Validators.requiredString('Product Id', productId)
+    Validators.requiredString('Token', token)
 
     return this.app.request.get({
       url: this.app.urls.commerceValidate(packageName, productId, token),
@@ -22,9 +23,9 @@ export default class Commerce {
   }
 
   async cancelPlaySubscription(packageName, subscriptionId, token) {
-    validateStringArgument('Package Name', packageName)
-    validateStringArgument('Subscription Id', subscriptionId)
-    validateStringArgument('Token', token)
+    Validators.requiredString('Package Name', packageName)
+    Validators.requiredString('Subscription Id', subscriptionId)
+    Validators.requiredString('Token', token)
 
     return this.app.request.post({
       url: this.app.urls.commerceSubCancel(packageName, subscriptionId, token),
@@ -32,20 +33,14 @@ export default class Commerce {
   }
 
   async getPlaySubscriptionStatus(packageName, subscriptionId, token) {
-    validateStringArgument('Package Name', packageName)
-    validateStringArgument('Subscription Id', subscriptionId)
-    validateStringArgument('Token', token)
+    Validators.requiredString('Package Name', packageName)
+    Validators.requiredString('Subscription Id', subscriptionId)
+    Validators.requiredString('Token', token)
 
     return this.app.request.get({
       url: this.app.urls.commerceSubStatus(packageName, subscriptionId, token),
     })
   }
 
-}
-
-function validateStringArgument(label, value) {
-  if (!value || typeof value !== 'string') {
-    throw new Error(`${label} must be provided and must be not an empty STRING!`)
-  }
 }
 

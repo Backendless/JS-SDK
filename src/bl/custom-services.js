@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import { Validators } from "../validators";
 
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
@@ -9,7 +10,10 @@ export default class CustomServices {
     Utils.enableAsyncHandlers(this, ['invoke'])
   }
 
-  async invoke(serviceName, method, parameters, executionType) {
+  async invoke(serviceName, methodName, parameters, executionType) {
+    Validators.requiredString('Service Name', serviceName)
+    Validators.requiredString('Method Name', methodName)
+
     if (typeof parameters === 'string' && isExecutionType(parameters)) {
       executionType = parameters
       parameters = undefined
@@ -22,7 +26,7 @@ export default class CustomServices {
     }
 
     return this.app.request.post({
-      url    : this.app.urls.blServiceMethod(serviceName, method),
+      url    : this.app.urls.blServiceMethod(serviceName, methodName),
       data   : parameters,
       headers: headers
     })

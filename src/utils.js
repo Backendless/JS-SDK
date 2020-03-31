@@ -25,10 +25,6 @@ const Utils = {
     return Object.prototype.toString.call(obj).slice(8, -1) === 'Boolean'
   },
 
-  isDate(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Date'
-  },
-
   isBrowser: isBrowser(),
 
   isLocalStorageSupported: isLocalStorageSupported(),
