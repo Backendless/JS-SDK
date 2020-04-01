@@ -19,7 +19,7 @@ describe('Backendless.Events', function() {
 
   it('dispatch event without event name', function() {
     return expect(Backendless.Events.dispatch()).to.eventually.be
-      .rejectedWith(Error, 'Event Name must be provided and must be a string!')
+      .rejectedWith(Error, 'Event Name must be provided and must be a string.')
   })
 
 })

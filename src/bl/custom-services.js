@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { Validators } from '../validators'
 
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
@@ -11,8 +10,13 @@ export default class CustomServices {
   }
 
   async invoke(serviceName, methodName, parameters, executionType) {
-    Validators.requiredString('Service Name', serviceName)
-    Validators.requiredString('Method Name', methodName)
+    if (!serviceName || typeof serviceName !== 'string') {
+      throw new Error('Service Name must be provided and must be a string.')
+    }
+
+    if (!methodName || typeof methodName !== 'string') {
+      throw new Error('Method Name must be provided and must be a string.')
+    }
 
     if (typeof parameters === 'string' && isExecutionType(parameters)) {
       executionType = parameters

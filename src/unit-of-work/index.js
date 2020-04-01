@@ -97,6 +97,8 @@ class UnitOfWork {
       data: this.composePayload(),
     })
 
+    console.log('result', JSON.stringify(result, null, 2))
+
     if (result.results) {
       this.payload.operations.forEach(operation => {
         const opResultId = operation.meta.opResult.getOpResultId()

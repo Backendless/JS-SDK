@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { Validators } from '../validators'
 
 import Logger from './logger'
 
@@ -23,7 +22,9 @@ export default class Logging {
   }
 
   getLogger(loggerName) {
-    Validators.requiredString('Logger Name', loggerName)
+    if (!loggerName || typeof loggerName !== 'string') {
+      throw new Error('Logger Name must be provided and must be a string.')
+    }
 
     if (!this.loggers[loggerName]) {
       this.loggers[loggerName] = new Logger(loggerName, this)

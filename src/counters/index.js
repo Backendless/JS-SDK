@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { Validators } from '../validators'
 
 import Counter from './counter'
 
@@ -25,7 +24,9 @@ export default class Counters {
   }
 
   async incrementAndGet(counterName) {
-    Validators.requiredString('Counter Name', counterName)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
 
     return this.app.request.put({
       url: this.app.urls.counterIncrementAndGet(counterName),
@@ -33,7 +34,9 @@ export default class Counters {
   }
 
   async getAndIncrement(counterName) {
-    Validators.requiredString('Counter Name', counterName)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
 
     return this.app.request.put({
       url: this.app.urls.counterGetAndIncrement(counterName),
@@ -41,7 +44,9 @@ export default class Counters {
   }
 
   async decrementAndGet(counterName) {
-    Validators.requiredString('Counter Name', counterName)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
 
     return this.app.request.put({
       url: this.app.urls.counterDecrementAndGet(counterName),
@@ -49,7 +54,9 @@ export default class Counters {
   }
 
   async getAndDecrement(counterName) {
-    Validators.requiredString('Counter Name', counterName)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
 
     return this.app.request.put({
       url: this.app.urls.counterGetAndDecrement(counterName),
@@ -57,7 +64,9 @@ export default class Counters {
   }
 
   async reset(counterName) {
-    Validators.requiredString('Counter Name', counterName)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
 
     return this.app.request.put({
       url: this.app.urls.counterReset(counterName),
@@ -65,7 +74,9 @@ export default class Counters {
   }
 
   async get(counterName) {
-    Validators.requiredString('Counter Name', counterName)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
 
     return this.app.request.get({
       url: this.app.urls.counter(counterName),
@@ -73,8 +84,13 @@ export default class Counters {
   }
 
   async addAndGet(counterName, value) {
-    Validators.requiredString('Counter Name', counterName)
-    Validators.anyNumber('Counter Value', value)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    if (typeof value !== 'number') {
+      throw new Error('Counter Value must be a number.')
+    }
 
     return this.app.request.put({
       url  : this.app.urls.counterAddAndGet(counterName),
@@ -83,8 +99,13 @@ export default class Counters {
   }
 
   async getAndAdd(counterName, value) {
-    Validators.requiredString('Counter Name', counterName)
-    Validators.anyNumber('Counter Value', value)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    if (typeof value !== 'number') {
+      throw new Error('Counter Value must be a number.')
+    }
 
     return this.app.request.put({
       url  : this.app.urls.counterGetAndAdd(counterName),
@@ -93,9 +114,17 @@ export default class Counters {
   }
 
   async compareAndSet(counterName, expected, updated) {
-    Validators.requiredString('Counter Name', counterName)
-    Validators.anyNumber('Counter Expected Value', expected)
-    Validators.anyNumber('Counter Updated Value', updated)
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    if (typeof expected !== 'number') {
+      throw new Error('Counter Expected Value must be a number.')
+    }
+
+    if (typeof updated !== 'number') {
+      throw new Error('Counter Updated Value must be a number.')
+    }
 
     return this.app.request.put({
       url  : this.app.urls.counterCompareAndSet(counterName),

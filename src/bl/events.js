@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import { Validators } from '../validators'
+
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
 export default class Events {
@@ -10,7 +10,9 @@ export default class Events {
   }
 
   async dispatch(eventName, eventArgs, executionType) {
-    Validators.requiredString('Event Name', eventName)
+    if (!eventName || typeof eventName !== 'string') {
+      throw new Error('Event Name must be provided and must be a string.')
+    }
 
     if (typeof eventArgs === 'string' && isExecutionType(eventArgs)) {
       executionType = eventArgs

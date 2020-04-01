@@ -40,7 +40,7 @@ export default class Messaging {
 
   subscribe(channelName) {
     if (!channelName || typeof channelName !== 'string') {
-      throw new Error('"channelName" must be non empty string')
+      throw new Error('Channel Name must be provided and must be a string.')
     }
 
     if (channelName.indexOf('/') >= 0) {
@@ -60,7 +60,7 @@ export default class Messaging {
         throw new Error('Use PublishOption as publishOptions argument')
       }
 
-      Utils.deepExtend(data, publishOptions)
+      Object.assign(data, publishOptions)
     }
 
     if (deliveryTarget) {
@@ -68,7 +68,7 @@ export default class Messaging {
         throw new Error('Use DeliveryOptions as deliveryTarget argument')
       }
 
-      Utils.deepExtend(data, deliveryTarget)
+      Object.assign(data, deliveryTarget)
     }
 
     return this.app.request.post({
@@ -78,8 +78,8 @@ export default class Messaging {
   }
 
   async pushWithTemplate(templateName, templateValues) {
-    if (!templateName || !Utils.isString(templateName)) {
-      throw new Error('Push Template Name must be non empty string!')
+    if (!templateName || typeof templateName !== 'string') {
+      throw new Error('Push Template Name must be provided and must be a string.')
     }
 
     const data = {}
@@ -95,12 +95,17 @@ export default class Messaging {
   }
 
   async sendEmail(subject, bodyParts, recipients, attachments) {
-    const data = {}
+    if (!subject || typeof subject !== 'string') {
+      throw new Error('Email Subject must be provided and must be a string.')
+    }
 
-    if (subject && Utils.isString(subject)) {
-      data.subject = subject
-    } else {
-      throw new Error('Subject is required parameter and must be a nonempty string')
+    if (!Array.isArray(recipients) || !recipients.length) {
+      throw new Error('Recipients must be a non empty array.')
+    }
+
+    const data = {
+      subject,
+      to: recipients
     }
 
     if (bodyParts instanceof Bodyparts) {
@@ -111,27 +116,21 @@ export default class Messaging {
       data.bodyparts = bodyParts
     }
 
-    if (Utils.isArray(recipients) && recipients.length) {
-      data.to = recipients
-    } else {
-      throw new Error('Recipients is required parameter, must be a nonempty array')
-    }
-
     if (Utils.isArray(attachments) && attachments.length) {
       data.attachment = attachments
     }
 
     return this.app.request
       .post({
-        url : this.app.urls.messagingEmail(),
-        data: data
+        url: this.app.urls.messagingEmail(),
+        data
       })
       .then(data => data.status)
   }
 
   async sendEmailFromTemplate(templateName, envelopeObject, templateValues) {
-    if (typeof templateName !== 'string' || !templateName) {
-      throw new Error('Template name is required and must be a string')
+    if (!templateName || typeof templateName !== 'string') {
+      throw new Error('Email Template Name must be provided and must be a string.')
     }
 
     if (!(envelopeObject instanceof EmailEnvelope)) {
@@ -172,10 +171,10 @@ export default class Messaging {
       data.channels = channels
     }
 
-    if (Utils.isNumber(expiration) || expiration instanceof Date) {
-      data.expiration = (expiration instanceof Date)
-        ? expiration.getTime() / 1000
-        : expiration
+    if (typeof expiration === 'number') {
+      data.expiration = expiration
+    } else if (expiration instanceof Date) {
+      data.expiration = expiration.getTime() / 1000
     }
 
     return this.app.request.post({
@@ -201,8 +200,8 @@ export default class Messaging {
   }
 
   async getMessageStatus(messageId) {
-    if (!messageId) {
-      throw Error('Message ID is required.')
+    if (!messageId || typeof messageId !== 'string') {
+      throw new Error('Message ID must be provided and must be a string.')
     }
 
     return this.app.request.get({

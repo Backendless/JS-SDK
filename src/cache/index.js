@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { Validators } from '../validators'
 
 export default class Cache {
   constructor(app) {
@@ -44,8 +43,13 @@ export default class Cache {
   }
 
   async put(key, value, timeToLive) {
-    Validators.requiredString('Cache Key', key)
-    Validators.optionalNumber('Cache TimeToLive', key)
+    if (!key || typeof key !== 'string') {
+      throw new Error('Cache Key must be provided and must be a string.')
+    }
+
+    if (timeToLive && !(timeToLive > 0)) {
+      throw new Error('Cache TimeToLive must be a number.')
+    }
 
     return this.app.request.put({
       url    : this.app.urls.cacheItem(key),
@@ -56,7 +60,9 @@ export default class Cache {
   }
 
   async get(key) {
-    Validators.requiredString('Cache Key', key)
+    if (!key || typeof key !== 'string') {
+      throw new Error('Cache Key must be provided and must be a string.')
+    }
 
     return this.app.request
       .get({
@@ -66,7 +72,9 @@ export default class Cache {
   }
 
   async remove(key) {
-    Validators.requiredString('Cache Key', key)
+    if (!key || typeof key !== 'string') {
+      throw new Error('Cache Key must be provided and must be a string.')
+    }
 
     return this.app.request.delete({
       url: this.app.urls.cacheItem(key),
@@ -74,7 +82,9 @@ export default class Cache {
   }
 
   async contains(key) {
-    Validators.requiredString('Cache Key', key)
+    if (!key || typeof key !== 'string') {
+      throw new Error('Cache Key must be provided and must be a string.')
+    }
 
     return this.app.request.get({
       url: this.app.urls.cacheItemCheck(key),
@@ -82,8 +92,13 @@ export default class Cache {
   }
 
   async expireIn(key, seconds) {
-    Validators.requiredString('Cache Key', key)
-    Validators.positiveNumber('Cache Expiration', seconds, 'number of seconds')
+    if (!key || typeof key !== 'string') {
+      throw new Error('Cache Key must be provided and must be a string.')
+    }
+
+    if (!(seconds > 0)) {
+      throw new Error('Cache Expiration must be provided and must be a number of seconds.')
+    }
 
     return this.app.request.put({
       url  : this.app.urls.cacheItemExpireIn(key),
@@ -95,8 +110,13 @@ export default class Cache {
   async expireAt(key, timestamp) {
     timestamp = timestamp instanceof Date ? timestamp.getTime() : timestamp
 
-    Validators.requiredString('Cache Key', key)
-    Validators.positiveNumber('Cache Expiration', timestamp, 'timestamp or instance of Date')
+    if (!key || typeof key !== 'string') {
+      throw new Error('Cache Key must be provided and must be a string.')
+    }
+
+    if (!(timestamp > 0)) {
+      throw new Error('Cache Expiration must be provided and must be a timestamp or an instance of Date.')
+    }
 
     return this.app.request.put({
       url  : this.app.urls.cacheItemExpireAt(key),

@@ -1,5 +1,4 @@
 import Utils from '../utils'
-import { Validators } from '../validators'
 
 export default class Commerce {
   constructor(app) {
@@ -13,9 +12,17 @@ export default class Commerce {
   }
 
   async validatePlayPurchase(packageName, productId, token) {
-    Validators.requiredString('Package Name', packageName)
-    Validators.requiredString('Product Id', productId)
-    Validators.requiredString('Token', token)
+    if (!packageName || typeof packageName !== 'string') {
+      throw new Error('Package Name must be provided and must be a string.')
+    }
+
+    if (!productId || typeof productId !== 'string') {
+      throw new Error('Product Id must be provided and must be a string.')
+    }
+
+    if (!token || typeof token !== 'string') {
+      throw new Error('Token must be provided and must be a string.')
+    }
 
     return this.app.request.get({
       url: this.app.urls.commerceValidate(packageName, productId, token),
@@ -23,9 +30,17 @@ export default class Commerce {
   }
 
   async cancelPlaySubscription(packageName, subscriptionId, token) {
-    Validators.requiredString('Package Name', packageName)
-    Validators.requiredString('Subscription Id', subscriptionId)
-    Validators.requiredString('Token', token)
+    if (!packageName || typeof packageName !== 'string') {
+      throw new Error('Package Name must be provided and must be a string.')
+    }
+
+    if (!subscriptionId || typeof subscriptionId !== 'string') {
+      throw new Error('Subscription Id must be provided and must be a string.')
+    }
+
+    if (!token || typeof token !== 'string') {
+      throw new Error('Token must be provided and must be a string.')
+    }
 
     return this.app.request.post({
       url: this.app.urls.commerceSubCancel(packageName, subscriptionId, token),
@@ -33,9 +48,17 @@ export default class Commerce {
   }
 
   async getPlaySubscriptionStatus(packageName, subscriptionId, token) {
-    Validators.requiredString('Package Name', packageName)
-    Validators.requiredString('Subscription Id', subscriptionId)
-    Validators.requiredString('Token', token)
+    if (!packageName || typeof packageName !== 'string') {
+      throw new Error('Package Name must be provided and must be a string.')
+    }
+
+    if (!subscriptionId || typeof subscriptionId !== 'string') {
+      throw new Error('Subscription Id must be provided and must be a string.')
+    }
+
+    if (!token || typeof token !== 'string') {
+      throw new Error('Token must be provided and must be a string.')
+    }
 
     return this.app.request.get({
       url: this.app.urls.commerceSubStatus(packageName, subscriptionId, token),
