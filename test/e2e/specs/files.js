@@ -286,23 +286,4 @@ describe('Backendless.Files', function() {
     })
   })
 
-  describe('Permissions', function() {
-    const testFile = 'permissions-test'
-
-    before(function() {
-      return createFile(testFile)
-    })
-
-    const operations = ['grantForAllUsers', 'denyForAllUsers', 'grantForAllRoles', 'denyForAllRoles']
-    const permissions = ['READ', 'WRITE', 'DELETE']
-
-    operations.forEach(operation =>
-      permissions.forEach(permission =>
-        it(`${operation} ${permission}`, function() {
-          return Files.Permissions[permission][operation](testFile)
-        })
-      )
-    )
-  })
-
 })

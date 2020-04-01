@@ -46,19 +46,13 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
   before(async function() {
     tablesAPI = this.tablesAPI
 
-    await Promise.all([
-      tablesAPI.createTable(PERSONS_TABLE_NAME),
-      tablesAPI.createTable(ADDRESSES_TABLE_NAME),
-    ])
+    await tablesAPI.createTable(PERSONS_TABLE_NAME)
+    await tablesAPI.createTable(ADDRESSES_TABLE_NAME)
 
-    await Promise.all([
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(ADDRESSES_TABLE_NAME, 'address', tablesAPI.DataTypes.STRING),
-    ])
+    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING)
+    await tablesAPI.createColumn(ADDRESSES_TABLE_NAME, 'address', tablesAPI.DataTypes.STRING)
 
-    await Promise.all([
-      tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ADDRESSES_COLUMN, ADDRESSES_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_MANY)
-    ])
+    await tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ADDRESSES_COLUMN, ADDRESSES_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_MANY)
 
     personsStore = Backendless.Data.of(Person)
     addressesStore = Backendless.Data.of(Address)
@@ -107,7 +101,7 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.delete_relationPerson1.type).to.equal('DELETE_RELATION')
+          expect(uowResult.results.delete_relationPerson1.operationType).to.equal('DELETE_RELATION')
           expect(uowResult.results.delete_relationPerson1.result).to.equal(3)
 
           expect(operation.result).to.equal(3)
@@ -219,7 +213,7 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.delete_relationPerson1.type).to.equal('DELETE_RELATION')
+          expect(uowResult.results.delete_relationPerson1.operationType).to.equal('DELETE_RELATION')
           expect(uowResult.results.delete_relationPerson1.result).to.equal(3)
 
           expect(operation.result).to.equal(3)
@@ -324,7 +318,7 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.delete_relationPerson1.type).to.equal('DELETE_RELATION')
+          expect(uowResult.results.delete_relationPerson1.operationType).to.equal('DELETE_RELATION')
           expect(uowResult.results.delete_relationPerson1.result).to.equal(3)
 
           expect(operation.result).to.equal(3)
@@ -432,7 +426,7 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.delete_relationPerson1.type).to.equal('DELETE_RELATION')
+          expect(uowResult.results.delete_relationPerson1.operationType).to.equal('DELETE_RELATION')
           expect(uowResult.results.delete_relationPerson1.result).to.equal(3)
 
           expect(operation.result).to.equal(3)
@@ -537,7 +531,7 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.delete_relationPerson1.type).to.equal('DELETE_RELATION')
+          expect(uowResult.results.delete_relationPerson1.operationType).to.equal('DELETE_RELATION')
           expect(uowResult.results.delete_relationPerson1.result).to.equal(3)
 
           expect(operation.result).to.equal(3)

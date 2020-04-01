@@ -52,7 +52,7 @@ describe('Transactions - Delete Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.deletePerson1.type).to.equal('DELETE')
+    expect(uowResult.results.deletePerson1.operationType).to.equal('DELETE')
     expect(uowResult.results.deletePerson1.result).to.be.a('number')
 
     const query = Backendless.Data.QueryBuilder
@@ -75,7 +75,7 @@ describe('Transactions - Delete Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.deletePerson1.type).to.equal('DELETE')
+    expect(uowResult.results.deletePerson1.operationType).to.equal('DELETE')
     expect(uowResult.results.deletePerson1.result).to.be.a('number')
 
     const query = Backendless.Data.QueryBuilder

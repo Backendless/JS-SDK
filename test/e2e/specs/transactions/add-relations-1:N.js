@@ -42,21 +42,6 @@ describe('Transactions - Add 1:N Relations Operations', function() {
   before(async function() {
     tablesAPI = this.tablesAPI
 
-    await Promise.all([
-      tablesAPI.createTable(PERSONS_TABLE_NAME),
-      tablesAPI.createTable(ADDRESSES_TABLE_NAME),
-    ])
-
-    await Promise.all([
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT),
-      tablesAPI.createColumn(ADDRESSES_TABLE_NAME, 'address', tablesAPI.DataTypes.STRING),
-    ])
-
-    await Promise.all([
-      tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ADDRESSES_COLUMN, ADDRESSES_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_MANY)
-    ])
-
     personsStore = Backendless.Data.of(Person)
     addressesStore = Backendless.Data.of(Address)
 
@@ -73,6 +58,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
       addressesStore.save({ address: 'initial-4' }),
       addressesStore.save({ address: 'initial-5' }),
     ])
+
+    await tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ADDRESSES_COLUMN, ADDRESSES_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_MANY)
   })
 
   beforeEach(function() {
@@ -112,7 +99,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)
@@ -284,7 +271,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)
@@ -453,7 +440,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)
@@ -626,7 +613,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)
@@ -791,7 +778,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)
@@ -968,7 +955,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)
@@ -1129,7 +1116,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)
@@ -1288,7 +1275,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.add_relationPerson1.type).to.equal('ADD_RELATION')
+          expect(uowResult.results.add_relationPerson1.operationType).to.equal('ADD_RELATION')
           expect(uowResult.results.add_relationPerson1.result).to.equal(2)
 
           expect(setRelationOp.result).to.equal(2)

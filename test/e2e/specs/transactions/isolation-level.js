@@ -32,11 +32,9 @@ describe('Isolation Levels', function() {
       tablesAPI.createTable(PERSONS_TABLE_NAME),
     ])
 
-    await Promise.all([
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'tag', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT),
-    ])
+    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'tag', tablesAPI.DataTypes.STRING)
+    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING)
+    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT)
 
     personsStore = Backendless.Data.of(Person)
   })

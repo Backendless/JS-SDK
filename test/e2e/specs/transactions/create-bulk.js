@@ -54,7 +54,7 @@ describe('Transactions - Create-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.create_bulkPerson1.type).to.equal('CREATE_BULK')
+    expect(uowResult.results.create_bulkPerson1.operationType).to.equal('CREATE_BULK')
     expect(uowResult.results.create_bulkPerson1.result).to.be.an('array')
     expect(uowResult.results.create_bulkPerson1.result).to.have.length(5)
 
@@ -93,7 +93,7 @@ describe('Transactions - Create-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.create_bulkPerson1.type).to.equal('CREATE_BULK')
+    expect(uowResult.results.create_bulkPerson1.operationType).to.equal('CREATE_BULK')
     expect(uowResult.results.create_bulkPerson1.result).to.be.an('array')
     expect(uowResult.results.create_bulkPerson1.result).to.have.length(5)
 
@@ -150,13 +150,13 @@ describe('Transactions - Create-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.create_bulkPerson1.type).to.equal('CREATE_BULK')
+    expect(uowResult.results.create_bulkPerson1.operationType).to.equal('CREATE_BULK')
     expect(uowResult.results.create_bulkPerson1.result).to.be.an('array')
     expect(uowResult.results.create_bulkPerson1.result).to.have.length(5)
-    expect(uowResult.results.create_bulkPerson2.type).to.equal('CREATE_BULK')
+    expect(uowResult.results.create_bulkPerson2.operationType).to.equal('CREATE_BULK')
     expect(uowResult.results.create_bulkPerson2.result).to.be.an('array')
     expect(uowResult.results.create_bulkPerson2.result).to.have.length(5)
-    expect(uowResult.results.create_bulkPerson3.type).to.equal('CREATE_BULK')
+    expect(uowResult.results.create_bulkPerson3.operationType).to.equal('CREATE_BULK')
     expect(uowResult.results.create_bulkPerson3.result).to.be.an('array')
     expect(uowResult.results.create_bulkPerson3.result).to.have.length(5)
 

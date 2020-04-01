@@ -43,22 +43,6 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
   before(async function() {
     tablesAPI = this.tablesAPI
 
-    await Promise.all([
-      tablesAPI.createTable(PERSONS_TABLE_NAME),
-      tablesAPI.createTable(ORDERS_TABLE_NAME),
-    ])
-
-    await Promise.all([
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT),
-      tablesAPI.createColumn(ORDERS_TABLE_NAME, 'price', tablesAPI.DataTypes.INT),
-      tablesAPI.createColumn(ORDERS_TABLE_NAME, 'label', tablesAPI.DataTypes.STRING),
-    ])
-
-    await Promise.all([
-      tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ORDER_COLUMN, ORDERS_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_ONE),
-    ])
-
     personsStore = Backendless.Data.of(Person)
     ordersStore = Backendless.Data.of(Order)
 
@@ -75,6 +59,8 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
       ordersStore.save({ label: 'initial-4', price: 130 }),
       ordersStore.save({ label: 'initial-5', price: 135 }),
     ])
+
+    await tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ORDER_COLUMN, ORDERS_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_ONE)
   })
 
   beforeEach(function() {
@@ -94,7 +80,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+    expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
     expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
     expect(setRelationOp.result).to.equal(1)
@@ -135,7 +121,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+    expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
     expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
     expect(setRelationOp.result).to.equal(1)
@@ -176,7 +162,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+    expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
     expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
     expect(setRelationOp.result).to.equal(1)
@@ -217,7 +203,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+    expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
     expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
     expect(setRelationOp.result).to.equal(1)
@@ -257,7 +243,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+    expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
     expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
     expect(setRelationOp.result).to.equal(1)
@@ -299,7 +285,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+    expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
     expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
     expect(setRelationOp.result).to.equal(1)
@@ -345,7 +331,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)
@@ -545,7 +531,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)
@@ -745,7 +731,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)
@@ -948,7 +934,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)
@@ -1143,7 +1129,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)
@@ -1337,7 +1323,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)
@@ -1532,7 +1518,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)
@@ -1729,7 +1715,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
           expect(uowResult.error).to.equal(null)
           expect(uowResult.success).to.equal(true)
 
-          expect(uowResult.results.set_relationPerson1.type).to.equal('SET_RELATION')
+          expect(uowResult.results.set_relationPerson1.operationType).to.equal('SET_RELATION')
           expect(uowResult.results.set_relationPerson1.result).to.equal(1)
 
           expect(setRelationOp.result).to.equal(1)

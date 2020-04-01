@@ -56,7 +56,7 @@ describe('Transactions - Delete-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.delete_bulkPerson1.type).to.equal('DELETE_BULK')
+    expect(uowResult.results.delete_bulkPerson1.operationType).to.equal('DELETE_BULK')
     expect(uowResult.results.delete_bulkPerson1.result).to.equal(3)
 
     const query = Backendless.Data.QueryBuilder
@@ -92,7 +92,7 @@ describe('Transactions - Delete-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.delete_bulkPerson1.type).to.equal('DELETE_BULK')
+    expect(uowResult.results.delete_bulkPerson1.operationType).to.equal('DELETE_BULK')
     expect(uowResult.results.delete_bulkPerson1.result).to.equal(3)
 
     const query = Backendless.Data.QueryBuilder
@@ -128,7 +128,7 @@ describe('Transactions - Delete-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.delete_bulkPerson1.type).to.equal('DELETE_BULK')
+    expect(uowResult.results.delete_bulkPerson1.operationType).to.equal('DELETE_BULK')
     expect(uowResult.results.delete_bulkPerson1.result).to.equal(3)
 
     const query = Backendless.Data.QueryBuilder
@@ -160,7 +160,7 @@ describe('Transactions - Delete-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.delete_bulkPerson1.type).to.equal('DELETE_BULK')
+    expect(uowResult.results.delete_bulkPerson1.operationType).to.equal('DELETE_BULK')
     expect(uowResult.results.delete_bulkPerson1.result).to.equal(3)
 
     const query = Backendless.Data.QueryBuilder
