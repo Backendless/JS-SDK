@@ -278,8 +278,8 @@ describe('Transactions - Create-Bulk Operation', function() {
       expect(uowResult.success).to.equal(false)
 
       expect(uowResult.error.message).to.equal(
-        'Column \'missedColumn\' in table \'Person\' not exists. ' +
-        'Transaction accepts only DML operations (Data Manipulation Language)'
+        'Column \'missedColumn\' in table \'Person\' does not exists. ' +
+        'All tables and columns must be present in the database before a transaction is executed.'
       )
 
       expect(uowResult.error.operation.operationType).to.equal('CREATE_BULK')

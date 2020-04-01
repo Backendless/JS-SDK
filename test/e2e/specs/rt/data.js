@@ -257,7 +257,7 @@ describe('RT - Data', function() {
       expect(rtHandler.results[0].lastName).to.be.equal(undefined)
       expect(rtHandler.results[0].age).to.be.equal(undefined)
 
-      expect(rtHandler.results[1].objectId).to.be.equal(restObject2.objectId)
+      expect(rtHandler.results[1].objectId).to.be.equal(restObject4.objectId)
       expect(rtHandler.results[0].firstName).to.be.equal(undefined)
       expect(rtHandler.results[0].lastName).to.be.equal(undefined)
       expect(rtHandler.results[0].age).to.be.equal(undefined)

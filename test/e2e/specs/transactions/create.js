@@ -161,8 +161,8 @@ describe('Transactions - Create Operation', function() {
       expect(uowResult.error.operation.payload).to.eql(obj)
 
       expect(uowResult.error.message).to.equal(
-        'Column \'missedColumn\' in table \'Person\' not exists. ' +
-        'Transaction accepts only DML operations (Data Manipulation Language)'
+        'Column \'missedColumn\' in table \'Person\' does not exists. ' +
+        'All tables and columns must be present in the database before a transaction is executed.'
       )
 
       const query = Backendless.Data.QueryBuilder
@@ -200,8 +200,8 @@ describe('Transactions - Create Operation', function() {
       expect(uowResult.success).to.equal(false)
       expect(uowResult.error.operation.opResultId).to.equal(`createPerson${limit}`)
       expect(uowResult.error.message).to.equal(
-        'Column \'missedColumn\' in table \'Person\' not exists. ' +
-        'Transaction accepts only DML operations (Data Manipulation Language)'
+        'Column \'missedColumn\' in table \'Person\' does not exists. ' +
+        'All tables and columns must be present in the database before a transaction is executed.'
       )
     })
 
