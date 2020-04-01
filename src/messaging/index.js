@@ -23,19 +23,6 @@ export default class Messaging {
 
     /** @deprecated */
     this.SubscriptionOptions = SubscriptionOptions
-
-    Utils.enableAsyncHandlers(this, [
-      'publish',
-      'pushWithTemplate',
-      'sendEmail',
-      'sendEmailFromTemplate',
-      'cancel',
-      'registerDevice',
-      'getRegistrations',
-      'unregisterDevice',
-      'getMessageStatus',
-      'getPushTemplates',
-    ])
   }
 
   subscribe(channelName) {

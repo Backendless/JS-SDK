@@ -12,27 +12,6 @@ export default class Users {
 
     this.roles = new UsersRoles(this)
     this.social = new UsersSocial(this)
-
-    Utils.enableAsyncHandlers(this, [
-      'register',
-      'login',
-      'loginAsGuest',
-      'loginWithFacebook',
-      'loginWithFacebookSdk',
-      'loginWithGooglePlus',
-      'loginWithGooglePlusSdk',
-      'loginWithTwitter',
-      'logout',
-      'getCurrentUser',
-      'isValidLogin',
-      'restorePassword',
-      'resendEmailConfirmation',
-      'update',
-      'getUserRoles',
-      'assignRole',
-      'unassignRole',
-      'describeUserClass',
-    ])
   }
 
   async register(user) {

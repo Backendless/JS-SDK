@@ -1,22 +1,8 @@
-import Utils from '../utils'
-
 import Counter from './counter'
 
 export default class Counters {
   constructor(app) {
     this.app = app
-
-    Utils.enableAsyncHandlers(this, [
-      'incrementAndGet',
-      'getAndIncrement',
-      'decrementAndGet',
-      'getAndDecrement',
-      'reset',
-      'get',
-      'addAndGet',
-      'getAndAdd',
-      'compareAndSet',
-    ])
   }
 
   of(name) {

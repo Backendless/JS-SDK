@@ -5,8 +5,6 @@ import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 export default class Events {
   constructor(app) {
     this.app = app
-
-    Utils.enableAsyncHandlers(this, ['dispatch'])
   }
 
   async dispatch(eventName, eventArgs, executionType) {

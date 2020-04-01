@@ -24,27 +24,6 @@ export default class Geo {
     this.Cluster = GeoCluster
     this.Point = GeoPoint
     this.Query = GeoQuery
-
-    Utils.enableAsyncHandlers(this, [
-      'addPoint',
-      'savePoint',
-      'find',
-      'loadMetadata',
-      'getClusterPoints',
-      'relativeFind',
-      'addCategory',
-      'getCategories',
-      'deleteCategory',
-      'deletePoint',
-      'getFencePoints',
-      'getGeopointCount',
-      'runOnEnterAction',
-      'runOnStayAction',
-      'runOnExitAction',
-      'startGeofenceMonitoringWithInAppCallback',
-      'startGeofenceMonitoringWithRemoteCallback',
-      'stopGeofenceMonitoring',
-    ])
   }
 
   /** @deprecated */

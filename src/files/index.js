@@ -12,19 +12,6 @@ export default class Files {
       DELETE: new FilePermission('DELETE', app),
       WRITE : new FilePermission('WRITE', app),
     }
-
-    Utils.enableAsyncHandlers(this, [
-      'saveFile',
-      'upload',
-      'listing',
-      'renameFile',
-      'moveFile',
-      'copyFile',
-      'remove',
-      'exists',
-      'removeDirectory',
-      'getFileCount',
-    ])
   }
 
   async saveFile(filePath, fileName, fileContent, overwrite) {

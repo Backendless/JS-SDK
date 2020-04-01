@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 const PermissionTypes = {
   GRANT: 'GRANT',
   DENY : 'DENY',
@@ -31,21 +29,6 @@ export default class FilePermission {
     this.denyRole = backwardCompatibility(this, 'denyForRole', 'denyRole')
     this.grant = backwardCompatibility(this, 'grantForAllUsers', 'grant')
     this.deny = backwardCompatibility(this, 'denyForAllUsers', 'deny')
-
-    Utils.enableAsyncHandlers(this, [
-      'grantForUser',
-      'denyForUser',
-      'grantForRole',
-      'denyForRole',
-      'grantForAllUsers',
-      'denyForAllUsers',
-      'grantUser',
-      'denyUser',
-      'grantRole',
-      'denyRole',
-      'grant',
-      'deny',
-    ])
   }
 
   grantForUser(userId, url) {

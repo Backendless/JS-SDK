@@ -26,24 +26,6 @@ export default class DataStore {
     }
 
     this.app = app
-
-    Utils.enableAsyncHandlers(this, [
-      'save',
-      'remove',
-      'find',
-      'findById',
-      'loadRelations',
-      'findFirst',
-      'findLast',
-      'getObjectCount',
-      'setRelation',
-      'setRelation',
-      'addRelation',
-      'deleteRelation',
-      'bulkCreate',
-      'bulkUpdate',
-      'bulkDelete',
-    ])
   }
 
   rt() {

@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 import Logger from './logger'
 
 export default class Logging {
@@ -8,10 +6,6 @@ export default class Logging {
     this.app = app
 
     this.reset()
-
-    Utils.enableAsyncHandlers(this, [
-      'flush',
-    ])
   }
 
   reset() {

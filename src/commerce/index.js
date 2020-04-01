@@ -1,14 +1,6 @@
-import Utils from '../utils'
-
 export default class Commerce {
   constructor(app) {
     this.app = app
-
-    Utils.enableAsyncHandlers(this, [
-      'validatePlayPurchase',
-      'cancelPlaySubscription',
-      'getPlaySubscriptionStatus'
-    ])
   }
 
   async validatePlayPurchase(packageName, productId, token) {

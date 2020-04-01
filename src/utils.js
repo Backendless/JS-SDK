@@ -1,5 +1,3 @@
-import Async from './request/async'
-
 const Utils = {
   isObject(obj) {
     return obj === Object(obj)
@@ -106,29 +104,6 @@ const Utils = {
 
     return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
   },
-
-  enableAsyncHandlers(service, methods) {
-    //TODO: add warning
-    //TODO: add toggle to disable it
-    methods.forEach(methodName => {
-      const method = service[methodName]
-
-      service[methodName] = function(...args) {
-        const asyncHandler = (args[args.length - 1] instanceof Async)
-          ? args.pop()
-          : undefined
-
-        const result = method.apply(this, args)
-
-        if (asyncHandler) {
-          //TODO: add warning
-          result.then(asyncHandler.success, asyncHandler.fault)
-        }
-
-        return result
-      }
-    })
-  }
 }
 
 function isBrowser() {

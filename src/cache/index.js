@@ -5,15 +5,6 @@ export default class Cache {
     this.app = app
 
     this.parsers = {}
-
-    Utils.enableAsyncHandlers(this, [
-      'put',
-      'get',
-      'remove',
-      'contains',
-      'expireIn',
-      'expireAt'
-    ])
   }
 
   setObjectFactory(objectName, factoryMethod) {

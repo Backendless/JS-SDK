@@ -38,11 +38,6 @@ export default class Data {
     this.WKTParser = WKTParser
 
     this.SpatialReferenceSystem = SpatialReferenceSystem
-
-    Utils.enableAsyncHandlers(this, [
-      'describe',
-      'save',
-    ])
   }
 
   of(model) {
