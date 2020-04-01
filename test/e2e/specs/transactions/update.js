@@ -33,15 +33,11 @@ describe('Transactions - Update Operation', function() {
   before(async function() {
     tablesAPI = this.tablesAPI
 
-    await tablesAPI.createTable(PERSONS_TABLE_NAME)
-    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING)
-    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT)
-
     personsStore = Backendless.Data.of(PERSONS_TABLE_NAME)
 
-    savedObject1 = await personsStore.save({ name: `p-${Utils.uid()}` })
-    savedObject2 = await personsStore.save({ name: `p-${Utils.uid()}` })
-    savedObject3 = await personsStore.save({ name: `p-${Utils.uid()}` })
+    savedObject1 = await personsStore.save({ name: `p-${Utils.uid()}`, age: 123 })
+    savedObject2 = await personsStore.save({ name: `p-${Utils.uid()}`, age: 123 })
+    savedObject3 = await personsStore.save({ name: `p-${Utils.uid()}`, age: 123 })
   })
 
   beforeEach(function() {
@@ -58,7 +54,7 @@ describe('Transactions - Update Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.updatePerson1.type).to.equal('UPDATE')
+    expect(uowResult.results.updatePerson1.operationType).to.equal('UPDATE')
     expect(uowResult.results.updatePerson1.result.___class).to.equal(PERSONS_TABLE_NAME)
     expect(uowResult.results.updatePerson1.result.objectId).to.equal(savedObject1.objectId)
     expect(uowResult.results.updatePerson1.result.created).to.be.a('number')
@@ -86,7 +82,7 @@ describe('Transactions - Update Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.updatePerson1.type).to.equal('UPDATE')
+    expect(uowResult.results.updatePerson1.operationType).to.equal('UPDATE')
     expect(uowResult.results.updatePerson1.result.___class).to.equal(PERSONS_TABLE_NAME)
     expect(uowResult.results.updatePerson1.result.objectId).to.equal(savedObject1.objectId)
     expect(uowResult.results.updatePerson1.result.created).to.be.a('number')
@@ -185,7 +181,7 @@ describe('Transactions - Update Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.createPerson1.type).to.equal('CREATE')
+    expect(uowResult.results.createPerson1.operationType).to.equal('CREATE')
     expect(uowResult.results.createPerson1.result.___class).to.equal(PERSONS_TABLE_NAME)
     expect(uowResult.results.createPerson1.result.objectId).to.be.a('string')
     expect(uowResult.results.createPerson1.result.created).to.be.a('number')
@@ -194,7 +190,7 @@ describe('Transactions - Update Operation', function() {
     expect(uowResult.results.createPerson1.result.ownerId).to.equal(null)
     expect(uowResult.results.createPerson1.result.age).to.equal(777)
 
-    expect(uowResult.results.updatePerson1.type).to.equal('UPDATE')
+    expect(uowResult.results.updatePerson1.operationType).to.equal('UPDATE')
     expect(uowResult.results.updatePerson1.result.___class).to.equal(PERSONS_TABLE_NAME)
     expect(uowResult.results.updatePerson1.result.objectId).to.be.a('string')
     expect(uowResult.results.updatePerson1.result.created).to.be.a('number')

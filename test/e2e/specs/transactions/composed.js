@@ -4,7 +4,6 @@ import sandbox from '../../helpers/sandbox'
 const Backendless = sandbox.Backendless
 
 const PERSONS_TABLE_NAME = 'Person'
-const ADDRESSES_TABLE_NAME = 'Address'
 const ORDERS_TABLE_NAME = 'Order'
 const MOVIES_TABLE_NAME = 'Movie'
 
@@ -51,20 +50,14 @@ describe('Transactions - Composed Operations', function() {
   before(async function() {
     tablesAPI = this.tablesAPI
 
-    await Promise.all([
-      tablesAPI.createTable(PERSONS_TABLE_NAME),
-      tablesAPI.createTable(ADDRESSES_TABLE_NAME),
-      tablesAPI.createTable(ORDERS_TABLE_NAME),
-      tablesAPI.createTable(MOVIES_TABLE_NAME),
-    ])
+    await tablesAPI.createTable(PERSONS_TABLE_NAME)
+    await tablesAPI.createTable(ORDERS_TABLE_NAME)
+    await tablesAPI.createTable(MOVIES_TABLE_NAME)
 
-    await Promise.all([
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT),
-      tablesAPI.createColumn(ADDRESSES_TABLE_NAME, 'address', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(ORDERS_TABLE_NAME, 'price', tablesAPI.DataTypes.INT),
-      tablesAPI.createColumn(MOVIES_TABLE_NAME, 'title', tablesAPI.DataTypes.STRING),
-    ])
+    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING)
+    await tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT)
+    await tablesAPI.createColumn(ORDERS_TABLE_NAME, 'price', tablesAPI.DataTypes.INT)
+    await tablesAPI.createColumn(MOVIES_TABLE_NAME, 'title', tablesAPI.DataTypes.STRING)
 
     personsStore = Backendless.Data.of(Person)
     ordersStore = Backendless.Data.of(Order)
@@ -108,7 +101,7 @@ describe('Transactions - Composed Operations', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.createPerson1.type).to.equal('CREATE')
+    expect(uowResult.results.createPerson1.operationType).to.equal('CREATE')
     expect(uowResult.results.createPerson1.result).to.have.property('name', 'Bob')
     expect(uowResult.results.createPerson1.result).to.have.property('age', 22)
     expect(uowResult.results.createPerson1.result).to.have.property('___class', 'Person')
@@ -117,7 +110,7 @@ describe('Transactions - Composed Operations', function() {
     expect(uowResult.results.createPerson1.result).to.have.property('updated', null)
     expect(uowResult.results.createPerson1.result).to.have.property('ownerId', null)
 
-    expect(uowResult.results.createPerson2.type).to.equal('CREATE')
+    expect(uowResult.results.createPerson2.operationType).to.equal('CREATE')
     expect(uowResult.results.createPerson2.result).to.have.property('name', 'Jack')
     expect(uowResult.results.createPerson2.result).to.have.property('age', 35)
     expect(uowResult.results.createPerson2.result).to.have.property('___class', 'Person')
@@ -126,11 +119,11 @@ describe('Transactions - Composed Operations', function() {
     expect(uowResult.results.createPerson2.result).to.have.property('updated', null)
     expect(uowResult.results.createPerson2.result).to.have.property('ownerId', null)
 
-    expect(uowResult.results.create_bulkPerson1.type).to.equal('CREATE_BULK')
+    expect(uowResult.results.create_bulkPerson1.operationType).to.equal('CREATE_BULK')
     expect(uowResult.results.create_bulkPerson1.result).to.be.an('array')
     expect(uowResult.results.create_bulkPerson1.result).to.have.length(3)
 
-    expect(uowResult.results.updateOrder1.type).to.equal('UPDATE')
+    expect(uowResult.results.updateOrder1.operationType).to.equal('UPDATE')
     expect(uowResult.results.updateOrder1.result).to.have.property('price', 200)
     expect(uowResult.results.updateOrder1.result).to.have.property('___class', 'Order')
     expect(uowResult.results.updateOrder1.result).to.have.property('created').to.be.a('number')
@@ -138,7 +131,7 @@ describe('Transactions - Composed Operations', function() {
     expect(uowResult.results.updateOrder1.result).to.have.property('objectId', order1.objectId)
     expect(uowResult.results.updateOrder1.result).to.have.property('ownerId', null)
 
-    expect(uowResult.results.updateOrder2.type).to.equal('UPDATE')
+    expect(uowResult.results.updateOrder2.operationType).to.equal('UPDATE')
     expect(uowResult.results.updateOrder2.result).to.have.property('price', 700)
     expect(uowResult.results.updateOrder2.result).to.have.property('___class', 'Order')
     expect(uowResult.results.updateOrder2.result).to.have.property('created').to.be.a('number')
@@ -146,10 +139,10 @@ describe('Transactions - Composed Operations', function() {
     expect(uowResult.results.updateOrder2.result).to.have.property('objectId', order2.objectId)
     expect(uowResult.results.updateOrder2.result).to.have.property('ownerId', null)
 
-    expect(uowResult.results.deleteMovie1.type).to.equal('DELETE')
+    expect(uowResult.results.deleteMovie1.operationType).to.equal('DELETE')
     expect(uowResult.results.deleteMovie1.result).to.be.a('number')
 
-    expect(uowResult.results.deleteMovie2.type).to.equal('DELETE')
+    expect(uowResult.results.deleteMovie2.operationType).to.equal('DELETE')
     expect(uowResult.results.deleteMovie2.result).to.be.a('number')
   })
 

@@ -48,7 +48,7 @@ describe('Transactions - Create Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.createPerson1.type).to.equal('CREATE')
+    expect(uowResult.results.createPerson1.operationType).to.equal('CREATE')
     expect(uowResult.results.createPerson1.result.objectId).to.be.a('string')
     expect(uowResult.results.createPerson1.result.created).to.be.a('number')
     expect(uowResult.results.createPerson1.result.updated).to.equal(null)
@@ -76,7 +76,7 @@ describe('Transactions - Create Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.createPerson1.type).to.equal('CREATE')
+    expect(uowResult.results.createPerson1.operationType).to.equal('CREATE')
     expect(uowResult.results.createPerson1.result.objectId).to.be.a('string')
     expect(uowResult.results.createPerson1.result.created).to.be.a('number')
     expect(uowResult.results.createPerson1.result.updated).to.equal(null)

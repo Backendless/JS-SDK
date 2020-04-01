@@ -56,7 +56,7 @@ describe('Transactions - Update-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.update_bulkPerson1.type).to.equal('UPDATE_BULK')
+    expect(uowResult.results.update_bulkPerson1.operationType).to.equal('UPDATE_BULK')
     expect(uowResult.results.update_bulkPerson1.result).to.equal(3)
 
     const query = Backendless.Data.QueryBuilder
@@ -91,7 +91,7 @@ describe('Transactions - Update-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.update_bulkPerson1.type).to.equal('UPDATE_BULK')
+    expect(uowResult.results.update_bulkPerson1.operationType).to.equal('UPDATE_BULK')
     expect(uowResult.results.update_bulkPerson1.result).to.equal(3)
 
     const query = Backendless.Data.QueryBuilder
@@ -126,7 +126,7 @@ describe('Transactions - Update-Bulk Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.update_bulkPerson1.type).to.equal('UPDATE_BULK')
+    expect(uowResult.results.update_bulkPerson1.operationType).to.equal('UPDATE_BULK')
     expect(uowResult.results.update_bulkPerson1.result).to.equal(5)
 
     const query = Backendless.Data.QueryBuilder

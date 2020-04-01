@@ -17,8 +17,6 @@ class Person {
 
 describe('Transactions - Find Operation', function() {
 
-  let tablesAPI
-
   let personsStore
 
   let uow
@@ -26,17 +24,6 @@ describe('Transactions - Find Operation', function() {
   sandbox.forSuite()
 
   before(async function() {
-    tablesAPI = this.tablesAPI
-
-    await Promise.all([
-      tablesAPI.createTable(PERSONS_TABLE_NAME),
-    ])
-
-    await Promise.all([
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT),
-    ])
-
     personsStore = Backendless.Data.of(Person)
 
     await Promise.all([
@@ -63,7 +50,7 @@ describe('Transactions - Find Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.findPerson1.type).to.equal('FIND')
+    expect(uowResult.results.findPerson1.operationType).to.equal('FIND')
     expect(uowResult.results.findPerson1.result).to.have.length(2)
 
     uowResult.results.findPerson1.result.forEach(result => {
@@ -88,7 +75,7 @@ describe('Transactions - Find Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.findPerson1.type).to.equal('FIND')
+    expect(uowResult.results.findPerson1.operationType).to.equal('FIND')
     expect(uowResult.results.findPerson1.result).to.have.length(5)
 
     const personAges = uowResult.results.findPerson1.result.map(o => o.age)
@@ -109,7 +96,7 @@ describe('Transactions - Find Operation', function() {
     expect(uowResult.error).to.equal(null)
     expect(uowResult.success).to.equal(true)
 
-    expect(uowResult.results.findPerson1.type).to.equal('FIND')
+    expect(uowResult.results.findPerson1.operationType).to.equal('FIND')
 
     expect(uowResult.results.findPerson1.result).to.have.length(1)
     expect(uowResult.results.findPerson1.result[0]).to.have.property('___class', 'Person')

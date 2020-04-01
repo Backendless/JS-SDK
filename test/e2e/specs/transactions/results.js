@@ -29,17 +29,11 @@ describe('Transactions - Results', function() {
   before(async function() {
     tablesAPI = this.tablesAPI
 
-    await Promise.all([
-      tablesAPI.createTable(PERSONS_TABLE_NAME),
-    ])
-
-    await Promise.all([
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'tag', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'name', tablesAPI.DataTypes.STRING),
-      tablesAPI.createColumn(PERSONS_TABLE_NAME, 'age', tablesAPI.DataTypes.INT),
-    ])
-
     personsStore = Backendless.Data.of(Person)
+
+    const fakePerson = await personsStore.save({ tag: 'fake', name: 'Bob', age: 123 })
+
+    await personsStore.remove(fakePerson)
   })
 
   beforeEach(function() {
@@ -108,7 +102,7 @@ describe('Transactions - Results', function() {
 
       const result = await uow.execute()
 
-      expect(result.results[customOpResultId].type).to.equal('CREATE')
+      expect(result.results[customOpResultId].operationType).to.equal('CREATE')
       expect(result.results[customOpResultId].result.___class).to.equal('Person')
       expect(result.results[customOpResultId].result.age).to.equal(123)
       expect(result.results[customOpResultId].result.name).to.equal('Bob-1')
