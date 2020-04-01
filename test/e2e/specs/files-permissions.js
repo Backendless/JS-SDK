@@ -13,7 +13,6 @@ describe('Files - Permissions', function() {
   let user
 
   before(async function() {
-    Backendless.debugMode = true
     user = await Backendless.Data.of('Users').save({
       email   : `john-${Date.now()}-lennon@lennon.co`,
       name    : 'John Lennon',
