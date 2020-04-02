@@ -71,11 +71,11 @@ export default class Channel extends RTScopeConnector {
     }
 
     if (selector && typeof selector !== 'string') {
-      throw new Error('"selector" must be string')
+      throw new Error('Selector must be a string.')
     }
 
-    if (typeof callback !== 'function') {
-      throw new Error('"callback" must be function')
+    if (typeof callback !== 'string') {
+      throw new Error('Callback must be a string.')
     }
 
     const matcher = subscription => {
@@ -93,7 +93,7 @@ export default class Channel extends RTScopeConnector {
 
   removeMessageListeners(selector) {
     if (typeof selector !== 'string') {
-      throw new Error('"selector" must be string')
+      throw new Error('Selector must be a string.')
     }
 
     const matcher = subscription => subscription.params.selector === selector
