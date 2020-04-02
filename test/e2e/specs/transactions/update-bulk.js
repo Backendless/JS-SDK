@@ -204,8 +204,8 @@ describe('Transactions - Update-Bulk Operation', function() {
       expect(uowResult.error.operation.payload).to.eql({ changes, conditional })
 
       expect(uowResult.error.message).to.equal(
-        'Column \'missedColumn\' in table \'Person\' not exists. ' +
-        'Transaction accepts only DML operations (Data Manipulation Language)'
+        'Column \'missedColumn\' in table \'Person\' does not exists. ' +
+        'All tables and columns must be present in the database before a transaction is executed.'
       )
 
       const query = Backendless.Data.QueryBuilder

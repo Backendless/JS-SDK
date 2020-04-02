@@ -77,8 +77,8 @@ describe('Transactions - Results', function() {
       expect(error).to.equal(opResult.getError())
 
       expect(error.message).to.equal(
-        'Column \'unknownColumn\' in table \'Person\' not exists. ' +
-        'Transaction accepts only DML operations (Data Manipulation Language)'
+        'Column \'unknownColumn\' in table \'Person\' does not exists. ' +
+        'All tables and columns must be present in the database before a transaction is executed.'
       )
 
       expect(error.operation.operationType).to.equal('CREATE')
