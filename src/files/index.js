@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 import FilesUtils from './utils'
 import FilePermission from './persmission'
 
@@ -15,220 +13,169 @@ export default class Files {
   }
 
   async saveFile(filePath, fileName, fileContent, overwrite) {
-
-    const toBase64 = content => {
-      if (typeof Blob !== 'undefined') {
-        if (!(content instanceof Blob)) {
-          content = new Blob([content], { type: '' })
-        }
-
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader()
-          reader.onerror = error => reject(error)
-          reader.onload = event => resolve(event.target.result.split(';base64,')[1])
-          reader.readAsDataURL(content)
-        })
-      }
-
-      if (typeof Buffer !== 'undefined') {
-        return Promise.resolve(Buffer.from(content).toString('base64'))
-      }
-
-      return Promise.resolve(content)
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('File "path" must be provided and must be a string.')
     }
 
-    const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
-
-    if (!filePath || !Utils.isString(filePath)) {
-      throw new Error('Missing value for the "path" argument. The argument must contain a string value')
+    if (!fileName || typeof fileName !== 'string') {
+      throw new Error('File Name must be provided and must be a string.')
     }
 
-    if (!fileName || !Utils.isString(fileName)) {
-      throw new Error('Missing value for the "fileName" argument. The argument must contain a string value')
+    fileContent = await FilesUtils.toBase64(fileContent)
+
+    const query = {}
+
+    if (typeof overwrite === 'boolean') {
+      query.overwrite = overwrite
     }
 
-    return toBase64(fileContent)
-      .then(fileContent => {
-        const query = {}
-
-        if (Utils.isBoolean(overwrite)) {
-          query.overwrite = overwrite
-        }
-
-        return this.app.request.put({
-          url    : `${this.app.urls.fileBinaryPath(filePath)}/${sanitizeFileName(fileName)}`,
-          query  : query,
-          headers: { 'Content-Type': 'text/plain' },
-          data   : fileContent,
-        })
-      })
+    return this.app.request.put({
+      url    : `${this.app.urls.fileBinaryPath(filePath)}/${FilesUtils.sanitizeFileName(fileName)}`,
+      headers: { 'Content-Type': 'text/plain' },
+      query  : query,
+      data   : fileContent,
+    })
   }
 
   async upload(file, filePath, overwrite) {
-
-    const getFileName = file => {
-      if (file.name) {
-        return file.name
-      }
-
-      if (file.path) {
-        const path = file.path.split('/')
-        return path[path.length - 1] //last item of the file path
-      }
-    }
-
-    const fileName = getFileName(file)
+    const fileName = FilesUtils.getFileName(file)
 
     if (!fileName) {
       throw new Error('Wrong type of the file source object. Can not get file name')
     }
 
-    const options = {
-      overwrite: overwrite,
-      path     : filePath,
-      fileName : fileName,
-      file     : file,
-    }
-
-    const sanitizeFileName = fileName => encodeURIComponent(fileName).replace(/'/g, '%27').replace(/"/g, '%22')
-
-    const url = this.app.urls.filePath(options.path) + '/' + sanitizeFileName(options.fileName)
     const query = {}
 
-    if (Utils.isBoolean(options.overwrite)) {
-      query.overwrite = options.overwrite
+    if (typeof overwrite === 'boolean') {
+      query.overwrite = overwrite
     }
 
     return this.app.request.post({
-      url  : url,
+      url  : `${this.app.urls.filePath(filePath)}/${FilesUtils.sanitizeFileName(fileName)}`,
       query: query,
-      form : { file: options.file },
+      form : {
+        file
+      },
     })
   }
 
   async listing(path, pattern, recursively, pagesize, offset) {
     const query = {}
 
-    if (Utils.isString(pattern)) {
+    if (typeof pattern === 'string') {
       query.pattern = pattern
     }
 
-    if (Utils.isBoolean(recursively)) {
+    if (typeof recursively === 'boolean') {
       query.sub = recursively
     }
 
-    if (Utils.isNumber(pagesize)) {
+    if (typeof pagesize === 'number' && pagesize >= 0) {
       query.pagesize = pagesize
     }
 
-    if (Utils.isNumber(offset)) {
+    if (typeof offset === 'number' && offset >= 0) {
       query.offset = offset
     }
 
     return this.app.request.get({
-      url  : this.app.urls.filePath(path),
-      query: query,
+      url: this.app.urls.filePath(path),
+      query,
     })
   }
 
   async renameFile(oldPathName, newName) {
-    if (!oldPathName || !Utils.isString(oldPathName)) {
-      throw new Error('Old File "path" must not be empty and must be String')
+    if (!oldPathName || typeof oldPathName !== 'string') {
+      throw new Error('Old File "path" must be provided and must be a string.')
     }
 
-    if (!newName || !Utils.isString(newName)) {
-      throw new Error('New File "path" must not be empty and must be String')
-    }
-
-    const parameters = {
-      oldPathName: FilesUtils.ensureSlashInPath(oldPathName),
-      newName    : newName
+    if (!newName || typeof newName !== 'string') {
+      throw new Error('New File "path" must be provided and must be a string.')
     }
 
     return this.app.request.put({
       url : this.app.urls.fileRename(),
-      data: parameters,
+      data: {
+        oldPathName: FilesUtils.ensureSlashInPath(oldPathName),
+        newName    : newName
+      },
     })
   }
 
   async moveFile(sourcePath, targetPath) {
-    const parameters = {
-      sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
-      targetPath: FilesUtils.ensureSlashInPath(targetPath)
-    }
-
     return this.app.request.put({
       url : this.app.urls.fileMove(),
-      data: parameters,
+      data: {
+        sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
+        targetPath: FilesUtils.ensureSlashInPath(targetPath)
+      },
     })
   }
 
   async copyFile(sourcePath, targetPath) {
-    const parameters = {
-      sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
-      targetPath: FilesUtils.ensureSlashInPath(targetPath)
-    }
-
     return this.app.request.put({
       url : this.app.urls.fileCopy(),
-      data: parameters,
+      data: {
+        sourcePath: FilesUtils.ensureSlashInPath(sourcePath),
+        targetPath: FilesUtils.ensureSlashInPath(targetPath)
+      },
     })
   }
 
-  async remove(path) {
-    if (!path || !Utils.isString(path)) {
-      throw new Error('File "path" must not be empty and must be String')
+  async remove(filePath) {
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('File "path" must be provided and must be a string.')
     }
 
-    if (!path.startsWith('http://') && !path.startsWith('https://')) {
-      path = this.app.urls.filePath(path)
+    if (!filePath.startsWith('http://') && !filePath.startsWith('https://')) {
+      filePath = this.app.urls.filePath(filePath)
     }
 
     return this.app.request.delete({
-      url: path,
+      url: filePath,
     })
   }
 
-  async exists(path) {
-    if (!path || !Utils.isString(path)) {
-      throw new Error('Files "path" must not be empty and must be String')
+  async exists(filePath) {
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('File "path" must be provided and must be a string.')
     }
 
     return this.app.request.get({
-      url  : this.app.urls.filePath(path),
-      query: { action: 'exists' },
+      url  : this.app.urls.filePath(filePath),
+      query: {
+        action: 'exists'
+      },
     })
   }
 
-  async removeDirectory(path) {
-    if (!path || !Utils.isString(path)) {
-      throw new Error('Directory "path" must not be empty and must be String')
+  async removeDirectory(directoryPath) {
+    if (!directoryPath || typeof directoryPath !== 'string') {
+      throw new Error('Directory "path" must be provided and must be a string.')
     }
 
     this.app.request.delete({
-      url: this.app.urls.filePath(path),
+      url: this.app.urls.filePath(directoryPath),
     })
   }
 
-  async getFileCount(path, pattern, recursive, countDirectories) {
-    const query = {
-      action          : 'count',
-      pattern         : pattern !== undefined ? pattern : '*',
-      recursive       : !!recursive,
-      countDirectories: !!countDirectories
+  async getFileCount(filesPath, pattern, recursive, countDirectories) {
+    if (!filesPath || typeof filesPath !== 'string') {
+      throw new Error('Files "path" must be provided and must be a string.')
     }
 
-    if (!path || !Utils.isString(path)) {
-      throw new Error('Files "path" must not be empty and must be String')
-    }
-
-    if (!query.pattern || !Utils.isString(query.pattern)) {
-      throw new Error('Files "path" must not be empty and must be String')
+    if (pattern && typeof pattern !== 'string') {
+      throw new Error('Files Pattern must be provided and must be a string.')
     }
 
     return this.app.request.get({
-      url  : this.app.urls.filePath(path),
-      query: query,
+      url: this.app.urls.filePath(filesPath),
+      query:{
+        action          : 'count',
+        pattern         : pattern || '*',
+        recursive       : !!recursive,
+        countDirectories: !!countDirectories
+      },
     })
   }
 
