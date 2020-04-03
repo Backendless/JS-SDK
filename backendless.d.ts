@@ -1469,8 +1469,8 @@ declare module Backendless {
 
         setOpResultId(opResultId: string): void;
 
-        resolvedTo(index: number, property?: string): OpResultValueReference
-        resolvedTo(property: string): OpResultValueReference
+        resolveTo(index: number, property?: string): OpResultValueReference
+        resolveTo(property: string): OpResultValueReference
     }
 
     enum IsolationLevelEnum {
@@ -1490,14 +1490,11 @@ declare module Backendless {
 
         update(object: object): OpResult;
         update(tableName: string, object: object): OpResult;
-        update(opResult: OpResult | OpResultValueReference, object: object): OpResult;
+        update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
-        update(index: number, changesObj: object): OpResult;
-        update(index: number, propertyName: string, propertyValueObj: object): OpResult;
 
         delete(object: object): OpResult;
-        delete(opResult: OpResult): OpResult;
-        delete(index: number): OpResult;
+        delete(opResult: OpResult | OpResultValueReference): OpResult;
         delete(tableName: string, object: object): OpResult;
         delete(tableName: string, objectId: string): OpResult;
 

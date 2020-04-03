@@ -1331,9 +1331,9 @@ async function testBaseTransactions() {
 
     tableName = opResult.getTableName()
 
-    opResultValueReference = opResult.resolvedTo(1)
-    opResultValueReference = opResult.resolvedTo(1, 'propName')
-    opResultValueReference = opResult.resolvedTo('propName')
+    opResultValueReference = opResult.resolveTo(1)
+    opResultValueReference = opResult.resolveTo(1, 'propName')
+    opResultValueReference = opResult.resolveTo('propName')
 
     promiseResult = uow.execute()
     unitOfWorkResult = await uow.execute()

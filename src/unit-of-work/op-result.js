@@ -62,7 +62,7 @@ export class OpResult {
     return this.table
   }
 
-  resolvedTo(resultIndex, propName) {
+  resolveTo(resultIndex, propName) {
     if (typeof resultIndex === 'string') {
       propName = resultIndex
       resultIndex = undefined

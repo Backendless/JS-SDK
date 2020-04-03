@@ -111,7 +111,7 @@ describe('Transactions - Results', function() {
 
     it('has an access to tableName', async function() {
       expect(uow.create(PERSONS_TABLE_NAME, {}).getTableName()).to.equal(PERSONS_TABLE_NAME)
-      expect(uow.find(PERSONS_TABLE_NAME, {}).resolvedTo(0).getTableName()).to.equal(PERSONS_TABLE_NAME)
+      expect(uow.find(PERSONS_TABLE_NAME, {}).resolveTo(0).getTableName()).to.equal(PERSONS_TABLE_NAME)
     })
 
     it('has an access to operationType', async function() {
