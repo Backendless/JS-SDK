@@ -1,5 +1,5 @@
 import Utils from '../utils'
-import DataQueryBuilder from '../data/query-builder'
+import DataQueryBuilder from '../data/data-query-builder'
 
 import { OperationType, IsolationLevelEnum } from './constants'
 import { OpResult } from './op-result'
@@ -137,8 +137,8 @@ class UnitOfWork {
       payload.offset = query.offset
     }
 
-    if (query.props) {
-      payload.properties = query.props
+    if (query.properties) {
+      payload.properties = query.properties
     }
 
     if (query.where) {

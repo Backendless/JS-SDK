@@ -99,10 +99,7 @@ describe('Data - Bulk Operations', function() {
     })
 
     describe('should throw an error when', function() {
-      const errorMessage = (
-        'Invalid bulkCreate argument. ' +
-        'The first argument must contain only array of objects.'
-      )
+      const errorMessage = 'Objects must be provided and must be an array of objects.'
 
       it('not passed any arguments', function() {
         return TestTable.bulkCreate()
@@ -199,8 +196,7 @@ describe('Data - Bulk Operations', function() {
         return TestTable.bulkDelete()
           .catch(error => {
             expect(error.message).to.be.equal(
-              'Invalid bulkDelete argument. ' +
-              'The first argument must contain array of objects or array of id or "whereClause" string.'
+              'Condition must be provided and must be a string or a list of objects.'
             )
           })
       })
@@ -209,8 +205,7 @@ describe('Data - Bulk Operations', function() {
         return TestTable.bulkDelete({})
           .catch(error => {
             expect(error.message).to.be.equal(
-              'Invalid bulkDelete argument. ' +
-              'The first argument must contain array of objects or array of id or "whereClause" string.'
+              'Condition must be provided and must be a string or a list of objects.'
             )
           })
       })
@@ -297,15 +292,8 @@ describe('Data - Bulk Operations', function() {
     })
 
     describe('should throw an error when', function() {
-      const invalidWhereClauseArgumentError = (
-        'Invalid bulkUpdate argument. ' +
-        'The first argument must be "whereClause" string.'
-      )
-
-      const invalidChangesArgumentError = (
-        'Invalid bulkUpdate argument. ' +
-        'The second argument must be object.'
-      )
+      const invalidWhereClauseArgumentError = 'Condition must be provided and must be a string.'
+      const invalidChangesArgumentError = 'Changes must be provided and must be a object.'
 
       it('not passed any arguments', function() {
         return TestTable.bulkUpdate()

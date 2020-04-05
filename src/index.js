@@ -188,7 +188,10 @@ class Backendless {
 
     if (this.__debugMode !== debugMode) {
       this.__debugMode = debugMode
-      this.RT.setDebugMode(debugMode)
+
+      if (this.__RT) {
+        this.RT.setDebugMode(debugMode)
+      }
     }
   }
 

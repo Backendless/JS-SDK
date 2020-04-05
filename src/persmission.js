@@ -22,16 +22,17 @@ export default class Permission {
   backwardCompatibility(methodName, oldMethodName) {
     //TODO: this method will be removed
 
+    const context = this
     const bcLabel = this.constructor.BACKWARD_COMPATIBILITY_LABEL
 
-    return () => {
+    return function () {
       const mainMessage = `"${bcLabel}.${oldMethodName}" is deprecated and will be removed in the nearest release.`
       const helpMessage = `Please use "${bcLabel}.${methodName}" instead of.`
 
       // eslint-disable-next-line no-console
       console.warn(`${mainMessage}\n${helpMessage}`)
 
-      return this[methodName].apply(context, arguments)
+      return context[methodName].apply(context, arguments)
     }
   }
 

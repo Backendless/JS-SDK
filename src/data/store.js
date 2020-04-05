@@ -1,0 +1,333 @@
+import Utils from '../utils'
+import RTHandlers from './rt-handlers'
+import DataQueryBuilder from './data-query-builder'
+import LoadRelationsQueryBuilder from './load-relations-query-builder'
+
+import geoConstructor, { GEO_CLASSES } from './geo/geo-constructor'
+
+export default class DataStore {
+
+  constructor(model, dataService) {
+    this.app = dataService.app
+    this.classToTableMap = dataService.classToTableMap
+
+    if (typeof model === 'string') {
+      this.className = model
+      this.model = this.classToTableMap[this.className]
+
+    } else {
+      this.className = Utils.getClassName(model)
+      this.model = this.classToTableMap[this.className] || model
+    }
+
+    if (!this.className) {
+      throw new Error('Class name should be specified')
+    }
+  }
+
+  rt() {
+    return this.rtHandlers = this.rtHandlers || new RTHandlers(this)
+  }
+
+  async save(object) {
+    return this.app.request
+      .put({
+        url : this.app.urls.dataTable(this.className),
+        data: object,
+      })
+      .then(result => this.parseFindResponse(result))
+  }
+
+  async remove(object) {
+    const objectId = object && object.objectId || object
+
+    if (!objectId || typeof objectId !== 'string') {
+      throw new Error('Object Id must be provided and must be a string.')
+    }
+
+    return this.app.request.delete({
+      url: this.app.urls.dataTableObject(this.className, objectId),
+    })
+  }
+
+  async find(query) {
+    return this.app.request
+      .get({
+        url        : this.app.urls.dataTable(this.className),
+        queryString: DataQueryBuilder.toQueryString(query),
+      })
+      .then(result => this.parseFindResponse(result))
+  }
+
+  async findById(objectId, query) {
+    objectId = objectId && objectId.objectId || objectId
+
+    if (!objectId || typeof objectId !== 'string') {
+      throw new Error('Object Id must be provided and must be a string.')
+    }
+
+    return this.app.request
+      .get({
+        url        : this.app.urls.dataTableObject(this.className, objectId),
+        queryString: DataQueryBuilder.toQueryString(query),
+      })
+      .then(result => this.parseFindResponse(result))
+  }
+
+  async findFirst(query) {
+    return this.app.request
+      .get({
+        url        : this.app.urls.dataTableObject(this.className, 'first'),
+        queryString: DataQueryBuilder.toQueryString(query),
+      })
+      .then(result => this.parseFindResponse(result))
+  }
+
+  async findLast(query) {
+    return this.app.request
+      .get({
+        url        : this.app.urls.dataTableObject(this.className, 'last'),
+        queryString: DataQueryBuilder.toQueryString(query),
+      })
+      .then(result => this.parseFindResponse(result))
+  }
+
+  async getObjectCount(condition) {
+    if (condition instanceof DataQueryBuilder) {
+      condition = condition.getWhereClause() || undefined
+    }
+
+    return this.app.request.get({
+      url  : this.app.urls.dataTableCount(this.className),
+      query: { where: condition },
+    })
+  }
+
+  async loadRelations(parentObjectId, queryBuilder) {
+    if (!parentObjectId || typeof parentObjectId !== 'string') {
+      throw new Error('Parent Object Id must be provided and must be a string.')
+    }
+
+    const { relationName, relationModel, ...query } = queryBuilder instanceof LoadRelationsQueryBuilder
+      ? queryBuilder.toJSON()
+      : queryBuilder
+
+    if (!relationName || typeof relationName !== 'string') {
+      throw new Error('Relation Name must be provided and must be a string.')
+    }
+
+    return this.app.request
+      .get({
+        url        : this.app.urls.dataTableObjectRelation(this.className, parentObjectId, relationName),
+        queryString: LoadRelationsQueryBuilder.toQueryString(query)
+      })
+      .then(result => this.parseFindResponse(result, relationModel))
+  }
+
+  async setRelation(parent, columnName, children) {
+    return this.changeRelation(this.app.request.Methods.POST, parent, columnName, children)
+  }
+
+  async addRelation(parent, columnName, children) {
+    return this.changeRelation(this.app.request.Methods.PUT, parent, columnName, children)
+  }
+
+  async deleteRelation(parent, columnName, children) {
+    return this.changeRelation(this.app.request.Methods.DELETE, parent, columnName, children)
+  }
+
+  async bulkCreate(objects) {
+    const errorMessage = 'Objects must be provided and must be an array of objects.'
+
+    if (!objects || !Array.isArray(objects)) {
+      throw new Error(errorMessage)
+    }
+
+    objects = objects.map(object => {
+      if (!object || typeof object !== 'object' || Array.isArray(object)) {
+        throw new Error(errorMessage)
+      }
+
+      return object
+    })
+
+    return this.app.request.post({
+      url : this.app.urls.dataBulkTable(this.className),
+      data: objects,
+    })
+  }
+
+  async bulkUpdate(condition, changes) {
+    if (!condition || typeof condition !== 'string') {
+      throw new Error('Condition must be provided and must be a string.')
+    }
+
+    if (!changes || typeof changes !== 'object' || Array.isArray(changes)) {
+      throw new Error('Changes must be provided and must be a object.')
+    }
+
+    return this.app.request.put({
+      url  : this.app.urls.dataBulkTable(this.className),
+      query: { where: condition },
+      data : changes,
+    })
+  }
+
+  async bulkDelete(condition) {
+    if (!condition || (typeof condition !== 'string' && !Array.isArray(condition))) {
+      throw new Error('Condition must be provided and must be a string or a list of objects.')
+    }
+
+    const queryData = {}
+
+    if (typeof condition === 'string') {
+      queryData.where = condition
+
+    } else {
+      const objectIds = condition.map(object => {
+        const objectId = object && object.objectId || object
+
+        if (!objectId || typeof objectId !== 'string') {
+          throw new Error(
+            'Can not transform "objects" to "whereClause". ' +
+            'Item must be a string or an object with property "objectId" as string.'
+          )
+        }
+
+        return `'${objectId}'`
+      })
+
+      queryData.where = `objectId in (${objectIds.join(',')})`
+    }
+
+    return this.app.request.post({
+      url : this.app.urls.dataBulkTableDelete(this.className),
+      data: queryData
+    })
+  }
+
+  /**
+   * @private
+   * */
+  parseFindResponse(result, model) {
+    return parseFindResponse(result, model || this.model, this.classToTableMap)
+  }
+
+  /**
+   * @private
+   * */
+  changeRelation(method, parent, columnName, children) {
+    const parentId = parent && parent.objectId || parent
+
+    if (!parentId || typeof parentId !== 'string') {
+      throw new Error('Relation Parent must be provided and must be a string or an object with objectId property.')
+    }
+
+    if (!columnName) {
+      throw new Error('Relation Column Name must be provided and must be a string.')
+    }
+
+    const condition = {}
+
+    if (typeof children === 'string') {
+      condition.whereClause = children
+
+    } else if (Utils.isArray(children)) {
+      condition.childrenIds = children.map(child => child.objectId || child)
+
+    } else {
+      throw new Error('Relation Children must be provided and must be a string or a list of objects.')
+    }
+
+    const query = {}
+
+    if (condition.whereClause) {
+      query.whereClause = condition.whereClause
+    }
+
+    return this.app.request.send({
+      method,
+      url : this.app.urls.dataTableObjectRelation(this.className, parentId, columnName),
+      query,
+      data: condition.childrenIds
+    })
+  }
+}
+
+function parseCircularDependencies(obj) {
+  //TODO: refactor me
+
+  const result = new obj.constructor()
+  const subIds = {}
+  const postAssign = []
+  const iteratedItems = []
+
+  function ensureCircularDep(source, target, prop) {
+    if (subIds[source[prop].__originSubID]) {
+      target[prop] = subIds[source[prop].__originSubID]
+    } else {
+      postAssign.push([target, prop, source[prop].__originSubID])
+    }
+  }
+
+  function processModel(source, target, prop) {
+    const Model = source[prop].constructor
+
+    target[prop] = new Model()
+
+    if (source[prop].__subID) {
+      subIds[source[prop].__subID] = target[prop]
+      delete source[prop].__subID
+    }
+  }
+
+  function buildCircularDeps(source, target) {
+    if (!iteratedItems.includes(source)) {
+      iteratedItems.push(source)
+
+      for (const prop in source) {
+        if (source.hasOwnProperty(prop)) {
+          if (Array.isArray(source[prop])) {
+            buildCircularDeps(source[prop], target[prop] = [])
+
+          } else if (source[prop] && typeof source[prop] === 'object') {
+            if (GEO_CLASSES.includes(source[prop].___class)) {
+              target[prop] = geoConstructor(source[prop])
+            } else if (source[prop].__originSubID) {
+              ensureCircularDep(source, target, prop)
+            } else {
+              processModel(source, target, prop)
+
+              buildCircularDeps(source[prop], target[prop])
+            }
+
+          } else {
+            target[prop] = source[prop]
+          }
+        }
+      }
+    }
+  }
+
+  buildCircularDeps(obj, result)
+
+  postAssign.forEach(([target, prop, __originSubID]) => target[prop] = subIds[__originSubID])
+
+  return result
+}
+
+function parseFindResponse(response, Model, classToTableMap) {
+  //TODO: refactor me
+
+  const sanitizeResponseItem = record => {
+    Model = typeof Model === 'function' ? Model : classToTableMap[record.___class]
+
+    return Utils.deepExtend(Model ? new Model() : {}, record, classToTableMap)
+  }
+
+  const result = Array.isArray(response)
+    ? response.map(sanitizeResponseItem)
+    : sanitizeResponseItem(response)
+
+  return parseCircularDependencies(result)
+}

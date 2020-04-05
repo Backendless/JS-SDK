@@ -1,9 +1,10 @@
 import Utils from '../utils'
 
 import { deprecated } from '../decorators'
+import User from '../users/user'
 
 import Store from './store'
-import QueryBuilder from './query-builder'
+import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import Point from './geo/point'
@@ -18,7 +19,10 @@ import DataPermission from './persmission'
 export default class Data {
   constructor(app) {
     this.app = app
-    this.classToTableMap = {}
+
+    this.classToTableMap = {
+      [User.className]: User
+    }
 
     this.Permissions = {
       FIND  : new DataPermission('FIND', app),
@@ -26,7 +30,7 @@ export default class Data {
       UPDATE: new DataPermission('UPDATE', app),
     }
 
-    this.QueryBuilder = QueryBuilder
+    this.QueryBuilder = DataQueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
 
     this.Point = Point
@@ -41,7 +45,7 @@ export default class Data {
   }
 
   of(model) {
-    return new Store(model, this.classToTableMap, this.app)
+    return new Store(model, this)
   }
 
   async describe(className) {
@@ -60,12 +64,12 @@ export default class Data {
   }
 
   mapTableToClass(tableName, clientClass) {
-    if (!tableName) {
-      throw new Error('Table name is not specified')
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be provided and must be a string.')
     }
 
-    if (!clientClass) {
-      throw new Error('Class is not specified')
+    if (!clientClass || typeof clientClass !== 'function') {
+      throw new Error('Table Name must be provided and must be a class.')
     }
 
     this.classToTableMap[tableName] = clientClass

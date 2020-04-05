@@ -35,19 +35,6 @@ const Utils = {
     return [value]
   },
 
-  toQueryParams(params) {
-    params = params || {}
-    const result = []
-
-    for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        result.push(key + '=' + encodeURIComponent(params[key]))
-      }
-    }
-
-    return result.join('&')
-  },
-
   tryParseJSON(s) {
     try {
       return typeof s === 'string' ? JSON.parse(s) : s

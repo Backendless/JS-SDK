@@ -1,6 +1,4 @@
-import { RTListeners } from '../../rt'
-
-import { parseFindResponse } from '../store/parse'
+import { RTListeners } from '../rt'
 
 const ChangesTypes = {
   CREATED: 'created',
@@ -18,13 +16,13 @@ const SingleChangesTypes = [
   ChangesTypes.DELETED,
 ]
 
-export default class EventHandler extends RTListeners {
+export default class RTHandlers extends RTListeners {
 
-  constructor(dataStore, app) {
+  constructor(dataStore) {
     super()
 
-    this.app = app
     this.dataStore = dataStore
+    this.app = dataStore.app
   }
 
   getSubscriptionOptions() {
@@ -178,8 +176,10 @@ export default class EventHandler extends RTListeners {
     this.stopSubscription(event, { matcher })
   }
 
+  /**
+   * @private
+   * */
   parseObjectToInstance(object) {
-    //TODO: "parseFindResponse" method must be moved to dataStore
-    return parseFindResponse(object, this.dataStore.model)
+    return this.dataStore.parseFindResponse(object)
   }
 }

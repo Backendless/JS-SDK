@@ -27,6 +27,10 @@ export default class Request {
       headers['user-token'] = userToken
     }
 
+    if (options.queryString) {
+      options.url = `${options.url}?${options.queryString}`
+    }
+
     return BackendlessRequest[method](options.url, options.data)
       .set(headers)
       .query(options.query)

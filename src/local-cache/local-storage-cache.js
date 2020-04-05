@@ -4,15 +4,11 @@ import Cache from './cache'
 const STORAGE_KEY_NAMESPACE = 'Backendless'
 
 const composeStorageKey = app => {
-  const { applicationId, standalone } = app
-
-  let key = STORAGE_KEY_NAMESPACE
-
-  if (standalone) {
-    key += `-${applicationId}`
+  if (app.standalone) {
+    return `${STORAGE_KEY_NAMESPACE}-${app.applicationId}`
   }
 
-  return key
+  return STORAGE_KEY_NAMESPACE
 }
 
 const expired = obj => {
