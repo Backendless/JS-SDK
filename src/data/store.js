@@ -232,7 +232,7 @@ export default class DataStore {
     if (typeof children === 'string') {
       condition.whereClause = children
 
-    } else if (Utils.isArray(children)) {
+    } else if (Array.isArray(children)) {
       condition.childrenIds = children.map(child => child.objectId || child)
 
     } else {

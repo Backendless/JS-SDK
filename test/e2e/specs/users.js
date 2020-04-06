@@ -183,7 +183,7 @@ describe('Backendless.Users', function() {
         expect(loggedInUser).to.not.have.property('password')
 
         return Backendless.UserService.getCurrentUser().then(currentUser => {
-          expect(currentUser).to.not.equal(loggedInUser)
+          expect(currentUser).to.equal(loggedInUser)
           expect(currentUser).to.have.property('objectId', user.objectId)
           expect(currentUser).to.have.property('email', user.email)
           expect(currentUser).to.have.property('user-token')

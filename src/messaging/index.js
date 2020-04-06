@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 import Channel from './channel'
 
 import {
@@ -103,7 +101,7 @@ export default class Messaging {
       data.bodyparts = bodyParts
     }
 
-    if (Utils.isArray(attachments) && attachments.length) {
+    if (Array.isArray(attachments) && attachments.length) {
       data.attachment = attachments
     }
 
@@ -154,7 +152,7 @@ export default class Messaging {
       osVersion  : device.version
     }
 
-    if (Utils.isArray(channels)) {
+    if (Array.isArray(channels)) {
       data.channels = channels
     }
 

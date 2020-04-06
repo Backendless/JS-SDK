@@ -1,5 +1,3 @@
-import Utils from '../../utils'
-
 import GeoPoint from '../point'
 
 //TODO: refactor me
@@ -10,8 +8,8 @@ export default class GeoFenceActions {
   }
 
   async run(action, geoFenceName, geoPoint) {
-    if (!Utils.isString(geoFenceName)) {
-      throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String")
+    if (typeof geoFenceName !== 'string') {
+      throw new Error('Invalid value for parameter \'geoFenceName\'. Geo Fence Name must be a String')
     }
 
     if (geoPoint && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
@@ -19,8 +17,8 @@ export default class GeoFenceActions {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.geoFence(action, geoFenceName),
-      data        : geoPoint,
+      url : this.app.urls.geoFence(action, geoFenceName),
+      data: geoPoint,
     })
   }
 

@@ -1,8 +1,6 @@
-import Utils from '../utils'
-
 export default class Counter {
   constructor(name, counters) {
-    if (!name || !Utils.isString(name)) {
+    if (!name || typeof name !== 'string') {
       throw new Error('Counter Name must be non empty String')
     }
 

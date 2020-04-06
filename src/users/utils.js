@@ -1,27 +1,21 @@
-import Utils from '../utils'
+export const UsersUtils = {
+  getClientUserLocale() {
+    if (typeof navigator === 'undefined') {
+      return
+    }
 
-import User from './user'
+    let language = ''
 
-export function parseResponse(data, stayLoggedIn) {
-  const user = new User()
+    if (navigator.languages && navigator.languages.length) {
+      language = navigator.languages[0]
+    } else {
+      language = navigator.userLanguage
+        || navigator.language
+        || navigator.browserLanguage
+        || navigator.systemLanguage
+        || ''
+    }
 
-  Utils.deepExtend(user, data)
-
-  if (stayLoggedIn) {
-    this.app.LocalCache.set('stayLoggedIn', stayLoggedIn)
+    return language.slice(0, 2).toLowerCase()
   }
-
-  return user
-}
-
-export function getUserFromResponse(user) {
-  this.app.LocalCache.set('current-user-id', user.objectId)
-
-  const userToken = user['user-token']
-
-  if (userToken && this.app.LocalCache.get('stayLoggedIn')) {
-    this.app.LocalCache.set('user-token', userToken)
-  }
-
-  return new User(user)
 }

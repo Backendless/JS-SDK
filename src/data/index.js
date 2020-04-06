@@ -49,7 +49,7 @@ export default class Data {
   }
 
   async describe(className) {
-    className = Utils.isString(className)
+    className = typeof className === 'string'
       ? className
       : Utils.getClassName(className)
 

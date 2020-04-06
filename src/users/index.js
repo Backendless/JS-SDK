@@ -1,10 +1,10 @@
 import Utils from '../utils'
 
+import { UsersUtils } from './utils'
+
 import User from './user'
 import UsersRoles from './roles'
 import UsersSocial from './social'
-
-import { parseResponse, getUserFromResponse } from './utils'
 
 export default class Users {
   constructor(app) {
@@ -12,53 +12,33 @@ export default class Users {
 
     this.roles = new UsersRoles(this)
     this.social = new UsersSocial(this)
+
+    this.dataStore = this.app.Data.of(User)
   }
 
   async register(user) {
-    function enrichWithLocaleInfo(user) {
-      if (!user.blUserLocale) {
-        const clientUserLocale = getClientUserLocale()
+    user = { ...user }
 
-        if (clientUserLocale) {
-          user.blUserLocale = clientUserLocale
-        }
+    if (!user.blUserLocale) {
+      const clientUserLocale = UsersUtils.getClientUserLocale()
+
+      if (clientUserLocale) {
+        user.blUserLocale = clientUserLocale
       }
-
-      return user
-    }
-
-    function getClientUserLocale() {
-      if (typeof navigator === 'undefined') {
-        return
-      }
-
-      let language = ''
-
-      if (navigator.languages && navigator.languages.length) {
-        language = navigator.languages[0]
-      } else {
-        language = navigator.userLanguage
-          || navigator.language
-          || navigator.browserLanguage
-          || navigator.systemLanguage
-          || ''
-      }
-
-      return language.slice(0, 2).toLowerCase()
     }
 
     return this.app.request
       .post({
         url : this.app.urls.userRegister(),
-        data: enrichWithLocaleInfo(user)
+        data: user
       })
-      .then(data => Utils.deepExtend(new User(), data))
+      .then(data => this.dataStore.parseFindResponse(data))
   }
 
   async login(login, password, stayLoggedIn) {
     const data = {}
 
-    if (typeof login === 'string' && !password) {
+    if (login && typeof login === 'string' && !password) {
       data.objectId = login
 
     } else {
@@ -76,9 +56,7 @@ export default class Users {
 
     stayLoggedIn = stayLoggedIn === true
 
-    this.app.LocalCache.remove('user-token')
-    this.app.LocalCache.remove('current-user-id')
-    this.app.LocalCache.set('stayLoggedIn', false)
+    this.resetStore()
 
     return this.app.request
       .post({
@@ -86,27 +64,29 @@ export default class Users {
         data: data,
       })
       .then(data => {
-        this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
+        const user = this.dataStore.parseFindResponse(data)
 
-        return getUserFromResponse.call(this, this.getLocalCurrentUser())
+        this.onLogin(user, stayLoggedIn)
+
+        return user
       })
   }
 
   async loginAsGuest(stayLoggedIn) {
     stayLoggedIn = stayLoggedIn === true
 
-    this.app.LocalCache.remove('user-token')
-    this.app.LocalCache.remove('current-user-id')
-    this.app.LocalCache.set('stayLoggedIn', false)
+    this.resetStore()
 
     return this.app.request
       .post({
         url: this.app.urls.guestLogin(),
       })
       .then(data => {
-        this.setLocalCurrentUser(parseResponse.call(this, Utils.tryParseJSON(data), stayLoggedIn))
+        const user = this.dataStore.parseFindResponse(data)
 
-        return getUserFromResponse.call(this, this.getLocalCurrentUser())
+        this.onLogin(user, stayLoggedIn)
+
+        return user
       })
   }
 
@@ -130,12 +110,16 @@ export default class Users {
     return this.social.loginWithTwitter(fieldsMapping, stayLoggedIn)
   }
 
+  resetStore(){
+    this.app.LocalCache.remove('user-token')
+    this.app.LocalCache.remove('current-user-id')
+    this.app.LocalCache.remove('stayLoggedIn')
+
+  }
+
   async logout() {
     const logoutUser = () => {
-      this.app.LocalCache.remove('user-token')
-      this.app.LocalCache.remove('current-user-id')
-      this.app.LocalCache.remove('stayLoggedIn')
-
+      this.resetStore()
       this.setLocalCurrentUser(null)
     }
 
@@ -154,43 +138,34 @@ export default class Users {
   }
 
   async getCurrentUser() {
-    let request = null
-
     if (this.currentUser) {
-      const userFromResponse = getUserFromResponse.call(this, this.currentUser)
-
-      request = Promise.resolve(userFromResponse)
-
-    } else if (this.currentUserRequest) {
-      request = this.currentUserRequest
-
-    } else {
-      const stayLoggedIn = this.app.LocalCache.get('stayLoggedIn')
-      const currentUserId = stayLoggedIn && this.app.LocalCache.get('current-user-id')
-
-      if (currentUserId) {
-        const Data = this.app.Data
-        const User = this.app.User
-
-        request = this.currentUserRequest = Data.of(User).findById(currentUserId)
-          .then(result => {
-            this.currentUserRequest = null
-
-            return this.currentUser = getUserFromResponse.call(this, result)
-          })
-          .catch(error => {
-            this.currentUserRequest = null
-
-            throw error
-          })
-      }
+      return Promise.resolve(this.currentUser)
     }
 
-    if (!request) {
-      request = Promise.resolve(null)
+    if (this.currentUserRequest) {
+      return this.currentUserRequest
     }
 
-    return request
+    const currentUserId = this.loggedInUser()
+
+    if (currentUserId) {
+      const Data = this.app.Data
+      const User = this.app.User
+
+      return this.currentUserRequest = Data.of(User).findById(currentUserId)
+        .then(user => {
+          this.currentUserRequest = null
+
+          return this.currentUser = user
+        })
+        .catch(error => {
+          this.currentUserRequest = null
+
+          throw error
+        })
+    }
+
+    return null
   }
 
   async isValidLogin() {
@@ -202,13 +177,12 @@ export default class Users {
       })
     }
 
-    return this.getCurrentUser()
-      .then(currentUser => !!currentUser)
+    return false
   }
 
   async restorePassword(emailAddress) {
     if (!emailAddress) {
-      throw new Error('emailAddress can not be empty')
+      throw new Error('Email Address must be provided and must be a string.')
     }
 
     return this.app.request.get({
@@ -218,7 +192,7 @@ export default class Users {
 
   async resendEmailConfirmation(emailAddress) {
     if (!emailAddress) {
-      throw new Error('Email cannot be empty')
+      throw new Error('Email Address must be provided and must be a string.')
     }
 
     return this.app.request.post({
@@ -272,7 +246,19 @@ export default class Users {
   setLocalCurrentUser(user) {
     this.currentUser = user || null
 
-    this.app.RT.updateUserTokenIfNeeded()
+    if (this.app.__RT) {
+      this.app.RT.updateUserTokenIfNeeded()
+    }
   }
 
+  onLogin(user, stayLoggedIn){
+    this.setLocalCurrentUser(user)
+
+    if (stayLoggedIn) {
+      this.app.LocalCache.set('stayLoggedIn', stayLoggedIn)
+      this.app.LocalCache.set('user-token', user['user-token'])
+    }
+
+    this.app.LocalCache.set('current-user-id', user.objectId)
+  }
 }

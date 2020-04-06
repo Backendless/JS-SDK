@@ -29,7 +29,7 @@ const previousBackendless = root && root.Backendless
 const parseInitConfig = (...args) => {
   const [appId, apiKey] = args
 
-  if (Utils.isObject(appId)) {
+  if (typeof appId === 'object') {
     return appId
   }
 
@@ -100,11 +100,24 @@ class Backendless {
     app.initConfig(config)
 
     app.resetRT()
-    app.Logging.reset()
-    app.Geo.resetGeofenceMonitoring()
-    app.Users.setLocalCurrentUser()
+
+    if (app.__hasService('Logging')) {
+      app.Logging.reset()
+    }
+
+    if (app.__hasService('Geo')) {
+      app.Geo.resetGeofenceMonitoring()
+    }
+
+    if (app.__hasService('Users')) {
+      app.Users.setLocalCurrentUser()
+    }
 
     return app
+  }
+
+  __hasService(name) {
+    return !!this[`__${name}`]
   }
 
   __getService(name) {

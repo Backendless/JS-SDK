@@ -12,7 +12,7 @@ const composeStorageKey = app => {
 }
 
 const expired = obj => {
-  if (Utils.isObject(obj)) {
+  if (obj && typeof obj === 'object') {
     const withTTL = (
       'cachePolicy' in obj &&
       'timeToLive' in obj.cachePolicy &&
@@ -32,7 +32,7 @@ const expired = obj => {
 }
 
 const addTimestamp = obj => {
-  if (Utils.isObject(obj)) {
+  if (obj && typeof obj === 'object') {
     if ('cachePolicy' in obj && 'timeToLive' in obj['cachePolicy']) {
       obj['cachePolicy']['created'] = new Date().getTime()
     }

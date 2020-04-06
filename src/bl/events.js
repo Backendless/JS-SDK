@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
 export default class Events {
@@ -17,7 +15,7 @@ export default class Events {
       eventArgs = undefined
     }
 
-    if (!Utils.isObject(eventArgs)) {
+    if (eventArgs && typeof eventArgs !== 'object') {
       eventArgs = {}
     }
 
@@ -29,7 +27,7 @@ export default class Events {
 
     return this.app.request.post({
       url    : this.app.urls.blEvent(eventName),
-      data   : eventArgs,
+      data   : eventArgs || {},
       headers: headers,
     })
   }

@@ -18,18 +18,21 @@ export default class UsersRoles {
     return this.changeRole(identity, rolename, 'unassignRole')
   }
 
-  async changeRole(identity, rolename, operation) {
+  async changeRole(identity, roleName, operation) {
     if (!identity) {
       throw new Error('User identity can not be empty')
     }
 
-    if (!rolename) {
-      throw new Error('RoleName can not be empty')
+    if (!roleName) {
+      throw new Error('Role Name can not be empty')
     }
 
     return this.app.request.post({
       url : this.app.urls.userRoleOperation(operation),
-      data: { user: identity, roleName: rolename },
+      data: {
+        user: identity,
+        roleName
+      },
     })
   }
 

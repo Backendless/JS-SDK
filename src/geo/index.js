@@ -32,7 +32,7 @@ export default class Geo {
   }
 
   async savePoint(geoPoint) {
-    if (!Utils.isNumber(geoPoint.latitude) || !Utils.isNumber(geoPoint.longitude)) {
+    if (typeof geoPoint.latitude !== 'number' || typeof geoPoint.longitude !== 'number') {
       throw new Error('Latitude or longitude not a number')
     }
 
@@ -202,11 +202,11 @@ export default class Geo {
   }
 
   async deletePoint(point) {
-    if (!point || Utils.isFunction(point)) {
+    if (!point || typeof point === 'function') {
       throw new Error('Point argument name is required, must be string (object Id), or point object')
     }
 
-    const pointId = Utils.isString(point) ? point : point.objectId
+    const pointId = typeof point === 'string' ? point : point.objectId
 
     return this.app.request
       .delete({
@@ -226,12 +226,12 @@ export default class Geo {
   }
 
   async getGeopointCount(fenceName, query) {
-    if (Utils.isObject(fenceName)) {
+    if (fenceName && typeof fenceName === 'object') {
       query = fenceName
       fenceName = undefined
     }
 
-    if (!Utils.isObject(query)) {
+    if (!query || typeof query !== 'object') {
       throw new Error('Geo query must be specified')
     }
 

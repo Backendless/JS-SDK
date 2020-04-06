@@ -1,5 +1,4 @@
-import { loginSocial } from './login'
-import { getUserFromResponse, parseResponse } from '../utils'
+import { SocialContainer } from './container'
 
 export default class UsersSocial {
   constructor(users) {
@@ -13,7 +12,7 @@ export default class UsersSocial {
       'Use method "loginWithFacebookSdk" instead.'
     )
 
-    return loginSocial.call(this, 'Facebook', fieldsMapping, permissions, null, stayLoggedIn)
+    return this.loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn)
   }
 
   async loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options) {
@@ -62,7 +61,7 @@ export default class UsersSocial {
       'Use method "loginWithGooglePlusSdk" instead.'
     )
 
-    return loginSocial.call(this, 'GooglePlus', fieldsMapping, permissions, container, stayLoggedIn)
+    return this.loginSocial('GooglePlus', fieldsMapping, permissions, container, stayLoggedIn)
   }
 
   async loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
@@ -104,7 +103,7 @@ export default class UsersSocial {
   }
 
   async loginWithTwitter(fieldsMapping, stayLoggedIn) {
-    return loginSocial.call(this, 'Twitter', fieldsMapping, null, null, stayLoggedIn)
+    return this.loginSocial('Twitter', fieldsMapping, null, null, stayLoggedIn)
   }
 
   async sendSocialLoginRequest(accessToken, socialType, fieldsMapping, stayLoggedIn) {
@@ -120,12 +119,89 @@ export default class UsersSocial {
           fieldsMapping
         }
       })
-      .then(() => {
-        this.users.setLocalCurrentUser(parseResponse.call(this, r))
+      .then(data => {
+        const user = this.users.dataStore.parseFindResponse(data)
 
-        this.app.LocalCache.set('stayLoggedIn', !!stayLoggedIn)
+        this.onLogin(user, stayLoggedIn)
 
-        return getUserFromResponse.call(this, this.users.getLocalCurrentUser())
+        return user
       })
   }
+
+  async loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn) {
+    const socialContainer = new SocialContainer(socialType, container)
+
+    const resolveContainer = () => {
+      return new Promise((resolve, reject) => {
+        const onMessage = event => {
+          if (event.origin === this.app.serverURL) {
+            const result = JSON.parse(event.data)
+
+            if (result.fault) {
+              reject(result.fault)
+            } else {
+              resolve(result)
+            }
+
+            removeWindowEventListener('message', window, onMessage)
+
+            socialContainer.closeContainer()
+          }
+        }
+
+        addWindowEventListener('message', window, onMessage)
+      })
+    }
+
+    const resolveUser = data => {
+      const user = this.users.dataStore.parseFindResponse(data)
+
+      this.onLogin(user, stayLoggedIn)
+
+      return user
+    }
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userSocialOAuth(socialType),
+        data: {
+          fieldsMapping: fieldsMapping || {},
+          permissions  : permissions || [],
+        }
+      })
+      .then(authUrl => socialContainer.doAuthorizationActivity(authUrl))
+      .catch(error => {
+        socialContainer.closeContainer()
+
+        throw error
+      })
+      .then(resolveContainer)
+      .then(resolveUser)
+  }
+
+  onLogin(user, stayLoggedIn) {
+    this.users.onLogin(user, stayLoggedIn)
+  }
+}
+
+function addWindowEventListener(event, elem, callback) {
+  if (elem.addEventListener) {
+    elem.addEventListener(event, callback, false)
+
+  } else if (elem.attachEvent) {
+    elem.attachEvent('on' + event, callback)
+
+  } else {
+    elem[event] = callback
+  }
+}
+
+function removeWindowEventListener(event, elem, callback) {
+  if (elem.removeEventListener) {
+    elem.removeEventListener(event, callback, false)
+  } else if (elem.detachEvent) {
+    elem.detachEvent('on' + event, callback)
+  }
+
+  elem[event] = null
 }

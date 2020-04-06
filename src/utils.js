@@ -1,46 +1,15 @@
 const Utils = {
-  isObject(obj) {
-    return obj === Object(obj)
-  },
-
-  isArray: (Array.isArray || function(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Array'
-  }),
-
-  isString(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'String'
-  },
-
-  isNumber(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Number'
-  },
-
-  isFunction(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Function'
-  },
-
-  isBoolean(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Boolean'
-  },
 
   isBrowser: isBrowser(),
 
   isLocalStorageSupported: isLocalStorageSupported(),
 
   castArray(value) {
-    if (Utils.isArray(value)) {
+    if (Array.isArray(value)) {
       return value
     }
 
     return [value]
-  },
-
-  tryParseJSON(s) {
-    try {
-      return typeof s === 'string' ? JSON.parse(s) : s
-    } catch (e) {
-      return s
-    }
   },
 
   getClassName(obj) {
@@ -48,18 +17,14 @@ const Utils = {
       return obj.prototype.___class
     }
 
-    if (Utils.isFunction(obj) && obj.name) {
+    if (typeof obj === 'function' && obj.name) {
       return obj.name
     }
 
-    const instStringified = (Utils.isFunction(obj) ? obj.toString() : obj.constructor.toString())
+    const instStringified = (typeof obj === 'function' ? obj.toString() : obj.constructor.toString())
     const results = instStringified.match(/function\s+(\w+)/)
 
     return (results && results.length > 1) ? results[1] : ''
-  },
-
-  encodeArrayToUriComponent(arr) {
-    return arr.map(item => encodeURIComponent(item)).join(',')
   },
 
   deepExtend(destination, source, classToTableMap = {}) {
@@ -137,8 +102,8 @@ function classWrapper(obj, classToTableMap) {
     return obj
   }
 
-  if (Utils.isObject(obj) && obj != null) {
-    if (Utils.isArray(obj)) {
+  if (obj && typeof obj === 'object') {
+    if (Array.isArray(obj)) {
       for (let i = obj.length; i--;) {
         obj[i] = wrapper(obj[i])
       }
