@@ -1493,8 +1493,8 @@ declare module Backendless {
         update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
 
-        delete(object: object): OpResult;
         delete(opResult: OpResult | OpResultValueReference): OpResult;
+        delete(object: object): OpResult;
         delete(tableName: string, object: object): OpResult;
         delete(tableName: string, objectId: string): OpResult;
 

@@ -21,6 +21,8 @@ describe('Transactions - Delete Operation', function() {
 
   let personsStore
 
+  let testCaseMarker
+
   let uow
 
   sandbox.forSuite()
@@ -39,6 +41,8 @@ describe('Transactions - Delete Operation', function() {
   })
 
   beforeEach(function() {
+    testCaseMarker = Utils.uidShort()
+
     uow = new Backendless.UnitOfWork()
   })
 
@@ -164,6 +168,38 @@ describe('Transactions - Delete Operation', function() {
     expect(uowResult.success).to.equal(true)
 
     expect(Object.keys(uowResult.results).length).to.equal(limit)
+  })
+
+
+  it('deletes object using opResult of FIND operation', async function() {
+    const personName= `Bob-${testCaseMarker}`
+
+    const createObjectResult = await personsStore.save({ name: personName })
+
+    expect(createObjectResult.objectId).to.be.a('string')
+
+    const query = Backendless.DataQueryBuilder
+      .create()
+      .setWhereClause(`name = '${personName}'`)
+
+    const findOp = uow.find(PERSONS_TABLE_NAME, query)
+
+    uow.delete(findOp.resolveTo(0))
+
+    const uowResult = await uow.execute()
+
+    expect(uowResult.error).to.equal(null)
+    expect(uowResult.success).to.equal(true)
+    expect(uowResult.results.findPerson1.operationType).to.equal('FIND')
+    expect(uowResult.results.findPerson1.result).to.have.length(1)
+    expect(uowResult.results.findPerson1.result[0].name).to.equal(personName)
+    expect(uowResult.results.findPerson1.result[0].objectId).to.equal(createObjectResult.objectId)
+    expect(uowResult.results.deletePerson1.operationType).to.equal('DELETE')
+    expect(uowResult.results.deletePerson1.result).to.be.a('number')
+
+    const objectsCountResult = await personsStore.getObjectCount(query)
+
+    expect(objectsCountResult).to.equal(0)
   })
 
   describe('Fails', function() {

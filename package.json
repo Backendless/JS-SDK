@@ -24,13 +24,13 @@
     "test:e2e": "npm run test:e2e:node",
     "test:e2e:node": "TEST_ENV=node mocha --require @babel/register test/e2e/specs/*",
     "test:e2e:browser": "karma start test/e2e/karma.conf.js",
-    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
     "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack -p",
     "bannerize": "bannerize ./dist/*.js --banner=./banner.ejs",
-    "prepare": "npm run clean && npm run build && npm run bannerize"
+    "prepare": "npm run build && npm run bannerize"
   },
   "repository": {
     "type": "git",
