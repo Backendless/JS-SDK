@@ -36,8 +36,14 @@ function findUtil(url, Model, dataQuery, asyncHandler) {
     query.push('having=' + encodeURIComponent(dataQuery.havingClause))
   }
 
-  if (dataQuery.properties && dataQuery.properties.length) {
-    query.push('props=' + Utils.encodeArrayToUriComponent(dataQuery.properties))
+  if (Array.isArray(dataQuery.properties)) {
+    dataQuery.properties.forEach(property => {
+      query.push('property=' + encodeURIComponent(property))
+    })
+  }
+
+  if (Array.isArray(dataQuery.excludeProps) && dataQuery.excludeProps.length) {
+    query.push('excludeProps=' + Utils.encodeArrayToUriComponent(dataQuery.excludeProps))
   }
 
   if (dataQueryURL) {

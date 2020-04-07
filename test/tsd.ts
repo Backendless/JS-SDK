@@ -85,6 +85,17 @@ function testDataQueryBuilderClass() {
 
     strs = dataQuery.getProperties();
 
+    dataQuery = dataQuery.addAllProperties();
+
+    dataQuery = dataQuery.excludeProperty(str);
+    dataQuery = dataQuery.excludeProperties('abc');
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc']);
+    dataQuery = dataQuery.excludeProperties(str, str, str, str);
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc'], str, str);
+    dataQuery = dataQuery.excludeProperties(str);
+    dataQuery = dataQuery.excludeProperties(['abc', 'abc', 'abc']);
+
     dataQuery = dataQuery.setSortBy(str);
     dataQuery = dataQuery.setSortBy(strs);
     strs = dataQuery.getSortBy();
