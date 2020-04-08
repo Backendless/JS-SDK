@@ -3,7 +3,7 @@ import { createClient } from 'backendless-console-sdk'
 import { TablesAPI } from './tables'
 import { wait } from './promise'
 import * as Utils from './utils'
-// import Backendless from '../../../src/backendless'
+
 const Backendless = require('../../../lib')
 
 const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
