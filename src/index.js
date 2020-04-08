@@ -99,9 +99,18 @@ class Backendless {
     app.initConfig(config)
 
     app.resetRT()
-    app.Logging.reset()
-    app.Geo.resetGeofenceMonitoring()
-    app.Users.setLocalCurrentUser()
+
+    if (app.__Logging) {
+      app.Logging.reset()
+    }
+
+    if (app.__Geo) {
+      app.Geo.resetGeofenceMonitoring()
+    }
+
+    if (app.__Users) {
+      app.Users.setLocalCurrentUser()
+    }
 
     return app
   }
@@ -187,7 +196,10 @@ class Backendless {
 
     if (this.__debugMode !== debugMode) {
       this.__debugMode = debugMode
-      this.RT.setDebugMode(debugMode)
+
+      if (this.__RT) {
+        this.RT.setDebugMode(debugMode)
+      }
     }
   }
 

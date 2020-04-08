@@ -25,6 +25,7 @@ export function sendRequest(config) {
   }
   //---------------------------------------------------------------
 
+  Request.verbose = !!this.app.debugMode
   Request.XMLHttpRequest = XMLHttpRequest
 
   const url = config.url
