@@ -120,7 +120,7 @@ describe('Backendless.Users', function() {
       it('it fails', function() {
         return expect(Backendless.UserService.register(randUser()))
           .to.eventually.be
-          .rejectedWith(Error, 'You are not authorized.')
+          .rejectedWith(Error, 'User registration is denied for this version of application')
           .and.eventually.have.property('status', 401)
       })
 
@@ -328,9 +328,7 @@ describe('Backendless.Users', function() {
       expect(loggedUser.email).to.equal(savedUser.email)
     })
 
-    xit('login by user\'s objectId with non BL API_KEY', async function() {
-      //TODO: waits BKNDLSS-20473
-
+    it('login by user\'s objectId with non BL API_KEY', async function() {
       const savedUser = await Backendless.Data.of(Backendless.User).save(randUser())
 
       expect(savedUser.objectId).to.be.a('string')

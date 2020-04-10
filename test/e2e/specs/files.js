@@ -141,11 +141,9 @@ describe('Backendless.Files', function() {
 
       await createDir('', beforeRename)
 
-      const renamingResult = await Files.renameFile(beforeRename, 'dir-after')
+      await Files.renameFile(beforeRename, 'dir-after')
 
       await waiter()
-
-      expect(renamingResult).to.equal(`${Backendless.urls.files()}${afterRename}`)
 
       expect(await Files.exists(beforeRename)).to.equal(false)
       expect(await Files.exists(afterRename)).to.equal(true)
