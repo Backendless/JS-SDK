@@ -121,7 +121,7 @@ describe('Backendless.Users', function() {
         return expect(Backendless.UserService.register(randUser()))
           .to.eventually.be
           .rejectedWith(Error, 'User registration is denied for this version of application')
-          .and.eventually.have.property('status', 401)
+          .and.eventually.have.property('status', 403)
       })
 
       after(function() {
