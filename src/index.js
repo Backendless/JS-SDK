@@ -104,7 +104,7 @@ class Backendless {
     }
 
     if (app.__hasService('Users')) {
-      app.Users.setLocalCurrentUser()
+      app.Users.setLocalCurrentUser(null)
     }
 
     return app

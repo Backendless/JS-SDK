@@ -1,4 +1,3 @@
-//TODO: refactor me
 export class SocialContainer {
 
   constructor(socialType, container) {

@@ -130,7 +130,7 @@ export default class Urls {
   }
 
   dataObjectPermission(tableName, permissionType, objectId) {
-    return `${this.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`
+    return `${this.dataTable(tableName)}/permissions/${permissionType}/${objectId}`
   }
 
   transactions() {

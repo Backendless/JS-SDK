@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 import { UsersUtils } from './utils'
 
 import User from './user'
@@ -56,38 +54,22 @@ export default class Users {
 
     stayLoggedIn = stayLoggedIn === true
 
-    this.resetStore()
-
     return this.app.request
       .post({
         url : this.app.urls.userLogin(),
         data: data,
       })
-      .then(data => {
-        const user = this.dataStore.parseFindResponse(data)
-
-        this.onLogin(user, stayLoggedIn)
-
-        return user
-      })
+      .then(data => this.setLocalCurrentUser(data, stayLoggedIn))
   }
 
   async loginAsGuest(stayLoggedIn) {
     stayLoggedIn = stayLoggedIn === true
 
-    this.resetStore()
-
     return this.app.request
       .post({
         url: this.app.urls.guestLogin(),
       })
-      .then(data => {
-        const user = this.dataStore.parseFindResponse(data)
-
-        this.onLogin(user, stayLoggedIn)
-
-        return user
-      })
+      .then(data => this.setLocalCurrentUser(data, stayLoggedIn))
   }
 
   async loginWithFacebook(fieldsMapping, permissions, stayLoggedIn) {
@@ -110,27 +92,17 @@ export default class Users {
     return this.social.loginWithTwitter(fieldsMapping, stayLoggedIn)
   }
 
-  resetStore(){
-    this.app.LocalCache.remove('user-token')
-    this.app.LocalCache.remove('current-user-id')
-    this.app.LocalCache.remove('stayLoggedIn')
-
-  }
-
   async logout() {
-    const logoutUser = () => {
-      this.resetStore()
-      this.setLocalCurrentUser(null)
-    }
-
     return this.app.request
       .get({
         url: this.app.urls.userLogout(),
       })
-      .then(logoutUser)
+      .then(() => {
+        this.setLocalCurrentUser(null)
+      })
       .catch(error => {
-        if ([3064, 3091, 3090, 3023].includes(error.code)) {
-          logoutUser()
+        if ([3023, 3064, 3090, 3091].includes(error.code)) {
+          this.setLocalCurrentUser(null)
         }
 
         throw error
@@ -206,7 +178,7 @@ export default class Users {
         url : this.app.urls.userObject(user.objectId),
         data: user
       })
-      .then(data => Utils.deepExtend(new User(), data))
+      .then(data => this.dataStore.parseFindResponse(data))
   }
 
   async getUserRoles() {
@@ -233,7 +205,7 @@ export default class Users {
 
   getCurrentUserToken() {
     if (this.currentUser && this.currentUser['user-token']) {
-      return this.currentUser['user-token'] || null
+      return this.currentUser['user-token']
     }
 
     return this.app.LocalCache.get('user-token') || null
@@ -243,22 +215,30 @@ export default class Users {
     return this.currentUser
   }
 
-  setLocalCurrentUser(user) {
+  setLocalCurrentUser(user, stayLoggedIn) {
+    this.app.LocalCache.remove('user-token')
+    this.app.LocalCache.remove('current-user-id')
+    this.app.LocalCache.remove('stayLoggedIn')
+
     this.currentUser = user || null
+
+    if (this.currentUser) {
+      if (!(this.currentUser instanceof User)) {
+        this.currentUser = this.dataStore.parseFindResponse(this.currentUser)
+      }
+
+      if (stayLoggedIn) {
+        this.app.LocalCache.set('stayLoggedIn', true)
+        this.app.LocalCache.set('user-token', this.currentUser['user-token'])
+      }
+
+      this.app.LocalCache.set('current-user-id', this.currentUser.objectId)
+    }
 
     if (this.app.__RT) {
       this.app.RT.updateUserTokenIfNeeded()
     }
-  }
 
-  onLogin(user, stayLoggedIn){
-    this.setLocalCurrentUser(user)
-
-    if (stayLoggedIn) {
-      this.app.LocalCache.set('stayLoggedIn', stayLoggedIn)
-      this.app.LocalCache.set('user-token', user['user-token'])
-    }
-
-    this.app.LocalCache.set('current-user-id', user.objectId)
+    return this.currentUser
   }
 }

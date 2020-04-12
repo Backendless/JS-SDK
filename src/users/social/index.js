@@ -7,106 +7,26 @@ export default class UsersSocial {
   }
 
   async loginWithFacebook(fieldsMapping, permissions, stayLoggedIn) {
-    console.warn( // eslint-disable-line no-console
-      'Method "loginWithFacebook" is deprecated. and will be removed in the nearest release.\n' +
-      'Use method "loginWithFacebookSdk" instead.'
-    )
-
-    return this.loginSocial('Facebook', fieldsMapping, permissions, null, stayLoggedIn)
-  }
-
-  async loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options) {
-    if (typeof accessToken !== 'string') {
-      options = stayLoggedIn
-      stayLoggedIn = fieldsMapping
-      fieldsMapping = accessToken
-      accessToken = null
-    }
-
-    const loginRequest = () => {
-      return this.sendSocialLoginRequest(accessToken, 'facebook', fieldsMapping, stayLoggedIn)
-    }
-
-    if (accessToken || !fieldsMapping) {
-      return loginRequest()
-    }
-
-    // eslint-disable-next-line no-console
-    console.warn(
-      'You must pass "accessToken" as the first argument into ' +
-      ' "loginWithFacebook(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method'
-    )
-
-    if (!FB) {
-      throw new Error('Facebook SDK not found')
-    }
-
-    return new Promise((resolve, reject) => {
-      FB.getLoginStatus(response => {
-        if (response.status === 'connected') {
-          loginRequest(accessToken = response.authResponse.accessToken).then(resolve, reject)
-
-        } else {
-          FB.login(response => {
-            loginRequest(accessToken = response.authResponse.accessToken).then(resolve, reject)
-          }, options)
-        }
-      })
-    })
+    return this.loginWithContainer('Facebook', fieldsMapping, permissions, null, stayLoggedIn)
   }
 
   async loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn) {
-    console.warn( // eslint-disable-line no-console
-      'Method "loginWithGooglePlus" is deprecated. and will be removed in the nearest release.\n' +
-      'Use method "loginWithGooglePlusSdk" instead.'
-    )
-
-    return this.loginSocial('GooglePlus', fieldsMapping, permissions, container, stayLoggedIn)
-  }
-
-  async loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
-    if (typeof accessToken !== 'string') {
-      stayLoggedIn = fieldsMapping
-      fieldsMapping = accessToken
-      accessToken = null
-    }
-
-    const loginRequest = () => {
-      return this.sendSocialLoginRequest(accessToken, 'googleplus', fieldsMapping, stayLoggedIn)
-    }
-
-    if (accessToken || !fieldsMapping) {
-      return loginRequest()
-    }
-
-    console.warn(// eslint-disable-line no-console
-      'You must pass "accessToken" as the first argument into ' +
-      '"loginWithGooglePlusSdk(accessToken:String, fieldsMapping:Object, stayLoggedIn?:Boolean)" method'
-    )
-
-    if (!gapi) {
-      throw new Error('Google Plus SDK not found')
-    }
-
-    return new Promise((resolve, reject) => {
-      gapi.auth.authorize({
-        client_id: fieldsMapping.client_id,
-        scope    : 'https://www.googleapis.com/auth/plus.login'
-      }, ({ access_token, error }) => {
-        if (error) {
-          reject(error)
-        } else {
-          loginRequest(accessToken = access_token).then(resolve, reject)
-        }
-      })
-    })
+    return this.loginWithContainer('GooglePlus', fieldsMapping, permissions, container, stayLoggedIn)
   }
 
   async loginWithTwitter(fieldsMapping, stayLoggedIn) {
-    return this.loginSocial('Twitter', fieldsMapping, null, null, stayLoggedIn)
+    return this.loginWithContainer('Twitter', fieldsMapping, null, null, stayLoggedIn)
   }
 
-  async sendSocialLoginRequest(accessToken, socialType, fieldsMapping, stayLoggedIn) {
+  async loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn) {
+    return this.sendWithAccessToken('facebook', accessToken, fieldsMapping, stayLoggedIn)
+  }
+
+  async loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
+    return this.sendWithAccessToken('googleplus', accessToken, fieldsMapping, stayLoggedIn)
+  }
+
+  async sendWithAccessToken(socialType, accessToken, fieldsMapping, stayLoggedIn) {
     if (!accessToken) {
       throw new Error('"accessToken" is missing.')
     }
@@ -119,16 +39,10 @@ export default class UsersSocial {
           fieldsMapping
         }
       })
-      .then(data => {
-        const user = this.users.dataStore.parseFindResponse(data)
-
-        this.onLogin(user, stayLoggedIn)
-
-        return user
-      })
+      .then(data => this.users.setLocalCurrentUser(data, stayLoggedIn))
   }
 
-  async loginSocial(socialType, fieldsMapping, permissions, container, stayLoggedIn) {
+  async loginWithContainer(socialType, fieldsMapping, permissions, container, stayLoggedIn) {
     const socialContainer = new SocialContainer(socialType, container)
 
     const resolveContainer = () => {
@@ -153,14 +67,6 @@ export default class UsersSocial {
       })
     }
 
-    const resolveUser = data => {
-      const user = this.users.dataStore.parseFindResponse(data)
-
-      this.onLogin(user, stayLoggedIn)
-
-      return user
-    }
-
     return this.app.request
       .post({
         url : this.app.urls.userSocialOAuth(socialType),
@@ -176,11 +82,7 @@ export default class UsersSocial {
         throw error
       })
       .then(resolveContainer)
-      .then(resolveUser)
-  }
-
-  onLogin(user, stayLoggedIn) {
-    this.users.onLogin(user, stayLoggedIn)
+      .then(data => this.users.setLocalCurrentUser(data, stayLoggedIn))
   }
 }
 
