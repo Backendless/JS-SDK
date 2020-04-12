@@ -18,7 +18,6 @@ Follow the steps below to get started with Backendless:
     - Data Service TODO-App Demo: `examples/data-service/todo-app/js/app.js`
     - Data Service Relations Management Demo: `examples/data-service/relations-management/js/app.js`
     - Messaging Service Demo: `examples/messaging-service/chat/js/chat.js`  
-    - Geo Service Demo: `examples/geo-service/citysearch/js/citysearch.js`  
     - File Service Demo: `examples/file-service/js/files-example.js`  
     - TypeScript Demo: `examples/typescript/app.ts`
 ---
