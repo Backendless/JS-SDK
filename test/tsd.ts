@@ -643,7 +643,6 @@ function testMessaging() {
     const deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
 
     let channel: Backendless.ChannelClass;
-    const subscriptionOptions: Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
     const subscriptionCallback = function (data: Object): void {
         const messagesArray: Array<String> = data["messages"];
     };

@@ -5,7 +5,6 @@ import {
   PublishOptions,
   DeliveryOptions,
   Bodyparts,
-  SubscriptionOptions,
   EmailEnvelope
 } from './helpers'
 
@@ -18,9 +17,6 @@ export default class Messaging {
     this.DeliveryOptions = DeliveryOptions
     this.PublishOptionsHeaders = PublishOptionsHeaders
     this.EmailEnvelope = EmailEnvelope
-
-    /** @deprecated */
-    this.SubscriptionOptions = SubscriptionOptions
   }
 
   subscribe(channelName) {

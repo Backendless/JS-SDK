@@ -1023,20 +1023,6 @@ declare module Backendless {
     }
 
     /**
-     * @public
-     * @deprecated
-     * @class Backendless.SubscriptionOptions
-     * @constructor
-     */
-    class SubscriptionOptions {
-        subscriberId: string;
-        subtopic: string;
-        selector: string;
-
-        constructor(args?: Object);
-    }
-
-    /**
      * @private
      * @class Logger
      */

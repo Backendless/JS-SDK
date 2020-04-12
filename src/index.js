@@ -379,11 +379,6 @@ class Backendless {
     return this.Messaging.EmailEnvelope
   }
 
-  /** @deprecated */
-  get SubscriptionOptions() {
-    return this.Messaging.SubscriptionOptions
-  }
-
   ///--------BACKWARD COMPATIBILITY-------///
   ///-------------------------------------///
 }
