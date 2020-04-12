@@ -67,13 +67,13 @@ function isLocalStorageSupported() {
     if (isBrowser() && window.localStorage) {
       localStorage.setItem('localStorageTest', true)
       localStorage.removeItem('localStorageTest')
+
       return true
-    } else {
-      return false
     }
   } catch (e) {
-    return false
   }
+
+  return false
 }
 
 function classWrapper(obj, classToTableMap) {
