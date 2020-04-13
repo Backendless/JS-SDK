@@ -12,6 +12,10 @@ const Utils = {
     return [value]
   },
 
+  isCustomClassInstance(item) {
+    return !!item && typeof item === 'object' && !Array.isArray(item) && item.constructor !== Object
+  },
+
   getClassName(obj) {
     if (obj.prototype && obj.prototype.___class) {
       return obj.prototype.___class

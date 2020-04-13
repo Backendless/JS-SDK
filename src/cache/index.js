@@ -26,7 +26,7 @@ export default class Cache {
   }
 
   stringifyItem(item) {
-    if (item && item.constructor !== Object) {
+    if (Utils.isCustomClassInstance(item)) {
       item.___class = item.___class || Utils.getClassName(item)
     }
 
