@@ -1,7 +1,7 @@
 import Utils from '../utils'
 import Async from '../request/async'
 
-export function listing(path, pattern, recursively, pagesize, offset, asyncHandler) {
+export function listing(path, pattern, sub, pagesize, offset, asyncHandler) {
   if (offset instanceof Async) {
     asyncHandler = offset
     offset = undefined
@@ -11,16 +11,16 @@ export function listing(path, pattern, recursively, pagesize, offset, asyncHandl
     pagesize = undefined
     offset = undefined
 
-  } else if (recursively instanceof Async) {
-    asyncHandler = recursively
-    recursively = undefined
+  } else if (sub instanceof Async) {
+    asyncHandler = sub
+    sub = undefined
     pagesize = undefined
     offset = undefined
 
   } else if (pattern instanceof Async) {
     asyncHandler = pattern
     pattern = undefined
-    recursively = undefined
+    sub = undefined
     pagesize = undefined
     offset = undefined
   }
@@ -31,8 +31,8 @@ export function listing(path, pattern, recursively, pagesize, offset, asyncHandl
     query.pattern = pattern
   }
 
-  if (Utils.isBoolean(recursively)) {
-    query.sub = recursively
+  if (Utils.isBoolean(sub)) {
+    query.sub = sub
   }
 
   if (Utils.isNumber(pagesize)) {

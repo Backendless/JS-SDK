@@ -597,9 +597,11 @@ declare module Backendless {
 
         function upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
 
-        function listingSync(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Object;
+        function listingSync(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Object;
 
-        function listing(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Promise<Object>;
+        function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
+
+        function getFileCount(path: string, pattern?: string, sub?: boolean, countDirectories?: boolean): Promise<number>;
 
         function renameFileSync(oldPathName: string, newName: string): Object;
 

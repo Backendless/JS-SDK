@@ -6,12 +6,23 @@ import * as Utils from './utils'
 
 const Backendless = require('../../../lib')
 
+process.env.API_SERVER = 'https://apitest.backendless.com'
+process.env.CONSOLE_SERVER = 'https://devtest.backendless.com'
+// process.env.API_SERVER = 'https://api.backendless.com'
+// process.env.CONSOLE_SERVER = 'https://develop.backendless.com'
+process.env.TEST_USER_EMAIL = 'vladimir.upirov+e2e@themidnightcoders.com'
+process.env.TEST_USER_PASSWORD = 'js-sdk-tests'
+process.env.TEST_VERBOSE = true
+process.env.DESTROY_ALL_PREV_APPS = true
+process.env.DESTROY_APP_AFTER_TEST = false
+// process.env.PERSISTED_APP_ID = '9860E938-7FC0-40CD-8429-7005CA1D2F26'
+
 const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
 const CONSOLE_SERVER = process.env.CONSOLE_SERVER || 'http://localhost:3000'
 const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'foo@foo.com'
 const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'secret'
 const TEST_VERBOSE = process.env.TEST_VERBOSE === 'true'
-const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS === 'true'
+const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS !== 'false'
 const DESTROY_APP_AFTER_TEST = process.env.DESTROY_APP_AFTER_TEST !== 'false'
 const PERSISTED_APP_ID = process.env.PERSISTED_APP_ID
 
@@ -179,6 +190,7 @@ const createSandboxFor = each => () => {
         this.dev = sandbox.dev
         this.app = sandbox.app
 
+        Backendless.debugMode = TEST_VERBOSE
         Backendless.serverURL = API_SERVER
         Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
       })

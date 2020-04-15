@@ -27,34 +27,68 @@ describe('Backendless.Files', function() {
 
   describe('Directory Listing', function() {
     before(function() {
-        return Promise.all([
-          createFile('/listing-test/index.html'),
-          createFile('/listing-test/users.html'),
-          createFile('/listing-test/logo.png'),
-          createFile('/listing-test/subdir/one-more.html')
-        ])
-      }
-    )
-
-    it('basic', function() {
-      return Files.listing('listing-test').then(result => {
-        return expect(sortedNames(result)).to.be.eql(['index.html', 'logo.png', 'subdir', 'users.html'])
-      })
+      return Promise.all([
+        createFile('/listing-test/index.html'),
+        createFile('/listing-test/users.html'),
+        createFile('/listing-test/logo.png'),
+        createFile('/listing-test/subdir/one-more.html')
+      ])
     })
 
-    it('pattern based', function() {
-      return Files.listing('listing-test', '*.html')
-        .then(result => expect(sortedNames(result)).to.be.eql(['index.html', 'users.html']))
+    it('basic', async () => {
+      const files = await Files.listing('listing-test')
+
+      expect(sortedNames(files)).to.be.eql(['index.html', 'logo.png', 'subdir', 'users.html'])
     })
 
-    it('pattern based recursive', function() {
-      return Files.listing('listing-test', '*.html', true)
-        .then(result => expect(sortedNames(result)).to.be.eql(['index.html', 'one-more.html', 'users.html']))
+    it('pattern based', async () => {
+      const files = await Files.listing('listing-test', '*.html')
+
+      expect(sortedNames(files)).to.be.eql(['index.html', 'users.html'])
     })
 
-    it('paged', function() {
-      return Files.listing('listing-test', null, true, 3, 1)
-        .then(result => expect(sortedNames(result)).to.be.eql(['index.html', 'logo.png', 'one-more.html']))
+    it('pattern based recursive', async () => {
+      const files = await Files.listing('listing-test', '*.html', true)
+
+      expect(sortedNames(files)).to.be.eql(['index.html', 'one-more.html', 'users.html'])
+    })
+
+    it('paged', async () => {
+      const files = await Files.listing('listing-test', null, true, 3, 1)
+
+      expect(sortedNames(files)).to.be.eql(['index.html', 'logo.png', 'one-more.html'])
+    })
+  })
+
+  describe('Count', function() {
+    const dirName = 'listing-count-test'
+
+    before(function() {
+      return Promise.all([
+        createFile(`/${dirName}/index.html`),
+        createFile(`/${dirName}/users.html`),
+        createFile(`/${dirName}/logo.png`),
+        createFile(`/${dirName}/subdir-1/one-more-1.html`),
+        createFile(`/${dirName}/subdir-2/one-more-2.html`)
+      ])
+    })
+
+    it('basic', async () => {
+      const filesCount = await Files.getFileCount(dirName)
+
+      expect(filesCount).to.be.eql(3)
+    })
+
+    it('pattern based', async () => {
+      const filesCount = await Files.getFileCount(dirName, '*.html')
+
+      expect(filesCount).to.be.eql(2)
+    })
+
+    it('pattern based recursive', async () => {
+      const filesCount = await Files.getFileCount(dirName, '*.html', true)
+
+      expect(filesCount).to.be.eql(4)
     })
   })
 
