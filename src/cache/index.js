@@ -38,8 +38,8 @@ export default class Cache {
       throw new Error('Cache Key must be provided and must be a string.')
     }
 
-    if (timeToLive && !(timeToLive > 0)) {
-      throw new Error('Cache TimeToLive must be a number.')
+    if (timeToLive && (typeof timeToLive !== 'number' || timeToLive < 0)) {
+      throw new Error('Cache TimeToLive must be a positive number.')
     }
 
     return this.app.request.put({
@@ -87,7 +87,7 @@ export default class Cache {
       throw new Error('Cache Key must be provided and must be a string.')
     }
 
-    if (!(seconds > 0)) {
+    if (typeof seconds !== 'number' || seconds <= 0) {
       throw new Error('Cache Expiration must be provided and must be a number of seconds.')
     }
 
@@ -99,13 +99,14 @@ export default class Cache {
   }
 
   async expireAt(key, timestamp) {
-    timestamp = timestamp instanceof Date ? timestamp.getTime() : timestamp
-
     if (!key || typeof key !== 'string') {
       throw new Error('Cache Key must be provided and must be a string.')
     }
 
-    if (!(timestamp > 0)) {
+    if (timestamp instanceof Date) {
+      timestamp = timestamp.getTime()
+
+    } else if (typeof timestamp !== 'number' || timestamp <= 0) {
       throw new Error('Cache Expiration must be provided and must be a timestamp or an instance of Date.')
     }
 

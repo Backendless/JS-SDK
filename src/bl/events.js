@@ -15,8 +15,8 @@ export default class Events {
       eventArgs = undefined
     }
 
-    if (eventArgs && typeof eventArgs !== 'object') {
-      eventArgs = {}
+    if (eventArgs && (typeof eventArgs !== 'object' || Array.isArray(eventArgs))) {
+      throw new Error('Event Arguments must be an object.')
     }
 
     const headers = {}

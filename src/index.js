@@ -236,10 +236,10 @@ class Backendless {
     )
   }
 
-  setupDevice(...args) {
-    const { default: Device } = require('./device')
+  setupDevice(device) {
+    const Device = require('./device').default
 
-    this.__device = new Device(...args)
+    this.__device = new Device(device)
   }
 
   ///----------UTIL METHODS--------///

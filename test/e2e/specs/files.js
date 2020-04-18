@@ -1,6 +1,4 @@
-import '../helpers/global'
-import sandbox from '../helpers/sandbox'
-import { wait } from '../helpers/promise'
+import sandbox, { Utils } from '../helpers/sandbox'
 
 const Backendless = sandbox.Backendless
 
@@ -15,7 +13,7 @@ describe('Backendless.Files', function() {
   let createFile
   let readFile
 
-  const waiter = () => wait(2000)
+  const waiter = () => Utils.wait(2000)
 
   before(function() {
     Files = Backendless.Files

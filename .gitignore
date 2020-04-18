@@ -9,4 +9,5 @@ node_modules
 # Build results
 dist
 lib
-es
+es.nyc_output/
+coverage/
