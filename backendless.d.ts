@@ -1033,11 +1033,11 @@ declare module Backendless {
 
         info(message: string): void;
 
-        warn(message: string): void;
+        warn(message: string, exception?: string): void;
 
-        error(message: string): void;
+        error(message: string, exception?: string): void;
 
-        fatal(message: string): void;
+        fatal(message: string, exception?: string): void;
 
         trace(message: string): void;
     }

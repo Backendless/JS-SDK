@@ -985,6 +985,7 @@ function testLogging() {
     const loggerName: string = 'str';
     let logger: Backendless.Logger;
     const message: string = 'str';
+    const exception: string = 'str';
 
     const restUrl: string = Backendless.Logging.restUrl;
     const loggers: Object = Backendless.Logging.loggers;
@@ -999,8 +1000,11 @@ function testLogging() {
     logger.debug(message);
     logger.info(message);
     logger.warn(message);
+    logger.warn(message, exception);
     logger.error(message);
+    logger.error(message, exception);
     logger.fatal(message);
+    logger.fatal(message, exception);
     logger.trace(message);
 }
 
