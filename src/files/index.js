@@ -59,15 +59,15 @@ export default class Files {
     })
   }
 
-  async listing(path, pattern, recursively, pagesize, offset) {
+  async listing(path, pattern, sub, pagesize, offset) {
     const query = {}
 
     if (typeof pattern === 'string') {
       query.pattern = pattern
     }
 
-    if (typeof recursively === 'boolean') {
-      query.sub = recursively
+    if (typeof sub === 'boolean') {
+      query.sub = sub
     }
 
     if (typeof pagesize === 'number' && pagesize >= 0) {
@@ -159,7 +159,7 @@ export default class Files {
     })
   }
 
-  async getFileCount(filesPath, pattern, recursive, countDirectories) {
+  async getFileCount(filesPath, pattern, sub, countDirectories) {
     if (!filesPath || typeof filesPath !== 'string') {
       throw new Error('Files "path" must be provided and must be a string.')
     }
@@ -169,11 +169,11 @@ export default class Files {
     }
 
     return this.app.request.get({
-      url: this.app.urls.filePath(filesPath),
-      query:{
+      url  : this.app.urls.filePath(filesPath),
+      query: {
         action          : 'count',
         pattern         : pattern || '*',
-        recursive       : !!recursive,
+        sub             : !!sub,
         countDirectories: !!countDirectories
       },
     })
