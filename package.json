@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "5.8.8",
+  "version": "5.8.9",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -86,7 +86,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.8.7",
-    "backendless-request": "~0.1.0",
-    "backendless-rt-client": "0.0.18"
+    "backendless-request": "~0.1.1",
+    "backendless-rt-client": "0.0.20"
   }
 }

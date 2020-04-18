@@ -1,28 +1,28 @@
 import Utils from '../utils'
 import Async from '../request/async'
 
-export function getFileCount(path, pattern, recursive, countDirectories, asyncHandler) {
+export function getFileCount(path, pattern, sub, countDirectories, asyncHandler) {
 
   if (countDirectories instanceof Async) {
     asyncHandler = countDirectories
     countDirectories = undefined
 
-  } else if (recursive instanceof Async) {
-    asyncHandler = recursive
-    recursive = undefined
+  } else if (sub instanceof Async) {
+    asyncHandler = sub
+    sub = undefined
     countDirectories = undefined
 
   } else if (pattern instanceof Async) {
     asyncHandler = pattern
     pattern = undefined
-    recursive = undefined
+    sub = undefined
     countDirectories = undefined
   }
 
   const query = {
     action          : 'count',
     pattern         : pattern !== undefined ? pattern : '*',
-    recursive       : !!recursive,
+    sub             : !!sub,
     countDirectories: !!countDirectories
   }
 
