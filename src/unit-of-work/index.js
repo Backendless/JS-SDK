@@ -202,8 +202,6 @@ class UnitOfWork {
    * update(tableName: string, object: object): OpResult;
    * update(opResult: OpResult | OpResultValueReference, object: object): OpResult;
    * update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
-   * update(index: number, changesObj: object): OpResult;
-   * update(index: number, propertyName: string, propertyValueObj: object): OpResult;
    * **/
   update(...args) {
     let tableName
@@ -246,25 +244,42 @@ class UnitOfWork {
   }
 
   /**
-   * delete(object: object): OpResult;
    * delete(opResult: OpResult): OpResult;
-   * delete(index: number): OpResult;
+   * delete(object: object): OpResult;
    * delete(tableName: string, object: object): OpResult;
    * delete(tableName: string, objectId: string): OpResult;
    * **/
-  delete(tableName, object) {
-    if (tableName && typeof tableName === 'object') {
-      object = tableName
-      tableName = Utils.getClassName(tableName)
+  delete(...args) {
+    let tableName
+    let object
+
+    if (args.length === 1) {
+      if (args[0] instanceof OpResult || args[0] instanceof OpResultValueReference) {
+        tableName = args[0].getTableName()
+        object = args[0]
+
+      } else if (typeof args[0] === 'object') {
+        tableName = Utils.getClassName(args[0])
+        object = args[0].objectId
+      }
+
+    } else if (args.length === 2) {
+      tableName = args[0]
+      object = typeof args[1] === 'object' ? args[1].objectId : args[1]
+
+    } else {
+      throw new Error('Invalid arguments')
     }
 
-    let objectId = object
-
-    if (object && typeof object === 'object') {
-      objectId = object.objectId
+    if (!object) {
+      throw new Error('Table Object must be provided.')
     }
 
-    return this.addOperations(OperationType.DELETE, tableName, objectId)
+    if (typeof tableName !== 'string') {
+      throw new Error('Table Name must be a string.')
+    }
+
+    return this.addOperations(OperationType.DELETE, tableName, object)
   }
 
   /**

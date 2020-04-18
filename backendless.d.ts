@@ -516,9 +516,11 @@ declare module Backendless {
 
         function upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
 
-        function listingSync(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Object;
+        function listingSync(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Object;
 
-        function listing(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Promise<Object>;
+        function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
+
+        function getFileCount(path: string, pattern?: string, sub?: boolean, countDirectories?: boolean): Promise<number>;
 
         function renameFileSync(oldPathName: string, newName: string): Object;
 
@@ -1374,8 +1376,8 @@ declare module Backendless {
 
         setOpResultId(opResultId: string): void;
 
-        resolvedTo(index: number, property?: string): OpResultValueReference
-        resolvedTo(property: string): OpResultValueReference
+        resolveTo(index: number, property?: string): OpResultValueReference
+        resolveTo(property: string): OpResultValueReference
     }
 
     enum IsolationLevelEnum {
@@ -1395,14 +1397,11 @@ declare module Backendless {
 
         update(object: object): OpResult;
         update(tableName: string, object: object): OpResult;
-        update(opResult: OpResult | OpResultValueReference, object: object): OpResult;
+        update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
-        update(index: number, changesObj: object): OpResult;
-        update(index: number, propertyName: string, propertyValueObj: object): OpResult;
 
+        delete(opResult: OpResult | OpResultValueReference): OpResult;
         delete(object: object): OpResult;
-        delete(opResult: OpResult): OpResult;
-        delete(index: number): OpResult;
         delete(tableName: string, object: object): OpResult;
         delete(tableName: string, objectId: string): OpResult;
 

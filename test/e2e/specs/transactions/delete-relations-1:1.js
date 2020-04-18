@@ -161,7 +161,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult([findOrdersOperation.resolvedTo(0)])
+          await checkResult([findOrdersOperation.resolveTo(0)])
         })
 
         it('children:<Update.OpResult>', async function() {
@@ -181,7 +181,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult(findOrdersOperation.resolvedTo(0))
+          await checkResult(findOrdersOperation.resolveTo(0))
         })
       })
 
@@ -196,7 +196,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
         })
 
         async function checkResult(children) {
-          const operation = uow.deleteRelation(findPersonsOperation.resolvedTo(0), ORDER_COLUMN, children)
+          const operation = uow.deleteRelation(findPersonsOperation.resolveTo(0), ORDER_COLUMN, children)
 
           const uowResult = await uow.execute()
 
@@ -269,7 +269,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult([findOrdersOperation.resolvedTo(0)])
+          await checkResult([findOrdersOperation.resolveTo(0)])
         })
 
         it('children:<Update.OpResult>', async function() {
@@ -289,7 +289,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult(findOrdersOperation.resolvedTo(0))
+          await checkResult(findOrdersOperation.resolveTo(0))
         })
       })
 
@@ -371,7 +371,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult([findOrdersOperation.resolvedTo(0)])
+          await checkResult([findOrdersOperation.resolveTo(0)])
         })
 
         it('children:<Update.OpResult>', async function() {
@@ -391,7 +391,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult(findOrdersOperation.resolvedTo(0))
+          await checkResult(findOrdersOperation.resolveTo(0))
         })
       })
     })
@@ -471,7 +471,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult([findOrdersOperation.resolvedTo(0)])
+          await checkResult([findOrdersOperation.resolveTo(0)])
         })
 
         it('children:<Update.OpResult>', async function() {
@@ -489,7 +489,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult(findOrdersOperation.resolvedTo(0))
+          await checkResult(findOrdersOperation.resolveTo(0))
         })
 
       })
@@ -569,7 +569,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult([findOrdersOperation.resolvedTo(0)])
+          await checkResult([findOrdersOperation.resolveTo(0)])
         })
 
         it('children:<Update.OpResult>', async function() {
@@ -587,7 +587,7 @@ describe('Transactions - Delete 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          await checkResult(findOrdersOperation.resolvedTo(0))
+          await checkResult(findOrdersOperation.resolveTo(0))
         })
 
       })

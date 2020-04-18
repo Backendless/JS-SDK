@@ -188,8 +188,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -207,8 +207,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())
@@ -360,8 +360,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -379,8 +379,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())
@@ -433,7 +433,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
         })
 
         async function checkResult(children) {
-          const setRelationOp = uow.addToRelation(findPersonsOperation.resolvedTo(0), ADDRESSES_COLUMN, children)
+          const setRelationOp = uow.addToRelation(findPersonsOperation.resolveTo(0), ADDRESSES_COLUMN, children)
 
           const uowResult = await uow.execute()
 
@@ -530,8 +530,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -549,8 +549,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())
@@ -606,7 +606,7 @@ describe('Transactions - Add 1:N Relations Operations', function() {
         })
 
         async function checkResult(children) {
-          const setRelationOp = uow.addToRelation(bulkCreateOperation.resolvedTo(0), ADDRESSES_COLUMN, children)
+          const setRelationOp = uow.addToRelation(bulkCreateOperation.resolveTo(0), ADDRESSES_COLUMN, children)
 
           const uowResult = await uow.execute()
 
@@ -702,8 +702,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -721,8 +721,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())
@@ -868,8 +868,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -887,8 +887,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())
@@ -1045,8 +1045,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -1064,8 +1064,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())
@@ -1206,8 +1206,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -1225,8 +1225,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())
@@ -1365,8 +1365,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           const person = await checkResult([
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(3)
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(3)
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort()).to.eql(['initial-2', 'initial-4'].sort())
@@ -1384,8 +1384,8 @@ describe('Transactions - Add 1:N Relations Operations', function() {
           const bulkCreateOperation = uow.bulkCreate(objects)
 
           const person = await checkResult([
-            bulkCreateOperation.resolvedTo(1),
-            bulkCreateOperation.resolvedTo(3),
+            bulkCreateOperation.resolveTo(1),
+            bulkCreateOperation.resolveTo(3),
           ])
 
           expect(person[ADDRESSES_COLUMN].map(o => o.address).sort())

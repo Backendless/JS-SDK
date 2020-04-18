@@ -278,7 +278,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
     const operation = uow.find(PERSONS_TABLE_NAME, query)
 
-    const setRelationOp = uow.setRelation(operation.resolvedTo(0), ORDER_COLUMN, [simpleOrder])
+    const setRelationOp = uow.setRelation(operation.resolveTo(0), ORDER_COLUMN, [simpleOrder])
 
     const uowResult = await uow.execute()
 
@@ -423,7 +423,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -440,7 +440,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -476,7 +476,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -493,7 +493,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -625,7 +625,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -642,7 +642,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -678,7 +678,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -695,7 +695,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -724,7 +724,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
         })
 
         async function checkResult(children) {
-          const setRelationOp = uow.setRelation(findPersonsOperation.resolvedTo(0), ORDER_COLUMN, children)
+          const setRelationOp = uow.setRelation(findPersonsOperation.resolveTo(0), ORDER_COLUMN, children)
 
           const uowResult = await uow.execute()
 
@@ -825,7 +825,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -842,7 +842,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -878,7 +878,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -895,7 +895,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -927,7 +927,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
         })
 
         async function checkResult(children) {
-          const setRelationOp = uow.setRelation(bulkCreateOperation.resolvedTo(0), ORDER_COLUMN, children)
+          const setRelationOp = uow.setRelation(bulkCreateOperation.resolveTo(0), ORDER_COLUMN, children)
 
           const uowResult = await uow.execute()
 
@@ -1027,7 +1027,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1044,7 +1044,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1080,7 +1080,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1097,7 +1097,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1221,7 +1221,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1238,7 +1238,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1274,7 +1274,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1291,7 +1291,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1416,7 +1416,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1433,7 +1433,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1469,7 +1469,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1486,7 +1486,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1611,7 +1611,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1628,7 +1628,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1664,7 +1664,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1681,7 +1681,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1808,7 +1808,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult([findOrdersOperation.resolvedTo(3)])
+          const person = await checkResult([findOrdersOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1825,7 +1825,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult([bulkCreateOperation.resolvedTo(3)])
+          const person = await checkResult([bulkCreateOperation.resolveTo(3)])
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)
@@ -1861,7 +1861,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const findOrdersOperation = uow.find(ORDERS_TABLE_NAME, query)
 
-          const person = await checkResult(findOrdersOperation.resolvedTo(3))
+          const person = await checkResult(findOrdersOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal('initial-4')
           expect(person[ORDER_COLUMN].price).to.equal(130)
@@ -1878,7 +1878,7 @@ describe('Transactions - Set 1:1 Relations Operations', function() {
 
           const bulkCreateOperation = uow.bulkCreate(objects)
 
-          const person = await checkResult(bulkCreateOperation.resolvedTo(3))
+          const person = await checkResult(bulkCreateOperation.resolveTo(3))
 
           expect(person[ORDER_COLUMN].label).to.equal(objects[3].label)
           expect(person[ORDER_COLUMN].price).to.equal(objects[3].price)

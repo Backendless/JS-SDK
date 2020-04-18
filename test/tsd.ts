@@ -684,7 +684,7 @@ function testFilesService() {
     const fileName: string = 'str';
     const fileContent: Blob = new Blob();
     const pattern: string = 'str';
-    const recursively: boolean = true;
+    const sub: boolean = true;
     const pageSize: number = 123;
     const offset: number = 123;
     const overwrite: boolean = true;
@@ -699,6 +699,7 @@ function testFilesService() {
     const url: string = 'str';
     const permissionType: string = 'str';
     const roleName: string = 'str';
+    const countDirectories: boolean = true;
 
     let resultStr: string;
     let resultBool: boolean;
@@ -728,15 +729,20 @@ function testFilesService() {
 
     resultObj = Backendless.Files.listingSync(path);
     resultObj = Backendless.Files.listingSync(path, pattern);
-    resultObj = Backendless.Files.listingSync(path, pattern, recursively);
-    resultObj = Backendless.Files.listingSync(path, pattern, recursively, pageSize);
-    resultObj = Backendless.Files.listingSync(path, pattern, recursively, pageSize, offset);
+    resultObj = Backendless.Files.listingSync(path, pattern, sub);
+    resultObj = Backendless.Files.listingSync(path, pattern, sub, pageSize);
+    resultObj = Backendless.Files.listingSync(path, pattern, sub, pageSize, offset);
 
     promiseObject = Backendless.Files.listing(path);
     promiseObject = Backendless.Files.listing(path, pattern);
-    promiseObject = Backendless.Files.listing(path, pattern, recursively);
-    promiseObject = Backendless.Files.listing(path, pattern, recursively, pageSize);
-    promiseObject = Backendless.Files.listing(path, pattern, recursively, pageSize, offset);
+    promiseObject = Backendless.Files.listing(path, pattern, sub);
+    promiseObject = Backendless.Files.listing(path, pattern, sub, pageSize);
+    promiseObject = Backendless.Files.listing(path, pattern, sub, pageSize, offset);
+
+    promiseNumber = Backendless.Files.getFileCount(path);
+    promiseNumber = Backendless.Files.getFileCount(path, pattern);
+    promiseNumber = Backendless.Files.getFileCount(path, pattern, sub);
+    promiseNumber = Backendless.Files.getFileCount(path, pattern, sub, countDirectories);
 
     resultObj = Backendless.Files.renameFileSync(oldPathName, newName);
     promiseObject = Backendless.Files.renameFile(oldPathName, newName);
@@ -1206,9 +1212,9 @@ async function testBaseTransactions() {
 
     tableName = opResult.getTableName()
 
-    opResultValueReference = opResult.resolvedTo(1)
-    opResultValueReference = opResult.resolvedTo(1, 'propName')
-    opResultValueReference = opResult.resolvedTo('propName')
+    opResultValueReference = opResult.resolveTo(1)
+    opResultValueReference = opResult.resolveTo(1, 'propName')
+    opResultValueReference = opResult.resolveTo('propName')
 
     promiseResult = uow.execute()
     unitOfWorkResult = await uow.execute()

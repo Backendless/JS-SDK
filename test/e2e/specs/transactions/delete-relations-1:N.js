@@ -177,9 +177,9 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           await checkResult([
-            findOperation.resolvedTo(0),
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(2)
+            findOperation.resolveTo(0),
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(2)
           ])
         })
 
@@ -206,7 +206,7 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
         })
 
         async function checkResult(children) {
-          const operation = uow.deleteRelation(findPersonsOperation.resolvedTo(0), ADDRESSES_COLUMN, children)
+          const operation = uow.deleteRelation(findPersonsOperation.resolveTo(0), ADDRESSES_COLUMN, children)
 
           const uowResult = await uow.execute()
 
@@ -289,9 +289,9 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           await checkResult([
-            findOperation.resolvedTo(0),
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(2)
+            findOperation.resolveTo(0),
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(2)
           ])
         })
 
@@ -394,9 +394,9 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           await checkResult([
-            findOperation.resolvedTo(0),
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(2)
+            findOperation.resolveTo(0),
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(2)
           ])
         })
 
@@ -502,9 +502,9 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           await checkResult([
-            findOperation.resolvedTo(0),
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(2)
+            findOperation.resolveTo(0),
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(2)
           ])
         })
 
@@ -607,9 +607,9 @@ describe('Transactions - Delete 1:N Relations Operations', function() {
           const findOperation = uow.find(ADDRESSES_TABLE_NAME, query)
 
           await checkResult([
-            findOperation.resolvedTo(0),
-            findOperation.resolvedTo(1),
-            findOperation.resolvedTo(2)
+            findOperation.resolveTo(0),
+            findOperation.resolveTo(1),
+            findOperation.resolveTo(2)
           ])
         })
 

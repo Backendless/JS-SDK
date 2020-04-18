@@ -3,14 +3,26 @@ import { createClient } from 'backendless-console-sdk'
 import { TablesAPI } from './tables'
 import { wait } from './promise'
 import * as Utils from './utils'
-// import Backendless from '../../../src/backendless'
+
 const Backendless = require('../../../lib')
+
+process.env.API_SERVER = 'https://apitest.backendless.com'
+process.env.CONSOLE_SERVER = 'https://devtest.backendless.com'
+// process.env.API_SERVER = 'https://api.backendless.com'
+// process.env.CONSOLE_SERVER = 'https://develop.backendless.com'
+process.env.TEST_USER_EMAIL = 'vladimir.upirov+e2e@themidnightcoders.com'
+process.env.TEST_USER_PASSWORD = 'js-sdk-tests'
+process.env.TEST_VERBOSE = true
+process.env.DESTROY_ALL_PREV_APPS = true
+process.env.DESTROY_APP_AFTER_TEST = false
+// process.env.PERSISTED_APP_ID = '9860E938-7FC0-40CD-8429-7005CA1D2F26'
 
 const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
 const CONSOLE_SERVER = process.env.CONSOLE_SERVER || 'http://localhost:3000'
 const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'foo@foo.com'
 const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'secret'
-const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS === 'true'
+const TEST_VERBOSE = process.env.TEST_VERBOSE === 'true'
+const DESTROY_ALL_PREV_APPS = process.env.DESTROY_ALL_PREV_APPS !== 'false'
 const DESTROY_APP_AFTER_TEST = process.env.DESTROY_APP_AFTER_TEST !== 'false'
 const PERSISTED_APP_ID = process.env.PERSISTED_APP_ID
 
@@ -21,6 +33,12 @@ const persistedLocalDev = () => ({
   pwd  : TEST_USER_PASSWORD
 })
 
+const log = (...args) => {
+  if (TEST_VERBOSE) {
+    console.log(...args)
+  }
+}
+
 const destroyAllTestApps = (() => {
   let prevRequest = null
 
@@ -29,12 +47,18 @@ const destroyAllTestApps = (() => {
       return prevRequest
     }
 
+    log('destroy all previous test apps')
+
     return prevRequest = Promise.resolve()
       .then(async () => {
         const apps = await api.apps.getApps()
 
-        await Promise.all(apps.map(app => {
+        log(`loaded ${apps.length} apps`)
+
+        return Promise.all(apps.map(app => {
           if (TEST_APP_NAME_PATTERN.test(app.name)) {
+            log(`destroy app: ${app.id} (${app.name})`)
+
             return api.apps.deleteApp(app.id)
           }
         }))
@@ -44,6 +68,8 @@ const destroyAllTestApps = (() => {
 
 const createDestroyer = sandbox => async () => {
   if (DESTROY_APP_AFTER_TEST) {
+    log(`destroy after tests application: ${sandbox.app.id} (${sandbox.app.name})`)
+
     await sandbox.api.apps.deleteApp(sandbox.app.id)
   }
 }
@@ -59,6 +85,8 @@ const provideApp = api => {
 }
 
 const createSandbox = async api => {
+  log('create sandbox')
+
   const app = {}
   const dev = persistedLocalDev()
 
@@ -66,6 +94,8 @@ const createSandbox = async api => {
   sandbox.destroy = createDestroyer(sandbox)
 
   const user = await api.user.login(dev.email, dev.pwd)
+
+  log('logged in user: ', dev.email)
 
   dev.id = user.id
   dev.name = user.name
@@ -78,6 +108,8 @@ const createSandbox = async api => {
   const createApp = await provideApp(api)
 
   Object.assign(app, createApp)
+
+  log(`load app settings for app: ${sandbox.app.id} (${sandbox.app.name})`)
 
   const appSettings = await api.settings.getAppSettings(app.id)
 
@@ -158,6 +190,7 @@ const createSandboxFor = each => () => {
         this.dev = sandbox.dev
         this.app = sandbox.app
 
+        Backendless.debugMode = TEST_VERBOSE
         Backendless.serverURL = API_SERVER
         Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
       })
