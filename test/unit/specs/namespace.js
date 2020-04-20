@@ -5,23 +5,23 @@ import Backendless, { APP_ID, API_KEY } from '../helpers/sandbox'
 
 describe('Namespace', () => {
 
-  describe('Basic init', function() {
+  describe('Basic init', () => {
 
-    it('should change public app relevant variables in Backendless scope', function() {
+    it('should change public app relevant variables in Backendless scope', () => {
       Backendless.initApp(APP_ID, API_KEY)
 
       expect(Backendless.applicationId).to.be.equal(APP_ID)
       expect(Backendless.secretKey).to.be.equal(API_KEY)
     })
 
-    it('should change public app relevant variables in Backendless scope using object config', function() {
+    it('should change public app relevant variables in Backendless scope using object config', () => {
       Backendless.initApp({ appId: APP_ID, apiKey: API_KEY })
 
       expect(Backendless.applicationId).to.be.equal(APP_ID)
       expect(Backendless.secretKey).to.be.equal(API_KEY)
     })
 
-    it('should not change public variables in Backendless scope', function() {
+    it('should not change public variables in Backendless scope', () => {
       Backendless.serverURL = 'http://foo.bar'
       Backendless.initApp(APP_ID, API_KEY)
 
@@ -37,9 +37,9 @@ describe('Namespace', () => {
     })
   })
 
-  describe('Standalone', function() {
+  describe('Standalone', () => {
 
-    it('has several Backendless apps at the same time', function() {
+    it('has several Backendless apps at the same time', () => {
       const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
       const app3 = Backendless.initApp({ appId: 'appId-3', apiKey: 'apiKey-3', standalone: true })
 
@@ -51,9 +51,9 @@ describe('Namespace', () => {
     })
   })
 
-  describe('Debug Mode', function() {
+  describe('Debug Mode', () => {
 
-    it('should set debug mode', function() {
+    it('should set debug mode', () => {
       Backendless.debugMode = true
 
       expect(Backendless.debugMode).to.be.equal(true)
@@ -72,9 +72,9 @@ describe('Namespace', () => {
     })
   })
 
-  describe('Server Code', function() {
+  describe('Server Code', () => {
 
-    it('should set ServerCode', function() {
+    it('should set ServerCode', () => {
       Backendless.ServerCode = {
         addService() {
           return true
@@ -85,9 +85,9 @@ describe('Namespace', () => {
     })
   })
 
-  describe('Device', function() {
+  describe('Device', () => {
 
-    it('should fail if device is not setup yet', function() {
+    it('should fail if device is not setup yet', () => {
       let error
 
       try {
@@ -101,7 +101,7 @@ describe('Namespace', () => {
       )
     })
 
-    it('should setup device', function() {
+    it('should setup device', () => {
       Backendless.setupDevice({
         uuid    : 'uuid',
         platform: 'platform',
@@ -113,7 +113,7 @@ describe('Namespace', () => {
       expect(Backendless.device.version).to.equal('version')
     })
 
-    it('should fail if it has missed parameter', function() {
+    it('should fail if it has missed parameter', () => {
       Backendless.setupDevice({ uuid: 'u', platform: 'p', version: 'v', })
 
       const errorMsg = 'Device properties object must consist of fields "uuid", "platform" and "version".'
@@ -129,8 +129,8 @@ describe('Namespace', () => {
     })
   })
 
-  describe('XMLHttpRequest', function() {
-    it('should setup XMLHttpRequest', function() {
+  describe('XMLHttpRequest', () => {
+    it('should setup XMLHttpRequest', () => {
       class TestXMLHttpRequest {
       }
 
@@ -140,9 +140,109 @@ describe('Namespace', () => {
     })
   })
 
-  describe('Browser', function() {
-    it('should return empty object in Nodejs env', function() {
+  describe('Browser', () => {
+    it('should return empty object in Nodejs env', () => {
       expect(Backendless.browser).to.eql({})
+    })
+  })
+
+  describe('Utils', () => {
+    it('isBrowser returns false in NodeJS env', () => {
+      expect(Backendless.Utils.isBrowser).to.equal(false)
+    })
+
+    it('isLocalStorageSupported is not supported in NodeJS env', () => {
+      expect(Backendless.Utils.isLocalStorageSupported).to.equal(false)
+    })
+
+    it('castArray wrap into array if passed argument is not array', () => {
+      expect(Backendless.Utils.castArray()).to.eql([])
+      expect(Backendless.Utils.castArray(undefined)).to.eql([])
+      expect(Backendless.Utils.castArray(null)).to.eql([null])
+      expect(Backendless.Utils.castArray(false)).to.eql([false])
+      expect(Backendless.Utils.castArray(0)).to.eql([0])
+      expect(Backendless.Utils.castArray(123)).to.eql([123])
+      expect(Backendless.Utils.castArray({})).to.eql([{}])
+      expect(Backendless.Utils.castArray('str')).to.eql(['str'])
+
+      expect(Backendless.Utils.castArray([])).to.eql([])
+      expect(Backendless.Utils.castArray([undefined])).to.eql([undefined])
+      expect(Backendless.Utils.castArray([null])).to.eql([null])
+      expect(Backendless.Utils.castArray([false])).to.eql([false])
+      expect(Backendless.Utils.castArray([0])).to.eql([0])
+      expect(Backendless.Utils.castArray([123])).to.eql([123])
+      expect(Backendless.Utils.castArray([{}])).to.eql([{}])
+      expect(Backendless.Utils.castArray(['str'])).to.eql(['str'])
+    })
+
+    it('isCustomClassInstance returns true is the passed object is an instance of custom class only', () => {
+      class FooClass {
+      }
+
+      function FooFn() {
+      }
+
+      expect(Backendless.Utils.isCustomClassInstance(new FooClass())).to.equal(true)
+      expect(Backendless.Utils.isCustomClassInstance(new FooFn())).to.equal(true)
+
+      expect(Backendless.Utils.isCustomClassInstance()).to.equal(false)
+      expect(Backendless.Utils.isCustomClassInstance(null)).to.equal(false)
+      expect(Backendless.Utils.isCustomClassInstance(0)).to.equal(false)
+      expect(Backendless.Utils.isCustomClassInstance(123)).to.equal(false)
+      expect(Backendless.Utils.isCustomClassInstance('str')).to.equal(false)
+      expect(Backendless.Utils.isCustomClassInstance({})).to.equal(false)
+      expect(Backendless.Utils.isCustomClassInstance([])).to.equal(false)
+      expect(Backendless.Utils.isCustomClassInstance(() => ({}))).to.equal(false)
+    })
+
+    it('getClassName returns a Class Name', () => {
+      class FooClass {
+      }
+
+      function FooFn() {
+      }
+
+      const FooArrow = () => {
+      }
+
+      const FooVarFn = function() {
+      }
+
+      const classes = {
+        FooFn() {
+        },
+
+        FooVar: function() {
+        },
+      }
+
+      expect(Backendless.Utils.getClassName(FooClass)).to.equal('FooClass')
+      expect(Backendless.Utils.getClassName(FooFn)).to.equal('FooFn')
+      expect(Backendless.Utils.getClassName(FooArrow)).to.equal('FooArrow')
+      expect(Backendless.Utils.getClassName(FooVarFn)).to.equal('FooVarFn')
+
+      expect(Backendless.Utils.getClassName(new FooClass())).to.equal('FooClass')
+      expect(Backendless.Utils.getClassName(new FooFn())).to.equal('FooFn')
+      expect(Backendless.Utils.getClassName(new FooArrow())).to.equal('FooArrow')
+      expect(Backendless.Utils.getClassName(new FooVarFn())).to.equal('FooVarFn')
+
+      expect(Backendless.Utils.getClassName(classes.FooFn)).to.equal('FooFn')
+      expect(Backendless.Utils.getClassName(classes.FooVar)).to.equal('FooVar')
+      expect(Backendless.Utils.getClassName({ ___class: 'MyClass' })).to.equal('MyClass')
+
+      expect(Backendless.Utils.getClassName()).to.equal(null)
+      expect(Backendless.Utils.getClassName(null)).to.equal(null)
+      expect(Backendless.Utils.getClassName(0)).to.equal(null)
+      expect(Backendless.Utils.getClassName(123)).to.equal(null)
+      expect(Backendless.Utils.getClassName('str')).to.equal(null)
+      expect(Backendless.Utils.getClassName({})).to.equal(null)
+      expect(Backendless.Utils.getClassName([])).to.equal(null)
+      expect(Backendless.Utils.getClassName(() => ({}))).to.equal(null)
+    })
+
+    it('uuid returns uniq string', () => {
+      expect(Backendless.Utils.uuid()).to.be.a('string')
+      expect(Backendless.Utils.uuid()).to.not.equal(Backendless.Utils.uuid())
     })
   })
 })

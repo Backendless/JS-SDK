@@ -9,26 +9,39 @@ const Utils = {
       return value
     }
 
+    if (typeof value === 'undefined') {
+      return []
+    }
+
     return [value]
   },
 
   isCustomClassInstance(item) {
-    return !!item && typeof item === 'object' && !Array.isArray(item) && item.constructor !== Object
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      return false
+    }
+
+    return item.constructor !== Object
   },
 
   getClassName(obj) {
-    if (obj.prototype && obj.prototype.___class) {
-      return obj.prototype.___class
+    if (typeof obj === 'function') {
+      if (obj.name) {
+        return obj.name
+      }
     }
 
-    if (typeof obj === 'function' && obj.name) {
-      return obj.name
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      if (obj.___class) {
+        return obj.___class
+      }
+
+      if (obj.constructor !== Object) {
+        return Utils.getClassName(obj.constructor)
+      }
     }
 
-    const instStringified = (typeof obj === 'function' ? obj.toString() : obj.constructor.toString())
-    const results = instStringified.match(/function\s+(\w+)/)
-
-    return (results && results.length > 1) ? results[1] : ''
+    return null
   },
 
   deepExtend(destination, source, classToTableMap = {}) {

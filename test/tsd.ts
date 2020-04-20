@@ -1240,7 +1240,10 @@ async function testBaseTransactions() {
     opResult = uow.update(opResult, personObj);
     opResult = uow.update(opResult, propertyName, propertyValueObj);
     opResult = uow.update(opResultValueReference, changesObj);
-    opResult = uow.update(opResultValueReference, propertyName, propertyValueObj);
+    opResult = uow.update(opResultValueReference, propertyName, opResultValueReference);
+    opResult = uow.update(opResultValueReference, propertyName, 123);
+    opResult = uow.update(opResultValueReference, propertyName, 'str');
+    opResult = uow.update(opResultValueReference, propertyName, true);
     ///
     opResult = uow.delete(opResult);
     opResult = uow.delete(opResultValueReference);

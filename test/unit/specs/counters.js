@@ -3,13 +3,13 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH } from '../helpers/sandbox'
 
-describe('<Counters>', function() {
+describe('<Counters>', () => {
 
   forSuite()
 
   const counterName = 'MY_COUNTER_NAME'
 
-  describe('basic', function() {
+  describe('basic', () => {
 
     it('get', async () => {
       const req1 = prepareMockRequest()
@@ -128,7 +128,7 @@ describe('<Counters>', function() {
       })
     })
 
-    describe('fails when counterName is not a string', function() {
+    describe('fails when counterName is not a string', () => {
       const noCounterNameError = 'Counter Name must be provided and must be a string.'
 
       it('get', async () => {
@@ -265,7 +265,7 @@ describe('<Counters>', function() {
     })
   })
 
-  describe('instance', function() {
+  describe('instance', () => {
 
     const counter = Backendless.Counters.of(counterName)
 

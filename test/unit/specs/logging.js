@@ -3,7 +3,7 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH, Utils } from '../helpers/sandbox'
 
-describe('<Logging>', function() {
+describe('<Logging>', () => {
 
   const loggerName = 'MY_LOGGER_NAME'
 
@@ -11,7 +11,7 @@ describe('<Logging>', function() {
 
   forSuite()
 
-  beforeEach(()=>{
+  beforeEach(() => {
     logger = Backendless.Logging.getLogger(loggerName)
   })
 

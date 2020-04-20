@@ -2,6 +2,7 @@ import Request from 'backendless-request'
 
 import APIRequest from './request'
 import Urls from './urls'
+import Utils from './utils'
 
 const DEFAULT_PROPS = {
   appId         : null,
@@ -243,6 +244,10 @@ class Backendless {
   }
 
   ///----------UTIL METHODS--------///
+
+  get Utils() {
+    return Utils
+  }
 
   getCurrentUserToken() {
     return this.Users.getCurrentUserToken()

@@ -3,7 +3,7 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH } from '../helpers/sandbox'
 
-describe('<Commerce>', function() {
+describe('<Commerce>', () => {
 
   forSuite()
 
