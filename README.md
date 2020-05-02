@@ -1,7 +1,8 @@
 # Welcome to Backendless!
 
-[![npm version](https://img.shields.io/npm/v/backendless.svg?style=flat)](https://www.npmjs.com/package/backendless)
 [![Build Status](https://travis-ci.org/Backendless/JS-SDK.svg?branch=master)](https://travis-ci.org/Backendless/JS-SDK)
+[![npm version](https://img.shields.io/npm/v/backendless.svg?style=flat)](https://www.npmjs.com/package/backendless)
+[![dependencies Status](https://david-dm.org/backendless/JS-SDK/status.svg)](https://david-dm.org/backendless/JS-SDK)
 
 In this document you will find the instructions for getting up and running with **Backendless** quickly. 
 The SDK you downloaded contains a library with the APIs, which provide access to the Backendless services. 
