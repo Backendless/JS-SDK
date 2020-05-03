@@ -15,7 +15,7 @@ export class SocialContainer {
   processContainer() {
     let client
 
-    const container = this.container[0]
+    const container = this.container[0] || this.container
 
     const loadingMsg = document.createElement('div')
     loadingMsg.innerHTML = 'Loading...'

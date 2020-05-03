@@ -6,6 +6,8 @@ const Utils = {
 
   uid: () => `${chr8()}${chr8()}${chr8()}${chr8()}`,
 
+  objectId: () => `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr8()}${chr4()}`.toUpperCase(),
+
   wait: milliseconds => {
     return new Promise(resolve => {
       setTimeout(resolve, milliseconds)

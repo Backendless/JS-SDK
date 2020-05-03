@@ -1,9 +1,15 @@
 import Request from 'backendless-request'
+import chai from 'chai'
+import spies from 'chai-spies'
 
 import '../../helpers/global'
 import Utils from '../../helpers/utils'
 
 import Backendless from '../../../src'
+
+global.chai = chai
+
+chai.use(spies)
 
 export {
   Utils
@@ -35,6 +41,9 @@ Request.send = function fakeRequestSend(path, method, headers, body, encoding) {
 
   return Promise.resolve()
     .then(mockRequest.responseFn)
+    .then(({ delay, ...response }) => {
+      return delay ? Utils.wait(delay).then(() => response) : response
+    })
     .then(response => {
       return Object.assign({ status: 200, body: undefined, headers: {} }, response)
     })
@@ -42,7 +51,9 @@ Request.send = function fakeRequestSend(path, method, headers, body, encoding) {
 
 export function prepareMockRequest(responseFn) {
   const mockRequest = {
-    responseFn
+    responseFn: typeof responseFn === 'function'
+      ? responseFn
+      : () => ({ body: responseFn })
   }
 
   mockRequests.push(mockRequest)

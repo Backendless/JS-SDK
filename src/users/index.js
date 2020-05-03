@@ -36,14 +36,23 @@ export default class Users {
   async login(login, password, stayLoggedIn) {
     const data = {}
 
-    if (login && typeof login === 'string' && !password) {
+    if (typeof login !== 'string' && typeof login !== 'number') {
+      throw new Error('Login must a string or number.')
+    }
+
+    if (!login) {
+      throw new Error('Login can not be empty value.')
+    }
+
+    if (typeof password === 'boolean') {
+      stayLoggedIn = password
+      password = undefined
+    }
+
+    if (typeof login === 'string' && password === undefined) {
       data.objectId = login
 
     } else {
-      if (!login) {
-        throw new Error('Login can not be empty')
-      }
-
       if (!password) {
         throw new Error('Password can not be empty')
       }
@@ -111,20 +120,17 @@ export default class Users {
 
   async getCurrentUser() {
     if (this.currentUser) {
-      return Promise.resolve(this.currentUser)
+      return this.currentUser
     }
 
     if (this.currentUserRequest) {
       return this.currentUserRequest
     }
 
-    const currentUserId = this.loggedInUser()
+    const currentUserId = this.getCurrentUserId()
 
     if (currentUserId) {
-      const Data = this.app.Data
-      const User = this.app.User
-
-      return this.currentUserRequest = Data.of(User).findById(currentUserId)
+      return this.currentUserRequest = this.dataStore.findById(currentUserId)
         .then(user => {
           this.currentUserRequest = null
 
@@ -153,7 +159,7 @@ export default class Users {
   }
 
   async restorePassword(emailAddress) {
-    if (!emailAddress) {
+    if (!emailAddress || typeof emailAddress !== 'string') {
       throw new Error('Email Address must be provided and must be a string.')
     }
 
@@ -163,7 +169,7 @@ export default class Users {
   }
 
   async resendEmailConfirmation(emailAddress) {
-    if (!emailAddress) {
+    if (!emailAddress || typeof emailAddress !== 'string') {
       throw new Error('Email Address must be provided and must be a string.')
     }
 
@@ -200,7 +206,7 @@ export default class Users {
   }
 
   loggedInUser() {
-    return this.app.LocalCache.get('current-user-id')
+    return this.getCurrentUserId()
   }
 
   getCurrentUserToken() {
@@ -208,7 +214,15 @@ export default class Users {
       return this.currentUser['user-token']
     }
 
-    return this.app.LocalCache.get('user-token') || null
+    return this.app.LocalCache.get(this.app.LocalCache.Keys.USER_TOKEN) || null
+  }
+
+  getCurrentUserId() {
+    if (this.currentUser) {
+      return this.currentUser.objectId
+    }
+
+    return this.app.LocalCache.get(this.app.LocalCache.Keys.CURRENT_USER_ID) || null
   }
 
   getLocalCurrentUser() {
@@ -216,9 +230,9 @@ export default class Users {
   }
 
   setLocalCurrentUser(user, stayLoggedIn) {
-    this.app.LocalCache.remove('user-token')
-    this.app.LocalCache.remove('current-user-id')
-    this.app.LocalCache.remove('stayLoggedIn')
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.USER_TOKEN)
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.CURRENT_USER_ID)
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.STAY_LOGGED_IN)
 
     this.currentUser = user || null
 
@@ -228,11 +242,10 @@ export default class Users {
       }
 
       if (stayLoggedIn) {
-        this.app.LocalCache.set('stayLoggedIn', true)
-        this.app.LocalCache.set('user-token', this.currentUser['user-token'])
+        this.app.LocalCache.set(this.app.LocalCache.Keys.STAY_LOGGED_IN, true)
+        this.app.LocalCache.set(this.app.LocalCache.Keys.USER_TOKEN, this.currentUser['user-token'])
+        this.app.LocalCache.set(this.app.LocalCache.Keys.CURRENT_USER_ID, this.currentUser.objectId)
       }
-
-      this.app.LocalCache.set('current-user-id', this.currentUser.objectId)
     }
 
     if (this.app.__RT) {

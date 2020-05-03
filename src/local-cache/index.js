@@ -18,6 +18,12 @@ export default class LocalCache {
       : VirtualStorage
 
     this.setStorage(Storage)
+
+    this.Keys = {
+      USER_TOKEN     : 'user-token',
+      CURRENT_USER_ID: 'current-user-id',
+      STAY_LOGGED_IN : 'stayLoggedIn',
+    }
   }
 
   setStorage(Storage) {

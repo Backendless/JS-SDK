@@ -292,6 +292,10 @@ class Backendless {
     return require('./users/user').default
   }
 
+  get UserService() {
+    return this.Users
+  }
+
   get BL() {
     return this.__getService('BL')
   }
@@ -346,10 +350,6 @@ class Backendless {
   ///--------BACKWARD COMPATIBILITY-------///
 
   //TODO: do we need to remove it?
-
-  get UserService() {
-    return this.Users
-  }
 
   /** @deprecated */
   get Persistence() {

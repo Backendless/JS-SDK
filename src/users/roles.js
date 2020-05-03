@@ -19,12 +19,12 @@ export default class UsersRoles {
   }
 
   async changeRole(identity, roleName, operation) {
-    if (!identity) {
-      throw new Error('User identity can not be empty')
+    if (!identity || !(typeof identity === 'string' || typeof identity === 'number')) {
+      throw new Error('User identity must be a string or number and can not be empty.')
     }
 
-    if (!roleName) {
-      throw new Error('Role Name can not be empty')
+    if (!roleName || typeof roleName !== 'string') {
+      throw new Error('Role Name must be a string and can not be empty.')
     }
 
     return this.app.request.post({

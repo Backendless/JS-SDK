@@ -384,13 +384,15 @@ declare module Backendless {
 
         function loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
 
-        /**@deprecated */
-        function loginWithFacebookSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object, stayLoggedIn: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
-        /**@deprecated */
-        function loginWithGooglePlusSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object, stayLoggedIn: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
         function isValidLoginSync(): boolean;
 

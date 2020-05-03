@@ -7,15 +7,15 @@ export default class UsersSocial {
   }
 
   async loginWithFacebook(fieldsMapping, permissions, stayLoggedIn) {
-    return this.loginWithContainer('Facebook', fieldsMapping, permissions, null, stayLoggedIn)
+    return this.loginWithContainer('facebook', fieldsMapping, permissions, null, stayLoggedIn)
   }
 
   async loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn) {
-    return this.loginWithContainer('GooglePlus', fieldsMapping, permissions, container, stayLoggedIn)
+    return this.loginWithContainer('googleplus', fieldsMapping, permissions, container, stayLoggedIn)
   }
 
   async loginWithTwitter(fieldsMapping, stayLoggedIn) {
-    return this.loginWithContainer('Twitter', fieldsMapping, null, null, stayLoggedIn)
+    return this.loginWithContainer('twitter', fieldsMapping, null, null, stayLoggedIn)
   }
 
   async loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn) {
@@ -27,11 +27,16 @@ export default class UsersSocial {
   }
 
   async sendWithAccessToken(socialType, accessToken, fieldsMapping, stayLoggedIn) {
-    if (!accessToken) {
-      throw new Error('"accessToken" is missing.')
+    if (!accessToken || typeof accessToken !== 'string') {
+      throw new Error('"accessToken" must be non empty string.')
     }
 
-    this.app.request
+    if (typeof fieldsMapping === 'boolean') {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = undefined
+    }
+
+    return this.app.request
       .post({
         url : this.app.urls.userSocialLogin(socialType),
         data: {

@@ -387,7 +387,7 @@ class UnitOfWork {
         payload.unconditional = args[0]
       } else if (Array.isArray(args[0])) {
         tableName = Utils.getClassName(args[0][0])
-        payload.unconditional = args[0].map(o => o.objectId || o)
+        payload.unconditional = args[0].map(o => o.objectId)
       } else {
         throw new Error('Invalid arguments')
       }
