@@ -24,7 +24,6 @@ describe('<Users> Social Login with Container', () => {
   let dispatchLoginEvent
 
   beforeEach(() => {
-
     objectId = Utils.objectId()
     userToken = Utils.uid()
 
@@ -39,8 +38,6 @@ describe('<Users> Social Login with Container', () => {
         objectId,
         'user-token': userToken,
       })
-
-      console.log('dispatch event')
 
       window.dispatchEvent(event)
     }, timeout || 200)

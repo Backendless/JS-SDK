@@ -5,7 +5,7 @@ const PermissionTypes = {
 
 export default class Permission {
 
-  BACKWARD_COMPATIBILITY_LABEL = null
+  static BACKWARD_COMPATIBILITY_LABEL = null
 
   constructor(permission, app) {
     this.permission = permission

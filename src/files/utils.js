@@ -3,6 +3,10 @@ const FilesUtils = {
     return !path.startsWith('/') ? `/${path}` : path
   },
 
+  preventSlashInPath(path) {
+    return (path && path.startsWith('/')) ? path.replace('/', '') : path
+  },
+
   sanitizeFileName(fileName) {
     return encodeURIComponent(fileName)
       .replace(/'/g, '%27')

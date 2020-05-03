@@ -14,7 +14,7 @@ export default class Files {
 
   async saveFile(filePath, fileName, fileContent, overwrite) {
     if (!filePath || typeof filePath !== 'string') {
-      throw new Error('File "path" must be provided and must be a string.')
+      throw new Error('"filePath" must be provided and must be a string.')
     }
 
     if (!fileName || typeof fileName !== 'string') {
@@ -29,8 +29,11 @@ export default class Files {
       query.overwrite = overwrite
     }
 
+    filePath = FilesUtils.preventSlashInPath(filePath)
+    fileName = FilesUtils.sanitizeFileName(fileName)
+
     return this.app.request.put({
-      url    : `${this.app.urls.fileBinaryPath(filePath)}/${FilesUtils.sanitizeFileName(fileName)}`,
+      url    : `${this.app.urls.fileBinaryPath(filePath)}/${fileName}`,
       headers: { 'Content-Type': 'text/plain' },
       query  : query,
       data   : fileContent,
@@ -38,7 +41,7 @@ export default class Files {
   }
 
   async upload(file, filePath, overwrite) {
-    const fileName = FilesUtils.getFileName(file)
+    let fileName = FilesUtils.getFileName(file)
 
     if (!fileName) {
       throw new Error('Wrong type of the file source object. Can not get file name')
@@ -50,8 +53,11 @@ export default class Files {
       query.overwrite = overwrite
     }
 
+    filePath = FilesUtils.preventSlashInPath(filePath)
+    fileName = FilesUtils.sanitizeFileName(fileName)
+
     return this.app.request.post({
-      url  : `${this.app.urls.filePath(filePath)}/${FilesUtils.sanitizeFileName(fileName)}`,
+      url  : `${this.app.urls.filePath(filePath)}/${fileName}`,
       query: query,
       form : {
         file
@@ -59,8 +65,14 @@ export default class Files {
     })
   }
 
-  async listing(path, pattern, sub, pagesize, offset) {
+  async listing(filePath, pattern, sub, pagesize, offset) {
     const query = {}
+
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('"filePath" must be provided and must be a string.')
+    }
+
+    filePath = FilesUtils.preventSlashInPath(filePath)
 
     if (typeof pattern === 'string') {
       query.pattern = pattern
@@ -79,18 +91,18 @@ export default class Files {
     }
 
     return this.app.request.get({
-      url: this.app.urls.filePath(path),
+      url: this.app.urls.filePath(filePath),
       query,
     })
   }
 
   async renameFile(oldPathName, newName) {
     if (!oldPathName || typeof oldPathName !== 'string') {
-      throw new Error('Old File "path" must be provided and must be a string.')
+      throw new Error('"oldPathName" must be provided and must be a string.')
     }
 
     if (!newName || typeof newName !== 'string') {
-      throw new Error('New File "path" must be provided and must be a string.')
+      throw new Error('New File Name must be provided and must be a string.')
     }
 
     return this.app.request.put({
@@ -124,7 +136,7 @@ export default class Files {
 
   async remove(filePath) {
     if (!filePath || typeof filePath !== 'string') {
-      throw new Error('File "path" must be provided and must be a string.')
+      throw new Error('"filePath" must be provided and must be a string.')
     }
 
     if (!filePath.startsWith('http://') && !filePath.startsWith('https://')) {
@@ -138,8 +150,10 @@ export default class Files {
 
   async exists(filePath) {
     if (!filePath || typeof filePath !== 'string') {
-      throw new Error('File "path" must be provided and must be a string.')
+      throw new Error('"filePath" must be provided and must be a string.')
     }
+
+    filePath = FilesUtils.preventSlashInPath(filePath)
 
     return this.app.request.get({
       url  : this.app.urls.filePath(filePath),
@@ -154,19 +168,23 @@ export default class Files {
       throw new Error('Directory "path" must be provided and must be a string.')
     }
 
-    this.app.request.delete({
+    directoryPath = FilesUtils.preventSlashInPath(directoryPath)
+
+    return this.app.request.delete({
       url: this.app.urls.filePath(directoryPath),
     })
   }
 
   async getFileCount(filesPath, pattern, sub, countDirectories) {
     if (!filesPath || typeof filesPath !== 'string') {
-      throw new Error('Files "path" must be provided and must be a string.')
+      throw new Error('"filesPath" must be provided and must be a string.')
     }
 
     if (pattern && typeof pattern !== 'string') {
       throw new Error('Files Pattern must be provided and must be a string.')
     }
+
+    filesPath = FilesUtils.preventSlashInPath(filesPath)
 
     return this.app.request.get({
       url  : this.app.urls.filePath(filesPath),
