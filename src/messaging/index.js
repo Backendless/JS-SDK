@@ -80,21 +80,22 @@ export default class Messaging {
       throw new Error('Email Subject must be provided and must be a string.')
     }
 
+    if (!bodyParts || Array.isArray(bodyParts) || typeof bodyParts !== 'object') {
+      throw new Error('BodyParts must be an object')
+    }
+
+    if (!bodyParts.textmessage && !bodyParts.htmlmessage) {
+      throw new Error('BodyParts must contain at least one property of [ textmessage | htmlmessage ]')
+    }
+
     if (!Array.isArray(recipients) || !recipients.length) {
       throw new Error('Recipients must be a non empty array.')
     }
 
     const data = {
       subject,
-      to: recipients
-    }
-
-    if (bodyParts instanceof Bodyparts) {
-      if (!bodyParts.textmessage && !bodyParts.htmlmessage) {
-        throw new Error('Use Bodyparts as bodyParts argument, must contain at least one property')
-      }
-
-      data.bodyparts = bodyParts
+      bodyParts,
+      to: recipients,
     }
 
     if (Array.isArray(attachments) && attachments.length) {

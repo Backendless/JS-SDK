@@ -96,9 +96,7 @@ describe('Namespace', () => {
         error = e
       }
 
-      expect(error.message).to.equal(
-        'Device is not defined. Please, run the Backendless.setupDevice'
-      )
+      expect(error.message).to.equal('Device is not defined. Please, run the Backendless.setupDevice')
     })
 
     it('should setup device', () => {

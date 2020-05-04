@@ -108,6 +108,8 @@ class Backendless {
       app.Users.setLocalCurrentUser(null)
     }
 
+    delete this.__device
+
     return app
   }
 
