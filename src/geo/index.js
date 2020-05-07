@@ -211,7 +211,6 @@ export default class Geo {
     return this.trackerMonitor.stopGeofenceMonitoring(...args)
   }
 
-  @deprecated('Backendless.Geo')
   resetGeofenceMonitoring(...args) {
     return this.trackerMonitor.reset(...args)
   }
