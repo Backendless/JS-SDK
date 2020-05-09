@@ -97,12 +97,46 @@ export default class RemoteSharedObject extends RTScopeConnector {
     this.stopSubscription(ListenerTypes.CLEARED, { callback })
   }
 
-  addCommandListener() {
-    return super.addCommandListener.apply(this, arguments)
+  addCommandListener(callback, onError) {
+    super.addCommandListener.call(this, callback, onError)
+
+    return this
   }
 
-  addUserStatusListener() {
-    return super.addUserStatusListener.apply(this, arguments)
+  removeCommandListeners(callback) {
+    super.removeCommandListeners.call(this, callback)
+
+    return this
+  }
+
+  addUserStatusListener(callback, onError) {
+    super.addUserStatusListener.call(this, callback, onError)
+
+    return this
+  }
+
+  removeUserStatusListeners(callback) {
+    super.removeUserStatusListeners.call(this, callback)
+
+    return this
+  }
+
+  addConnectListener(callback, onError) {
+    super.addConnectListener.call(this, callback, onError)
+
+    return this
+  }
+
+  removeConnectListeners(callback, onError) {
+    super.removeConnectListeners.call(this, callback, onError)
+
+    return this
+  }
+
+  removeAllListeners() {
+    super.removeAllListeners.call(this)
+
+    return this
   }
 
   @RTScopeConnector.connectionRequired(true)

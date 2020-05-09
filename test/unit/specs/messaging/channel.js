@@ -27,8 +27,6 @@ describe('<Messaging> Channel', () => {
   })
 
   afterEach(async () => {
-    await Utils.wait(100)
-
     rtClient.stop()
   })
 
@@ -393,13 +391,7 @@ describe('<Messaging> Channel', () => {
   describe('Connection', () => {
     it('can join and leave the channel', async () => {
       const sub1Promise = rtClient.getNext_SUB_ON() // PUB_SUB_CONNECT
-
-      rtClient.getNext_SUB_ON() // PUB_SUB_MESSAGES
-
-      const sub3Promise = rtClient.getNext_SUB_ON() // PUB_SUB_CONNECT
-
-      channel.addMessageListener(() => {
-      })
+      const sub2Promise = rtClient.getNext_SUB_ON() // PUB_SUB_CONNECT
 
       expect(channel.isJoined()).to.be.equal(false)
       expect(channel.isConnected()).to.be.equal(false)
@@ -422,7 +414,7 @@ describe('<Messaging> Channel', () => {
 
       channel.join()
 
-      const sub3 = await sub3Promise
+      const sub3 = await sub2Promise
 
       rtClient.subReady(sub3.id)
 
@@ -430,7 +422,6 @@ describe('<Messaging> Channel', () => {
 
       expect(channel.isJoined()).to.be.equal(true)
       expect(channel.isConnected()).to.be.equal(true)
-
     })
 
     it('adds connect listener', async () => {
