@@ -50,6 +50,22 @@ describe('<Messaging> Push Notifications', () => {
     expect(result1).to.be.eql([{ type: 'MY_DEVICE_TYPE' }])
   })
 
+  it('fails when deviceType is invalid', async () => {
+    const errorMsg = 'Device Type must be provided and must be a string.'
+
+    await expect(Backendless.Messaging.getPushTemplates()).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates(undefined)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates(null)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates(true)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates(false)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates(0)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates(123)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates('')).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates({})).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates([])).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.Messaging.getPushTemplates(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+  })
+
   it('fails when templateName is invalid', async () => {
     const errorMsg = 'Push Template Name must be provided and must be a string.'
 

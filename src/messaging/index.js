@@ -20,36 +20,32 @@ export default class Messaging {
   }
 
   subscribe(channelName) {
-    if (!channelName || typeof channelName !== 'string') {
-      throw new Error('Channel Name must be provided and must be a string.')
-    }
+    validateChannelName(channelName)
 
-    if (channelName.indexOf('/') >= 0) {
-      throw new Error('"channelName" can not contains slash chars')
-    }
-
-    return new Channel({ name: channelName.trim() }, this.app)
+    return new Channel({ name: channelName }, this.app)
   }
 
-  async publish(channelName, message, publishOptions, deliveryTarget) {
+  async publish(channelName, message, publishOptions, deliveryOptions) {
+    validateChannelName(channelName)
+
     const data = {
       message: message
     }
 
     if (publishOptions) {
-      if (!(publishOptions instanceof PublishOptions)) {
-        throw new Error('Use PublishOption as publishOptions argument')
+      if (Array.isArray(publishOptions) || typeof publishOptions !== 'object') {
+        throw new Error('"publishOptions" argument must be an object.')
       }
 
       Object.assign(data, publishOptions)
     }
 
-    if (deliveryTarget) {
-      if (!(deliveryTarget instanceof DeliveryOptions)) {
-        throw new Error('Use DeliveryOptions as deliveryTarget argument')
+    if (deliveryOptions) {
+      if (Array.isArray(deliveryOptions) || typeof deliveryOptions !== 'object') {
+        throw new Error('"deliveryOptions" argument must be an object.')
       }
 
-      Object.assign(data, deliveryTarget)
+      Object.assign(data, deliveryOptions)
     }
 
     return this.app.request.post({
@@ -134,6 +130,10 @@ export default class Messaging {
   }
 
   async cancel(messageId) {
+    if (!messageId || typeof messageId !== 'string') {
+      throw new Error('Message ID must be provided and must be a string.')
+    }
+
     return this.app.request.delete({
       url: this.app.urls.messagingMessage(messageId),
     })
@@ -192,9 +192,23 @@ export default class Messaging {
   }
 
   async getPushTemplates(deviceType) {
+    if (!deviceType || typeof deviceType !== 'string') {
+      throw new Error('Device Type must be provided and must be a string.')
+    }
+
     return this.app.request.get({
       url: this.app.urls.messagingPushTemplates(deviceType),
     })
   }
 
+}
+
+function validateChannelName(channelName) {
+  if (!channelName || typeof channelName !== 'string') {
+    throw new Error('Channel Name must be provided and must be a string.')
+  }
+
+  if (channelName.indexOf('/') >= 0) {
+    throw new Error('Channel Name can not contain slash chars')
+  }
 }

@@ -74,11 +74,13 @@
     "chai-spies": "^1.0.0",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
+    "express": "^4.17.1",
     "jsdom": "16.2.2",
     "jsdom-global": "3.0.2",
     "mocha": "^7.1.0",
     "nyc": "^15.0.1",
     "rimraf": "^2.6.2",
+    "socket.io": "^2.3.0",
     "terser-webpack-plugin": "^2.3.5",
     "typescript": "^3.8.3",
     "watch": "^1.0.2",
@@ -89,6 +91,6 @@
   "dependencies": {
     "@babel/runtime": "^7.8.7",
     "backendless-request": "~0.1.1",
-    "backendless-rt-client": "0.0.20"
+    "backendless-rt-client": "0.0.21"
   }
 }

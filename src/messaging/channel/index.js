@@ -74,15 +74,13 @@ export default class Channel extends RTScopeConnector {
       throw new Error('Selector must be a string.')
     }
 
-    if (typeof callback !== 'string') {
-      throw new Error('Callback must be a string.')
+    if (typeof callback !== 'function') {
+      throw new Error('Callback must be a function.')
     }
 
     const matcher = subscription => {
-      const params = subscription.params
-
       if (selector) {
-        return params.selector === selector && params.callback === callback
+        return subscription.params.selector === selector && subscription.callback === callback
       }
 
       return subscription.callback === callback
@@ -105,12 +103,50 @@ export default class Channel extends RTScopeConnector {
     this.stopSubscription(ListenerTypes.MESSAGE, {})
   }
 
-  addCommandListener() {
-    return super.addCommandListener.apply(this, arguments)
+  addCommandListener(callback, onError) {
+    super.addCommandListener.call(this, callback, onError)
+
+    return this
   }
 
-  addUserStatusListener() {
-    return super.addUserStatusListener.apply(this, arguments)
+  addUserStatusListener(callback, onError) {
+    super.addUserStatusListener.call(this, callback, onError)
+
+    return this
+  }
+
+  removeCommandListeners(callback) {
+    super.removeCommandListeners.call(this, callback)
+
+    return this
+  }
+
+  removeUserStatusListeners(callback) {
+    super.removeUserStatusListeners.call(this, callback)
+
+    return this
+  }
+
+  addConnectListener(callback, onError) {
+    super.addConnectListener.call(this, callback, onError)
+
+    return this
+  }
+
+  removeConnectListeners(callback, onError) {
+    super.removeConnectListeners.call(this, callback, onError)
+
+    return this
+  }
+
+  removeAllListeners() {
+    super.removeAllListeners.call(this)
+
+    return this
+  }
+
+  send(type, data) {
+    return super.send.call(this, type, data)
   }
 
   join() {

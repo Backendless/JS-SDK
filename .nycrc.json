@@ -1,5 +1,6 @@
 {
   "all": true,
+  "skip-full": true,
   "check-coverage": false,
   "include": [
     "src/**/*.js"

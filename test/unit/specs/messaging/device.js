@@ -24,8 +24,10 @@ describe('<Messaging> Device', () => {
 
   it('registers device', async () => {
     const req1 = prepareMockRequest({ fakeResult })
+    const req2 = prepareMockRequest({ fakeResult })
 
     const result1 = await Backendless.Messaging.registerDevice(deviceToken, channels)
+    const result2 = await Backendless.Messaging.registerDevice(deviceToken)
 
     expect(req1).to.deep.include({
       method : 'POST',
@@ -40,7 +42,20 @@ describe('<Messaging> Device', () => {
       }
     })
 
+    expect(req2).to.deep.include({
+      method : 'POST',
+      path   : `${APP_PATH}/messaging/registrations`,
+      headers: { 'Content-Type': 'application/json' },
+      body   : {
+        deviceId   : 'test-uuid',
+        deviceToken: 'test-token',
+        os         : 'TEST-PLATFORM',
+        osVersion  : 'test-version',
+      }
+    })
+
     expect(result1).to.be.eql({ fakeResult })
+    expect(result2).to.be.eql({ fakeResult })
   })
 
   it('registers device with expiration', async () => {
