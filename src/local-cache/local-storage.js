@@ -8,14 +8,14 @@ export default class LocalStorage {
     try {
       return JSON.parse(localStorage.getItem(this.storageName)) || {}
     } catch (e) {
-      console.warn('Could not save data to LocalStorage', e)
+      console.warn('Could not parse data from LocalStorage', e)
     }
 
     return {}
   }
 
   setStore(data) {
-    localStorage.setItem(this.storageName, JSON.stringify(data || {}))
+    localStorage.setItem(this.storageName, JSON.stringify(data))
   }
 
   get(key) {

@@ -100,6 +100,8 @@ class Backendless {
 
     app.resetRT()
 
+    app.__removeService('LocalCache')
+
     if (app.__hasService('Logging')) {
       app.Logging.reset()
     }
@@ -115,6 +117,10 @@ class Backendless {
 
   __hasService(name) {
     return !!this[`__${name}`]
+  }
+
+  __removeService(name) {
+    delete this[`__${name}`]
   }
 
   __getService(name) {
