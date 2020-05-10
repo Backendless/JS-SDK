@@ -19,7 +19,7 @@ export default class Request {
     BackendlessRequest.verbose = !!this.app.debugMode
     BackendlessRequest.XMLHttpRequest = this.app.XMLHttpRequest
 
-    const method = (options.method || Methods.GET).toLowerCase()
+    const method = options.method.toLowerCase()
     const headers = options.headers || {}
     const userToken = this.app.getCurrentUserToken()
 
@@ -47,10 +47,6 @@ export default class Request {
 
   put(options) {
     return this.send({ ...options, method: Methods.PUT })
-  }
-
-  patch(options) {
-    return this.send({ ...options, method: Methods.PATCH })
   }
 
   delete(options) {

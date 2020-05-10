@@ -147,6 +147,17 @@ describe('<Users> Login', () => {
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
     })
 
+    it('get current user id', async () => {
+      const objectId = Utils.objectId()
+      const userToken = Utils.uid()
+
+      prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
+
+      await Backendless.UserService.login('foo@bar.com', '123456', true)
+
+      expect(Backendless.UserService.getCurrentUserId()).to.be.equal(objectId)
+    })
+
     it('login with objectId', async () => {
       const objectId = Utils.objectId()
       const userToken = Utils.uid()
@@ -319,6 +330,29 @@ describe('<Users> Login', () => {
       await check(3064)
       await check(3090)
       await check(3091)
+    })
+
+    it('do not clear current user even when exception is caused', async () => {
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(objectId)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(userToken)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
+
+      prepareMockRequest(() => ({ status: 400, body: { code: 12345, message: 'test login error' }, }))
+
+      let error
+
+      try {
+        await Backendless.UserService.logout()
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.code).to.be.equal(12345)
+      expect(error.message).to.be.equal('test login error')
+
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(objectId)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(userToken)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
     })
 
   })
