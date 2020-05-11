@@ -12,6 +12,11 @@ import FindHelpers from './find-helpers'
 import { validateQueryObject } from './query-validator'
 import { toQueryParams } from './query-params'
 
+const alternativeForDepreciation = (
+  'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
+  'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
+)
+
 export default class Geo {
   constructor(app) {
     this.app = app
