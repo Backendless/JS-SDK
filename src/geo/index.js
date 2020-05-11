@@ -1,3 +1,4 @@
+import { deprecated } from '../decorators'
 import Utils from '../utils'
 import GeoUtils from './utils'
 
@@ -31,11 +32,12 @@ export default class Geo {
     this.Query = GeoQuery
   }
 
-  /** @deprecated */
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async addPoint(/** geopoint, async */) {
     return this.savePoint.apply(this, arguments)
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async savePoint(geoPoint) {
     if (typeof geoPoint.latitude !== 'number' || typeof geoPoint.longitude !== 'number') {
       throw new Error('Latitude or longitude not a number')
@@ -72,12 +74,14 @@ export default class Geo {
     }
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async find(query) {
     query.url = this.app.urls.geo()
 
     return loadItems.call(this, query)
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async loadMetadata(geoObject) {
     const isCluster = geoObject instanceof GeoCluster
     const isPoint = geoObject instanceof GeoPoint
@@ -113,6 +117,7 @@ export default class Geo {
     })
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async getClusterPoints(geoObject) {
     if (!geoObject.objectId || !(geoObject instanceof GeoCluster)) {
       throw new Error('Method argument must be a valid instance of GeoCluster persisted on the server')
@@ -148,6 +153,7 @@ export default class Geo {
       .then(parser)
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async relativeFind(query) {
     if (!(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
       throw new Error(
@@ -176,6 +182,7 @@ export default class Geo {
     }
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async addCategory(name) {
     if (!name) {
       throw new Error('Category name is required.')
@@ -188,12 +195,14 @@ export default class Geo {
       .then(data => data.result || data)
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async getCategories() {
     return this.app.request.get({
       url: this.app.urls.geoCategories(),
     })
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async deleteCategory(name) {
     if (!name) {
       throw new Error('Category name is required.')
@@ -206,6 +215,7 @@ export default class Geo {
       .then(data => data.result || data)
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async deletePoint(point) {
     if (!point || typeof point === 'function') {
       throw new Error('Point argument name is required, must be string (object Id), or point object')
@@ -221,6 +231,7 @@ export default class Geo {
 
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async getFencePoints(geoFenceName, query) {
     query = query || new GeoQuery()
 
@@ -230,6 +241,7 @@ export default class Geo {
     return loadItems.call(this, query)
   }
 
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
   async getGeopointCount(fenceName, query) {
     if (fenceName && typeof fenceName === 'object') {
       query = fenceName
@@ -253,26 +265,32 @@ export default class Geo {
     })
   }
 
+  @deprecated('Backendless.Geo')
   async runOnEnterAction(...args) {
     return this.trackerMonitor.runOnEnterAction(...args)
   }
 
+  @deprecated('Backendless.Geo')
   async runOnStayAction(...args) {
     return this.trackerMonitor.runOnStayAction(...args)
   }
 
+  @deprecated('Backendless.Geo')
   async runOnExitAction(...args) {
     return this.trackerMonitor.runOnExitAction(...args)
   }
 
+  @deprecated('Backendless.Geo')
   async startGeofenceMonitoringWithInAppCallback(...args) {
     return this.trackerMonitor.startGeofenceMonitoringWithInAppCallback(...args)
   }
 
+  @deprecated('Backendless.Geo')
   async startGeofenceMonitoringWithRemoteCallback(...args) {
     return this.trackerMonitor.startGeofenceMonitoringWithRemoteCallback(...args)
   }
 
+  @deprecated('Backendless.Geo')
   async stopGeofenceMonitoring(...args) {
     return this.trackerMonitor.stopGeofenceMonitoring(...args)
   }
