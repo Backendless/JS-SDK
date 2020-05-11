@@ -403,82 +403,123 @@ declare module Backendless {
 
     /**
      * @public
+     * @deprecated
      * @namespace Backendless.Geo
      **/
     namespace Geo {
+
+        /** @deprecated */
         let restUrl: string;
 
+        /** @deprecated */
         let UNITS: Object;
+
+        /** @deprecated */
         let EARTH_RADIUS: number;
 
+        /** @deprecated */
         function savePointSync(point: Backendless.GeoPoint): Backendless.GeoPoint;
 
+        /** @deprecated */
         function savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
 
+        /** @deprecated */
         function findSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
+        /** @deprecated */
         function find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
+        /** @deprecated */
         function getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
 
+        /** @deprecated */
         function getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
 
+        /** @deprecated */
         function getGeopointCountSync(fenceName: string, query: Backendless.GeoQueryI): number
 
+        /** @deprecated */
         function getGeopointCountSync(query: Backendless.GeoQueryI): number
 
+        /** @deprecated */
         function deletePointSync(point: string | Backendless.GeoPoint): string;
 
+        /** @deprecated */
         function deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
 
+        /** @deprecated */
         function loadMetadataSync(point: Backendless.GeoPoint | Backendless.GeoCluster): Object;
 
+        /** @deprecated */
         function loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
 
+        /** @deprecated */
         function getClusterPointsSync(cluster: Backendless.GeoCluster): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
+        /** @deprecated */
         function getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
+        /** @deprecated */
         function getFencePointsSync(fenceName: string, query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
+        /** @deprecated */
         function getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
+        /** @deprecated */
         function relativeFindSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
 
+        /** @deprecated */
         function relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
+        /** @deprecated */
         function addCategorySync(name: string): Backendless.GeoCategoryI;
 
+        /** @deprecated */
         function addCategory(name: string): Promise<Backendless.GeoCategoryI>;
 
+        /** @deprecated */
         function deleteCategorySync(name: string): boolean;
 
+        /** @deprecated */
         function deleteCategory(name: string): Promise<boolean>;
 
+        /** @deprecated */
         function getCategoriesSync(): Array<Backendless.GeoCategoryI>;
 
+        /** @deprecated */
         function getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
 
+        /** @deprecated */
         function runOnStayActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
 
+        /** @deprecated */
         function runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
 
+        /** @deprecated */
         function runOnExitActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
 
+        /** @deprecated */
         function runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
 
+        /** @deprecated */
         function runOnEnterActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
 
+        /** @deprecated */
         function runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
 
+        /** @deprecated */
         function startGeofenceMonitoringWithInAppCallbackSync(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): void;
 
+        /** @deprecated */
         function startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
 
+        /** @deprecated */
         function startGeofenceMonitoringWithRemoteCallbackSync(fenceName: string, point: Backendless.GeoPoint): void;
 
+        /** @deprecated */
         function startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
 
+        /** @deprecated */
         function stopGeofenceMonitoring(fenceName: string): void;
     }
 
@@ -983,6 +1024,7 @@ declare module Backendless {
 
     /**
      * @public
+     * @deprecated
      * @class Backendless.GeoPoint
      * @constructor
      */
@@ -997,6 +1039,7 @@ declare module Backendless {
 
     /**
      * @public
+     * @deprecated
      * @class Backendless.GeoCluster
      * @extends GeoPoint
      * @constructor
@@ -1008,6 +1051,7 @@ declare module Backendless {
 
     /**
      * @public
+     * @deprecated
      * @class Backendless.GeoQuery
      * @constructor
      */
@@ -1356,16 +1400,19 @@ declare module Backendless {
         url?: string;
     }
 
+    /** @deprecated */
     interface GeoCategoryI {
         objectId: string;
         size: number;
         name: string;
     }
 
+    /** @deprecated */
     interface GeofenceMonitoringCallbackI {
         (geoFenceName: string, geoFenceId: string, latitude: number, longitude: number): void;
     }
 
+    /** @deprecated */
     interface GeofenceMonitoringCallbacksI {
         onenter?: Backendless.GeofenceMonitoringCallbackI;
         onstay?: Backendless.GeofenceMonitoringCallbackI;
@@ -1422,6 +1469,7 @@ declare module Backendless {
         send(type: string, command: Object): Promise<void>;
     }
 
+    /** @deprecated */
     interface GeoQueryI {
         categories?: string | string[];
         includeMetadata?: boolean;
@@ -1433,10 +1481,12 @@ declare module Backendless {
         offset?: number;
     }
 
+    /** @deprecated */
     interface RectangleGeoQueryI extends Backendless.GeoQueryI {
         searchRectangle: number[];
     }
 
+    /** @deprecated */
     interface CircleGeoQueryI extends Backendless.GeoQueryI {
         latitude: number;
         longitude: number;
