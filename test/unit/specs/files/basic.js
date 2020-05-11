@@ -9,15 +9,18 @@ describe('<Files> Basic', () => {
 
   const resultFileURL = 'http://foo.com/path/to/file.txt'
 
-  const filePath = '/test/path'
+  const filePath = 'test/path'
+  const filePathWithSlash = `/${filePath}`
   const fileName = 'test-name.txt'
 
   describe('Save', () => {
 
     it('saves a file from text', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
 
       const result1 = await Backendless.Files.saveFile(filePath, fileName, 'test-content')
+      const result2 = await Backendless.Files.saveFile(filePathWithSlash, fileName, 'test-content')
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -26,7 +29,15 @@ describe('<Files> Basic', () => {
         body   : 'dGVzdC1jb250ZW50' // === base64('test-content')
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/binary/test/path/test-name.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body   : 'dGVzdC1jb250ZW50' // === base64('test-content')
+      })
+
       expect(result1).to.be.eql({ resultFileURL })
+      expect(result2).to.be.eql({ resultFileURL })
     })
 
     it('saves a file from base64', async () => {
@@ -147,8 +158,10 @@ describe('<Files> Basic', () => {
 
     it('gets files list', async () => {
       const req1 = prepareMockRequest([{ resultFileURL }])
+      const req2 = prepareMockRequest([{ resultFileURL }])
 
       const result1 = await Backendless.Files.listing(filePath)
+      const result2 = await Backendless.Files.listing(filePathWithSlash)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -157,7 +170,15 @@ describe('<Files> Basic', () => {
         body   : undefined
       })
 
+      expect(req2).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/files/test/path`,
+        headers: {},
+        body   : undefined
+      })
+
       expect(result1).to.be.eql([{ resultFileURL }])
+      expect(result2).to.be.eql([{ resultFileURL }])
     })
 
     it('gets files list with pattern', async () => {
@@ -292,8 +313,10 @@ describe('<Files> Basic', () => {
 
     it('gets files count', async () => {
       const req1 = prepareMockRequest(123)
+      const req2 = prepareMockRequest(123)
 
       const result1 = await Backendless.Files.getFileCount(filePath)
+      const result2 = await Backendless.Files.getFileCount(filePathWithSlash)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -302,7 +325,15 @@ describe('<Files> Basic', () => {
         body   : undefined
       })
 
+      expect(req2).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/files/test/path?action=count&pattern=*&sub=false&countDirectories=false`,
+        headers: {},
+        body   : undefined
+      })
+
       expect(result1).to.be.eql(123)
+      expect(result2).to.be.eql(123)
     })
 
     it('gets files count with [pattern]', async () => {
@@ -400,8 +431,10 @@ describe('<Files> Basic', () => {
   describe('Rename', () => {
     it('renames a file', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
 
       const result1 = await Backendless.Files.renameFile(`${filePath}/${fileName}`, 'new-file-name.txt')
+      const result2 = await Backendless.Files.renameFile(`${filePathWithSlash}/${fileName}`, 'new-file-name.txt')
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -413,7 +446,18 @@ describe('<Files> Basic', () => {
         }
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/rename`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          newName    : 'new-file-name.txt',
+          oldPathName: '/test/path/test-name.txt',
+        }
+      })
+
       expect(result1).to.be.eql({ resultFileURL })
+      expect(result2).to.be.eql({ resultFileURL })
     })
 
     it('fails when oldPathName is invalid', async () => {
@@ -456,8 +500,10 @@ describe('<Files> Basic', () => {
 
     it('moves a file', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
 
       const result1 = await Backendless.Files.moveFile(sourcePath, targetPath)
+      const result2 = await Backendless.Files.moveFile(`/${sourcePath}`, `/${targetPath}`)
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -469,7 +515,18 @@ describe('<Files> Basic', () => {
         }
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/move`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          sourcePath: '/old.txt',
+          targetPath: '/new-dir/new.txt',
+        }
+      })
+
       expect(result1).to.be.eql({ resultFileURL })
+      expect(result2).to.be.eql({ resultFileURL })
     })
 
   })
@@ -480,8 +537,10 @@ describe('<Files> Basic', () => {
 
     it('moves a file', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
 
       const result1 = await Backendless.Files.copyFile(sourcePath, targetPath)
+      const result2 = await Backendless.Files.copyFile(`/${sourcePath}`, `/${targetPath}`)
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -493,7 +552,18 @@ describe('<Files> Basic', () => {
         }
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/copy`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          sourcePath: '/old.txt',
+          targetPath: '/new-dir/new.txt',
+        }
+      })
+
       expect(result1).to.be.eql({ resultFileURL })
+      expect(result2).to.be.eql({ resultFileURL })
     })
 
   })
@@ -552,8 +622,10 @@ describe('<Files> Basic', () => {
   describe('Exists', () => {
     it('removes a file by a relative path', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
 
       const result1 = await Backendless.Files.exists(`${filePath}/${fileName}`)
+      const result2 = await Backendless.Files.exists(`${filePathWithSlash}/${fileName}`)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -562,7 +634,15 @@ describe('<Files> Basic', () => {
         body   : undefined
       })
 
+      expect(req2).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/files/test/path/test-name.txt?action=exists`,
+        headers: {},
+        body   : undefined
+      })
+
       expect(result1).to.be.eql({ resultFileURL })
+      expect(result2).to.be.eql({ resultFileURL })
     })
 
     it('fails when filePath is invalid', async () => {
@@ -586,8 +666,10 @@ describe('<Files> Basic', () => {
   describe('Remove Directory', () => {
     it('removes a directory by a relative path', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
 
       const result1 = await Backendless.Files.removeDirectory(filePath)
+      const result2 = await Backendless.Files.removeDirectory(filePathWithSlash)
 
       expect(req1).to.deep.include({
         method : 'DELETE',
@@ -596,7 +678,15 @@ describe('<Files> Basic', () => {
         body   : undefined
       })
 
+      expect(req2).to.deep.include({
+        method : 'DELETE',
+        path   : `${APP_PATH}/files/test/path`,
+        headers: {},
+        body   : undefined
+      })
+
       expect(result1).to.be.eql({ resultFileURL })
+      expect(result2).to.be.eql({ resultFileURL })
     })
 
     it('fails when directoryPath is invalid', async () => {

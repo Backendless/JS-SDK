@@ -101,6 +101,7 @@ describe('<Messaging> Messages', () => {
       const req1 = prepareMockRequest({ fakeResult })
       const req2 = prepareMockRequest({ fakeResult })
       const req3 = prepareMockRequest({ fakeResult })
+      const req4 = prepareMockRequest({ fakeResult })
 
       const publishOptions1 = new Backendless.Messaging.PublishOptions({})
 
@@ -111,16 +112,23 @@ describe('<Messaging> Messages', () => {
         foo        : '111',
       })
 
-      const publishOptions3 = {
+      const publishOptions3 = new Backendless.Messaging.PublishOptions()
+      publishOptions3.publisherId = 'test-publisherId'
+      publishOptions3.headers = 'test-headers'
+      publishOptions3.subtopic = 'test-subtopic'
+      publishOptions3.foo = '222'
+
+      const publishOptions4 = {
         publisherId: 'test-publisherId',
         headers    : 'test-headers',
         subtopic   : 'test-subtopic',
-        foo        : '222',
+        foo        : '333',
       }
 
       const result1 = await Backendless.Messaging.publish(channelName, message, publishOptions1)
       const result2 = await Backendless.Messaging.publish(channelName, message, publishOptions2)
       const result3 = await Backendless.Messaging.publish(channelName, message, publishOptions3)
+      const result4 = await Backendless.Messaging.publish(channelName, message, publishOptions4)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -156,15 +164,30 @@ describe('<Messaging> Messages', () => {
         }
       })
 
+      expect(req4).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/messaging/${channelName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          message,
+          publisherId: 'test-publisherId',
+          headers    : 'test-headers',
+          subtopic   : 'test-subtopic',
+          foo        : '333',
+        }
+      })
+
       expect(result1).to.be.eql({ fakeResult })
       expect(result2).to.be.eql({ fakeResult })
       expect(result3).to.be.eql({ fakeResult })
+      expect(result4).to.be.eql({ fakeResult })
     })
 
     it('publishes a basic message with deliveryOptions', async () => {
       const req1 = prepareMockRequest({ fakeResult })
       const req2 = prepareMockRequest({ fakeResult })
       const req3 = prepareMockRequest({ fakeResult })
+      const req4 = prepareMockRequest({ fakeResult })
 
       const deliveryOptions1 = new Backendless.Messaging.DeliveryOptions({})
 
@@ -178,19 +201,29 @@ describe('<Messaging> Messages', () => {
         foo            : '111',
       })
 
-      const deliveryOptions3 = {
+      const deliveryOptions3 = new Backendless.Messaging.DeliveryOptions()
+      deliveryOptions3.publishPolicy = 'test-publishPolicy'
+      deliveryOptions3.pushBroadcast = 'test-pushBroadcast'
+      deliveryOptions3.pushSinglecast = 'test-pushSinglecast'
+      deliveryOptions3.publishAt = 'test-publishAt'
+      deliveryOptions3.repeatEvery = 'test-repeatEvery'
+      deliveryOptions3.repeatExpiresAt = 'test-repeatExpiresAt'
+      deliveryOptions3.foo = '222'
+
+      const deliveryOptions4 = {
         publishPolicy  : 'test-publishPolicy',
         pushBroadcast  : 'test-pushBroadcast',
         pushSinglecast : 'test-pushSinglecast',
         publishAt      : 'test-publishAt',
         repeatEvery    : 'test-repeatEvery',
         repeatExpiresAt: 'test-repeatExpiresAt',
-        foo            : '222',
+        foo            : '333',
       }
 
       const result1 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions1)
       const result2 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions2)
       const result3 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions3)
+      const result4 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions4)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -232,9 +265,26 @@ describe('<Messaging> Messages', () => {
         }
       })
 
+      expect(req4).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/messaging/${channelName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          message,
+          publishPolicy  : 'test-publishPolicy',
+          pushBroadcast  : 'test-pushBroadcast',
+          pushSinglecast : 'test-pushSinglecast',
+          publishAt      : 'test-publishAt',
+          repeatEvery    : 'test-repeatEvery',
+          repeatExpiresAt: 'test-repeatExpiresAt',
+          foo            : '333',
+        }
+      })
+
       expect(result1).to.be.eql({ fakeResult })
       expect(result2).to.be.eql({ fakeResult })
       expect(result3).to.be.eql({ fakeResult })
+      expect(result4).to.be.eql({ fakeResult })
     })
 
     it('publishes a basic message with publishOptions and deliveryOptions', async () => {

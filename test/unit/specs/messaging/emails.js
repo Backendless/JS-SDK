@@ -56,10 +56,16 @@ describe('<Messaging> Emails', () => {
 
   it('sends an email with "bodyParts" instance', async () => {
     const req1 = prepareMockRequest({ status: fakeResult })
+    const req2 = prepareMockRequest({ status: fakeResult })
 
-    const bodyPartsInstance = new Backendless.Bodyparts({ textmessage, htmlmessage })
+    const bodyPartsInstance1 = new Backendless.Bodyparts({ textmessage, htmlmessage })
 
-    const result1 = await Backendless.Messaging.sendEmail(subject, bodyPartsInstance, recipients)
+    const bodyPartsInstance2 = new Backendless.Bodyparts()
+    bodyPartsInstance2.textmessage = textmessage
+    bodyPartsInstance2.htmlmessage = htmlmessage
+
+    const result1 = await Backendless.Messaging.sendEmail(subject, bodyPartsInstance1, recipients)
+    const result2 = await Backendless.Messaging.sendEmail(subject, bodyPartsInstance2, recipients)
 
     expect(req1).to.deep.include({
       method : 'POST',
@@ -72,7 +78,19 @@ describe('<Messaging> Emails', () => {
       }
     })
 
+    expect(req2).to.deep.include({
+      method : 'POST',
+      path   : `${APP_PATH}/messaging/email`,
+      headers: { 'Content-Type': 'application/json' },
+      body   : {
+        subject,
+        to       : recipients,
+        bodyParts: { textmessage, htmlmessage },
+      }
+    })
+
     expect(result1).to.be.eql(fakeResult)
+    expect(result2).to.be.eql(fakeResult)
   })
 
   it('sends an email with any "bodyParts"', async () => {

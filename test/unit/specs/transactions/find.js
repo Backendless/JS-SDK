@@ -300,12 +300,13 @@ describe('<Transactions> Find Operation', () => {
     })
 
     it('excludeProperties', async () => {
-      query.excludeProperties(['foo', 'bar'])
-      query.excludeProperties(['prop1', 'prop2'])
-      query.excludeProperties('prop3', 'prop4')
-      query.excludeProperties('prop5', ['prop6', 'prop7'])
-      query.excludeProperty('prop8')
-      query.addAllProperties()
+      query
+        .excludeProperties(['foo', 'bar'])
+        .excludeProperties(['prop1', 'prop2'])
+        .excludeProperties('prop3', 'prop4')
+        .excludeProperties('prop5', ['prop6', 'prop7'])
+        .excludeProperty('prop8')
+        .addAllProperties()
 
       const results = {
         findPerson1: {

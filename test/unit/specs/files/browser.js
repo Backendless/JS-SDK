@@ -9,7 +9,8 @@ describe('<Files> Browser', () => {
 
   const resultFileURL = 'http://foo.com/path/to/file.txt'
 
-  const filePath = '/test/path'
+  const filePath = 'test/path'
+  const filePathWithSlash = '/test/path'
   const fileName = 'test-name.txt'
   const fileContent = 'test-content'
 
@@ -96,10 +97,12 @@ describe('<Files> Browser', () => {
 
     it('uploads a file', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
 
       const file = new File(Buffer.from('test-content'), fileName)
 
       await Backendless.Files.upload(file, filePath)
+      await Backendless.Files.upload(file, filePathWithSlash)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -107,8 +110,17 @@ describe('<Files> Browser', () => {
         headers: {},
       })
 
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
+        headers: {},
+      })
+
       expect(req1.body).to.be.instanceof(FormData)
       expect(req1.body.get('file')).to.be.equal(file)
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file')).to.be.equal(file)
     })
 
     it('uploads a file with path', async () => {

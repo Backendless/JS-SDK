@@ -3334,8 +3334,13 @@ describe('<Transactions> Add Relations Operation', () => {
 
       expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, {}])).to.throw(errorMsg)
       expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, []])).to.throw(errorMsg)
+      expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, ''])).to.throw(errorMsg)
+      expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, 0])).to.throw(errorMsg)
       expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, 123])).to.throw(errorMsg)
       expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, true])).to.throw(errorMsg)
+      expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, false])).to.throw(errorMsg)
+      expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, null])).to.throw(errorMsg)
+      expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, undefined])).to.throw(errorMsg)
       expect(() => uow.addToRelation(PERSONS_TABLE_NAME, 'parent-id', ORDER_COLUMN, [validChild, () => ({})])).to.throw(errorMsg)
     })
 
