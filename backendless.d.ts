@@ -406,6 +406,87 @@ declare module Backendless {
 
     /**
      * @public
+     * @namespace Backendless.Geo
+     **/
+    namespace Geo {
+        let restUrl: string;
+
+        let UNITS: Object;
+        let EARTH_RADIUS: number;
+
+        function savePointSync(point: Backendless.GeoPoint): Backendless.GeoPoint;
+
+        function savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
+
+        function findSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
+
+        function getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
+
+        function getGeopointCountSync(fenceName: string, query: Backendless.GeoQueryI): number
+
+        function getGeopointCountSync(query: Backendless.GeoQueryI): number
+
+        function deletePointSync(point: string | Backendless.GeoPoint): string;
+
+        function deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
+
+        function loadMetadataSync(point: Backendless.GeoPoint | Backendless.GeoCluster): Object;
+
+        function loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
+
+        function getClusterPointsSync(cluster: Backendless.GeoCluster): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function getFencePointsSync(fenceName: string, query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function relativeFindSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
+
+        function relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
+
+        function addCategorySync(name: string): Backendless.GeoCategoryI;
+
+        function addCategory(name: string): Promise<Backendless.GeoCategoryI>;
+
+        function deleteCategorySync(name: string): boolean;
+
+        function deleteCategory(name: string): Promise<boolean>;
+
+        function getCategoriesSync(): Array<Backendless.GeoCategoryI>;
+
+        function getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
+
+        function runOnStayActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        function runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        function runOnExitActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        function runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        function runOnEnterActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
+
+        function runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
+
+        function startGeofenceMonitoringWithInAppCallbackSync(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): void;
+
+        function startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
+
+        function startGeofenceMonitoringWithRemoteCallbackSync(fenceName: string, point: Backendless.GeoPoint): void;
+
+        function startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
+
+        function stopGeofenceMonitoring(fenceName: string): void;
+    }
+
+    /**
+     * @public
      * @namespace Backendless.Messaging
      **/
     namespace Messaging {

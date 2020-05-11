@@ -46,6 +46,7 @@ const SERVICES = {
   'Commerce'    : () => require('./commerce').default,
   'Users'       : () => require('./users').default,
   'BL'          : () => require('./bl').default,
+  'Geo'         : () => require('./geo').default,
   'Data'        : () => require('./data').default,
   'Messaging'   : () => require('./messaging').default,
   'Files'       : () => require('./files').default,
@@ -104,6 +105,10 @@ class Backendless {
 
     if (app.__hasService('Logging')) {
       app.Logging.reset()
+    }
+
+    if (app.__hasService('Geo')) {
+      app.Geo.resetGeofenceMonitoring()
     }
 
     if (app.__hasService('Users')) {
@@ -316,6 +321,10 @@ class Backendless {
     return this.BL.Events
   }
 
+  get Geo() {
+    return this.__getService('Geo')
+  }
+
   get Data() {
     return this.__getService('Data')
   }
@@ -358,6 +367,18 @@ class Backendless {
   ///--------BACKWARD COMPATIBILITY-------///
 
   //TODO: do we need to remove it?
+
+  get GeoQuery() {
+    return this.Geo.Query
+  }
+
+  get GeoPoint() {
+    return this.Geo.Point
+  }
+
+  get GeoCluster() {
+    return this.Geo.Cluster
+  }
 
   /** @deprecated */
   get Persistence() {

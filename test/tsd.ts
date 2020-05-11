@@ -593,6 +593,130 @@ function testUserService() {
 
 }
 
+function testGoeService() {
+    const newGeoPoint: Backendless.GeoPoint = new Backendless.GeoPoint();
+    newGeoPoint.latitude = 20;
+    newGeoPoint.longitude = 30;
+    newGeoPoint.categories = ["c"];
+    newGeoPoint.metadata = {"owner": "XXX"};
+
+    let existPoint: Backendless.GeoPoint = new Backendless.GeoPoint();
+    newGeoPoint.___class = 'c';
+    newGeoPoint.objectId = 'id';
+    newGeoPoint.latitude = 20;
+    newGeoPoint.longitude = 30;
+
+    const geoClaster: Backendless.GeoCluster = new Backendless.GeoCluster();
+
+    geoClaster.___class = 'geo';
+    geoClaster.objectId = 'id';
+    geoClaster.latitude = 20;
+    geoClaster.longitude = 30;
+    geoClaster.totalPoints = 10;
+    geoClaster.geoQuery = new Backendless.GeoQuery();
+
+    let bool: boolean = true;
+    let errorStr: string = 'str';
+    const fenceName: string = 'str';
+    const categoryName: string = 'str';
+    const restUrl: string = Backendless.Geo.restUrl;
+    const EARTH_RADIUS: number = Backendless.Geo.EARTH_RADIUS;
+    let geoCollectionResult: Array<Object>;
+    let geoCategory: Backendless.GeoCategoryI;
+    let geoCategories: Backendless.GeoCategoryI[];
+    let resultObj: Object;
+
+    const baseGeoQuery: Backendless.GeoQueryI = new Backendless.GeoQuery();
+    const rectangleGeoQuery: Backendless.RectangleGeoQueryI = {searchRectangle: [1, 2, 3, 4]};
+    const circleGeoQuery: Backendless.CircleGeoQueryI = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
+    const categories: string | string[] = baseGeoQuery.categories;
+    const includeMetadata: boolean = baseGeoQuery.includeMetadata;
+    const metadata: Object = baseGeoQuery.metadata;
+    const condition: string = baseGeoQuery.condition;
+    const relativeFindMetadata: Object = baseGeoQuery.relativeFindMetadata;
+    const relativeFindPercentThreshold: number = baseGeoQuery.relativeFindPercentThreshold;
+    const pageSize: number = baseGeoQuery.pageSize;
+
+    const searchRectangle: number[] = rectangleGeoQuery.searchRectangle;
+
+    const latitude: number = circleGeoQuery.latitude;
+    const longitude: number = circleGeoQuery.longitude;
+    const radius: number = circleGeoQuery.radius;
+    const units: string = circleGeoQuery.units;
+    let promiseObject: Promise<Object>;
+    let promiseVoid: Promise<void>;
+    let promiseNum: Promise<number>;
+    let resultNum: number;
+
+    const inAppCallback: Backendless.GeofenceMonitoringCallbacksI = {
+        onenter: function () {
+        }
+    };
+
+    existPoint = Backendless.Geo.savePointSync(newGeoPoint);
+    promiseObject = Backendless.Geo.savePoint(newGeoPoint);
+
+    geoCollectionResult = Backendless.Geo.findSync(baseGeoQuery);
+    promiseObject = Backendless.Geo.find(baseGeoQuery);
+
+    geoCollectionResult = Backendless.Geo.findSync(rectangleGeoQuery);
+    promiseObject = Backendless.Geo.find(rectangleGeoQuery);
+
+    geoCollectionResult = Backendless.Geo.findSync(circleGeoQuery);
+    promiseObject = Backendless.Geo.find(circleGeoQuery);
+
+    resultNum = Backendless.Geo.getGeopointCountSync(baseGeoQuery);
+    resultNum = Backendless.Geo.getGeopointCountSync(fenceName, baseGeoQuery);
+    promiseNum = Backendless.Geo.getGeopointCount(baseGeoQuery);
+    promiseNum = Backendless.Geo.getGeopointCount(fenceName, baseGeoQuery);
+
+    errorStr = Backendless.Geo.deletePointSync(categoryName);
+    errorStr = Backendless.Geo.deletePointSync(existPoint);
+    promiseObject = Backendless.Geo.deletePoint(categoryName);
+    promiseObject = Backendless.Geo.deletePoint(existPoint);
+
+    resultObj = Backendless.Geo.loadMetadataSync(existPoint);
+    resultObj = Backendless.Geo.loadMetadataSync(geoClaster);
+    promiseObject = Backendless.Geo.loadMetadata(existPoint);
+    promiseObject = Backendless.Geo.loadMetadata(geoClaster);
+
+    geoCollectionResult = Backendless.Geo.getClusterPointsSync(geoClaster);
+    promiseObject = Backendless.Geo.getClusterPoints(geoClaster);
+
+    geoCollectionResult = Backendless.Geo.getFencePointsSync(fenceName, baseGeoQuery);
+    promiseObject = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery);
+
+    geoCollectionResult = Backendless.Geo.relativeFindSync(baseGeoQuery);
+    promiseObject = Backendless.Geo.relativeFind(baseGeoQuery);
+
+    geoCategory = Backendless.Geo.addCategorySync(categoryName);
+    promiseObject = Backendless.Geo.addCategory(categoryName);
+
+    bool = Backendless.Geo.deleteCategorySync(categoryName);
+    promiseObject = Backendless.Geo.deleteCategory(categoryName);
+
+    geoCategories = Backendless.Geo.getCategoriesSync();
+    promiseObject = Backendless.Geo.getCategories();
+
+    resultObj = Backendless.Geo.runOnStayActionSync(fenceName, existPoint);
+    promiseObject = Backendless.Geo.runOnStayAction(fenceName, existPoint);
+
+    resultObj = Backendless.Geo.runOnExitActionSync(fenceName, existPoint);
+    promiseObject = Backendless.Geo.runOnExitAction(fenceName, existPoint);
+
+    resultObj = Backendless.Geo.runOnEnterActionSync(fenceName, existPoint);
+    promiseObject = Backendless.Geo.runOnEnterAction(fenceName, existPoint);
+
+    Backendless.Geo.startGeofenceMonitoringWithInAppCallbackSync(fenceName, inAppCallback);
+    promiseVoid = Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback);
+
+    Backendless.Geo.startGeofenceMonitoringWithRemoteCallbackSync(fenceName, existPoint);
+    promiseVoid = Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint);
+
+    Backendless.Geo.stopGeofenceMonitoring(fenceName);
+
+}
+
 function testEmailEnvelope() {
     let addresses: string[];
     let query: string;
