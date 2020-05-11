@@ -40,7 +40,7 @@ export default class RTHandlers extends RTListeners {
   }
 
   removeCreateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -56,7 +56,7 @@ export default class RTHandlers extends RTListeners {
   }
 
   removeUpdateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -72,7 +72,7 @@ export default class RTHandlers extends RTListeners {
   }
 
   removeDeleteListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -88,7 +88,7 @@ export default class RTHandlers extends RTListeners {
   }
 
   removeBulkCreateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -104,7 +104,7 @@ export default class RTHandlers extends RTListeners {
   }
 
   removeBulkUpdateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -120,7 +120,7 @@ export default class RTHandlers extends RTListeners {
   }
 
   removeBulkDeleteListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -135,7 +135,7 @@ export default class RTHandlers extends RTListeners {
     }
 
     if (typeof callback !== 'function') {
-      throw new Error('"callback" must be function.')
+      throw new Error('Listener Function must be passed.')
     }
 
     this.addSubscription(event, this.app.RT.subscriptions.onObjectsChanges, {
@@ -158,10 +158,6 @@ export default class RTHandlers extends RTListeners {
     const matcher = subscription => {
       const params = subscription.params
 
-      if (params.event !== event) {
-        return false
-      }
-
       if (whereClause) {
         return params.whereClause === whereClause
       }
@@ -174,6 +170,10 @@ export default class RTHandlers extends RTListeners {
     }
 
     this.stopSubscription(event, { matcher })
+  }
+
+  removeAllListeners() {
+    super.removeAllListeners()
   }
 
   /**

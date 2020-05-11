@@ -1,6 +1,5 @@
 import Utils from '../utils'
 
-import { deprecated } from '../decorators'
 import User from '../users/user'
 
 import Store from './store'
@@ -58,18 +57,18 @@ export default class Data {
     })
   }
 
-  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  save(className, obj) {
-    return this.of(className).save(obj)
-  }
-
   mapTableToClass(tableName, clientClass) {
+    if (typeof tableName === 'function') {
+      clientClass = tableName
+      tableName = Utils.getClassName(clientClass)
+    }
+
     if (!tableName || typeof tableName !== 'string') {
       throw new Error('Table Name must be provided and must be a string.')
     }
 
     if (!clientClass || typeof clientClass !== 'function') {
-      throw new Error('Table Name must be provided and must be a class.')
+      throw new Error('Class must be provided and must be a constructor function.')
     }
 
     this.classToTableMap[tableName] = clientClass

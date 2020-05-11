@@ -303,6 +303,7 @@ declare module Backendless {
         function callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
 
         function mapTableToClass(tableName: string, clientClass: Function): void;
+        function mapTableToClass(clientClass: Function): void;
     }
 
     /**

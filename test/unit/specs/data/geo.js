@@ -28,7 +28,31 @@ function createLineString(srs) {
 describe('<Data> GEO', () => {
   forSuite()
 
-  describe('Backendless.Data.Point', function() {
+  describe('Geometry', function() {
+
+    it('has abstract methods', function() {
+      const geometry = new Backendless.Data.Geometry()
+
+      expect(geometry.getGeojsonType).to.be.a('function')
+      expect(geometry.getWktType).to.be.a('function')
+      expect(geometry.wktCoordinatePairs).to.be.a('function')
+      expect(geometry.jsonCoordinatePairs).to.be.a('function')
+    })
+
+    it('returns JSON and WKT', function() {
+      const geometry = new Backendless.Data.Geometry()
+
+      expect(geometry.toJSON()).to.be.eql({
+        coordinates: undefined,
+        type       : undefined,
+      })
+
+      expect(geometry.toString()).to.be.equal('\'undefined(undefined)\'')
+    })
+
+  })
+
+  describe('Point', function() {
 
     it('coordinates of point should be same as during creation', function() {
       const x = createRandomCoordinate()
@@ -40,6 +64,18 @@ describe('<Data> GEO', () => {
 
       expect(point.getX()).to.be.equal(x)
       expect(point.getY()).to.be.equal(y)
+    })
+
+    it('has methods for working with Longitude and Latitude', function() {
+      const x = createRandomCoordinate()
+      const y = createRandomCoordinate()
+
+      const point = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.WGS84)
+        .setLongitude(x)
+        .setLatitude(y)
+
+      expect(point.getLongitude()).to.be.equal(point.getX()).to.be.equal(x)
+      expect(point.getLatitude()).to.be.equal(point.getY()).to.be.equal(y)
     })
 
     it('two same points should be equal', function() {
@@ -54,7 +90,27 @@ describe('<Data> GEO', () => {
         .setX(x)
         .setY(y)
 
+      const point3 = point2
+
       expect(point1.equals(point2)).to.equal(true)
+      expect(point2.equals(point3)).to.equal(true)
+    })
+
+    it('two same points should not be equal', function() {
+      const x = createRandomCoordinate()
+      const y = createRandomCoordinate()
+
+      const point1 = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.WGS84)
+        .setX(x)
+        .setY(y)
+
+      const point2 = {
+        srs: point1.srs,
+        x  : point1.x,
+        y  : point1.y
+      }
+
+      expect(point1.equals(point2)).to.equal(false)
     })
 
     it('two different points should not be equal', function() {
@@ -93,7 +149,7 @@ describe('<Data> GEO', () => {
     })
   })
 
-  describe('Backendless.Data.LineString', function() {
+  describe('LineString', function() {
 
     it('two same linestrings should be equal', function() {
       const point1 = createPoint()
@@ -173,7 +229,7 @@ describe('<Data> GEO', () => {
     })
   })
 
-  describe('Backendless.Data.Polygon', function() {
+  describe('Polygon', function() {
     it('two same polygons should be equal', function() {
       const lineString1 = createLineString()
       const lineString2 = createLineString()

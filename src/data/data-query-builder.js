@@ -31,12 +31,16 @@ export default class DataQueryBuilder {
 
   setPageSize(pageSize) {
     if (pageSize <= 0) {
-      return 'Page size must be a positive value.'
+      throw new Error('Page size must be a positive value.')
     }
 
     this.pageSize = pageSize
 
     return this
+  }
+
+  getPageSize() {
+    return this.pageSize
   }
 
   setOffset(offset) {
@@ -47,6 +51,10 @@ export default class DataQueryBuilder {
     this.offset = offset
 
     return this
+  }
+
+  getOffset() {
+    return this.offset
   }
 
   prepareNextPage() {
@@ -107,6 +115,10 @@ export default class DataQueryBuilder {
     return this
   }
 
+  getExcludeProperties() {
+    return this.excludeProps
+  }
+
   getWhereClause() {
     return this.whereClause
   }
@@ -163,24 +175,24 @@ export default class DataQueryBuilder {
     return this
   }
 
-  getRelationsDepth() {
-    return this.relationsDepth
-  }
-
   setRelationsDepth(relationsDepth) {
     this.relationsDepth = relationsDepth
 
     return this
   }
 
-  getRelationsPageSize() {
-    return this.relationsPageSize
+  getRelationsDepth() {
+    return this.relationsDepth
   }
 
   setRelationsPageSize(relationsPageSize) {
     this.relationsPageSize = relationsPageSize
 
     return this
+  }
+
+  getRelationsPageSize() {
+    return this.relationsPageSize
   }
 
   toJSON() {

@@ -93,8 +93,12 @@ export default class DataStore {
   }
 
   async getObjectCount(condition) {
-    if (condition instanceof DataQueryBuilder) {
-      condition = condition.getWhereClause() || undefined
+    if (condition) {
+      if (condition instanceof DataQueryBuilder) {
+        condition = condition.getWhereClause() || undefined
+      } else if (typeof condition !== 'string') {
+        throw new Error('Condition must be a string or an instance of DataQueryBuilder.')
+      }
     }
 
     return this.app.request.get({
@@ -103,7 +107,9 @@ export default class DataStore {
     })
   }
 
-  async loadRelations(parentObjectId, queryBuilder) {
+  async loadRelations(parent, queryBuilder) {
+    const parentObjectId = parent && parent.objectId || parent
+
     if (!parentObjectId || typeof parentObjectId !== 'string') {
       throw new Error('Parent Object Id must be provided and must be a string.')
     }
@@ -223,8 +229,12 @@ export default class DataStore {
       throw new Error('Relation Parent must be provided and must be a string or an object with objectId property.')
     }
 
-    if (!columnName) {
+    if (!columnName || typeof columnName !== 'string') {
       throw new Error('Relation Column Name must be provided and must be a string.')
+    }
+
+    if (!children || (typeof children !== 'string' && !Array.isArray(children))) {
+      throw new Error('Relation Children must be provided and must be a string or a list of objects.')
     }
 
     const condition = {}
@@ -232,11 +242,16 @@ export default class DataStore {
     if (typeof children === 'string') {
       condition.whereClause = children
 
-    } else if (Array.isArray(children)) {
-      condition.childrenIds = children.map(child => child.objectId || child)
-
     } else {
-      throw new Error('Relation Children must be provided and must be a string or a list of objects.')
+      condition.childrenIds = children.map(child => {
+        const childId = child && child.objectId || child
+
+        if (!childId || typeof childId !== 'string') {
+          throw new Error('Child Id must be provided and must be a string.')
+        }
+
+        return childId
+      })
     }
 
     const query = {}
@@ -271,9 +286,11 @@ function parseCircularDependencies(obj) {
   }
 
   function processModel(source, target, prop) {
-    const Model = source[prop].constructor
-
-    target[prop] = new Model()
+    if (source[prop].__subID && subIds[source[prop].__subID]) {
+      target[prop] = subIds[source[prop].__subID]
+    } else {
+      target[prop] = new source[prop].constructor()
+    }
 
     if (source[prop].__subID) {
       subIds[source[prop].__subID] = target[prop]
@@ -286,7 +303,7 @@ function parseCircularDependencies(obj) {
       iteratedItems.push(source)
 
       for (const prop in source) {
-        if (source.hasOwnProperty(prop)) {
+        if (source.hasOwnProperty(prop) && (!Array.isArray(target[prop]) || !target[prop])) {
           if (Array.isArray(source[prop])) {
             buildCircularDeps(source[prop], target[prop] = [])
 
