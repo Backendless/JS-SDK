@@ -2582,6 +2582,23 @@ describe('<Data> Parser', () => {
     })
   })
 
+  describe('GEO Types', () => {
+
+    it('fails due to unsupported GEO types', async () => {
+      const check = geoData => dataStore.parseFindResponse([{ ___class: 'ParentGeo', geoData, }])
+
+      const geoData1 = { type: 'InvalidTestType', ___class: 'com.backendless.persistence.Polygon' }
+      const geoData2 = { type: 'InvalidTestType', ___class: 'com.backendless.persistence.LineString' }
+      const geoData3 = { type: 'InvalidTestType', ___class: 'com.backendless.persistence.Point' }
+      const geoData4 = { type: 'InvalidTestType', ___class: 'com.backendless.persistence.Geometry' }
+
+      expect(() => check(geoData1)).to.throw('There is no constructor for InvalidTestType')
+      expect(() => check(geoData2)).to.throw('There is no constructor for InvalidTestType')
+      expect(() => check(geoData3)).to.throw('There is no constructor for InvalidTestType')
+      expect(() => check(geoData4)).to.throw('There is no constructor for InvalidTestType')
+    })
+  })
+
   it('data store instance', async () => {
     class FooClass {
     }

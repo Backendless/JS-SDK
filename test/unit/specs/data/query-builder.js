@@ -208,4 +208,17 @@ describe('<Data> Query Builder', () => {
       'where'            : 'w1',
     })
   })
+
+  it('fails when pageSize is invalid', function() {
+    const errorMsg = 'Page size must be a positive value.'
+
+    expect(() => query.setPageSize(0)).to.throw(errorMsg)
+    expect(() => query.setPageSize(-1)).to.throw(errorMsg)
+  })
+
+  it('fails when offset is invalid', function() {
+    const errorMsg = 'Offset cannot have a negative value.'
+
+    expect(() => query.setOffset(-1)).to.throw(errorMsg)
+  })
 })

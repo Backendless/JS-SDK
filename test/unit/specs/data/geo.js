@@ -322,6 +322,26 @@ describe('<Data> GEO', () => {
 
       expect(polygon.asWKT()).to.eql(expectedWKT)
     })
+
+    it('converts boundary to LineString instance', function() {
+      const point1 = createPoint()
+      const point2 = createPoint()
+      const point3 = createPoint()
+      const point4 = createPoint()
+
+      const polygon = new Backendless.Data.Polygon(createLineString())
+
+      polygon.setBoundary([point1, point2, point3, point4])
+
+      expect(polygon.getBoundary().points).to.eql([point1, point2, point3, point4])
+      expect(polygon.getBoundary()).to.be.instanceOf(Backendless.Data.LineString)
+    })
+
+    it('fails when boundary is missed', function() {
+      const polygon = new Backendless.Data.Polygon(createLineString())
+
+      expect(() => polygon.setBoundary()).to.throw('The \'boundary\' argument is required.')
+    })
   })
 
   describe('Parse from WKT', function() {
@@ -375,6 +395,12 @@ describe('<Data> GEO', () => {
 
       expect(constructedPolygon).to.eql(polygonObj)
     })
+
+    it('fails when wktString is invalid', function() {
+      const invalidWKT = 'INVALID((,,7 2))'
+
+      expect(() => Backendless.Data.Geometry.fromWKT(invalidWKT)).to.throw('WKT string is invalid')
+    })
   })
 
   describe('Parse from GeoJSON', function() {
@@ -423,6 +449,49 @@ describe('<Data> GEO', () => {
       expect(polygonObj.asGeoJSON()).to.eql(constructedPolygon.asGeoJSON())
       expect(constructedPolygon).to.eql(polygonObj)
     })
+  })
+
+  describe('Spatial Reference System', function() {
+    let SpatialReferenceSystem
+
+    beforeEach(() => {
+      SpatialReferenceSystem = Backendless.Data.SpatialReferenceSystem
+    })
+
+    it('has predefined systems', function() {
+      expect(SpatialReferenceSystem.CARTESIAN.getSRSId()).to.equal(0)
+      expect(SpatialReferenceSystem.CARTESIAN.getName()).to.equal('Cartesian')
+      expect(SpatialReferenceSystem.CARTESIAN.toString()).to.equal('Cartesian(0)')
+
+      expect(SpatialReferenceSystem.PULKOVO_1995.getSRSId()).to.equal(4200)
+      expect(SpatialReferenceSystem.PULKOVO_1995.getName()).to.equal('Pulkovo 1995')
+      expect(SpatialReferenceSystem.PULKOVO_1995.toString()).to.equal('Pulkovo 1995(4200)')
+
+      expect(SpatialReferenceSystem.WGS84.getSRSId()).to.equal(4326)
+      expect(SpatialReferenceSystem.WGS84.getName()).to.equal('WGS 84')
+      expect(SpatialReferenceSystem.WGS84.toString()).to.equal('WGS 84(4326)')
+
+      expect(SpatialReferenceSystem.WGS84_PSEUDO_MERCATOR.getSRSId()).to.equal(3857)
+      expect(SpatialReferenceSystem.WGS84_PSEUDO_MERCATOR.getName()).to.equal('WGS 84 / Pseudo-Mercator')
+      expect(SpatialReferenceSystem.WGS84_PSEUDO_MERCATOR.toString()).to.equal('WGS 84 / Pseudo-Mercator(3857)')
+
+      expect(SpatialReferenceSystem.WGS84_WORLD_MERCATOR.getSRSId()).to.equal(3395)
+      expect(SpatialReferenceSystem.WGS84_WORLD_MERCATOR.getName()).to.equal('WGS 84 / World Mercator')
+      expect(SpatialReferenceSystem.WGS84_WORLD_MERCATOR.toString()).to.equal('WGS 84 / World Mercator(3395)')
+    })
+
+    it('has default system', function() {
+      expect(SpatialReferenceSystem.DEFAULT).to.equal(SpatialReferenceSystem.WGS84)
+    })
+
+    it('can find SpatialSystem by srs', function() {
+      expect(SpatialReferenceSystem.valueBySRSId(0)).to.equal(SpatialReferenceSystem.CARTESIAN)
+      expect(SpatialReferenceSystem.valueBySRSId(4200)).to.equal(SpatialReferenceSystem.PULKOVO_1995)
+      expect(SpatialReferenceSystem.valueBySRSId(4326)).to.equal(SpatialReferenceSystem.WGS84)
+      expect(SpatialReferenceSystem.valueBySRSId(3857)).to.equal(SpatialReferenceSystem.WGS84_PSEUDO_MERCATOR)
+      expect(SpatialReferenceSystem.valueBySRSId(3395)).to.equal(SpatialReferenceSystem.WGS84_WORLD_MERCATOR)
+    })
+
   })
 })
 

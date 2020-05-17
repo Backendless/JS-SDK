@@ -38,6 +38,7 @@ const Constructors = {
 
 export default function geoConstructor(geoObject, srs) {
   const constructor = Constructors[geoObject.type]
+
   srs = srs || SpatialReferenceSystem.valueBySRSId(geoObject.srsId)
 
   if (constructor) {

@@ -243,4 +243,33 @@ describe('Namespace', () => {
       expect(Backendless.Utils.uuid()).to.not.equal(Backendless.Utils.uuid())
     })
   })
+
+  describe('Helpers', () => {
+    it('has links to service classes', () => {
+      expect(Backendless.GeoQuery).to.equal(Backendless.Geo.Query)
+      expect(Backendless.GeoPoint).to.equal(Backendless.Geo.Point)
+      expect(Backendless.GeoCluster).to.equal(Backendless.Geo.Cluster)
+
+      expect(Backendless.Persistence).to.equal(Backendless.Data)
+      expect(Backendless.DataQueryBuilder).to.equal(Backendless.Data.QueryBuilder)
+      expect(Backendless.LoadRelationsQueryBuilder).to.equal(Backendless.Data.LoadRelationsQueryBuilder)
+
+      expect(Backendless.EmailEnvelope).to.equal(Backendless.Messaging.EmailEnvelope)
+      expect(Backendless.Bodyparts).to.equal(Backendless.Messaging.Bodyparts)
+      expect(Backendless.PublishOptions).to.equal(Backendless.Messaging.PublishOptions)
+      expect(Backendless.DeliveryOptions).to.equal(Backendless.Messaging.DeliveryOptions)
+      expect(Backendless.PublishOptionsHeaders).to.equal(Backendless.Messaging.PublishOptionsHeaders)
+
+      expect(Backendless.CustomServices).to.equal(Backendless.BL.CustomServices)
+      expect(Backendless.Events).to.equal(Backendless.BL.Events)
+    })
+
+    it('has noConflict function', () => {
+      const B = Backendless.noConflict()
+
+      expect(B).to.equal(Backendless)
+      expect(global.Backendless).to.equal(undefined)
+    })
+
+  })
 })
