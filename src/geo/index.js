@@ -40,7 +40,7 @@ export default class Geo {
   @deprecated('Backendless.Geo', alternativeForDepreciation)
   async savePoint(geoPoint) {
     if (typeof geoPoint.latitude !== 'number' || typeof geoPoint.longitude !== 'number') {
-      throw new Error('Latitude or longitude not a number')
+      throw new Error('Latitude or Longitude not a number')
     }
 
     geoPoint.categories = Utils.castArray(geoPoint.categories || ['Default'])
@@ -144,6 +144,8 @@ export default class Geo {
       for (let i = 0; i < geoCollection.length; i++) {
         geoCollection[i] = new GeoPoint(geoCollection[i])
       }
+
+      return geoCollection
     }
 
     return this.app.request
@@ -217,18 +219,17 @@ export default class Geo {
 
   @deprecated('Backendless.Geo', alternativeForDepreciation)
   async deletePoint(point) {
-    if (!point || typeof point === 'function') {
+    const pointId = point && point.objectId || point
+
+    if (!pointId || typeof pointId !== 'string') {
       throw new Error('Point argument name is required, must be string (object Id), or point object')
     }
-
-    const pointId = typeof point === 'string' ? point : point.objectId
 
     return this.app.request
       .delete({
         url: this.app.urls.geoPoint(pointId),
       })
       .then(data => data.result || data)
-
   }
 
   @deprecated('Backendless.Geo', alternativeForDepreciation)
