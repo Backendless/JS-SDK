@@ -63,7 +63,7 @@
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.6",
     "babelify": "^10.0.0",
-    "backendless-console-sdk": "^2.8.3",
+    "backendless-console-sdk": "^2.10.12",
     "bannerize": "^1.1.4",
     "browserify": "^16.5.0",
     "chai": "^4.2.0",

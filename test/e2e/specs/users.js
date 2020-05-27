@@ -30,7 +30,7 @@ describe('Backendless.Users', function() {
       const user = randUser()
 
       return Backendless.UserService.register(user)
-      //TODO Backendless does login on register but doesn't return 'user-token'
+        //TODO Backendless does login on register but doesn't return 'user-token'
         .then(() => Backendless.UserService.logout())
         .then(() => Backendless.UserService.login(user.email, user.password, true))
         .then(serverUser => Object.assign(user, serverUser))
@@ -527,5 +527,42 @@ describe('Backendless.Users', function() {
           )
       })
     })
+  })
+
+  it('toggle userStatus with BL API_KEY', async function() {
+    let user
+    const blBackendless = Backendless.initApp({
+      appId     : app.id,
+      apiKey    : app.apiKeysMap.BL,
+      standalone: true
+    })
+
+    const savedUser = await blBackendless.Data.of(Backendless.User).save(randUser())
+    user = await blBackendless.UserService.login(savedUser.objectId)
+
+    await blBackendless.UserService.disableUser(user.objectId)
+
+    await blBackendless.UserService.logout()
+    user = await blBackendless.Data.of(blBackendless.Users).findById(user.objectId)
+    expect(user.userStatus).to.equal('DISABLED')
+
+    await blBackendless.UserService.enableUser(user.objectId)
+
+    user = await blBackendless.Data.of(blBackendless.Users).findById(user.objectId)
+    expect(user.userStatus).to.equal('ENABLED')
+  })
+
+  it('toggle userStatus with non BL API_KEY', async function() {
+    const user = await loginRandomUser()
+
+    expect(Backendless.UserService.disableUser(user.objectId))
+      .to.eventually.be.rejected
+      .and.eventually.have.property('code', 3054)
+      .and.eventually.have.property('message', 'Operation allowed only for BL logic.')
+
+    expect(Backendless.UserService.enableUser(user.objectId))
+      .to.eventually.be.rejected
+      .and.eventually.have.property('code', 3054)
+      .and.eventually.have.property('message', 'Operation allowed only for BL logic.')
   })
 })

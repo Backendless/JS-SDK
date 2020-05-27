@@ -469,6 +469,7 @@ function testUserService() {
     const identity: string = 'identity';
     const roleName: string = 'rolename';
     const password: string = 'password';
+    const userId: string = 'userId';
     const div: HTMLElement = document.createElement('div');
     let bol: boolean = true;
     let newUser: Backendless.User = new Backendless.User();
@@ -592,6 +593,9 @@ function testUserService() {
     Backendless.UserService.resendEmailConfirmationSync('email');
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
 
+    promiseVoid = Backendless.UserService.enableUser(userId);
+
+    promiseVoid = Backendless.UserService.disableUser(userId);
 }
 
 function testGoeService() {
