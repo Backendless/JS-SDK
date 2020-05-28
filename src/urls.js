@@ -339,4 +339,8 @@ export default class Urls {
   guestLogin() {
     return `${this.users()}/register/guest`
   }
+
+  userStatus(userId) {
+    return `${this.userObject(userId)}/status`
+  }
 }
