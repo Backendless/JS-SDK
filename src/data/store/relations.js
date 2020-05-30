@@ -3,7 +3,6 @@ import Utils from '../../utils'
 import LoadRelationsQueryBuilder from '../load-relations-query-builder'
 
 import { extractQueryOptions } from './extract-query-options'
-import { parseFindResponse } from './parse'
 
 //TODO: refactor me
 
@@ -118,7 +117,7 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
   let url = this.app.urls.dataTableObjectRelation(this.className, parentObjectId, relationName)
 
   if (asyncHandler) {
-    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, dataQuery.relationModel))
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => this.parseFindResponse(resp, dataQuery.relationModel))
   }
 
   if (query.length) {
@@ -135,7 +134,7 @@ export function loadRelations(parentObjectId, queryBuilder, asyncHandler) {
     return result
   }
 
-  return parseFindResponse(result, dataQuery.relationModel)
+  return this.parseFindResponse(result, dataQuery.relationModel)
 }
 
 export function setRelation(parent, columnName, children, asyncHandler) {

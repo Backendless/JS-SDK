@@ -19,6 +19,10 @@ export default class LoadRelationsQueryBuilder {
     this._paging = new PagingQueryBuilder()
   }
 
+  setRelationModel(RelationModel){
+    this._query.relationModel = RelationModel
+  }
+
   setRelationName(relationName) {
     this._query.setOption('relationName', relationName)
 

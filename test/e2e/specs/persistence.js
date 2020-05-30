@@ -1,6 +1,4 @@
-import '../helpers/global'
-import sandbox from '../helpers/sandbox'
-import * as Utils from '../helpers/utils'
+import sandbox, { Utils } from '../helpers/sandbox'
 
 const Backendless = sandbox.Backendless
 

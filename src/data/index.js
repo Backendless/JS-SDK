@@ -61,12 +61,17 @@ export default class Data {
   }
 
   mapTableToClass(tableName, clientClass) {
-    if (!tableName) {
-      throw new Error('Table name is not specified')
+    if (typeof tableName === 'function') {
+      clientClass = tableName
+      tableName = Utils.getClassName(clientClass)
     }
 
-    if (!clientClass) {
-      throw new Error('Class is not specified')
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be provided and must be a string.')
+    }
+
+    if (!clientClass || typeof clientClass !== 'function') {
+      throw new Error('Class must be provided and must be a constructor function.')
     }
 
     this.classToTableMap[tableName] = clientClass

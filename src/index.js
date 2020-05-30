@@ -1,8 +1,8 @@
 import Request from 'backendless-request'
 
 import APIRequest from './request'
-import Utils from './utils'
 import Urls from './urls'
+import Utils from './utils'
 
 const DEFAULT_PROPS = {
   appId         : null,
@@ -29,7 +29,7 @@ const previousBackendless = root && root.Backendless
 const parseInitConfig = (...args) => {
   const [appId, apiKey] = args
 
-  if (Utils.isObject(appId)) {
+  if (appId && typeof appId === 'object') {
     return appId
   }
 
@@ -101,19 +101,31 @@ class Backendless {
 
     app.resetRT()
 
-    if (app.__Logging) {
+    app.__removeService('LocalCache')
+
+    if (app.__hasService('Logging')) {
       app.Logging.reset()
     }
 
-    if (app.__Geo) {
+    if (app.__hasService('Geo')) {
       app.Geo.resetGeofenceMonitoring()
     }
 
-    if (app.__Users) {
+    if (app.__hasService('Users')) {
       app.Users.setLocalCurrentUser()
     }
 
+    delete this.__device
+
     return app
+  }
+
+  __hasService(name) {
+    return !!this[`__${name}`]
+  }
+
+  __removeService(name) {
+    delete this[`__${name}`]
   }
 
   __getService(name) {
@@ -238,13 +250,17 @@ class Backendless {
     )
   }
 
-  setupDevice(...args) {
-    const { default: Device } = require('./device')
+  setupDevice(device) {
+    const Device = require('./device').default
 
-    this.__device = new Device(...args)
+    this.__device = new Device(device)
   }
 
   ///----------UTIL METHODS--------///
+
+  get Utils() {
+    return Utils
+  }
 
   getCurrentUserToken() {
     return this.Users.getCurrentUserToken()
@@ -287,6 +303,10 @@ class Backendless {
 
   get User() {
     return require('./users/user').default
+  }
+
+  get UserService() {
+    return this.Users
   }
 
   get BL() {
@@ -347,10 +367,6 @@ class Backendless {
   ///--------BACKWARD COMPATIBILITY-------///
 
   //TODO: do we need to remove it?
-
-  get UserService() {
-    return this.Users
-  }
 
   get GeoQuery() {
     return this.Geo.Query

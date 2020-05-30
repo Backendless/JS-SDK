@@ -12,12 +12,16 @@ export default class DataPagingQueryBuilder {
 
   setPageSize(pageSize) {
     if (pageSize <= 0) {
-      return 'Page size must be a positive value.'
+      throw new Error('Page size must be a positive value.')
     }
 
     this.pageSize = pageSize
 
     return this
+  }
+
+  getPageSize() {
+    return this.pageSize
   }
 
   setOffset(offset) {
@@ -28,6 +32,10 @@ export default class DataPagingQueryBuilder {
     this.offset = offset
 
     return this
+  }
+
+  getOffset() {
+    return this.offset
   }
 
   prepareNextPage() {

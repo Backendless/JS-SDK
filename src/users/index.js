@@ -10,6 +10,7 @@ import { update } from './update'
 import { describeUserClass } from './describe-class'
 import { restorePassword } from './restore-password'
 import { resendEmailConfirmation } from './email-confirmation'
+import { enableUser, disableUser } from './status'
 import {
   loginWithGooglePlusSdk,
   loginWithGooglePlus,
@@ -29,6 +30,14 @@ import {
 class Users {
   constructor(app) {
     this.app = app
+  }
+
+  getCurrentUserId() {
+    if (this.currentUser) {
+      return this.currentUser.objectId
+    }
+
+    return this.app.LocalCache.get(this.app.LocalCache.Keys.CURRENT_USER_ID) || null
   }
 }
 
@@ -103,7 +112,10 @@ Object.assign(Users.prototype, {
   loggedInUser       : loggedInUser,
   getCurrentUserToken: getCurrentUserToken,
   getLocalCurrentUser: getLocalCurrentUser,
-  setLocalCurrentUser: setLocalCurrentUser
+  setLocalCurrentUser: setLocalCurrentUser,
+
+  enableUser : Utils.promisified(enableUser),
+  disableUser: Utils.promisified(disableUser)
 })
 
 export default Users

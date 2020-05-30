@@ -384,13 +384,15 @@ declare module Backendless {
 
         function loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
 
-        /**@deprecated */
-        function loginWithFacebookSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object, stayLoggedIn: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
-        /**@deprecated */
-        function loginWithGooglePlusSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object, stayLoggedIn: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
         function isValidLoginSync(): boolean;
 
@@ -399,6 +401,10 @@ declare module Backendless {
         function resendEmailConfirmationSync(email: string): void;
 
         function resendEmailConfirmation(email: string): Promise<void>;
+
+        function enableUser(userId: string): Promise<void>;
+
+        function disableUser(userId: string): Promise<void>;
     }
 
     /**
@@ -1172,11 +1178,11 @@ declare module Backendless {
 
         info(message: string): void;
 
-        warn(message: string): void;
+        warn(message: string, exception?: string): void;
 
-        error(message: string): void;
+        error(message: string, exception?: string): void;
 
-        fatal(message: string): void;
+        fatal(message: string, exception?: string): void;
 
         trace(message: string): void;
     }

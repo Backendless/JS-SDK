@@ -1,5 +1,4 @@
 /// <reference path="../backendless.d.ts" />
-/// <reference path="./es6-promise.d.ts" />
 
 import Counter = Backendless.Counter;
 
@@ -469,6 +468,7 @@ function testUserService() {
     const identity: string = 'identity';
     const roleName: string = 'rolename';
     const password: string = 'password';
+    const userId: string = 'userId';
     const div: HTMLElement = document.createElement('div');
     let bol: boolean = true;
     let newUser: Backendless.User = new Backendless.User();
@@ -592,6 +592,9 @@ function testUserService() {
     Backendless.UserService.resendEmailConfirmationSync('email');
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
 
+    promiseVoid = Backendless.UserService.enableUser(userId);
+
+    promiseVoid = Backendless.UserService.disableUser(userId);
 }
 
 function testGoeService() {
@@ -1111,6 +1114,7 @@ function testLogging() {
     const loggerName: string = 'str';
     let logger: Backendless.Logger;
     const message: string = 'str';
+    const exception: string = 'str';
 
     const restUrl: string = Backendless.Logging.restUrl;
     const loggers: Object = Backendless.Logging.loggers;
@@ -1125,8 +1129,11 @@ function testLogging() {
     logger.debug(message);
     logger.info(message);
     logger.warn(message);
+    logger.warn(message, exception);
     logger.error(message);
+    logger.error(message, exception);
     logger.fatal(message);
+    logger.fatal(message, exception);
     logger.trace(message);
 }
 
@@ -1362,7 +1369,10 @@ async function testBaseTransactions() {
     opResult = uow.update(opResult, personObj);
     opResult = uow.update(opResult, propertyName, propertyValueObj);
     opResult = uow.update(opResultValueReference, changesObj);
-    opResult = uow.update(opResultValueReference, propertyName, propertyValueObj);
+    opResult = uow.update(opResultValueReference, propertyName, opResultValueReference);
+    opResult = uow.update(opResultValueReference, propertyName, 123);
+    opResult = uow.update(opResultValueReference, propertyName, 'str');
+    opResult = uow.update(opResultValueReference, propertyName, true);
     ///
     opResult = uow.delete(opResult);
     opResult = uow.delete(opResultValueReference);
