@@ -3,7 +3,6 @@ import Async from '../../request/async'
 
 import QueryBuilder from '../query-builder'
 
-import { parseFindResponse } from './parse'
 import { extractQueryOptions } from './extract-query-options'
 
 
@@ -21,7 +20,7 @@ function findUtil(url, Model, dataQuery, asyncHandler) {
   const query = []
 
   if (asyncHandler) {
-    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, Model, this.classToTableMap))
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => this.parseFindResponse(resp))
   }
 
   if (dataQuery.options) {
@@ -65,7 +64,7 @@ function findUtil(url, Model, dataQuery, asyncHandler) {
     return result
   }
 
-  return parseFindResponse(result, Model, this.classToTableMap)
+  return this.parseFindResponse(result, Model, this.classToTableMap)
 }
 
 export function find(queryBuilder, asyncHandler) {
@@ -111,7 +110,7 @@ export function findById() {
     }
 
     if (responder) {
-      responder = Utils.wrapAsync(responder, resp => parseFindResponse(resp, this.model))
+      responder = Utils.wrapAsync(responder, resp => this.parseFindResponse(resp))
     }
 
     let result
@@ -131,7 +130,7 @@ export function findById() {
       })
     }
 
-    return isAsync ? result : parseFindResponse(result, this.model)
+    return isAsync ? result : this.parseFindResponse(result)
   }
 }
 

@@ -1,7 +1,5 @@
 import { RTListeners } from '../../rt'
 
-import { parseFindResponse } from '../store/parse'
-
 const ChangesTypes = {
   CREATED: 'created',
   UPDATED: 'updated',
@@ -42,7 +40,7 @@ export default class EventHandler extends RTListeners {
   }
 
   removeCreateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -58,7 +56,7 @@ export default class EventHandler extends RTListeners {
   }
 
   removeUpdateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -74,7 +72,7 @@ export default class EventHandler extends RTListeners {
   }
 
   removeDeleteListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -90,7 +88,7 @@ export default class EventHandler extends RTListeners {
   }
 
   removeBulkCreateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -106,7 +104,7 @@ export default class EventHandler extends RTListeners {
   }
 
   removeBulkUpdateListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -122,7 +120,7 @@ export default class EventHandler extends RTListeners {
   }
 
   removeBulkDeleteListener(callback) {
-    if (!callback) {
+    if (!callback || typeof callback !== 'function') {
       throw new Error('Listener Function must be passed.')
     }
 
@@ -137,13 +135,13 @@ export default class EventHandler extends RTListeners {
     }
 
     if (typeof callback !== 'function') {
-      throw new Error('"callback" must be function.')
+      throw new Error('Listener Function must be passed.')
     }
 
     this.addSubscription(event, this.app.RT.subscriptions.onObjectsChanges, {
       callback,
       onError,
-      parser      : SingleChangesTypes.includes(event) ? this.parseObjectToInstance.bind(this) : undefined,
+      parser: SingleChangesTypes.includes(event) ? this.parseObjectToInstance.bind(this) : undefined,
       params: {
         event,
         whereClause
@@ -160,10 +158,6 @@ export default class EventHandler extends RTListeners {
     const matcher = subscription => {
       const params = subscription.params
 
-      if (params.event !== event) {
-        return false
-      }
-
       if (whereClause) {
         return params.whereClause === whereClause
       }
@@ -178,8 +172,14 @@ export default class EventHandler extends RTListeners {
     this.stopSubscription(event, { matcher })
   }
 
+  removeAllListeners() {
+    super.removeAllListeners()
+  }
+
+  /**
+   * @private
+   * */
   parseObjectToInstance(object) {
-    //TODO: "parseFindResponse" method must be moved to dataStore
-    return parseFindResponse(object, this.dataStore.model)
+    return this.dataStore.parseFindResponse(object)
   }
 }

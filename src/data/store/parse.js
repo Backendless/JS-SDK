@@ -1,12 +1,7 @@
 import Utils from '../../utils'
-import { resolveModelClassFromString } from '../utils'
 import constructGeoObject from '../geo/geo-constructor'
 
-function isObject(item) {
-  return typeof item === 'object' && item !== null
-}
-
-const geoClasses = [
+const GEO_CLASSES = [
   'com.backendless.persistence.Polygon',
   'com.backendless.persistence.LineString',
   'com.backendless.persistence.Point',
@@ -28,9 +23,11 @@ function parseCircularDependencies(obj) {
   }
 
   function processModel(source, target, prop) {
-    const Model = source[prop].constructor
-
-    target[prop] = new Model()
+    if (source[prop].__subID && subIds[source[prop].__subID]) {
+      target[prop] = subIds[source[prop].__subID]
+    } else {
+      target[prop] = new source[prop].constructor()
+    }
 
     if (source[prop].__subID) {
       subIds[source[prop].__subID] = target[prop]
@@ -39,15 +36,15 @@ function parseCircularDependencies(obj) {
   }
 
   function buildCircularDeps(source, target) {
-    if (iteratedItems.indexOf(source) === -1) {
+    if (!iteratedItems.includes(source)) {
       iteratedItems.push(source)
 
       for (const prop in source) {
-        if (source.hasOwnProperty(prop)) {
+        if (source.hasOwnProperty(prop) && (!Array.isArray(target[prop]) || !target[prop])) {
           if (Array.isArray(source[prop])) {
             buildCircularDeps(source[prop], target[prop] = [])
-          } else if (isObject(source[prop])) {
-            if (geoClasses.includes(source[prop].___class)) {
+          } else if (source[prop] && typeof source[prop] === 'object') {
+            if (GEO_CLASSES.includes(source[prop].___class)) {
               target[prop] = constructGeoObject(source[prop])
             } else if (source[prop].__originSubID) {
               ensureCircularDep(source, target, prop)
@@ -74,12 +71,12 @@ function parseCircularDependencies(obj) {
 
 export function parseFindResponse(response, Model, classToTableMap) {
   const sanitizeResponseItem = record => {
-    Model = Utils.isFunction(Model) ? Model : resolveModelClassFromString(record.___class)
+    Model = typeof Model === 'function' ? Model : classToTableMap[record.___class]
 
-    return Utils.deepExtend(new Model(), record, classToTableMap)
+    return Utils.deepExtend(Model ? new Model() : {}, record, classToTableMap)
   }
 
-  const result = Utils.isArray(response)
+  const result = Array.isArray(response)
     ? response.map(sanitizeResponseItem)
     : sanitizeResponseItem(response)
 

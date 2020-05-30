@@ -31,6 +31,14 @@ class Users {
   constructor(app) {
     this.app = app
   }
+
+  getCurrentUserId() {
+    if (this.currentUser) {
+      return this.currentUser.objectId
+    }
+
+    return this.app.LocalCache.get(this.app.LocalCache.Keys.CURRENT_USER_ID) || null
+  }
 }
 
 Object.assign(Users.prototype, {

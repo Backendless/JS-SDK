@@ -1,10 +1,12 @@
 import Request from 'backendless-request'
 import { createClient } from 'backendless-console-sdk'
-import { TablesAPI } from './tables'
-import { wait } from './promise'
-import * as Utils from './utils'
+
+import '../../helpers/global'
+import Utils from '../../helpers/utils'
 
 const Backendless = require('../../../lib')
+
+import { TablesAPI } from './tables'
 
 const API_SERVER = process.env.API_SERVER || 'http://localhost:9000'
 const CONSOLE_SERVER = process.env.CONSOLE_SERVER || 'http://localhost:3000'
@@ -116,7 +118,7 @@ const waitUntilAppIsConfigured = async app => {
   } catch (e) {
     console.log('App is not ready yet', e)
 
-    await wait(5000)
+    await Utils.wait(5000)
 
     await waitUntilAppIsConfigured(app)
   }
@@ -164,12 +166,14 @@ const createSandboxFor = each => () => {
   const beforeHook = each ? beforeEach : before
   const afterHook = each ? afterEach : after
 
+  const timeout = 10 * 60000 // 10 minutes
+
   beforeEach(() => {
     mockRequests = []
   })
 
   beforeHook(function() {
-    this.timeout(120000)
+    this.timeout(timeout + (timeout * 0.2))
     this.consoleApi = createClient(CONSOLE_SERVER)
     this.tablesAPI = new TablesAPI(this)
 
@@ -183,7 +187,10 @@ const createSandboxFor = each => () => {
         Backendless.serverURL = API_SERVER
         Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
       })
-      .then(() => Promise.race([waitUntilAppIsConfigured(this.app), wait(120000)]))
+      .then(() => Promise.race([
+        waitUntilAppIsConfigured(this.app),
+        Utils.wait(timeout)
+      ]))
       .then(() => {
         if (!this.app.ready) {
           throw new Error('App was created with error!')
@@ -196,6 +203,10 @@ const createSandboxFor = each => () => {
       return this.sandbox.destroy()
     }
   })
+}
+
+export {
+  Utils
 }
 
 export default {

@@ -1,7 +1,7 @@
 import Connection from './connection'
 
 export default class RemoteSharedObjects {
-  constructor(options, app) {
+  constructor(app) {
     this.app = app
   }
 

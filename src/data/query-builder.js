@@ -19,10 +19,18 @@ export default class DataQueryBuilder {
     return this
   }
 
+  getPageSize() {
+    return this._paging.getPageSize()
+  }
+
   setOffset(offset) {
     this._paging.setOffset(offset)
 
     return this
+  }
+
+  getOffset() {
+    return this._paging.getOffset()
   }
 
   prepareNextPage() {
@@ -77,6 +85,10 @@ export default class DataQueryBuilder {
     this._query.excludeProperties(...properties)
 
     return this
+  }
+
+  getExcludeProperties() {
+    return this._query.excludeProps
   }
 
   getWhereClause() {
@@ -170,6 +182,7 @@ export default class DataQueryBuilder {
       props            : this._query.properties,
       where            : this._query.condition,
       having           : this._query.havingClause,
+      excludeProps     : this._query.excludeProps,
       sortBy           : this._query.options && this._query.options.sortBy,
       groupBy          : this._query.options && this._query.options.groupBy,
       loadRelations    : this._query.options && this._query.options.relations,
@@ -205,6 +218,10 @@ export default class DataQueryBuilder {
 
     if (source.groupBy) {
       target.groupBy = source.groupBy
+    }
+
+    if (Array.isArray(source.excludeProps)) {
+      target.excludeProps = source.excludeProps
     }
 
     if (Array.isArray(source.loadRelations)) {
