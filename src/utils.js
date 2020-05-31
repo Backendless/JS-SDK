@@ -34,11 +34,23 @@ const Utils = {
   isLocalStorageSupported: isLocalStorageSupported(),
 
   castArray(value) {
-    if (Utils.isArray(value)) {
+    if (Array.isArray(value)) {
       return value
     }
 
+    if (typeof value === 'undefined') {
+      return []
+    }
+
     return [value]
+  },
+
+  isCustomClassInstance(item) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      return false
+    }
+
+    return item.constructor !== Object
   },
 
   isEmpty(obj) {
@@ -81,18 +93,23 @@ const Utils = {
   },
 
   getClassName(obj) {
-    if (obj.prototype && obj.prototype.___class) {
-      return obj.prototype.___class
+    if (typeof obj === 'function') {
+      if (obj.name) {
+        return obj.name
+      }
     }
 
-    if (Utils.isFunction(obj) && obj.name) {
-      return obj.name
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      if (obj.___class) {
+        return obj.___class
+      }
+
+      if (obj.constructor !== Object) {
+        return Utils.getClassName(obj.constructor)
+      }
     }
 
-    const instStringified = (Utils.isFunction(obj) ? obj.toString() : obj.constructor.toString())
-    const results = instStringified.match(/function\s+(\w+)/)
-
-    return (results && results.length > 1) ? results[1] : ''
+    return null
   },
 
   encodeArrayToUriComponent(arr) {
@@ -217,13 +234,13 @@ function isLocalStorageSupported() {
     if (isBrowser() && window.localStorage) {
       localStorage.setItem('localStorageTest', true)
       localStorage.removeItem('localStorageTest')
+
       return true
-    } else {
-      return false
     }
   } catch (e) {
-    return false
   }
+
+  return false
 }
 
 function classWrapper(obj, classToTableMap) {
@@ -252,8 +269,8 @@ function classWrapper(obj, classToTableMap) {
     return obj
   }
 
-  if (Utils.isObject(obj) && obj != null) {
-    if (Utils.isArray(obj)) {
+  if (obj && typeof obj === 'object') {
+    if (Array.isArray(obj)) {
       for (let i = obj.length; i--;) {
         obj[i] = wrapper(obj[i])
       }

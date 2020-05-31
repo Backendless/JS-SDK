@@ -55,7 +55,7 @@ describe('<GEO> (Deprecated)', function() {
         body   : undefined
       })
 
-      expect(result1).to.be.eql({result: fakeResult})
+      expect(result1).to.be.eql({ result: fakeResult })
     })
   })
 
@@ -236,6 +236,31 @@ describe('<GEO> (Deprecated)', function() {
       expect(req1).to.deep.include({
         method : 'GET',
         path   : `${APP_PATH}/geo/points?categories=${categoryName}&includemetadata=true`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql([])
+    })
+
+    it('should load points with all queries', async () => {
+      const req1 = prepareMockRequest([])
+
+      const result1 = await Backendless.Geo.find({
+        radius         : 3000,
+        latitude       : 45,
+        longitude      : 80,
+        units          : 'm',
+        metadata       : { foo: 123, bar: 'test' },
+        categories     : ['category-1', 'category-2'],
+        includeMetadata: true,
+        pageSize       : 30,
+        offset         : 70
+      })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/geo/points?r=3000&lat=45&lon=80&units=m&metadata=%7B%22foo%22%3A123%2C%22bar%22%3A%22test%22%7D&categories=category-1,category-2&includemetadata=true&pagesize=30&offset=70`,
         headers: {},
         body   : undefined
       })

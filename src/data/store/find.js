@@ -113,22 +113,11 @@ export function findById() {
       responder = Utils.wrapAsync(responder, resp => this.parseFindResponse(resp))
     }
 
-    let result
-
-    if (Utils.getClassName(arguments[0]) === 'Object') {
-      result = this.app.request.get({
-        url         : url + send.replace(/&$/, ''),
-        isAsync     : isAsync,
-        asyncHandler: responder
-      })
-    } else {
-      result = this.app.request.put({
-        url         : url,
-        data        : argsObj,
-        isAsync     : isAsync,
-        asyncHandler: responder
-      })
-    }
+    const result = this.app.request.get({
+      url         : url + send.replace(/&$/, ''),
+      isAsync     : isAsync,
+      asyncHandler: responder
+    })
 
     return isAsync ? result : this.parseFindResponse(result)
   }

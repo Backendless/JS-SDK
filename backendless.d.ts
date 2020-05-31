@@ -303,6 +303,7 @@ declare module Backendless {
         function callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
 
         function mapTableToClass(tableName: string, clientClass: Function): void;
+        function mapTableToClass(clientClass: Function): void;
     }
 
     /**
@@ -1549,7 +1550,8 @@ declare module Backendless {
         update(object: object): OpResult;
         update(tableName: string, object: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
-        update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
+        update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: OpResultValueReference): OpResult;
+        update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: number | string | boolean): OpResult;
 
         delete(opResult: OpResult | OpResultValueReference): OpResult;
         delete(object: object): OpResult;
@@ -1559,11 +1561,11 @@ declare module Backendless {
         bulkCreate(tableName: string, objects: object[]): OpResult;
         bulkCreate(objects: object[]): OpResult;
 
-        bulkUpdate(whereClause: string, object: object): OpResult;
-        bulkUpdate(tableName: string, whereClause: string, changesObj: object): OpResult;
-        bulkUpdate(tableName: string, objectIds: string[], changesObj: object): OpResult;
-        bulkUpdate(tableName: string, objects: object[], changesObj: object): OpResult;
-        bulkUpdate(opResult: OpResult, changesObj: object): OpResult;
+        bulkUpdate(whereClause: string, changes: object): OpResult;
+        bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
+        bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;
+        bulkUpdate(tableName: string, objects: object[], changes: object): OpResult;
+        bulkUpdate(opResult: OpResult, changes: object): OpResult;
 
         bulkDelete(opResult: OpResult): OpResult;
         bulkDelete(objects: object[]): OpResult;

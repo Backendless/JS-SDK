@@ -129,7 +129,15 @@ class UnitOfWork {
   find(tableName, queryBuilder) {
     const query = (queryBuilder instanceof DataQueryBuilder)
       ? queryBuilder.toJSON()
-      : queryBuilder
+      : (queryBuilder || {})
+
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Invalid arguments')
+    }
+
+    if (typeof query !== 'object' || Array.isArray(query)) {
+      throw new Error('Invalid arguments')
+    }
 
     const payload = {
       queryOptions: {}
@@ -145,6 +153,10 @@ class UnitOfWork {
 
     if (query.props) {
       payload.properties = query.props
+    }
+
+    if (query.excludeProps) {
+      payload.excludeProps = query.excludeProps
     }
 
     if (query.where) {
@@ -196,7 +208,11 @@ class UnitOfWork {
       throw new Error('Invalid arguments')
     }
 
-    if (typeof tableName !== 'string') {
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Invalid arguments')
+    }
+
+    if (!changes || typeof changes !== 'object' || Array.isArray(changes)) {
       throw new Error('Invalid arguments')
     }
 
@@ -207,7 +223,8 @@ class UnitOfWork {
    * update(object: object): OpResult;
    * update(tableName: string, object: object): OpResult;
    * update(opResult: OpResult | OpResultValueReference, object: object): OpResult;
-   * update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: object): OpResult;
+   * update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: OpResultValueReference): OpResult;
+   * update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: number | string | boolean): OpResult;
    * **/
   update(...args) {
     let tableName
@@ -217,7 +234,7 @@ class UnitOfWork {
       tableName = Utils.getClassName(args[0])
       payload = args[0]
 
-    } else if (typeof args[0] === 'string') {
+    } else if (args.length === 2 && typeof args[0] === 'string') {
       tableName = args[0]
       payload = args[1]
 
@@ -228,7 +245,7 @@ class UnitOfWork {
         objectId: args[0]
       }
 
-      if (args.length === 3) {
+      if (args.length === 3 && typeof args[1] === 'string') {
         payload[args[1]] = args[2]
 
       } else if (args.length === 2) {
@@ -242,15 +259,15 @@ class UnitOfWork {
       throw new Error('Invalid arguments')
     }
 
-    if (typeof tableName !== 'string') {
-      throw new Error('Invalid tableName')
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Invalid arguments')
     }
 
     return this.addOperations(OperationType.UPDATE, tableName, payload)
   }
 
   /**
-   * delete(opResult: OpResult): OpResult;
+   * delete(opResult: OpResult | OpResultValueReference): OpResult;
    * delete(object: object): OpResult;
    * delete(tableName: string, object: object): OpResult;
    * delete(tableName: string, objectId: string): OpResult;
@@ -264,24 +281,24 @@ class UnitOfWork {
         tableName = args[0].getTableName()
         object = args[0]
 
-      } else if (typeof args[0] === 'object') {
+      } else if (args[0] && typeof args[0] === 'object' && !Array.isArray(args[0])) {
         tableName = Utils.getClassName(args[0])
         object = args[0].objectId
       }
 
     } else if (args.length === 2) {
       tableName = args[0]
-      object = typeof args[1] === 'object' ? args[1].objectId : args[1]
+      object = args[1] && args[1].objectId || args[1]
 
     } else {
       throw new Error('Invalid arguments')
     }
 
-    if (!object) {
-      throw new Error('Table Object must be provided.')
+    if (!object || Array.isArray(object) || (typeof object !== 'string' && typeof object !== 'object')) {
+      throw new Error('Invalid arguments')
     }
 
-    if (typeof tableName !== 'string') {
+    if (!tableName || typeof tableName !== 'string') {
       throw new Error('Table Name must be a string.')
     }
 
@@ -298,48 +315,60 @@ class UnitOfWork {
       tableName = Utils.getClassName(objects[0])
     }
 
+    if (!objects || !Array.isArray(objects)) {
+      throw new Error('Objects must be an array of objects.')
+    }
+
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be a string.')
+    }
+
     return this.addOperations(OperationType.CREATE_BULK, tableName, objects)
   }
 
   /**
-   * bulkUpdate(whereClause: string, object: object): OpResult;
-   * bulkUpdate(tableName: string, whereClause: string, changesObj: object): OpResult;
-   * bulkUpdate(tableName: string, objectIds: string[], changesObj: object): OpResult;
-   * bulkUpdate(tableName: string, objects: object[], changesObj: object): OpResult;
-   * bulkUpdate(opResult: OpResult, changesObj: object): OpResult;
+   * bulkUpdate(whereClause: string, changes: object): OpResult;
+   * bulkUpdate(opResult: OpResult, changes: object): OpResult;
+   *
+   * bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
+   * bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;
+   * bulkUpdate(tableName: string, objects: object[], changes: object): OpResult;
    * **/
   bulkUpdate(...args) {
     let tableName
 
     const payload = {}
 
-    if (typeof args[0] === 'string') {
-      if (args.length === 3) {
-        tableName = args[0]
-        payload.changes = args[2]
+    if (args.length === 2) {
+      payload.changes = args[1]
 
-        if (typeof args[1] === 'string') {
-          payload.conditional = args[1]
-        } else if (Array.isArray(args[1])) {
-          payload.unconditional = args[1].map(o => o.objectId || o)
-        } else {
-          throw new Error('Invalid arguments')
-        }
-      } else if (args.length === 2) {
+      if (typeof args[0] === 'string') {
         tableName = Utils.getClassName(args[1])
-
         payload.conditional = args[0]
-        payload.changes = args[1]
+
+      } else if (args[0] instanceof OpResult) {
+        tableName = args[0].getTableName()
+        payload.unconditional = args[0]
+      }
+
+    } else if (args.length === 3) {
+      tableName = args[0]
+      payload.changes = args[2]
+
+      if (typeof args[1] === 'string') {
+        payload.conditional = args[1]
+      } else if (Array.isArray(args[1])) {
+        payload.unconditional = args[1].map(o => o.objectId || o)
       } else {
         throw new Error('Invalid arguments')
       }
-    } else if (args[0] instanceof OpResult) {
-      tableName = args[0].getTableName()
 
-      payload.unconditional = args[0]
-      payload.changes = args[1]
     } else {
       throw new Error('Invalid arguments')
+    }
+
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be a string.')
     }
 
     return this.addOperations(OperationType.UPDATE_BULK, tableName, payload)
@@ -348,6 +377,7 @@ class UnitOfWork {
   /**
    * bulkDelete(opResult: OpResult): OpResult;
    * bulkDelete(objects: object[]): OpResult;
+   *
    * bulkDelete(tableName: string, objects: object[]): OpResult;
    * bulkDelete(tableName: string, objectIds: string[]): OpResult;
    * bulkDelete(tableName: string, whereClause: string): OpResult;
@@ -357,26 +387,34 @@ class UnitOfWork {
 
     let tableName
 
-    if (typeof args[0] === 'string') {
+    if (args.length === 1) {
+      if (args[0] instanceof OpResult) {
+        tableName = args[0].getTableName()
+        payload.unconditional = args[0]
+      } else if (Array.isArray(args[0])) {
+        tableName = Utils.getClassName(args[0][0])
+        payload.unconditional = args[0].map(o => o.objectId)
+      } else {
+        throw new Error('Invalid arguments')
+      }
+
+    } else if (args.length === 2) {
       tableName = args[0]
 
       if (typeof args[1] === 'string') {
         payload.conditional = args[1]
-
       } else if (Array.isArray(args[1])) {
         payload.unconditional = args[1].map(o => o.objectId || o)
       } else {
         throw new Error('Invalid arguments')
       }
 
-    } else if (args[0] instanceof OpResult) {
-      tableName = args[0].getTableName()
-      payload.unconditional = args[0]
-    } else if (Array.isArray(args[0])) {
-      tableName = Utils.getClassName(args[0][0])
-      payload.unconditional = args[0].map(o => o.objectId || o)
     } else {
       throw new Error('Invalid arguments')
+    }
+
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be a string.')
     }
 
     return this.addOperations(OperationType.DELETE_BULK, tableName, payload)
@@ -449,8 +487,8 @@ class UnitOfWork {
       throw new Error('Invalid arguments')
     }
 
-    if (parentObject) {
-      parentObject = parentObject.objectId || parentObject
+    if (parentObject && parentObject.objectId) {
+      parentObject = parentObject.objectId
     }
 
     if (typeof children === 'string') {
@@ -484,18 +522,6 @@ class UnitOfWork {
       })
     }
 
-    if (!tableName || typeof tableName !== 'string') {
-      throw new Error(
-        'Invalid "tableName" parameter, check passed arguments'
-      )
-    }
-
-    if (!parentObject) {
-      throw new Error(
-        'Invalid "parentObject" parameter, check passed arguments'
-      )
-    }
-
     if (!relationColumn || typeof relationColumn !== 'string') {
       throw new Error(
         'Invalid "relationColumn" parameter, check passed arguments'
@@ -506,6 +532,10 @@ class UnitOfWork {
       throw new Error(
         'Neither "unconditional" nor "conditional" parameter is specified, check passed arguments'
       )
+    }
+
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be a string.')
     }
 
     const payload = {
