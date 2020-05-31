@@ -2,6 +2,8 @@ import Utils from '../utils'
 
 import { deprecated } from '../decorators'
 
+import User from '../users/user'
+
 import Permissions from './permissions'
 import Store from './store'
 import QueryBuilder from './query-builder'
@@ -20,7 +22,10 @@ import GeoJSONParser from './geo/geo-json-parser'
 export default class Data {
   constructor(app) {
     this.app = app
-    this.classToTableMap = {}
+
+    this.classToTableMap = {
+      [User.className]: User
+    }
 
     this.Permissions = new Permissions(app)
     this.QueryBuilder = QueryBuilder

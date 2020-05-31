@@ -220,7 +220,7 @@ export default class DataQueryBuilder {
       target.groupBy = source.groupBy
     }
 
-    if (Array.isArray(source.excludeProps)) {
+    if (Array.isArray(source.excludeProps) && source.excludeProps.length) {
       target.excludeProps = source.excludeProps
     }
 
