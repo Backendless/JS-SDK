@@ -30,6 +30,9 @@ export default class DataStore {
   }
 
   async save(object) {
+    //TODO: refactor me
+    replCircDeps(object)
+
     return this.app.request
       .put({
         url : this.app.urls.dataTable(this.className),
@@ -60,18 +63,33 @@ export default class DataStore {
   }
 
   async findById(objectId, query) {
-    objectId = objectId && objectId.objectId || objectId
+    let result
 
-    if (!objectId || typeof objectId !== 'string') {
-      throw new Error('Object Id must be provided and must be a string.')
+    if (objectId && typeof objectId === 'object' && !Array.isArray(objectId)) {
+      // this is relevant for External Data Connectors where may be more that on primary key
+
+      if (Object.keys(objectId).length < 2) {
+        throw new Error('Provided object must have at least 2 primary keys.')
+      }
+
+      result = await this.app.request.get({
+        url  : this.app.urls.dataTablePrimaryKey(this.className),
+        query: objectId,
+      })
+
+    } else {
+      if (!objectId || typeof objectId !== 'string') {
+        throw new Error('Object Id must be provided and must be a string or an object of primary keys.')
+      }
+
+      result = await this.app.request
+        .get({
+          url        : this.app.urls.dataTableObject(this.className, objectId),
+          queryString: DataQueryBuilder.toQueryString(query),
+        })
     }
 
-    return this.app.request
-      .get({
-        url        : this.app.urls.dataTableObject(this.className, objectId),
-        queryString: DataQueryBuilder.toQueryString(query),
-      })
-      .then(result => this.parseFindResponse(result))
+    return this.parseFindResponse(result)
   }
 
   async findFirst(query) {
@@ -269,6 +287,41 @@ export default class DataStore {
   }
 }
 
+const genID = () => {
+  //TODO: refactor me
+  let b = ''
+
+  for (let a = b; a++ < 36; b += a * 51
+  && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
+  }
+
+  return b
+}
+
+export function replCircDeps(object) {
+  const objMap = [object]
+  let pos
+
+  const _replCircDepsHelper = obj => {
+    for (const prop in obj) {
+      if (obj.hasOwnProperty(prop) && typeof obj[prop] === 'object' && obj[prop] != null) {
+        if ((pos = objMap.indexOf(obj[prop])) !== -1) {
+          objMap[pos]['__subID'] = objMap[pos]['__subID'] || genID()
+          obj[prop] = { '__originSubID': objMap[pos]['__subID'] }
+
+        } else if (obj[prop] && obj[prop] instanceof Date) {
+          obj[prop] = obj[prop].getTime()
+
+        } else {
+          objMap.push(obj[prop])
+          _replCircDepsHelper(obj[prop])
+        }
+      }
+    }
+  }
+
+  _replCircDepsHelper(object)
+}
 function parseCircularDependencies(obj) {
   //TODO: refactor me
 

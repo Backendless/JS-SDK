@@ -105,6 +105,10 @@ export default class Urls {
     return `${this.dataTable(tableName)}/find`
   }
 
+  dataTablePrimaryKey(tableName) {
+    return `${this.dataTable(tableName)}/pk`
+  }
+
   dataTableObject(tableName, objectId) {
     return `${this.dataTable(tableName)}/${objectId}`
   }

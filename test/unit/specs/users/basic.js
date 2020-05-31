@@ -119,8 +119,8 @@ describe('<Users> Basic', function() {
       expect(result1).to.be.eql(fakeResult)
     })
 
-    xit('should fail if userId is invalid', async () => {
-      const errorMsg = 'User objectId can not be empty'
+    it('should fail if userId is invalid', async () => {
+      const errorMsg = 'User objectId must be non empty string'
 
       await expect(Backendless.UserService.disableUser()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -143,6 +143,21 @@ describe('<Users> Basic', function() {
       await expect(Backendless.UserService.enableUser({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.enableUser([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.enableUser(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+    it('should fail if userStatus is invalid', async () => {
+      const errorMsg = 'User Status must be a valid string'
+
+      await expect(Backendless.UserService.updateUserStatus('user-id' )).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id', () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
   })

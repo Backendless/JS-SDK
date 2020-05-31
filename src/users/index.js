@@ -205,6 +205,29 @@ export default class Users {
     })
   }
 
+  async enableUser(userId) {
+    return this.updateUserStatus(userId, 'ENABLED')
+  }
+
+  async disableUser(userId) {
+    return this.updateUserStatus(userId, 'DISABLED')
+  }
+
+  async updateUserStatus(userId, userStatus) {
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('User objectId must be non empty string')
+    }
+
+    if (!userStatus || typeof userStatus !== 'string') {
+      throw new Error('User Status must be a valid string')
+    }
+
+    return this.app.request.put({
+      url : this.app.urls.userStatus(userId),
+      data: { userStatus },
+    })
+  }
+
   loggedInUser() {
     return this.getCurrentUserId()
   }

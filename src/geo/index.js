@@ -190,11 +190,9 @@ export default class Geo {
       throw new Error('Category name is required.')
     }
 
-    return this.app.request
-      .put({
-        url: this.app.urls.geoCategory(name),
-      })
-      .then(data => data.result || data)
+    return this.app.request.put({
+      url: this.app.urls.geoCategory(name),
+    })
   }
 
   @deprecated('Backendless.Geo', alternativeForDepreciation)
@@ -210,11 +208,9 @@ export default class Geo {
       throw new Error('Category name is required.')
     }
 
-    return this.app.request
-      .delete({
-        url: this.app.urls.geoCategory(name),
-      })
-      .then(data => data.result || data)
+    return this.app.request.delete({
+      url: this.app.urls.geoCategory(name),
+    })
   }
 
   @deprecated('Backendless.Geo', alternativeForDepreciation)

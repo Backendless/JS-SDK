@@ -31,7 +31,7 @@ describe('<Files> Basic', function() {
 
       expect(req2).to.deep.include({
         method : 'PUT',
-        path   : `${APP_PATH}/files/binary//test/path/test-name.txt`,
+        path   : `${APP_PATH}/files/binary/test/path/test-name.txt`,
         headers: { 'Content-Type': 'text/plain' },
         body   : 'dGVzdC1jb250ZW50' // === base64('test-content')
       })

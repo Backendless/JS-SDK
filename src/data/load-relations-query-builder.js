@@ -14,10 +14,6 @@ export default class LoadRelationsQueryBuilder extends DataQueryBuilder {
     this.relationName = null
   }
 
-  setRelationModel(RelationModel){
-    this._query.relationModel = RelationModel
-  }
-
   setRelationName(relationName) {
     this.relationName = relationName
 

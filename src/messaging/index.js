@@ -90,8 +90,8 @@ export default class Messaging {
 
     const data = {
       subject,
-      bodyParts,
-      to: recipients,
+      bodyparts: bodyParts,
+      to       : recipients,
     }
 
     if (Array.isArray(attachments) && attachments.length) {

@@ -126,20 +126,11 @@ describe('<Data> Data Connectors', function() {
       expect(result3).to.be.eql(fakeResult)
     })
 
-    xit('fails when objectId is invalid', async () => {
-      const errorMsg = 'Object Id must be provided and must be a string.'
+    it('fails when objectId is invalid', async () => {
+      const errorMsg = 'Provided object must have at least 2 primary keys.'
 
-      await expect(dataStore.findById()).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(null)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById('')).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById({})).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById([])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.findById({ foo: '123' })).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 
