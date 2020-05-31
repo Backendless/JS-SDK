@@ -26,9 +26,9 @@ class Person {
   }
 }
 
-describe('<Transactions> Delete Relations Operation', () => {
+describe('<Transactions> Delete Relations Operation', function() {
 
-  forSuite()
+  forSuite(this)
 
   let uow
 

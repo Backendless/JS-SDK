@@ -11,9 +11,11 @@ function getTestUserObject() {
   }
 }
 
-describe('<Users> Social Login with Container', () => {
+describe('<Users> Social Login with Container', function() {
 
-  forTest()
+  forTest(this)
+
+  this.timeout(10000)
 
   let cleanupDom
   let container

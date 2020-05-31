@@ -24,9 +24,9 @@ class Person {
   }
 }
 
-describe('<Transactions> Bulk Delete Operation', () => {
+describe('<Transactions> Bulk Delete Operation', function() {
 
-  forSuite()
+  forSuite(this)
 
   let uow
 

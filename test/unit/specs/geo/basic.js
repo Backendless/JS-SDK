@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<GEO> (Deprecated)', () => {
+describe('<GEO> (Deprecated)', function() {
 
-  forTest()
+  forTest(this)
 
   const fakeResult = { foo: 123 }
 
@@ -40,7 +40,7 @@ describe('<GEO> (Deprecated)', () => {
         body   : undefined
       })
 
-      expect(result1).to.be.equal(fakeResult)
+      expect(result1).to.be.eql({ result: fakeResult })
     })
 
     it('should delete category', async () => {
@@ -55,7 +55,7 @@ describe('<GEO> (Deprecated)', () => {
         body   : undefined
       })
 
-      expect(result1).to.be.equal(fakeResult)
+      expect(result1).to.be.eql({ result: fakeResult })
     })
   })
 
@@ -243,6 +243,31 @@ describe('<GEO> (Deprecated)', () => {
       expect(result1).to.be.eql([])
     })
 
+    it('should load points with all queries', async () => {
+      const req1 = prepareMockRequest([])
+
+      const result1 = await Backendless.Geo.find({
+        radius         : 3000,
+        latitude       : 45,
+        longitude      : 80,
+        units          : 'm',
+        metadata       : { foo: 123, bar: 'test' },
+        categories     : ['category-1', 'category-2'],
+        includeMetadata: true,
+        pageSize       : 30,
+        offset         : 70
+      })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/geo/points?r=3000&lat=45&lon=80&units=m&metadata=%7B%22foo%22%3A123%2C%22bar%22%3A%22test%22%7D&categories=category-1,category-2&includemetadata=true&pagesize=30&offset=70`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql([])
+    })
+
     it('should load points in radius', async () => {
       const req1 = prepareMockRequest([])
 
@@ -283,7 +308,7 @@ describe('<GEO> (Deprecated)', () => {
 
       queryObject = {
         searchRectangle: [32.78, -96.8, 25.79, -80.22],
-        categories: [categoryName]
+        categories     : [categoryName]
       }
 
       const result1 = await Backendless.Geo.getFencePoints(fenceName, queryObject)
@@ -317,7 +342,6 @@ describe('<GEO> (Deprecated)', () => {
       expect(result1).to.be.eql([])
     })
 
-
     it('should load cluster points', async () => {
       const req1 = prepareMockRequest([])
 
@@ -342,7 +366,7 @@ describe('<GEO> (Deprecated)', () => {
 
       queryObject = {
         searchRectangle: [32.78, -96.8, 25.79, -80.22],
-        categories: [categoryName]
+        categories     : [categoryName]
       }
 
       const result1 = await Backendless.Geo.getGeopointCount(queryObject)

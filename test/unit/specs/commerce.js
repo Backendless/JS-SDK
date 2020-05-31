@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH } from '../helpers/sandbox'
 
-describe('<Commerce>', () => {
+describe('<Commerce>', function() {
 
-  forSuite()
+  forSuite(this)
 
   const packageName = 'MY_PACKAGE_NAME'
   const productId = 'MY_PRODUCT_ID'

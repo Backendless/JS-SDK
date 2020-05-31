@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH } from '../../helpers/sandbox'
 
-describe('<Messaging> Push Notifications', () => {
+describe('<Messaging> Push Notifications', function() {
 
-  forSuite()
+  forSuite(this)
 
   const templateName = 'MY_PUSH_TEMPLATE'
 

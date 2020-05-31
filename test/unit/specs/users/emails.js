@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Users> Emails', () => {
+describe('<Users> Emails', function() {
 
-  forTest()
+  forTest(this)
 
   const validEmailAddress = 'foo@bar.com'
 

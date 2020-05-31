@@ -1,11 +1,11 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
+import Backendless, { forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Data> Parser', () => {
+describe('<Data> Parser', function() {
 
-  forTest()
+  forTest(this)
 
   const tableName = 'TEST_TABLE'
 

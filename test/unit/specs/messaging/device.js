@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forTest, prepareMockRequest, APP_PATH } from '../../helpers/sandbox'
 
-describe('<Messaging> Device', () => {
+describe('<Messaging> Device', function() {
 
-  forTest()
+  forTest(this)
 
   const device = {
     uuid    : 'test-uuid',

@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forSuite, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Data> Permissions', () => {
+describe('<Data> Permissions', function() {
 
-  forSuite()
+  forSuite(this)
 
   const role = 'test-role'
   const user = 'test-user'

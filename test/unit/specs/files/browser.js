@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forSuite, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Files> Browser', () => {
+describe('<Files> Browser', function() {
 
-  forSuite()
+  forSuite(this)
 
   const resultFileURL = 'http://foo.com/path/to/file.txt'
 
@@ -51,7 +51,7 @@ describe('<Files> Browser', () => {
 
       const file = new File(Buffer.from('test-content'), fileName)
 
-      const result1 = await Backendless.Files.saveFile(filePath, fileName, brokenFileContent)
+      const result1 = await Backendless.Files.saveFile(filePath, fileName, file)
 
       expect(req1).to.deep.include({
         method : 'PUT',

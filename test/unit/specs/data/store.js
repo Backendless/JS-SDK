@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Data> Store', () => {
+describe('<Data> Store', function() {
 
-  forTest()
+  forTest(this)
 
   const tableName = 'Person'
 

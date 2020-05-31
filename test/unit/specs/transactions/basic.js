@@ -6,11 +6,11 @@ import { prepareSuccessResponse, prepareErrorResponse } from './utils'
 
 const PERSONS_TABLE_NAME = 'Person'
 
-describe('<Transactions> Basic', () => {
+describe('<Transactions> Basic', function() {
 
   let uow
 
-  forSuite()
+  forSuite(this)
 
   beforeEach(() => {
     uow = new Backendless.UnitOfWork()

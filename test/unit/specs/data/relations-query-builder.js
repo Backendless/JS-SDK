@@ -3,14 +3,14 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forTest } from '../../helpers/sandbox'
 
-describe('<Data> Query Builder', function() {
+describe('<Data> Relations Query Builder', function() {
 
   forTest(this)
 
   let query
 
   beforeEach(() => {
-    query = Backendless.Data.QueryBuilder.create()
+    query = Backendless.Data.LoadRelationsQueryBuilder.create()
   })
 
   it('should has default values', async () => {
@@ -200,8 +200,8 @@ describe('<Data> Query Builder', function() {
       'having'           : 'h1',
       'offset'           : 222,
       'pageSize'         : 111,
-      'properties'       : ['p1', 'p2'],
-      'relations'        : ['r1'],
+      'props'       : ['p1', 'p2'],
+      'loadRelations'        : ['r1'],
       'relationsDepth'   : 123,
       'relationsPageSize': 123,
       'sortBy'           : ['s1'],

@@ -402,6 +402,10 @@ declare module Backendless {
         function resendEmailConfirmationSync(email: string): void;
 
         function resendEmailConfirmation(email: string): Promise<void>;
+
+        function enableUser(userId: string): Promise<void>;
+
+        function disableUser(userId: string): Promise<void>;
     }
 
     /**

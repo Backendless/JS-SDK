@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forTest } from '../../helpers/sandbox'
 
-describe('<LocalCache> Virtual', () => {
+describe('<LocalCache> Virtual', function() {
 
-  forTest()
+  forTest(this)
 
   it('has default storage name', () => {
     expect(Backendless.LocalCache.storageName).to.be.equal('Backendless')

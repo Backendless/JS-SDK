@@ -11,9 +11,9 @@ function getTestUserObject() {
   }
 }
 
-describe('<Users> Social Login with SDK', () => {
+describe('<Users> Social Login with SDK', function() {
 
-  forTest()
+  forTest(this)
 
   const accessToken = 'test-access-token'
 
@@ -259,7 +259,6 @@ describe('<Users> Social Login with SDK', () => {
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(userToken)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
     })
-
 
     it('fails when accessToken is invalid', async () => {
       const errorMsg = '"accessToken" must be non empty string.'

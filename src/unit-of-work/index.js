@@ -153,6 +153,10 @@ class UnitOfWork {
       payload.excludeProps = query.excludeProps
     }
 
+    if (query.excludeProps) {
+      payload.excludeProps = query.excludeProps
+    }
+
     if (query.where) {
       payload.whereClause = query.where
     }

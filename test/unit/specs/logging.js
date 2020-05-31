@@ -3,13 +3,13 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH, Utils } from '../helpers/sandbox'
 
-describe('<Logging>', () => {
+describe('<Logging>', function() {
 
   const loggerName = 'MY_LOGGER_NAME'
 
   let logger
 
-  forSuite()
+  forSuite(this)
 
   beforeEach(() => {
     logger = Backendless.Logging.getLogger(loggerName)
@@ -23,9 +23,12 @@ describe('<Logging>', () => {
     const errorMsg = 'Logger Name must be provided and must be a string.'
 
     expect(() => Backendless.Logging.getLogger()).to.throw(errorMsg)
+    expect(() => Backendless.Logging.getLogger('')).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(null)).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(true)).to.throw(errorMsg)
+    expect(() => Backendless.Logging.getLogger(false)).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(123)).to.throw(errorMsg)
+    expect(() => Backendless.Logging.getLogger(0)).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger({})).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger([])).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(() => ({}))).to.throw(errorMsg)

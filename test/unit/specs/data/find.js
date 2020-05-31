@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Data> Find', () => {
+describe('<Data> Find', function() {
 
-  forTest()
+  forTest(this)
 
   const fakeResult = { foo: 123 }
 
@@ -95,26 +95,26 @@ describe('<Data> Find', () => {
       }
 
       const result1 = await dataStore.findById(objectId, query)
-      const result2 = await dataStore.findById({ objectId }, query2)
-      const result3 = await dataStore.findById({ objectId }, query3)
+      const result2 = await dataStore.findById(objectId, query2)
+      const result3 = await dataStore.findById(objectId, query3)
 
       expect(req1).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=50&offset=15&sortBy=created&groupBy=objectId&relationsDepth=3&relationsPageSize=25&loadRelations=rel1,rel2,rel3&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8`,
         headers: {},
         body   : undefined
       })
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=10`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=10&offset=0`,
         headers: {},
         body   : undefined
       })
 
       expect(req3).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}?property=prop-1&property=prop-2&excludeProps=prop-3,prop-3`,
         headers: {},
         body   : undefined
       })
@@ -144,10 +144,8 @@ describe('<Data> Find', () => {
   describe('FindById', () => {
     it('without query', async () => {
       const req1 = prepareMockRequest(fakeResult)
-      const req2 = prepareMockRequest(fakeResult)
 
       const result1 = await dataStore.findById(objectId)
-      const result2 = await dataStore.findById({ objectId })
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -156,24 +154,13 @@ describe('<Data> Find', () => {
         body   : undefined
       })
 
-      expect(req2).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}`,
-        headers: {},
-        body   : undefined
-      })
-
       expect(result1).to.be.eql(fakeResult)
-      expect(result2).to.be.eql(fakeResult)
     })
 
     it('with all query options', async () => {
       const req1 = prepareMockRequest(fakeResult)
       const req2 = prepareMockRequest(fakeResult)
       const req3 = prepareMockRequest(fakeResult)
-      const req4 = prepareMockRequest(fakeResult)
-      const req5 = prepareMockRequest(fakeResult)
-      const req6 = prepareMockRequest(fakeResult)
 
       query
         .setPageSize(50)
@@ -227,16 +214,13 @@ describe('<Data> Find', () => {
         relationsPageSize: 70,
       }
 
-      const result1 = await dataStore.findById({ objectId }, query)
-      const result2 = await dataStore.findById({ objectId }, query2)
-      const result3 = await dataStore.findById({ objectId }, query3)
-      const result4 = await dataStore.findById(objectId, query)
-      const result5 = await dataStore.findById(objectId, query2)
-      const result6 = await dataStore.findById(objectId, query3)
+      const result1 = await dataStore.findById(objectId, query)
+      const result2 = await dataStore.findById(objectId, query2)
+      const result3 = await dataStore.findById(objectId, query3)
 
       expect(req1).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=50&offset=15&sortBy=created&groupBy=objectId&relationsDepth=3&relationsPageSize=25&loadRelations=rel1,rel2,rel3&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8`,
         headers: {},
         body   : undefined
       })
@@ -250,28 +234,7 @@ describe('<Data> Find', () => {
 
       expect(req3).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
-        headers: {},
-        body   : undefined
-      })
-
-      expect(req4).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
-        headers: {},
-        body   : undefined
-      })
-
-      expect(req5).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=10`,
-        headers: {},
-        body   : undefined
-      })
-
-      expect(req6).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}?property=prop-1&property=prop-2&excludeProps=prop-3,prop-3`,
         headers: {},
         body   : undefined
       })
@@ -279,9 +242,6 @@ describe('<Data> Find', () => {
       expect(result1).to.be.eql(fakeResult)
       expect(result2).to.be.eql(fakeResult)
       expect(result3).to.be.eql(fakeResult)
-      expect(result4).to.be.eql(fakeResult)
-      expect(result5).to.be.eql(fakeResult)
-      expect(result6).to.be.eql(fakeResult)
     })
 
     it('fails when objectId is invalid', async () => {
@@ -380,21 +340,21 @@ describe('<Data> Find', () => {
 
       expect(req1).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/first?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
+        path   : `${APP_PATH}/data/${tableName}/first?pageSize=50&offset=15&sortBy=created&groupBy=objectId&relationsDepth=3&relationsPageSize=25&loadRelations=rel1,rel2,rel3&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8`,
         headers: {},
         body   : undefined
       })
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/first?pageSize=10`,
+        path   : `${APP_PATH}/data/${tableName}/first?pageSize=10&offset=0`,
         headers: {},
         body   : undefined
       })
 
       expect(req3).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/first?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
+        path   : `${APP_PATH}/data/${tableName}/first?property=prop-1&property=prop-2&excludeProps=prop-3,prop-3`,
         headers: {},
         body   : undefined
       })
@@ -485,21 +445,21 @@ describe('<Data> Find', () => {
 
       expect(req1).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/last?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
+        path   : `${APP_PATH}/data/${tableName}/last?pageSize=50&offset=15&sortBy=created&groupBy=objectId&relationsDepth=3&relationsPageSize=25&loadRelations=rel1,rel2,rel3&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8`,
         headers: {},
         body   : undefined
       })
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/last?pageSize=10`,
+        path   : `${APP_PATH}/data/${tableName}/last?pageSize=10&offset=0`,
         headers: {},
         body   : undefined
       })
 
       expect(req3).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/last?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
+        path   : `${APP_PATH}/data/${tableName}/last?property=prop-1&property=prop-2&excludeProps=prop-3,prop-3`,
         headers: {},
         body   : undefined
       })

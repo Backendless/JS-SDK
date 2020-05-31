@@ -17,9 +17,9 @@ function getTestUserInstance(user) {
   return new Backendless.User(user || getTestUserObject())
 }
 
-describe('<Users> Basic', () => {
+describe('<Users> Basic', function() {
 
-  forTest()
+  forTest(this)
 
   it('register new users', async () => {
     const userObject = getTestUserObject()

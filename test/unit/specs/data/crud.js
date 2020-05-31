@@ -18,9 +18,9 @@ function getTestObjectWithId() {
   }
 }
 
-describe('<Data> CRUD', () => {
+describe('<Data> CRUD', function() {
 
-  forTest()
+  forTest(this)
 
   const fakeResult = { foo: 123 }
 
@@ -109,6 +109,94 @@ describe('<Data> CRUD', () => {
       expect(result1.fooItems[0]).to.be.instanceof(FooItems)
       expect(result1.fooItems[1]).to.be.instanceof(FooItems)
       expect(result1.fooItems[2]).to.be.instanceof(FooItems)
+    })
+
+    it('should process circular values', async () => {
+      const child1 = { v: 1 }
+      const child2 = { v: 2 }
+      const child3 = { v: 3 }
+      const child4 = { v: 4 }
+
+      const obj1 = { child1, child2 }
+      const obj2 = { child3, child4 }
+      const obj3 = { child1, child4 }
+      const obj4 = { child1, child2 }
+
+      obj1.obj2 = obj2
+      obj2.obj3 = obj3
+      obj3.obj4 = obj4
+      obj4.obj1 = obj1
+      obj4.obj2 = obj2
+      obj4.obj3 = obj3
+
+      const parent = { obj1, obj2, obj3, child2, child4 }
+
+      const req1 = prepareMockRequest(fakeResult)
+
+      await Backendless.Data.of(tableName).save(parent)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}`,
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      const requestBody = req1.body
+
+      // TODO: currently, it mutates parent object, but I assume we have to not do that
+
+      expect(requestBody).to.be.eql(parent)
+
+      const obj1__id = requestBody.obj1.__subID
+      const obj2__id = requestBody.obj1.obj2.__subID
+      const obj3__id = requestBody.obj1.obj2.obj3.__subID
+      const child1__id = requestBody.obj1.child1.__subID
+      const child2__id = requestBody.obj1.child2.__subID
+      const child4__id = requestBody.obj1.obj2.child4.__subID
+
+      expect(obj1__id).to.be.a('string')
+      expect(obj2__id).to.be.a('string')
+      expect(obj3__id).to.be.a('string')
+
+      expect(child1__id).to.be.a('string')
+      expect(child2__id).to.be.a('string')
+      expect(child4__id).to.be.a('string')
+
+      // obj4 is not a relation
+      expect(requestBody.obj1.obj2.obj3.obj4).to.not.have.property('__subID')
+      expect(requestBody.obj1.obj2.obj3.obj4).to.not.have.property('__originSubID')
+
+      // child3 is not a relation
+      expect(requestBody.obj1.obj2.child3).to.be.eql({ v: 3 })
+
+      expect(requestBody).to.be.eql({
+        'obj1'  : {
+          'child1' : { 'v': 1, '__subID': child1__id },
+          'child2' : { 'v': 2, '__subID': child2__id },
+          'obj2'   : {
+            'child3' : { 'v': 3 },
+            'child4' : { 'v': 4, '__subID': child4__id },
+            'obj3'   : {
+              'child1' : { '__originSubID': child1__id },
+              'child4' : { '__originSubID': child4__id },
+              'obj4'   : {
+                'child1': { '__originSubID': child1__id },
+                'child2': { '__originSubID': child2__id },
+                'obj1'  : { '__originSubID': obj1__id },
+                'obj2'  : { '__originSubID': obj2__id },
+                'obj3'  : { '__originSubID': obj3__id }
+              },
+              '__subID': obj3__id
+            },
+            '__subID': obj2__id
+          },
+          '__subID': obj1__id
+        },
+        'obj2'  : { '__originSubID': obj2__id },
+        'obj3'  : { '__originSubID': obj3__id },
+        'child2': { '__originSubID': child2__id },
+        'child4': { '__originSubID': child4__id }
+      })
     })
   })
 

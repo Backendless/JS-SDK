@@ -16,6 +16,8 @@ global.chai = chai
 
 chai.use(spies)
 
+process.title = 'UnitTestsWorker'
+
 export {
   Utils,
   SERVER_URL,
@@ -30,7 +32,7 @@ let mockRequests = []
 wrapRequest(Request)
 wrapRequest(RTClient.Request)
 
-function wrapRequest(R){
+function wrapRequest(R) {
   const nativeRequestSend = R.send
 
   R.send = function fakeRequestSend(path, method, headers, body, encoding) {
@@ -75,10 +77,14 @@ export function initApp() {
   Backendless.initApp(APP_ID, API_KEY)
 }
 
-const createSandboxFor = each => () => {
+const createSandboxFor = each => context => {
   const beforeHook = each ? beforeEach : before
 
-  beforeEach(() => {
+  if (context) {
+    context.timeout(5000)
+  }
+
+  beforeEach(function() {
     mockRequests = []
   })
 

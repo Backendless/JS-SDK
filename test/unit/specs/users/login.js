@@ -11,9 +11,9 @@ function getTestUserObject() {
   }
 }
 
-describe('<Users> Login', () => {
+describe('<Users> Login', function() {
 
-  forTest()
+  forTest(this)
 
   it('login with email and password', async () => {
     const objectId = Utils.objectId()

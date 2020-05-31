@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Data> Relations', () => {
+describe('<Data> Relations', function() {
 
-  forTest()
+  forTest(this)
 
   const fakeResult = { foo: 123 }
 

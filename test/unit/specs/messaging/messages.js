@@ -3,9 +3,11 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH } from '../../helpers/sandbox'
 
-describe('<Messaging> Messages', () => {
+describe('<Messaging> Messages', function() {
 
-  forSuite()
+  forSuite(this)
+
+  this.timeout(5000)
 
   const channelName = 'TEST_CHANNEL_NAME'
   const message = 'TEST_MESSAGE'

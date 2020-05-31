@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH } from '../helpers/sandbox'
 
-describe('<Counters>', () => {
+describe('<Counters>', function() {
 
-  forSuite()
+  forSuite(this)
 
   const counterName = 'MY_COUNTER_NAME'
 

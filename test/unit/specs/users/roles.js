@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('<Users> Roles', () => {
+describe('<Users> Roles', function() {
 
-  forTest()
+  forTest(this)
 
   it('gets user roles', async () => {
     const req1 = prepareMockRequest()

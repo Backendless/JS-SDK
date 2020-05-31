@@ -11,9 +11,9 @@ function getTestUserObject() {
   }
 }
 
-describe('<Users> Current User', () => {
+describe('<Users> Current User', function() {
 
-  forTest()
+  forTest(this)
 
   let objectId
   let userToken

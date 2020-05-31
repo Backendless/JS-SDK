@@ -6,9 +6,9 @@ import { prepareSuccessResponse } from './utils'
 
 const PERSONS_TABLE_NAME = 'Person'
 
-describe('<Transactions> Find Operation', () => {
+describe('<Transactions> Find Operation', function() {
 
-  forSuite()
+  forSuite(this)
 
   let uow
   let query

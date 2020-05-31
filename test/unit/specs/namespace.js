@@ -3,7 +3,8 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_ID, API_KEY } from '../helpers/sandbox'
 
-describe('Namespace', () => {
+describe('Namespace', function() {
+  this.timeout(2000)
 
   describe('Basic init', () => {
 

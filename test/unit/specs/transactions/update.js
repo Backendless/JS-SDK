@@ -24,9 +24,9 @@ class Person {
   }
 }
 
-describe('<Transactions> Update Operation', () => {
+describe('<Transactions> Update Operation', function() {
 
-  forSuite()
+  forSuite(this)
 
   let uow
 

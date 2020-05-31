@@ -29,7 +29,7 @@ const previousBackendless = root && root.Backendless
 const parseInitConfig = (...args) => {
   const [appId, apiKey] = args
 
-  if (typeof appId === 'object') {
+  if (appId && typeof appId === 'object') {
     return appId
   }
 

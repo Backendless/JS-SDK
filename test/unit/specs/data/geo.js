@@ -25,8 +25,8 @@ function createLineString(srs) {
   return new Backendless.Data.LineString([point1, point2, point3, point4], srs)
 }
 
-describe('<Data> GEO', () => {
-  forSuite()
+describe('<Data> GEO', function() {
+  forSuite(this)
 
   describe('Geometry', function() {
 

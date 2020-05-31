@@ -15,9 +15,9 @@ function getTestUserInstance(user) {
   return new Backendless.User(user || getTestUserObject())
 }
 
-describe('<Users> Basic', () => {
+describe('<Users> Basic', function() {
 
-  forTest()
+  forTest(this)
 
   it('updates user', async () => {
     const userObject = getTestUserObject()
@@ -79,5 +79,71 @@ describe('<Users> Basic', () => {
     expect(Backendless.UserService.getLocalCurrentUser())
       .to.equal(Backendless.UserService.currentUser)
       .to.equal(currentUser)
+  })
+
+  describe('Status', function() {
+    const fakeResult = { foo: 123 }
+    const testUserId = 'test-user-id'
+
+    it('should disable user', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await Backendless.UserService.disableUser(testUserId)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/users/${testUserId}/status`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          userStatus: 'DISABLED'
+        }
+      })
+
+      expect(result1).to.be.eql(fakeResult)
+    })
+
+    it('should enable user', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await Backendless.UserService.enableUser(testUserId)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/users/${testUserId}/status`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          userStatus: 'ENABLED'
+        }
+      })
+
+      expect(result1).to.be.eql(fakeResult)
+    })
+
+    xit('should fail if userId is invalid', async () => {
+      const errorMsg = 'User objectId can not be empty'
+
+      await expect(Backendless.UserService.disableUser()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.disableUser(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+
+      await expect(Backendless.UserService.enableUser()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.enableUser(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
   })
 })

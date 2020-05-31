@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forSuite, prepareMockRequest, APP_PATH } from '../../helpers/sandbox'
 
-describe('<BusinessLogic> API Services', () => {
+describe('<BusinessLogic> API Services', function() {
 
-  forSuite()
+  forSuite(this)
 
   const serviceName = 'MY_SERVICE_NAME'
   const methodName = 'MY_METHOD_NAME'

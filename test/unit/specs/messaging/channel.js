@@ -3,7 +3,11 @@ import { describe, it } from 'mocha'
 
 import Backendless, { Utils, forTest, prepareMockRequest, createMockRTServer, APP_PATH } from '../../helpers/sandbox'
 
-describe('<Messaging> Channel', () => {
+describe('<Messaging> Channel', function() {
+
+  forTest(this)
+
+  this.timeout(10000)
 
   const channelName = 'TEST_CHANNEL_NAME'
   const message = 'TEST_MESSAGE'
@@ -14,7 +18,6 @@ describe('<Messaging> Channel', () => {
 
   let channel
 
-  forTest()
 
   beforeEach(async () => {
     rtClient = await createMockRTServer()

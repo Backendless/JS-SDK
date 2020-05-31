@@ -3,7 +3,11 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forTest, prepareMockRequest, createMockRTServer } from '../../helpers/sandbox'
 
-describe('<Data> RT', () => {
+describe('<Data> RT', function() {
+
+  forTest(this)
+
+  this.timeout(15000)
 
   const tableName = 'TEST_TABLE_NAME'
 
@@ -11,8 +15,6 @@ describe('<Data> RT', () => {
 
   let dataStore
   let rtHandlers
-
-  forTest()
 
   beforeEach(async () => {
     rtClient = await createMockRTServer()

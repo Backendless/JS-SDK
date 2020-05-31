@@ -10,9 +10,9 @@ function Foo(opts) {
   this.___class = 'Foo'
 }
 
-describe('<Cache>', () => {
+describe('<Cache>', function() {
 
-  forSuite()
+  forSuite(this)
 
   before(() => {
     Backendless.Cache.setObjectFactory('Foo', Foo)

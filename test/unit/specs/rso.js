@@ -3,15 +3,14 @@ import { describe, it } from 'mocha'
 
 import Backendless, { Utils, forTest, prepareMockRequest, createMockRTServer } from '../helpers/sandbox'
 
-describe('RSO', () => {
+describe('RSO', function() {
+  forTest(this)
 
   const rsoName = 'TEST_RSO_NAME'
 
   let rtClient
 
   let rso
-
-  forTest()
 
   beforeEach(async () => {
     rtClient = await createMockRTServer()

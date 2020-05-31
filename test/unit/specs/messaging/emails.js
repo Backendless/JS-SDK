@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forTest, prepareMockRequest, APP_PATH } from '../../helpers/sandbox'
 
-describe('<Messaging> Emails', () => {
+describe('<Messaging> Emails', function() {
 
-  forTest()
+  forTest(this)
 
   const subject = 'test-subject'
   const textmessage = 'test-textmessage'
@@ -28,7 +28,7 @@ describe('<Messaging> Emails', () => {
       body   : {
         subject,
         to       : recipients,
-        bodyParts: { textmessage },
+        bodyparts: { textmessage },
       }
     })
 
@@ -47,7 +47,7 @@ describe('<Messaging> Emails', () => {
       body   : {
         subject,
         to       : recipients,
-        bodyParts: { htmlmessage },
+        bodyparts: { htmlmessage },
       }
     })
 
@@ -74,7 +74,7 @@ describe('<Messaging> Emails', () => {
       body   : {
         subject,
         to       : recipients,
-        bodyParts: { textmessage, htmlmessage },
+        bodyparts: { textmessage, htmlmessage },
       }
     })
 
@@ -85,7 +85,7 @@ describe('<Messaging> Emails', () => {
       body   : {
         subject,
         to       : recipients,
-        bodyParts: { textmessage, htmlmessage },
+        bodyparts: { textmessage, htmlmessage },
       }
     })
 
@@ -105,7 +105,7 @@ describe('<Messaging> Emails', () => {
       body   : {
         subject,
         to       : recipients,
-        bodyParts: { textmessage, htmlmessage, foo: 123 },
+        bodyparts: { textmessage, htmlmessage, foo: 123 },
       }
     })
 
@@ -125,7 +125,7 @@ describe('<Messaging> Emails', () => {
         subject,
         attachment,
         to       : recipients,
-        bodyParts: { textmessage },
+        bodyparts: { textmessage },
       }
     })
 

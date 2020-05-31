@@ -3,9 +3,9 @@ import { describe, it } from 'mocha'
 
 import Backendless, { forTest, APP_ID, API_KEY } from '../helpers/sandbox'
 
-describe('Browser', () => {
+describe('Browser', function() {
 
-  forTest()
+  forTest(this)
 
   let cleanupDom
 
