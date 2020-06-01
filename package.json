@@ -20,7 +20,7 @@
     "lint": "eslint src --fix",
     "check": "npm run lint && npm run test",
     "coverage": "nyc --reporter=html --reporter=text --cache=false npm run test:unit",
-    "test": "npm run test:tsc && npm run test:unit",
+    "test": "npm run test:tsc && npm run coverage",
     "test:tsc": "tsc ./test/tsd.ts",
     "test:unit": "cross-env NODE_ENV=test mocha test/unit/specs/*",
     "test:e2e": "cross-env NODE_ENV=test mocha --require @babel/register test/e2e/specs/*",
