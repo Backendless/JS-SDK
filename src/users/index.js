@@ -240,6 +240,22 @@ export default class Users {
     return this.app.LocalCache.get(this.app.LocalCache.Keys.USER_TOKEN) || null
   }
 
+  setCurrentUserToken(userToken) {
+    userToken = userToken || null
+
+    if (this.currentUser) {
+      this.currentUser['user-token'] = userToken
+    }
+
+    if (this.app.LocalCache.get('user-token')) {
+      this.app.LocalCache.set('user-token', userToken)
+    }
+
+    if (this.app.__RT) {
+      this.app.RT.updateUserTokenIfNeeded()
+    }
+  }
+
   getCurrentUserId() {
     if (this.currentUser) {
       return this.currentUser.objectId

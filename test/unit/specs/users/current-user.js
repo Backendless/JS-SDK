@@ -279,6 +279,7 @@ describe('<Users> Current User', function() {
     it('should replace current user token in the LocalCache', async () => {
       const token1 = 'test-1'
       const token2 = 'test-2'
+      const token3 = 'test-3'
 
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.USER_TOKEN, 'old-token')
 
@@ -299,6 +300,15 @@ describe('<Users> Current User', function() {
       Backendless.UserService.setLocalCurrentUser({ 'user-token': token2 })
 
       expect(token2)
+        .to.be.equal(Backendless.getCurrentUserToken())
+        .to.be.equal(Backendless.UserService.getCurrentUserToken())
+        .to.be.equal(Backendless.UserService.currentUser['user-token'])
+
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
+
+      Backendless.UserService.setLocalCurrentUser({ 'user-token': token3 }, true)
+
+      expect(token3)
         .to.be.equal(Backendless.getCurrentUserToken())
         .to.be.equal(Backendless.UserService.getCurrentUserToken())
         .to.be.equal(Backendless.UserService.currentUser['user-token'])
