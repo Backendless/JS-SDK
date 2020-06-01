@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { Utils, APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
+import Backendless, { API_KEY, APP_ID, Utils, APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
 function getTestUserObject() {
   return {
@@ -303,6 +303,19 @@ describe('<Users> Current User', function() {
         .to.be.equal(Backendless.UserService.getCurrentUserToken())
         .to.be.equal(Backendless.UserService.currentUser['user-token'])
         .to.be.equal(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN))
+    })
+
+    it('should reset current user token and id in the LocalCache after initApp', async () => {
+      const testToken = 'test-token'
+      const testUserId = 'test-id'
+
+      Backendless.LocalCache.set(Backendless.LocalCache.Keys.USER_TOKEN, testToken)
+      Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, testUserId)
+
+      Backendless.initApp(APP_ID, API_KEY)
+
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
     })
 
   })
