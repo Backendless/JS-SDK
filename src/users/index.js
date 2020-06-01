@@ -22,6 +22,7 @@ import {
   setLocalCurrentUser,
   getLocalCurrentUser,
   getCurrentUserToken,
+  setCurrentUserToken,
   getCurrentUser,
   isValidLogin,
   loggedInUser
@@ -109,8 +110,11 @@ Object.assign(Users.prototype, {
   resendEmailConfirmationSync: Utils.synchronized(resendEmailConfirmation),
   resendEmailConfirmation    : Utils.promisified(resendEmailConfirmation),
 
-  loggedInUser       : loggedInUser,
+  loggedInUser: loggedInUser,
+
   getCurrentUserToken: getCurrentUserToken,
+  setCurrentUserToken: setCurrentUserToken,
+
   getLocalCurrentUser: getLocalCurrentUser,
   setLocalCurrentUser: setLocalCurrentUser,
 

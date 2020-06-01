@@ -265,6 +265,10 @@ class Backendless {
     return this.Users.getCurrentUserToken()
   }
 
+  setCurrentUserToken(userToken) {
+    this.Users.setCurrentUserToken(userToken)
+  }
+
   get browser() {
     return require('./user-agent').getUserAgent()
   }
