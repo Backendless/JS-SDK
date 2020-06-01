@@ -89,6 +89,7 @@ describe('<Users> Current User', function() {
   it('gets the current user from the server by id', async () => {
     const req1 = prepareMockRequest({ objectId: '111', name: 'foo', age: 123 })
 
+    Backendless.LocalCache.set(Backendless.LocalCache.Keys.STAY_LOGGED_IN, 'true')
     Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, 'test-id')
 
     const currentUser = await Backendless.UserService.getCurrentUser()
@@ -131,6 +132,7 @@ describe('<Users> Current User', function() {
     prepareMockRequest(() => ({ status: 400, body: { message: 'test-error' } })) // for first two requests
     prepareMockRequest(() => ({ status: 200, body: { objectId: '3' } }))
 
+    Backendless.LocalCache.set(Backendless.LocalCache.Keys.STAY_LOGGED_IN, 'true')
     Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, 'test-id')
 
     const currentUserPromise1 = Backendless.UserService.getCurrentUser()
@@ -163,6 +165,7 @@ describe('<Users> Current User', function() {
     prepareMockRequest({ objectId: '2' })
     prepareMockRequest({ objectId: '3' })
 
+    Backendless.LocalCache.set(Backendless.LocalCache.Keys.STAY_LOGGED_IN, 'true')
     Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, 'test-id')
 
     const currentUser1 = await Backendless.UserService.getCurrentUser()

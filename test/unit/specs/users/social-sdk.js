@@ -112,14 +112,15 @@ describe('<Users> Social Login with SDK', function() {
 
       const req1 = prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
 
-      const user1 = await Backendless.UserService.loginWithFacebookSdk(accessToken, true)
+      const user1 = await Backendless.UserService.loginWithFacebookSdk(accessToken, {}, true)
 
       expect(req1).to.deep.include({
         method : 'POST',
         path   : `${APP_PATH}/users/social/facebook/sdk/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          accessToken
+          accessToken,
+          fieldsMapping: {}
         }
       })
 
@@ -239,14 +240,15 @@ describe('<Users> Social Login with SDK', function() {
 
       const req1 = prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
 
-      const user1 = await Backendless.UserService.loginWithGooglePlusSdk(accessToken, true)
+      const user1 = await Backendless.UserService.loginWithGooglePlusSdk(accessToken, {}, true)
 
       expect(req1).to.deep.include({
         method : 'POST',
         path   : `${APP_PATH}/users/social/googleplus/sdk/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          accessToken
+          accessToken,
+          fieldsMapping: {}
         }
       })
 

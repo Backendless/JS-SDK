@@ -84,7 +84,7 @@ describe('<Users> Social Login with Container', function() {
     it('login', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithFacebook()
+      const user1 = await Backendless.UserService.loginWithFacebook({}, [], false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -101,15 +101,15 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithFacebook(fieldsMapping)
+      const user1 = await Backendless.UserService.loginWithFacebook(fieldsMapping, [], false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -126,15 +126,15 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping, permissions', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithFacebook(fieldsMapping, permissions)
+      const user1 = await Backendless.UserService.loginWithFacebook(fieldsMapping, permissions, false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -151,9 +151,9 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping, permissions and stayLoggedIn', async () => {
@@ -186,7 +186,7 @@ describe('<Users> Social Login with Container', function() {
     it('login', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithGooglePlus()
+      const user1 = await Backendless.UserService.loginWithGooglePlus({}, [], null, false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -203,15 +203,15 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping)
+      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping, [], null, false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -228,15 +228,15 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping, permissions', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping, permissions)
+      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping, permissions, null, false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -253,9 +253,9 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping, permissions and stayLoggedIn', async () => {
@@ -290,7 +290,7 @@ describe('<Users> Social Login with Container', function() {
 
       dispatchLoginEvent(500)
 
-      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping, permissions, container)
+      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping, permissions, [container], false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -307,9 +307,9 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with container with stayLoggedIn', async () => {
@@ -319,7 +319,7 @@ describe('<Users> Social Login with Container', function() {
 
       dispatchLoginEvent(500)
 
-      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping, permissions, container, true)
+      const user1 = await Backendless.UserService.loginWithGooglePlus(fieldsMapping, permissions, [container], true)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -347,7 +347,7 @@ describe('<Users> Social Login with Container', function() {
     it('login', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithTwitter()
+      const user1 = await Backendless.UserService.loginWithTwitter({}, false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -364,15 +364,15 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping', async () => {
       const req1 = prepareMockRequest('http://test-social-url')
 
-      const user1 = await Backendless.UserService.loginWithTwitter(fieldsMapping)
+      const user1 = await Backendless.UserService.loginWithTwitter(fieldsMapping, false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -389,9 +389,9 @@ describe('<Users> Social Login with Container', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping, stayLoggedIn', async () => {
