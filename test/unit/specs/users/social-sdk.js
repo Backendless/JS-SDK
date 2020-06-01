@@ -106,20 +106,21 @@ describe('<Users> Social Login with SDK', function() {
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
     })
 
-    xit('login with stayLoggedIn', async () => {
+    it('login with stayLoggedIn', async () => {
       const objectId = Utils.objectId()
       const userToken = Utils.uid()
 
       const req1 = prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
 
-      const user1 = await Backendless.UserService.loginWithFacebookSdk(accessToken, true)
+      const user1 = await Backendless.UserService.loginWithFacebookSdk(accessToken, {}, true)
 
       expect(req1).to.deep.include({
         method : 'POST',
         path   : `${APP_PATH}/users/social/facebook/sdk/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          accessToken
+          accessToken,
+          fieldsMapping: {}
         }
       })
 
@@ -233,20 +234,21 @@ describe('<Users> Social Login with SDK', function() {
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
     })
 
-    xit('login with stayLoggedIn', async () => {
+    it('login with stayLoggedIn', async () => {
       const objectId = Utils.objectId()
       const userToken = Utils.uid()
 
       const req1 = prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
 
-      const user1 = await Backendless.UserService.loginWithGooglePlusSdk(accessToken, true)
+      const user1 = await Backendless.UserService.loginWithGooglePlusSdk(accessToken, {}, true)
 
       expect(req1).to.deep.include({
         method : 'POST',
         path   : `${APP_PATH}/users/social/googleplus/sdk/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          accessToken
+          accessToken,
+          fieldsMapping: {}
         }
       })
 
