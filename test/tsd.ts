@@ -569,18 +569,12 @@ function testUserService() {
     promiseVoid = Backendless.UserService.loginWithTwitter({}, true);
     promiseVoid = Backendless.UserService.loginWithTwitter(null, true);
 
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk({});
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk({}, true);
-
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, true);
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {});
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {}, true);
     promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {});
     promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {}, true);
-
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk({});
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk({}, true);
 
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, true);
