@@ -47,12 +47,6 @@ describe('<LocalCache> Browser', function() {
     expect(Backendless.LocalCache.Keys.STAY_LOGGED_IN).to.be.equal('stayLoggedIn')
   })
 
-  it('has KEYS shortcuts', () => {
-    expect(Backendless.LocalCache.Keys.USER_TOKEN).to.be.equal('user-token')
-    expect(Backendless.LocalCache.Keys.CURRENT_USER_ID).to.be.equal('current-user-id')
-    expect(Backendless.LocalCache.Keys.STAY_LOGGED_IN).to.be.equal('stayLoggedIn')
-  })
-
   it('sets and gets any data types', () => {
     const key = 'key'
 
@@ -132,6 +126,19 @@ describe('<LocalCache> Browser', function() {
     expect(warnError.message).to.be.equal('Unexpected token f in JSON at position 1')
 
     console.warn = warn
+  })
+
+  it('should keep current user token and id in the LocalCache after initApp', async () => {
+    const testToken = 'test-token'
+    const testUserId = 'test-id'
+
+    Backendless.LocalCache.set(Backendless.LocalCache.Keys.USER_TOKEN, testToken)
+    Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, testUserId)
+
+    Backendless.initApp(APP_ID, API_KEY)
+
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(testToken)
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(testUserId)
   })
 
 })

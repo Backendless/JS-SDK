@@ -112,7 +112,7 @@ class Backendless {
     }
 
     if (app.__hasService('Users')) {
-      app.Users.setLocalCurrentUser()
+      app.Users.currentUser = null
     }
 
     delete this.__device
