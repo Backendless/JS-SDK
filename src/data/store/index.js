@@ -1,6 +1,5 @@
 import Utils from '../../utils'
 import { deprecated } from '../../decorators'
-import { resolveModelClassFromString } from '../utils'
 import EventHandler from '../rt-store'
 
 import { loadRelations, setRelation, addRelation, deleteRelation } from './relations'
@@ -9,6 +8,7 @@ import { find, findById, findFirst, findLast } from './find'
 import { save } from './save'
 import { remove } from './remove'
 import { getObjectCount } from './count'
+import { parseFindResponse } from './parse'
 
 //TODO: will be removed when remove sync methods
 const namespaceLabel = 'Backendless.Data.of(<ClassName>)'
@@ -18,13 +18,13 @@ class DataStore {
   constructor(model, classToTableMap, app) {
     this.classToTableMap = classToTableMap
 
-    if (Utils.isString(model)) {
+    if (typeof model === 'string') {
       this.className = model
-      this.model = classToTableMap[this.className] || resolveModelClassFromString(this.className)
+      this.model = this.classToTableMap[this.className]
 
     } else {
       this.className = Utils.getClassName(model)
-      this.model = classToTableMap[this.className] || model
+      this.model = this.classToTableMap[this.className] || model
     }
 
     if (!this.className) {
@@ -36,6 +36,10 @@ class DataStore {
 
   rt() {
     return this.eventHandler = this.eventHandler || new EventHandler(this, this.app)
+  }
+
+  parseFindResponse(result, model) {
+    return parseFindResponse(result, model || this.model, this.classToTableMap)
   }
 }
 

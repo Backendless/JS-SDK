@@ -19,6 +19,10 @@ export default class LoadRelationsQueryBuilder {
     this._paging = new PagingQueryBuilder()
   }
 
+  setRelationModel(RelationModel){
+    this._query.relationModel = RelationModel
+  }
+
   setRelationName(relationName) {
     this._query.setOption('relationName', relationName)
 
@@ -31,10 +35,18 @@ export default class LoadRelationsQueryBuilder {
     return this
   }
 
+  getPageSize() {
+    return this._paging.getPageSize()
+  }
+
   setOffset(offset) {
     this._paging.setOffset(offset)
 
     return this
+  }
+
+  getOffset() {
+    return this._paging.getOffset()
   }
 
   prepareNextPage() {
@@ -65,12 +77,52 @@ export default class LoadRelationsQueryBuilder {
     return this
   }
 
+  addProperties(...properties) {
+    properties.forEach(p => {
+      Utils.castArray(p).forEach(property => this._query.addProperty(property))
+    })
+
+    return this
+  }
+
+  addAllProperties() {
+    this.addProperty('*')
+
+    return this
+  }
+
+  excludeProperty(property) {
+    this._query.excludeProperties(property)
+
+    return this
+  }
+
+  excludeProperties(...properties) {
+    this._query.excludeProperties(...properties)
+
+    return this
+  }
+
+  getExcludeProperties() {
+    return this._query.excludeProps
+  }
+
   getWhereClause() {
     return this._query.condition
   }
 
   setWhereClause(whereClause) {
     this._query.condition = whereClause
+
+    return this
+  }
+
+  getHavingClause() {
+    return this._query.havingClause
+  }
+
+  setHavingClause(havingClause) {
+    this._query.havingClause = havingClause
 
     return this
   }
@@ -85,6 +137,54 @@ export default class LoadRelationsQueryBuilder {
     return this
   }
 
+  getGroupBy() {
+    return this._query.getOption('groupBy')
+  }
+
+  setGroupBy(groupBy) {
+    this._query.setOption('groupBy', Utils.castArray(groupBy))
+
+    return this
+  }
+
+  getRelated() {
+    return this._query.getOption('relations')
+  }
+
+  setRelated(relations) {
+    this._query.setOption('relations', Utils.castArray(relations))
+
+    return this
+  }
+
+  addRelated(relations) {
+    const option = this._query.getOption('relations') || []
+
+    this._query.setOption('relations', option.concat(relations))
+
+    return this
+  }
+
+  getRelationsDepth() {
+    return this._query.getOption('relationsDepth')
+  }
+
+  setRelationsDepth(relationsDepth) {
+    this._query.setOption('relationsDepth', relationsDepth)
+
+    return this
+  }
+
+  getRelationsPageSize() {
+    return this._query.getOption('relationsPageSize')
+  }
+
+  setRelationsPageSize(relationsPageSize) {
+    this._query.setOption('relationsPageSize', relationsPageSize)
+
+    return this
+  }
+
   build() {
     this._query.setOptions(this._paging.build())
 
@@ -93,11 +193,17 @@ export default class LoadRelationsQueryBuilder {
 
   toJSON() {
     const source = {
-      pageSize: this._paging.pageSize,
-      offset  : this._paging.offset,
-      props   : this._query.properties,
-      where   : this._query.condition,
-      sortBy  : this._query.options && this._query.options.sortBy,
+      pageSize         : this._paging.pageSize,
+      offset           : this._paging.offset,
+      props            : this._query.properties,
+      where            : this._query.condition,
+      having           : this._query.havingClause,
+      excludeProps     : this._query.excludeProps,
+      sortBy           : this._query.options && this._query.options.sortBy,
+      groupBy          : this._query.options && this._query.options.groupBy,
+      loadRelations    : this._query.options && this._query.options.relations,
+      relationsDepth   : this._query.options && this._query.options.relationsDepth,
+      relationsPageSize: this._query.options && this._query.options.relationsPageSize,
     }
 
     const target = {}
@@ -118,8 +224,32 @@ export default class LoadRelationsQueryBuilder {
       target.where = source.where
     }
 
+    if (source.having) {
+      target.having = source.having
+    }
+
     if (source.sortBy) {
       target.sortBy = source.sortBy
+    }
+
+    if (source.groupBy) {
+      target.groupBy = source.groupBy
+    }
+
+    if (Array.isArray(source.excludeProps) && source.excludeProps.length) {
+      target.excludeProps = source.excludeProps
+    }
+
+    if (Array.isArray(source.loadRelations)) {
+      target.loadRelations = source.loadRelations.length ? source.loadRelations : '*'
+    }
+
+    if (source.relationsDepth > 0) {
+      target.relationsDepth = source.relationsDepth
+    }
+
+    if (source.relationsPageSize > 0) {
+      target.relationsPageSize = source.relationsPageSize
     }
 
     return target

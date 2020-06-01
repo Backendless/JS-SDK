@@ -69,7 +69,6 @@ export async function runRTHandler(subscriber) {
           }, 5000)
         }),
       ])
-
     }
   }
 }

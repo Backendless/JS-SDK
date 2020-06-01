@@ -2,6 +2,8 @@ import Utils from '../utils'
 
 import { deprecated } from '../decorators'
 
+import User from '../users/user'
+
 import Permissions from './permissions'
 import Store from './store'
 import QueryBuilder from './query-builder'
@@ -20,7 +22,10 @@ import GeoJSONParser from './geo/geo-json-parser'
 export default class Data {
   constructor(app) {
     this.app = app
-    this.classToTableMap = {}
+
+    this.classToTableMap = {
+      [User.className]: User
+    }
 
     this.Permissions = new Permissions(app)
     this.QueryBuilder = QueryBuilder
@@ -61,12 +66,17 @@ export default class Data {
   }
 
   mapTableToClass(tableName, clientClass) {
-    if (!tableName) {
-      throw new Error('Table name is not specified')
+    if (typeof tableName === 'function') {
+      clientClass = tableName
+      tableName = Utils.getClassName(clientClass)
     }
 
-    if (!clientClass) {
-      throw new Error('Class is not specified')
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be provided and must be a string.')
+    }
+
+    if (!clientClass || typeof clientClass !== 'function') {
+      throw new Error('Class must be provided and must be a constructor function.')
     }
 
     this.classToTableMap[tableName] = clientClass

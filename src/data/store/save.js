@@ -1,7 +1,5 @@
 import Utils from '../../utils'
 
-import { parseFindResponse } from './parse'
-
 const genID = () => {
   //TODO: refactor me
   let b = ''
@@ -44,7 +42,7 @@ export function save(obj, asyncHandler) {
   const objRef = obj
 
   if (asyncHandler) {
-    asyncHandler = Utils.wrapAsync(asyncHandler, resp => parseFindResponse(resp, this.model))
+    asyncHandler = Utils.wrapAsync(asyncHandler, resp => this.parseFindResponse(resp))
   }
 
   const result = this.app.request.put({
@@ -58,5 +56,5 @@ export function save(obj, asyncHandler) {
     return result
   }
 
-  return Utils.deepExtend(objRef, parseFindResponse(result, this.model), this.classToTableMap)
+  return Utils.deepExtend(objRef, this.parseFindResponse(result), this.classToTableMap)
 }

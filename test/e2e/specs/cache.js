@@ -1,7 +1,4 @@
-import '../helpers/global'
-import sandbox from '../helpers/sandbox'
-import { wait } from '../helpers/promise'
-import * as Utils from "../helpers/utils";
+import sandbox, { Utils } from '../helpers/sandbox'
 
 const Backendless = sandbox.Backendless
 
@@ -77,7 +74,7 @@ describe('Backendless.Cache', function() {
     //check keys are still alive
     expect(await Backendless.Cache.get(key)).to.equal(value)
 
-    await wait(2000)
+    await Utils.wait(2000)
 
     //a should gone, b should still be alive
     expect(await Backendless.Cache.get(key)).to.equal(null)
@@ -94,12 +91,12 @@ describe('Backendless.Cache', function() {
     //check keys are still alive
     expect(await Backendless.Cache.get(key)).to.equal(value)
 
-    await wait(1000)
+    await Utils.wait(1000)
 
     //a should gone, b should still be alive
     expect(await Backendless.Cache.get(key)).to.equal(value)
 
-    await wait(5000)
+    await Utils.wait(5000)
 
     expect(await Backendless.Cache.get(key)).to.equal(null)
   })

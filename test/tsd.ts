@@ -1,5 +1,4 @@
 /// <reference path="../backendless.d.ts" />
-/// <reference path="./es6-promise.d.ts" />
 
 import Counter = Backendless.Counter;
 
@@ -236,6 +235,9 @@ function testPersistence() {
     promiseObject = Backendless.Data.describe(Model);
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
+
+    Backendless.Data.mapTableToClass(Model);
+    Backendless.Data.mapTableToClass('ClassName', Model);
 }
 
 function testDataGeometry() {
@@ -1115,6 +1117,7 @@ function testLogging() {
     const loggerName: string = 'str';
     let logger: Backendless.Logger;
     const message: string = 'str';
+    const exception: string = 'str';
 
     const restUrl: string = Backendless.Logging.restUrl;
     const loggers: Object = Backendless.Logging.loggers;
@@ -1129,8 +1132,11 @@ function testLogging() {
     logger.debug(message);
     logger.info(message);
     logger.warn(message);
+    logger.warn(message, exception);
     logger.error(message);
+    logger.error(message, exception);
     logger.fatal(message);
+    logger.fatal(message, exception);
     logger.trace(message);
 }
 
@@ -1306,3 +1312,4 @@ function RTChannel() {
     const promiseSend: Promise<void> = channel.send('MY_COMMAND', {foo: 'string', bar: []})
 
 }
+
