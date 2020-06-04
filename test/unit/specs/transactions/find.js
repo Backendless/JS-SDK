@@ -99,13 +99,6 @@ describe('<Transactions> Find Operation', function() {
 
   describe('Paging', () => {
     it('basic options', async () => {
-      class DataQueryBuilder {
-        // setPageSize(pageSize)
-        // setOffset(offset)
-        // prepareNextPage()
-        // preparePreviousPage()
-      }
-
       query
         .setPageSize(50)
         .setOffset(15)
