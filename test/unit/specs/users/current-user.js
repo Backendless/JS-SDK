@@ -96,7 +96,7 @@ describe('<Users> Current User', function() {
 
     expect(req1).to.deep.include({
       method : 'GET',
-      path   : `${APP_PATH}/data/User/test-id`,
+      path   : `${APP_PATH}/data/Users/test-id`,
       headers: {},
       body   : undefined
     })

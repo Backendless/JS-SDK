@@ -25,6 +25,10 @@ const Utils = {
   },
 
   getClassName(obj) {
+    if (obj && obj.className) {
+      return obj.className
+    }
+
     if (typeof obj === 'function') {
       if (obj.name) {
         return obj.name
