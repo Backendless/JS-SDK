@@ -61,10 +61,6 @@ export class SocialContainer {
       container.close()
     }
 
-    this.removeLoading = function() {
-      body.innerHTML = null
-    }
-
     this.doAuthorizationActivity = function(url) {
       container.location.href = url
       container.onload = function() {

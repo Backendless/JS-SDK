@@ -10,12 +10,16 @@ function Foo(opts) {
   this.___class = 'Foo'
 }
 
+class Bar {
+}
+
 describe('<Cache>', function() {
 
   forSuite(this)
 
   before(() => {
     Backendless.Cache.setObjectFactory('Foo', Foo)
+    Backendless.Cache.setObjectFactory('Bar', Bar)
   })
 
   const cacheKey = 'MY_CACHE_KEY'
@@ -63,6 +67,30 @@ describe('<Cache>', function() {
       })
     })
 
+    it('should add ___class', async () => {
+      class MyClass {
+        constructor() {
+          this.testValue = 123
+        }
+      }
+
+      const req1 = prepareMockRequest()
+
+      const myClass = new MyClass()
+
+      await Backendless.Cache.put(cacheKey, myClass)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/cache/${cacheKey}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ___class : 'MyClass',
+          testValue: 123
+        }
+      })
+    })
+
     it('should put with ttl', async () => {
       const req1 = prepareMockRequest()
 
@@ -102,9 +130,7 @@ describe('<Cache>', function() {
 
   describe('Cache.get', () => {
     it('should get primitive value', async () => {
-      const req1 = prepareMockRequest(() => ({
-        body: 123
-      }))
+      const req1 = prepareMockRequest(123)
 
       const result = await Backendless.Cache.get(cacheKey)
 
@@ -118,13 +144,25 @@ describe('<Cache>', function() {
     })
 
     it('should get object', async () => {
-      const req1 = prepareMockRequest(() => ({
-        body: 123
-      }))
+      const req1 = prepareMockRequest({ foo: 123, bar: 'abc' })
 
       const result = await Backendless.Cache.get(cacheKey)
 
-      expect(result).to.equal(123)
+      expect(result).to.eql({ foo: 123, bar: 'abc' })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/cache/${cacheKey}`,
+        headers: {},
+      })
+    })
+
+    it('should get object', async () => {
+      const req1 = prepareMockRequest({ foo: 123, bar: 'abc' })
+
+      const result = await Backendless.Cache.get(cacheKey)
+
+      expect(result).to.eql({ foo: 123, bar: 'abc' })
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -142,6 +180,21 @@ describe('<Cache>', function() {
 
       expect(result instanceof Foo).to.equal(true)
       expect(result).to.eql({ ___class: 'Foo', bar: 123, foo: 'bar' })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/cache/${cacheKey}`,
+        headers: {},
+      })
+    })
+
+    it('should get instance of Unknown Class', async () => {
+      const req1 = prepareMockRequest({ ___class: 'UnknownClass', bar: 123 })
+
+      const result = await Backendless.Cache.get(cacheKey)
+
+      expect(result.constructor).to.be.equal(Object)
+      expect(result).to.eql({ ___class: 'UnknownClass', bar: 123 })
 
       expect(req1).to.deep.include({
         method : 'GET',

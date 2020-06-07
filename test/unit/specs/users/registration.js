@@ -17,7 +17,7 @@ function getTestUserInstance(user) {
   return new Backendless.User(user || getTestUserObject())
 }
 
-describe('<Users> Basic', function() {
+describe('<Users> Registration', function() {
 
   forTest(this)
 

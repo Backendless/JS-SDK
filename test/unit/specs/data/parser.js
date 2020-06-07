@@ -108,18 +108,18 @@ describe('<Data> Parser', function() {
                   key     : '222',
                   ___class: 'Child',
                   children: [
-                    { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+                    { __originSubID: 'child-222-rel' }
                   ],
-                  __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
+                  __subID : 'child-222-rel'
                 },
-                { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
-                { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
+                { __originSubID: 'child-333-rel' },
+                { __originSubID: 'child-111-rel' }
               ],
-              __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+              __subID : 'child-333-rel'
             },
-            { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+            { __originSubID: 'child-222-rel' }
           ],
-          __subID : 'D6DF05BF-158E-FE0F-FFE0-F245B8652000'
+          __subID : 'child-111-rel'
         },
         {
           created : 1589141337125,
@@ -129,9 +129,9 @@ describe('<Data> Parser', function() {
           key     : '222',
           ___class: 'Child',
           children: [
-            { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+            { __originSubID: 'child-222-rel' }
           ],
-          __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
+          __subID : 'child-222-rel'
         },
         {
           created : 1589141335441,
@@ -149,14 +149,14 @@ describe('<Data> Parser', function() {
               key     : '222',
               ___class: 'Child',
               children: [
-                { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+                { __originSubID: 'child-222-rel' }
               ],
-              __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
+              __subID : 'child-222-rel'
             },
-            { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
-            { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
+            { __originSubID: 'child-333-rel' },
+            { __originSubID: 'child-111-rel' }
           ],
-          __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+          __subID : 'child-333-rel'
         }
       ])
 
@@ -329,7 +329,7 @@ describe('<Data> Parser', function() {
           key     : '111',
           ___class: 'Child',
           children: [
-            { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+            { __originSubID: 'child-222-rel' }
           ],
         },
         {
@@ -339,7 +339,7 @@ describe('<Data> Parser', function() {
           ownerId : null,
           key     : '222',
           ___class: 'Child',
-          __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900',
+          __subID : 'child-222-rel',
           children: []
         },
       ])
@@ -407,9 +407,9 @@ describe('<Data> Parser', function() {
               key     : '333',
               ___class: 'Child',
               children: [
-                { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
+                { __originSubID: 'child-333-rel' },
               ],
-              __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+              __subID : 'child-333-rel'
             },
             { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
           ],
@@ -508,10 +508,10 @@ describe('<Data> Parser', function() {
                   ],
                   __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
                 },
-                { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
+                { __originSubID: 'child-333-rel' },
                 { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
               ],
-              __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+              __subID : 'child-333-rel'
             },
             { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
           ],
@@ -549,10 +549,10 @@ describe('<Data> Parser', function() {
               ],
               __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
             },
-            { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
+            { __originSubID: 'child-333-rel' },
             { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
           ],
-          __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+          __subID : 'child-333-rel'
         }
       ])
 
@@ -1663,6 +1663,123 @@ describe('<Data> Parser', function() {
       expect(child1).to.be.instanceof(Object)
       expect(child2).to.be.instanceof(Object)
       expect(child3).to.be.instanceof(Object)
+    })
+
+    it('circular relations #11', async () => {
+      Backendless.Data.mapTableToClass(Parent)
+      Backendless.Data.mapTableToClass(Child)
+
+      const result1 = dataStore.parseFindResponse([
+        {
+          '___class': 'Parent',
+          'value'   : 1,
+          'children': [
+            { '__originSubID': 'rel-to-c1' }
+          ],
+        },
+        {
+          '___class': 'Parent',
+          'value'   : 2,
+          'children': [
+            { '___class': 'Child', '__subID': 'rel-to-c1' }
+          ],
+        },
+        {
+          '___class': 'Parent',
+          'value'   : 3,
+          'children': [
+            { '__originSubID': 'rel-to-c1' }
+          ],
+        },
+      ])
+
+      const parent1 = result1[0]
+      const parent2 = result1[1]
+      const parent3 = result1[2]
+
+      const child1 = parent2.children[0]
+
+      expect(parent1).to.be.instanceof(Parent)
+      expect(parent2).to.be.instanceof(Parent)
+      expect(parent3).to.be.instanceof(Parent)
+
+      expect(parent1.value).to.be.equal(1)
+      expect(parent2.value).to.be.equal(2)
+      expect(parent3.value).to.be.equal(3)
+
+      expect(child1).to.be.instanceof(Child)
+    })
+
+    it('circular relations #12', async () => {
+      Backendless.Data.mapTableToClass(Parent)
+      Backendless.Data.mapTableToClass(Child)
+
+      const result1 = dataStore.parseFindResponse([
+        {
+          '___class': 'Parent',
+          'value'   : 1,
+          '__subID' : 'rel-to-p1',
+          'child'   : {
+            '___class': 'Child',
+            'value'   : 2,
+            'child'   : {
+              '___class': 'Child',
+              'value'   : 3,
+              'parent'  : { '__originSubID': 'rel-to-p1' },
+            },
+          },
+        },
+      ])
+
+      const parent1 = result1[0]
+
+      const child1 = parent1.child
+      const child2 = parent1.child.child
+
+      expect(parent1).to.be.instanceof(Parent)
+
+      expect(child1).to.be.instanceof(Child)
+      expect(child2).to.be.instanceof(Child)
+
+      expect(parent1).to.be.equal(child2.parent)
+    })
+
+    it('circular relations #13', async () => {
+      Backendless.Data.mapTableToClass(Parent)
+      Backendless.Data.mapTableToClass(Child)
+
+      const sourceParent1 = {
+        '___class': 'Parent',
+        'value'   : 1,
+        '__subID' : 'rel-to-p1',
+        'child'   : {
+          '___class': 'Child',
+          'value'   : 2,
+          'child'   : {
+            '___class': 'Child',
+            'value'   : 3,
+            'parent'  : { '__originSubID': 'rel-to-p1' },
+          },
+        },
+      }
+
+      sourceParent1.child.parent = sourceParent1
+
+      const result1 = dataStore.parseFindResponse([
+        sourceParent1
+      ])
+
+      const parent1 = result1[0]
+
+      const child1 = parent1.child
+      const child2 = parent1.child.child
+
+      expect(parent1).to.be.instanceof(Parent)
+
+      expect(child1).to.be.instanceof(Child)
+      expect(child2).to.be.instanceof(Child)
+
+      expect(parent1).to.be.equal(child2.parent)
     })
 
   })

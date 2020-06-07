@@ -287,18 +287,7 @@ export default class DataStore {
   }
 }
 
-const genID = () => {
-  //TODO: refactor me
-  let b = ''
-
-  for (let a = b; a++ < 36; b += a * 51
-  && 52 ? (a ^ 15 ? 8 ^ Math.random() * (a ^ 20 ? 16 : 4) : 4).toString(16) : '-') {
-  }
-
-  return b
-}
-
-export function replCircDeps(object) {
+function replCircDeps(object) {
   const objMap = [object]
   let pos
 
@@ -306,7 +295,7 @@ export function replCircDeps(object) {
     for (const prop in obj) {
       if (obj.hasOwnProperty(prop) && typeof obj[prop] === 'object' && obj[prop] != null) {
         if ((pos = objMap.indexOf(obj[prop])) !== -1) {
-          objMap[pos]['__subID'] = objMap[pos]['__subID'] || genID()
+          objMap[pos]['__subID'] = objMap[pos]['__subID'] || Utils.uuid()
           obj[prop] = { '__originSubID': objMap[pos]['__subID'] }
 
         } else if (obj[prop] && obj[prop] instanceof Date) {
@@ -322,13 +311,18 @@ export function replCircDeps(object) {
 
   _replCircDepsHelper(object)
 }
-function parseCircularDependencies(obj) {
-  //TODO: refactor me
 
-  const result = new obj.constructor()
-  const subIds = {}
-  const postAssign = []
+function parseCircularDependencies(record, result, subIds, postAssign, classToTableMap) {
   const iteratedItems = []
+
+  if (record.__subID) {
+    if (subIds[record.__subID]) {
+      return subIds[record.__subID]
+    }
+
+    subIds[record.__subID] = result
+    delete record.__subID
+  }
 
   function ensureCircularDep(source, target, prop) {
     if (subIds[source[prop].__originSubID]) {
@@ -342,62 +336,72 @@ function parseCircularDependencies(obj) {
     if (source[prop].__subID && subIds[source[prop].__subID]) {
       target[prop] = subIds[source[prop].__subID]
     } else {
-      target[prop] = new source[prop].constructor()
+      const className = source[prop].___class
+      const Model = classToTableMap[className] || Utils.globalScope[className] || source[prop].constructor
+
+      target[prop] = new Model()
     }
 
-    if (source[prop].__subID) {
+    if (source[prop].__subID && !subIds[source[prop].__subID]) {
       subIds[source[prop].__subID] = target[prop]
       delete source[prop].__subID
     }
   }
 
   function buildCircularDeps(source, target) {
-    if (!iteratedItems.includes(source)) {
-      iteratedItems.push(source)
+    iteratedItems.push(source)
 
-      for (const prop in source) {
-        if (source.hasOwnProperty(prop) && (!Array.isArray(target[prop]) || !target[prop])) {
-          if (Array.isArray(source[prop])) {
-            buildCircularDeps(source[prop], target[prop] = [])
+    for (const prop in source) {
+      if (iteratedItems.includes(source[prop])) {
+        target[prop] = source[prop]
+      } else if (!Array.isArray(target[prop]) || !target[prop]) {
+        if (Array.isArray(source[prop])) {
+          buildCircularDeps(source[prop], target[prop] = [])
 
-          } else if (source[prop] && typeof source[prop] === 'object') {
-            if (GEO_CLASSES.includes(source[prop].___class)) {
-              target[prop] = geoConstructor(source[prop])
-            } else if (source[prop].__originSubID) {
-              ensureCircularDep(source, target, prop)
-            } else {
-              processModel(source, target, prop)
-
-              buildCircularDeps(source[prop], target[prop])
-            }
-
+        } else if (source[prop] && typeof source[prop] === 'object') {
+          if (GEO_CLASSES.includes(source[prop].___class)) {
+            target[prop] = geoConstructor(source[prop])
+          } else if (source[prop].__originSubID) {
+            ensureCircularDep(source, target, prop)
           } else {
-            target[prop] = source[prop]
+            processModel(source, target, prop)
+
+            buildCircularDeps(source[prop], target[prop])
           }
+
+        } else {
+          target[prop] = source[prop]
         }
       }
     }
   }
 
-  buildCircularDeps(obj, result)
-
-  postAssign.forEach(([target, prop, __originSubID]) => target[prop] = subIds[__originSubID])
+  buildCircularDeps(record, result)
 
   return result
 }
 
 function parseFindResponse(response, Model, classToTableMap) {
+  if (!response) {
+    return response
+  }
+
   //TODO: refactor me
+  const subIds = {}
+  const postAssign = []
 
   const sanitizeResponseItem = record => {
     Model = typeof Model === 'function' ? Model : classToTableMap[record.___class]
 
-    return Utils.deepExtend(Model ? new Model() : {}, record, classToTableMap)
+    return parseCircularDependencies(record, Model ? new Model() : {}, subIds, postAssign, classToTableMap)
   }
 
   const result = Array.isArray(response)
     ? response.map(sanitizeResponseItem)
     : sanitizeResponseItem(response)
 
-  return parseCircularDependencies(result)
+  postAssign.forEach(([target, prop, __originSubID]) => target[prop] = subIds[__originSubID])
+
+  return result
+
 }

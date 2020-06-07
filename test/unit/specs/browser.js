@@ -64,6 +64,23 @@ describe('Browser', function() {
         version: '533.1',
       })
     })
+
+    it('should return empty object when hybrid-app', () => {
+      expect(Backendless.browser).to.be.eql({})
+
+      navigator.userAgent = null
+
+      expect(Backendless.browser).to.be.eql({})
+
+      navigator.userAgent = undefined
+
+      expect(Backendless.browser).to.be.eql({})
+
+      navigator.userAgent = ''
+
+      expect(Backendless.browser).to.be.eql({})
+
+    })
   })
 
 })

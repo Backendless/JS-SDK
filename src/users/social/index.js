@@ -57,7 +57,7 @@ export default class UsersSocial {
             const result = JSON.parse(event.data)
 
             if (result.fault) {
-              reject(result.fault)
+              reject(new Error(result.fault))
             } else {
               resolve(result)
             }

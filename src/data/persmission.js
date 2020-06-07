@@ -1,8 +1,8 @@
 import Permission from '../persmission'
 
-export default class FilePermission extends Permission {
+export default class DataPermission extends Permission {
 
-  BACKWARD_COMPATIBILITY_LABEL = 'Backendless.Data.Permissions.{FIND|REMOVE|UPDATE}'
+  static BACKWARD_COMPATIBILITY_LABEL = 'Backendless.Data.Permissions.{FIND|REMOVE|UPDATE}'
 
   getRequestURL(type, dataObject){
     if (!dataObject.___class || !dataObject.objectId) {

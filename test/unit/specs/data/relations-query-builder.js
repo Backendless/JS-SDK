@@ -13,6 +13,10 @@ describe('<Data> Relations Query Builder', function() {
     query = Backendless.Data.LoadRelationsQueryBuilder.create()
   })
 
+  it('should be inherited of DataQueryBuilder', async () => {
+    expect(query).to.be.an.instanceof(Backendless.Data.QueryBuilder)
+  })
+
   it('should has default values', async () => {
     expect(query.getPageSize()).to.be.equal(10)
     expect(query.getOffset()).to.be.equal(0)

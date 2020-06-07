@@ -37,10 +37,10 @@ export default class Logging {
           data: this.pool
         })
         .then(() => {
-          this.pool = []
-
           delete this.flushRequest
         })
+
+      this.pool = []
     }
 
     return this.flushRequest

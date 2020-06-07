@@ -198,6 +198,46 @@ describe('<Data> CRUD', function() {
         'child4': { '__originSubID': child4__id }
       })
     })
+
+    it('should convert Date into timestamp', async () => {
+      const date1 = new Date()
+      const date2 = new Date()
+      const date3 = new Date()
+      const date4 = new Date()
+
+      const newObject = {
+        date  : date1,
+        sub   : {
+          date  : date2,
+          dates1: [date1, date2]
+        },
+        dates2: [date1, date2],
+        dates3: {
+          values: [date3, date4]
+        },
+      }
+
+      const req1 = prepareMockRequest({})
+
+      await Backendless.Data.of(tableName).save(newObject)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          date  : date1.getTime(),
+          sub   : {
+            date  : date2.getTime(),
+            dates1: [date1.getTime(), date2.getTime()]
+          },
+          dates2: [date1.getTime(), date2.getTime()],
+          dates3: {
+            values: [date3.getTime(), date4.getTime()]
+          }
+        }
+      })
+    })
   })
 
   describe('Update', () => {

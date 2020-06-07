@@ -216,6 +216,14 @@ describe('<Users> Current User', function() {
     expect(result1).to.be.equal(false)
   })
 
+  it('should not wrap new current user', async () => {
+    const user = new Backendless.User()
+
+    Backendless.UserService.setLocalCurrentUser(user)
+
+    expect(Backendless.UserService.getLocalCurrentUser()).to.be.equal(user)
+  })
+
   describe('User Token', () => {
     it('should get current user token', async () => {
       const token1 = 'test-1'
@@ -319,6 +327,8 @@ describe('<Users> Current User', function() {
       const testToken = 'test-token'
       const testUserId = 'test-id'
 
+      Backendless.UserService.setLocalCurrentUser({ 'user-token': testToken }, true)
+
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.USER_TOKEN, testToken)
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, testUserId)
 
@@ -326,6 +336,12 @@ describe('<Users> Current User', function() {
 
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+    })
+
+    it('should not set user-token', async () => {
+      Backendless.setCurrentUserToken('new-token')
+
+      expect(Backendless.getCurrentUserToken()).to.be.equal(null)
     })
 
   })

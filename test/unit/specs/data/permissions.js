@@ -57,8 +57,10 @@ describe('<Data> Permissions', function() {
 
     it('grantForRole', async () => {
       const req1 = prepareMockRequest({ testResult })
+      const req2 = prepareMockRequest({ testResult })
 
       const result1 = await Backendless.Data.Permissions[permission].grantForRole(role, object)
+      const result2 = await Backendless.Data.Permissions[permission].grantForRole('', object)
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -70,13 +72,25 @@ describe('<Data> Permissions', function() {
         }
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/Persons/permissions/GRANT/${object.objectId}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          permission,
+        }
+      })
+
       expect(result1).to.be.eql({ testResult })
+      expect(result2).to.be.eql({ testResult })
     })
 
     it('denyForRole', async () => {
       const req1 = prepareMockRequest({ testResult })
+      const req2 = prepareMockRequest({ testResult })
 
       const result1 = await Backendless.Data.Permissions[permission].denyForRole(role, object)
+      const result2 = await Backendless.Data.Permissions[permission].denyForRole('', object)
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -88,7 +102,17 @@ describe('<Data> Permissions', function() {
         }
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/Persons/permissions/DENY/${object.objectId}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          permission,
+        }
+      })
+
       expect(result1).to.be.eql({ testResult })
+      expect(result2).to.be.eql({ testResult })
     })
 
     it('grantForAllUsers', async () => {

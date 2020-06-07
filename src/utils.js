@@ -4,6 +4,11 @@ const Utils = {
 
   isLocalStorageSupported: isLocalStorageSupported(),
 
+  globalScope: (
+    (typeof self === 'object' && self.self === self && self) ||
+    (typeof global === 'object' && global.global === global && global)
+  ),
+
   castArray(value) {
     if (Array.isArray(value)) {
       return value
@@ -48,28 +53,6 @@ const Utils = {
     return null
   },
 
-  deepExtend(destination, source, classToTableMap = {}) {
-    //TODO: refactor it
-    for (const property in source) {
-      if (source[property] !== undefined && source.hasOwnProperty(property)) {
-        destination[property] = destination[property] || {}
-        destination[property] = classWrapper(source[property], classToTableMap)
-
-        if (
-          destination[property]
-          && destination[property].hasOwnProperty(property)
-          && destination[property][property]
-          && destination[property][property].hasOwnProperty('__originSubID')
-        ) {
-
-          destination[property][property] = classWrapper(destination[property], classToTableMap)
-        }
-      }
-    }
-
-    return destination
-  },
-
   uuid() {
     const chr4 = () => Math.random().toString(16).slice(-4).toUpperCase()
     const chr8 = () => `${chr4()}${chr4()}`
@@ -95,45 +78,6 @@ function isLocalStorageSupported() {
   }
 
   return false
-}
-
-function classWrapper(obj, classToTableMap) {
-  //TODO: refactor it
-  const wrapper = obj => {
-    let wrapperName = null
-    let Wrapper = null
-
-    for (const property in obj) {
-      if (obj.hasOwnProperty(property)) {
-        if (property === '___class') {
-          wrapperName = obj[property]
-          break
-        }
-      }
-    }
-
-    if (wrapperName) {
-      try {
-        Wrapper = classToTableMap[wrapperName] || eval(wrapperName)
-        obj = Utils.deepExtend(new Wrapper(), obj, classToTableMap)
-      } catch (e) {
-      }
-    }
-
-    return obj
-  }
-
-  if (obj && typeof obj === 'object') {
-    if (Array.isArray(obj)) {
-      for (let i = obj.length; i--;) {
-        obj[i] = wrapper(obj[i])
-      }
-    } else {
-      obj = wrapper(obj)
-    }
-  }
-
-  return obj
 }
 
 export default Utils
