@@ -4,6 +4,7 @@ import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
 
 import geoConstructor, { GEO_CLASSES } from './geo/geo-constructor'
+import Geometry from './geo/geometry'
 
 export default class DataStore {
 
@@ -30,15 +31,12 @@ export default class DataStore {
   }
 
   async save(object) {
-    //TODO: refactor me
-    replCircDeps(object)
-
     return this.app.request
       .put({
-        url : this.app.urls.dataTable(this.className),
-        data: object,
+        url: this.app.urls.dataTable(this.className),
+        data: convertToServerRecord(object),
       })
-      .then(result => this.parseFindResponse(result))
+      .then(result => this.parseResponse(result))
   }
 
   async remove(object) {
@@ -59,7 +57,7 @@ export default class DataStore {
         url        : this.app.urls.dataTable(this.className),
         queryString: DataQueryBuilder.toQueryString(query),
       })
-      .then(result => this.parseFindResponse(result))
+      .then(result => this.parseResponse(result))
   }
 
   async findById(objectId, query) {
@@ -89,7 +87,7 @@ export default class DataStore {
         })
     }
 
-    return this.parseFindResponse(result)
+    return this.parseResponse(result)
   }
 
   async findFirst(query) {
@@ -98,7 +96,7 @@ export default class DataStore {
         url        : this.app.urls.dataTableObject(this.className, 'first'),
         queryString: DataQueryBuilder.toQueryString(query),
       })
-      .then(result => this.parseFindResponse(result))
+      .then(result => this.parseResponse(result))
   }
 
   async findLast(query) {
@@ -107,7 +105,7 @@ export default class DataStore {
         url        : this.app.urls.dataTableObject(this.className, 'last'),
         queryString: DataQueryBuilder.toQueryString(query),
       })
-      .then(result => this.parseFindResponse(result))
+      .then(result => this.parseResponse(result))
   }
 
   async getObjectCount(condition) {
@@ -145,7 +143,7 @@ export default class DataStore {
         url        : this.app.urls.dataTableObjectRelation(this.className, parentObjectId, relationName),
         queryString: LoadRelationsQueryBuilder.toQueryString(query)
       })
-      .then(result => this.parseFindResponse(result, relationModel))
+      .then(result => this.parseRelationsResponse(result, relationModel))
   }
 
   async setRelation(parent, columnName, children) {
@@ -233,8 +231,15 @@ export default class DataStore {
   /**
    * @private
    * */
-  parseFindResponse(result, model) {
-    return parseFindResponse(result, model || this.model, this.classToTableMap)
+  parseRelationsResponse(result, RelationModel) {
+    return convertToClientRecords(result, RelationModel, this.classToTableMap)
+  }
+
+  /**
+   * @private
+   * */
+  parseResponse(result) {
+    return convertToClientRecords(result, this.model, this.classToTableMap)
   }
 
   /**
@@ -287,121 +292,139 @@ export default class DataStore {
   }
 }
 
-function replCircDeps(object) {
-  const objMap = [object]
-  let pos
-
-  const _replCircDepsHelper = obj => {
-    for (const prop in obj) {
-      if (obj.hasOwnProperty(prop) && typeof obj[prop] === 'object' && obj[prop] != null) {
-        if ((pos = objMap.indexOf(obj[prop])) !== -1) {
-          objMap[pos]['__subID'] = objMap[pos]['__subID'] || Utils.uuid()
-          obj[prop] = { '__originSubID': objMap[pos]['__subID'] }
-
-        } else if (obj[prop] && obj[prop] instanceof Date) {
-          obj[prop] = obj[prop].getTime()
-
-        } else {
-          objMap.push(obj[prop])
-          _replCircDepsHelper(obj[prop])
-        }
-      }
+const convertToServerRecord = (() => {
+  return sourceRecord => {
+    const context = {
+      instancesMap: new WeakMap()
     }
+
+    return processTargetProps(context, sourceRecord, {})
   }
 
-  _replCircDepsHelper(object)
-}
-
-function parseCircularDependencies(record, result, subIds, postAssign, classToTableMap) {
-  const iteratedItems = []
-
-  if (record.__subID) {
-    if (subIds[record.__subID]) {
-      return subIds[record.__subID]
-    }
-
-    subIds[record.__subID] = result
-    delete record.__subID
-  }
-
-  function ensureCircularDep(source, target, prop) {
-    if (subIds[source[prop].__originSubID]) {
-      target[prop] = subIds[source[prop].__originSubID]
-    } else {
-      postAssign.push([target, prop, source[prop].__originSubID])
-    }
-  }
-
-  function processModel(source, target, prop) {
-    if (source[prop].__subID && subIds[source[prop].__subID]) {
-      target[prop] = subIds[source[prop].__subID]
-    } else {
-      const className = source[prop].___class
-      const Model = classToTableMap[className] || Utils.globalScope[className] || source[prop].constructor
-
-      target[prop] = new Model()
-    }
-
-    if (source[prop].__subID && !subIds[source[prop].__subID]) {
-      subIds[source[prop].__subID] = target[prop]
-      delete source[prop].__subID
-    }
-  }
-
-  function buildCircularDeps(source, target) {
-    iteratedItems.push(source)
-
+  function processTargetProps(context, source, target) {
     for (const prop in source) {
-      if (iteratedItems.includes(source[prop])) {
-        target[prop] = source[prop]
-      } else if (!Array.isArray(target[prop]) || !target[prop]) {
-        if (Array.isArray(source[prop])) {
-          buildCircularDeps(source[prop], target[prop] = [])
+      if (Array.isArray(source[prop])) {
+        processTargetProps(context, source[prop], target[prop] = [])
 
-        } else if (source[prop] && typeof source[prop] === 'object') {
-          if (GEO_CLASSES.includes(source[prop].___class)) {
-            target[prop] = geoConstructor(source[prop])
-          } else if (source[prop].__originSubID) {
-            ensureCircularDep(source, target, prop)
-          } else {
-            processModel(source, target, prop)
+      } else if (source[prop] && typeof source[prop] === 'object' && !(source[prop] instanceof Geometry)) {
+        if (source[prop] instanceof Date) {
+          target[prop] = source[prop].getTime()
 
-            buildCircularDeps(source[prop], target[prop])
+        } else if (context.instancesMap.has(source[prop])) {
+          const iteratedTarget = context.instancesMap.get(source[prop])
+
+          if (!iteratedTarget.__subID) {
+            iteratedTarget.__subID = Utils.uuid()
           }
 
+          target[prop] = { __originSubID: iteratedTarget.__subID }
         } else {
-          target[prop] = source[prop]
+          const iteratedTarget = target[prop] = {}
+
+          context.instancesMap.set(source[prop], iteratedTarget)
+
+          processTargetProps(context, source[prop], iteratedTarget)
         }
+      } else {
+        target[prop] = source[prop]
       }
+    }
+
+    return target
+  }
+})()
+
+const convertToClientRecords = (() => {
+  return (records, RootModel, classToTableMap) => {
+    if (!records) {
+      return records
+    }
+
+    const context = {
+      RootModel,
+      classToTableMap,
+      subIds    : {},
+      postAssign: [],
+    }
+
+    const result = Array.isArray(records)
+      ? records.map(record => sanitizeItem(context, record))
+      : sanitizeItem(context, records)
+
+    assignPostRelations(context)
+
+    return result
+  }
+
+  function createTargetRecord(context, source, target, prop) {
+    const __subID = source[prop].__subID
+
+    if (__subID && context.subIds[__subID]) {
+      target[prop] = context.subIds[__subID]
+      delete source[prop].__subID
+
+    } else {
+      const Model = context.classToTableMap[source[prop].___class] || Utils.globalScope[source[prop].___class]
+
+      target[prop] = Model ? new Model() : {}
+
+      if (__subID && !context.subIds[__subID]) {
+        context.subIds[__subID] = target[prop]
+        delete source[prop].__subID
+      }
+
+      processTargetProps(context, source[prop], target[prop])
     }
   }
 
-  buildCircularDeps(record, result)
+  function processTargetProp(context, source, target, prop) {
+    if (Array.isArray(source[prop])) {
+      processTargetProps(context, source[prop], target[prop] = [])
 
-  return result
-}
+    } else if (source[prop] && typeof source[prop] === 'object') {
+      if (GEO_CLASSES.includes(source[prop].___class)) {
+        target[prop] = geoConstructor(source[prop])
 
-function parseFindResponse(response, Model, classToTableMap) {
-  if (!response) {
-    return response
+      } else if (source[prop].__originSubID) {
+        context.postAssign.push([target, prop, source[prop].__originSubID])
+
+      } else {
+        createTargetRecord(context, source, target, prop)
+      }
+
+    } else {
+      target[prop] = source[prop]
+    }
   }
 
-  //TODO: refactor me
-  const subIds = {}
-  const postAssign = []
-
-  const sanitizeResponseItem = record => {
-    Model = typeof Model === 'function' ? Model : classToTableMap[record.___class]
-
-    return parseCircularDependencies(record, Model ? new Model() : {}, subIds, postAssign, classToTableMap)
+  function processTargetProps(context, source, target) {
+    for (const prop in source) {
+      processTargetProp(context, source, target, prop)
+    }
   }
 
-  const result = Array.isArray(response)
-    ? response.map(sanitizeResponseItem)
-    : sanitizeResponseItem(response)
+  function sanitizeItem(context, sourceRecord) {
+    const Model = context.RootModel || context.classToTableMap[sourceRecord.___class]
 
-  postAssign.forEach(([target, prop, __originSubID]) => target[prop] = subIds[__originSubID])
+    const targetRecord = Model ? new Model() : {}
 
-  return result
+    if (sourceRecord.__subID) {
+      if (context.subIds[sourceRecord.__subID]) {
+        return context.subIds[sourceRecord.__subID]
+      }
 
-}
+      context.subIds[sourceRecord.__subID] = targetRecord
+      delete sourceRecord.__subID
+    }
+
+    processTargetProps(context, sourceRecord, targetRecord)
+
+    return targetRecord
+  }
+
+  function assignPostRelations(context) {
+    context.postAssign.forEach(([target, prop, __originSubID]) => {
+      target[prop] = context.subIds[__originSubID]
+    })
+  }
+})()

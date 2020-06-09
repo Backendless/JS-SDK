@@ -30,7 +30,7 @@ export default class Users {
         url : this.app.urls.userRegister(),
         data: user
       })
-      .then(data => this.dataStore.parseFindResponse(data))
+      .then(data => this.dataStore.parseResponse(data))
   }
 
   async login(login, password, stayLoggedIn) {
@@ -184,7 +184,7 @@ export default class Users {
         url : this.app.urls.userObject(user.objectId),
         data: user
       })
-      .then(data => this.dataStore.parseFindResponse(data))
+      .then(data => this.dataStore.parseResponse(data))
   }
 
   async getUserRoles() {
@@ -277,7 +277,7 @@ export default class Users {
 
     if (this.currentUser) {
       if (!(this.currentUser instanceof User)) {
-        this.currentUser = this.dataStore.parseFindResponse(this.currentUser)
+        this.currentUser = this.dataStore.parseResponse(this.currentUser)
       }
 
       if (stayLoggedIn) {

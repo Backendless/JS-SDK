@@ -180,6 +180,6 @@ export default class RTHandlers extends RTListeners {
    * @private
    * */
   parseObjectToInstance(object) {
-    return this.dataStore.parseFindResponse(object)
+    return this.dataStore.parseResponse(object)
   }
 }
