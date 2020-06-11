@@ -66,12 +66,19 @@ function testDataQueryBuilderClass() {
     let strs: string[] = ['abc', 'foo', 'bar']
 
     dataQuery = dataQuery.setPageSize(num);
+    num = dataQuery.getPageSize();
+
     dataQuery = dataQuery.setOffset(num);
+    num = dataQuery.getOffset();
+
     dataQuery = dataQuery.prepareNextPage();
     dataQuery = dataQuery.preparePreviousPage();
 
     dataQuery = dataQuery.setWhereClause(str);
     str = dataQuery.getWhereClause();
+
+    dataQuery = dataQuery.setHavingClause(str);
+    str = dataQuery.getHavingClause();
 
     dataQuery = dataQuery.setProperties('abc');
     dataQuery = dataQuery.setProperties(['abc', 'abc', 'abc']);
@@ -99,6 +106,10 @@ function testDataQueryBuilderClass() {
     dataQuery = dataQuery.setSortBy(strs);
     strs = dataQuery.getSortBy();
 
+    dataQuery = dataQuery.setGroupBy(str);
+    dataQuery = dataQuery.setGroupBy(strs);
+    strs = dataQuery.getGroupBy();
+
     dataQuery = dataQuery.setRelated(str);
     dataQuery = dataQuery.setRelated(strs);
     dataQuery = dataQuery.addRelated(str);
@@ -108,12 +119,76 @@ function testDataQueryBuilderClass() {
     dataQuery = dataQuery.setRelationsDepth(num);
     num = dataQuery.getRelationsDepth();
 
+    dataQuery = dataQuery.setRelationsPageSize(num);
+    num = dataQuery.getRelationsPageSize();
+
     const query: Backendless.DataQueryValueI = dataQuery.build();
 }
 
 function testLoadRelationsQueryBuilder() {
+    let str: string = 'str';
+    let num: number = 123;
+    let strs: string[] = ['abc', 'foo', 'bar']
+
     let loadRelationsQueryBuilder: Backendless.LoadRelationsQueryBuilder;
     loadRelationsQueryBuilder = Backendless.LoadRelationsQueryBuilder.create();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setPageSize(num);
+    num = loadRelationsQueryBuilder.getPageSize();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setOffset(num);
+    num = loadRelationsQueryBuilder.getOffset();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.preparePreviousPage();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setWhereClause(str);
+    str = loadRelationsQueryBuilder.getWhereClause();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setHavingClause(str);
+    str = loadRelationsQueryBuilder.getHavingClause();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setProperties('abc');
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setProperties(['abc', 'abc', 'abc']);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addProperty(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addProperties(str, str, str, str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addProperties(['abc', 'abc', 'abc'], str, str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addProperties(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addProperties(['abc', 'abc', 'abc']);
+
+    strs = loadRelationsQueryBuilder.getProperties();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addAllProperties();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperty(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperties('abc');
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperties(['abc', 'abc', 'abc']);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperties(str, str, str, str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperties(['abc', 'abc', 'abc'], str, str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperties(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.excludeProperties(['abc', 'abc', 'abc']);
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setSortBy(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setSortBy(strs);
+    strs = loadRelationsQueryBuilder.getSortBy();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setGroupBy(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setGroupBy(strs);
+    strs = loadRelationsQueryBuilder.getGroupBy();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setRelated(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setRelated(strs);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addRelated(str);
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.addRelated(strs);
+    strs = loadRelationsQueryBuilder.getRelated();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setRelationsDepth(num);
+    num = loadRelationsQueryBuilder.getRelationsDepth();
+
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setRelationsPageSize(num);
+    num = loadRelationsQueryBuilder.getRelationsPageSize();
 
     loadRelationsQueryBuilder.setRelationName('relationColumn');
     loadRelationsQueryBuilder.setOffset(50);
