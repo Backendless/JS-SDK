@@ -923,8 +923,10 @@ declare module Backendless {
         static create(): Backendless.DataQueryBuilder;
 
         setPageSize(pageSize: number): Backendless.DataQueryBuilder;
+        getPageSize(): number;
 
         setOffset(offset: number): Backendless.DataQueryBuilder;
+        getOffset(): number;
 
         prepareNextPage(): Backendless.DataQueryBuilder;
 
@@ -948,9 +950,17 @@ declare module Backendless {
 
         setWhereClause(whereClause: string): Backendless.DataQueryBuilder;
 
+        getHavingClause(): string;
+
+        setHavingClause(havingClause: string): Backendless.DataQueryBuilder;
+
         getSortBy(): Array<string>;
 
         setSortBy(sortBy: string | Array<string>): Backendless.DataQueryBuilder;
+
+        getGroupBy(): Array<string>;
+
+        setGroupBy(groupBy: string | Array<string>): Backendless.DataQueryBuilder;
 
         getRelated(): Array<string>;
 
@@ -1006,23 +1016,57 @@ declare module Backendless {
 
         setProperties(properties: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
 
-        addProperty(properties: string): Backendless.LoadRelationsQueryBuilder;
+        addProperty(property: string): Backendless.LoadRelationsQueryBuilder;
+
+        addProperties(...properties: Array<string | Array<string>>): Backendless.LoadRelationsQueryBuilder;
+
+        addAllProperties(): Backendless.LoadRelationsQueryBuilder;
+
+        excludeProperty(property: string): Backendless.LoadRelationsQueryBuilder;
+
+        excludeProperties(...properties: Array<string | Array<string>>): Backendless.LoadRelationsQueryBuilder;
 
         getWhereClause(): string;
 
         setWhereClause(whereClause: string): Backendless.LoadRelationsQueryBuilder;
 
+        setHavingClause(havingClause: string): Backendless.LoadRelationsQueryBuilder;
+
+        getHavingClause(): string;
+
         setPageSize(pageSize: number): Backendless.LoadRelationsQueryBuilder;
 
+        getPageSize(): number;
+
         setOffset(offset: number): Backendless.LoadRelationsQueryBuilder;
+
+        getOffset(): number;
 
         getSortBy(): Array<string>;
 
         setSortBy(sortBy: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
 
+        getGroupBy(): Array<string>;
+
+        setGroupBy(groupBy: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
+
         prepareNextPage(): Backendless.LoadRelationsQueryBuilder;
 
         preparePreviousPage(): Backendless.LoadRelationsQueryBuilder;
+
+        getRelated(): Array<string>;
+
+        setRelated(relations: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
+
+        addRelated(relations: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
+
+        getRelationsDepth(): number;
+
+        setRelationsDepth(relationsDepth: number): Backendless.LoadRelationsQueryBuilder;
+
+        getRelationsPageSize(): number;
+
+        setRelationsPageSize(relationsPageSize: number): Backendless.LoadRelationsQueryBuilder;
 
         build(): Backendless.DataQueryValueI;
     }
