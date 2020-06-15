@@ -8,6 +8,7 @@ export default class LocalStorage {
     try {
       return JSON.parse(localStorage.getItem(this.storageName)) || {}
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.warn('Could not parse data from LocalStorage', e)
     }
 

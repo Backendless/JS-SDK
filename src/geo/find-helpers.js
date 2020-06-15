@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 //TODO: refactor me
 const FindHelpers = {
   searchRectangle: function(arg) {

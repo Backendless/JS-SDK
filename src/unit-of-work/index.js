@@ -217,12 +217,21 @@ class UnitOfWork {
     return this.addOperations(OperationType.CREATE, tableName, changes)
   }
 
+
   /**
    * update(object: object): OpResult;
    * update(tableName: string, object: object): OpResult;
    * update(opResult: OpResult | OpResultValueReference, object: object): OpResult;
-   * update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: OpResultValueReference): OpResult;
-   * update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: number | string | boolean): OpResult;
+   *
+   * update(
+   *    opResult: OpResult | OpResultValueReference,
+   *    propertyName: string,
+   *    propertyValue: OpResultValueReference): OpResult;
+   *
+   * update(
+   *    opResult: OpResult | OpResultValueReference,
+   *    propertyName: string,
+   *    propertyValue: number | string | boolean): OpResult;
    * **/
   update(...args) {
     let tableName

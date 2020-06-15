@@ -88,6 +88,6 @@ export default class Permission {
   /**
    * @abstract
    **/
-  getRequestURL(type, entity) {
+  getRequestURL(/** type, entity **/) {
   }
 }

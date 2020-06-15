@@ -374,6 +374,7 @@ class Backendless {
 
   /** @deprecated */
   get GeoQuery() {
+    // eslint-disable-next-line no-console
     console.warn(
       'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
       'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
@@ -384,6 +385,7 @@ class Backendless {
 
   /** @deprecated */
   get GeoPoint() {
+    // eslint-disable-next-line no-console
     console.warn(
       'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
       'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
@@ -394,6 +396,7 @@ class Backendless {
 
   /** @deprecated */
   get GeoCluster() {
+    // eslint-disable-next-line no-console
     console.warn(
       'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
       'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
@@ -404,6 +407,7 @@ class Backendless {
 
   /** @deprecated */
   get Persistence() {
+    // eslint-disable-next-line no-console
     console.warn('Backendless.Persistence is deprecated namespace, use Backendless.Data instead')
 
     return this.Data
