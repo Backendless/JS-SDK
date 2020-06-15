@@ -1,6 +1,6 @@
 {
   "name": "backendless",
-  "version": "5.9.4",
+  "version": "6.0.0",
   "description": "Backendless JavaScript SDK for Node.js and the browser",
   "browser": "dist/backendless.js",
   "main": "lib/index.js",
@@ -24,7 +24,7 @@
     "test:tsc": "tsc ./test/tsd.ts",
     "test:unit": "cross-env NODE_ENV=test mocha test/unit/specs/*",
     "test:e2e": "cross-env NODE_ENV=test mocha --require @babel/register test/e2e/specs/*",
-    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build": "npm run clean && npm run check && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
