@@ -33,7 +33,7 @@ export default class Geo {
   }
 
   @deprecated('Backendless.Geo', alternativeForDepreciation)
-  async addPoint(/** geopoint, async */) {
+  async addPoint(/** geopoint */) {
     return this.savePoint.apply(this, arguments)
   }
 
