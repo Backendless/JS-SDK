@@ -78,7 +78,7 @@ describe('<Files> Browser', function() {
       expect(result1).to.be.eql({ resultFileURL })
     })
 
-    xit('fails when file is broken', async () => {
+    it('fails when file is broken', async () => {
       brokenFileContent = new Blob([])
 
       let error
@@ -112,7 +112,7 @@ describe('<Files> Browser', function() {
 
       expect(req2).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/files//test/path/test-name.txt`,
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
         headers: {},
       })
 

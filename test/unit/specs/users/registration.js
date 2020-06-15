@@ -17,7 +17,7 @@ function getTestUserInstance(user) {
   return new Backendless.User(user || getTestUserObject())
 }
 
-describe('<Users> Basic', function() {
+describe('<Users> Registration', function() {
 
   forTest(this)
 
@@ -57,7 +57,7 @@ describe('<Users> Basic', function() {
     expect(user2.objectId).to.be.a('string')
   })
 
-  xit('register new users with blUserLocale', async () => {
+  it('register new users with blUserLocale', async () => {
     const blUserLocale = 'fake_bl_locale'
 
     const native__getClientUserLocale = UsersUtils.getClientUserLocale

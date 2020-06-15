@@ -312,7 +312,20 @@ describe('<Data> Permissions (deprecated)', function() {
       expect(result1).to.be.eql({ testResult })
     })
 
-    xit('fails when object has no ___class property', async () => {
+    it('fails when object has no ___class property', async () => {
+      const errorMsg = '"dataObject.___class" and "dataObject.objectId" need to be specified'
+
+      const perm = Backendless.Data.Permissions[permission]
+
+      expect(() => perm.grantUser(user, {})).to.throw(errorMsg)
+      expect(() => perm.denyUser(user, {})).to.throw(errorMsg)
+      expect(() => perm.grantRole(role, {})).to.throw(errorMsg)
+      expect(() => perm.denyRole(role, {})).to.throw(errorMsg)
+      expect(() => perm.grant({})).to.throw(errorMsg)
+      expect(() => perm.deny({})).to.throw(errorMsg)
+    })
+
+    it('fails when object has no ___class property', async () => {
       const errorMsg = '"dataObject.___class" and "dataObject.objectId" need to be specified'
 
       const perm = Backendless.Data.Permissions[permission]
@@ -474,7 +487,7 @@ describe('<Data> Permissions (deprecated)', function() {
       expect(result1).to.be.eql({ testResult })
     })
 
-    xit('fails when object has no ___class property', async () => {
+    it('fails when object has no ___class property', async () => {
       const errorMsg = '"dataObject.___class" and "dataObject.objectId" need to be specified'
 
       const perm = Backendless.Data.Permissions[permission]

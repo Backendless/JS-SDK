@@ -16,7 +16,6 @@ describe('<Data> RT', function() {
   let dataStore
   let rtHandlers
 
-
   beforeEach(async () => {
     rtClient = await createMockRTServer()
 

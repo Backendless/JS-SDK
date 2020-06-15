@@ -38,7 +38,7 @@ describe('<Data> Bulk Operations', function() {
     })
 
     it('fails when objects list is invalid', async () => {
-      const errorMsg = 'Invalid bulkCreate argument. The first argument must contain only array of objects.'
+      const errorMsg = 'Objects must be provided and must be an array of objects.'
 
       await expect(dataStore.bulkCreate()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkCreate('')).to.eventually.be.rejectedWith(errorMsg)
@@ -53,8 +53,8 @@ describe('<Data> Bulk Operations', function() {
       await expect(dataStore.bulkCreate(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least one item is invalid', async () => {
-      const errorMsg = 'Invalid bulkCreate argument. The first argument must contain only array of objects.'
+    it('fails when at least one item is invalid', async () => {
+      const errorMsg = 'Objects must be provided and must be an array of objects.'
 
       await expect(dataStore.bulkCreate([{}, ''])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkCreate([{}, 'str'])).to.eventually.be.rejectedWith(errorMsg)
@@ -86,7 +86,7 @@ describe('<Data> Bulk Operations', function() {
     })
 
     it('fails when condition is invalid', async () => {
-      const errorMsg = 'Invalid bulkUpdate argument. The first argument must be "whereClause" string.'
+      const errorMsg = 'Condition must be provided and must be a string.'
 
       await expect(dataStore.bulkUpdate()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkUpdate('')).to.eventually.be.rejectedWith(errorMsg)
@@ -101,8 +101,8 @@ describe('<Data> Bulk Operations', function() {
       await expect(dataStore.bulkUpdate(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when changes object is invalid', async () => {
-      const errorMsg = 'Invalid bulkUpdate argument. The second argument must be object.'
+    it('fails when changes object is invalid', async () => {
+      const errorMsg = 'Changes must be provided and must be a object.'
 
       await expect(dataStore.bulkUpdate('foo=1')).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkUpdate('foo=1', '')).to.eventually.be.rejectedWith(errorMsg)
@@ -153,8 +153,8 @@ describe('<Data> Bulk Operations', function() {
       expect(result1).to.be.equal(fakeResult)
     })
 
-    xit('fails when condition is invalid', async () => {
-      const errorMsg = 'Invalid bulkDelete argument. The first argument must contain array of objects or array of id or "whereClause" string.'
+    it('fails when condition is invalid', async () => {
+      const errorMsg = 'Condition must be provided and must be a string or a list of objects.'
 
       await expect(dataStore.bulkDelete()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete('')).to.eventually.be.rejectedWith(errorMsg)
@@ -168,7 +168,7 @@ describe('<Data> Bulk Operations', function() {
       await expect(dataStore.bulkDelete(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least on objectId is invalid', async () => {
+    it('fails when at least on objectId is invalid', async () => {
       const errorMsg = (
         'Can not transform "objects" to "whereClause". ' +
         'Item must be a string or an object with property "objectId" as string.'

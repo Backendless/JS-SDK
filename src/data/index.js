@@ -1,15 +1,10 @@
 import Utils from '../utils'
 
-import { deprecated } from '../decorators'
-
 import User from '../users/user'
 
-import Permissions from './permissions'
 import Store from './store'
-import QueryBuilder from './query-builder'
+import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
-
-import { describe } from './describe'
 
 import Point from './geo/point'
 import LineString from './geo/linestring'
@@ -18,6 +13,7 @@ import Geometry from './geo/geometry'
 import SpatialReferenceSystem from './geo/spatial-reference-system'
 import WKTParser from './geo/wkt-parser'
 import GeoJSONParser from './geo/geo-json-parser'
+import DataPermission from './persmission'
 
 export default class Data {
   constructor(app) {
@@ -27,8 +23,13 @@ export default class Data {
       [User.className]: User
     }
 
-    this.Permissions = new Permissions(app)
-    this.QueryBuilder = QueryBuilder
+    this.Permissions = {
+      FIND  : new DataPermission('FIND', app),
+      REMOVE: new DataPermission('REMOVE', app),
+      UPDATE: new DataPermission('UPDATE', app),
+    }
+
+    this.QueryBuilder = DataQueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
 
     this.Point = Point
@@ -43,26 +44,17 @@ export default class Data {
   }
 
   of(model) {
-    return new Store(model, this.classToTableMap, this.app)
+    return new Store(model, this)
   }
 
-  @deprecated('Backendless.Data', 'Backendless.Data.describe')
-  describeSync(...args) {
-    return Utils.synchronized(describe).call(this, ...args)
-  }
+  async describe(className) {
+    className = typeof className === 'string'
+      ? className
+      : Utils.getClassName(className)
 
-  describe(...args) {
-    return Utils.promisified(describe).call(this, ...args)
-  }
-
-  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  save(className, obj) {
-    return this.of(className).save(obj)
-  }
-
-  @deprecated('Backendless.Data', 'Backendless.Data.of(<ClassName>).save')
-  saveSync(className, obj, asyncHandler) {
-    return this.of(className).saveSync(obj, asyncHandler)
+    return this.app.request.get({
+      url: this.app.urls.dataTableProps(className),
+    })
   }
 
   mapTableToClass(tableName, clientClass) {

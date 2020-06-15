@@ -20,12 +20,15 @@ describe('<Logging>', function() {
   })
 
   it('fails when loggerName is not a string', async () => {
-    const errorMsg = 'Invalid \'loggerName\' value. LoggerName must be a string value'
+    const errorMsg = 'Logger Name must be provided and must be a string.'
 
     expect(() => Backendless.Logging.getLogger()).to.throw(errorMsg)
+    expect(() => Backendless.Logging.getLogger('')).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(null)).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(true)).to.throw(errorMsg)
+    expect(() => Backendless.Logging.getLogger(false)).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(123)).to.throw(errorMsg)
+    expect(() => Backendless.Logging.getLogger(0)).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger({})).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger([])).to.throw(errorMsg)
     expect(() => Backendless.Logging.getLogger(() => ({}))).to.throw(errorMsg)
@@ -147,5 +150,97 @@ describe('<Logging>', function() {
     })
 
     expect(req1.body[0].timestamp).to.be.a('number')
+  })
+
+  it('should not run timer if it is already running', async () => {
+    const req1 = prepareMockRequest()
+
+    Backendless.Logging.setLogReportingPolicy(1, 2)
+
+    logger.debug('debug message - 1')
+
+    const flushInterval1 = Backendless.Logging.flushInterval
+
+    logger.debug('debug message - 2')
+
+    const flushInterval2 = Backendless.Logging.flushInterval
+
+    expect(flushInterval1).to.be.equal(flushInterval2)
+
+    await Utils.wait(2000)
+
+    expect(req1).to.deep.include({
+      method : 'PUT',
+      path   : `${APP_PATH}/log`,
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    expect(req1.body[0]).to.deep.include({
+      'log-level': 'DEBUG',
+      'logger'   : loggerName,
+      'message'  : 'debug message - 1',
+    })
+
+    expect(req1.body[1]).to.deep.include({
+      'log-level': 'DEBUG',
+      'logger'   : loggerName,
+      'message'  : 'debug message - 2',
+    })
+  })
+
+  it('should return the same request promise', async () => {
+    prepareMockRequest(() => ({ delay: 2000 }))
+
+    logger.debug('debug message - 1')
+
+    const requestPromise1 = Backendless.Logging.flush()
+
+    logger.debug('debug message - 2')
+
+    const requestPromise2 = Backendless.Logging.flush()
+
+    await Utils.wait(500)
+
+    const requestPromise3 = Backendless.Logging.flush()
+
+    await requestPromise1
+    await requestPromise2
+    await requestPromise3
+  })
+
+  it('should send all the messages', async () => {
+    const req1 = prepareMockRequest(() => ({ delay: 1000 }))
+    const req2 = prepareMockRequest(() => ({ delay: 1000 }))
+
+    logger.debug('debug message - 1')
+
+    const requestPromise1 = Backendless.Logging.flush()
+
+    await Utils.wait(100)
+
+    logger.debug('debug message - 2')
+
+    await requestPromise1
+
+    const requestPromise2 = Backendless.Logging.flush()
+
+    await Utils.wait(100)
+
+    await requestPromise2
+
+    expect(req1.body).to.have.length(1)
+    expect(req2.body).to.have.length(1)
+
+    expect(req1.body[0]).to.deep.include({
+      'log-level': 'DEBUG',
+      'logger'   : loggerName,
+      'message'  : 'debug message - 1',
+    })
+
+    expect(req2.body[0]).to.deep.include({
+      'log-level': 'DEBUG',
+      'logger'   : loggerName,
+      'message'  : 'debug message - 2',
+    })
   })
 })

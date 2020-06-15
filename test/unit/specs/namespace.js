@@ -154,7 +154,7 @@ describe('Namespace', function() {
       expect(Backendless.Utils.isLocalStorageSupported).to.equal(false)
     })
 
-    xit('castArray wrap into array if passed argument is not array', () => {
+    it('castArray wrap into array if passed argument is not array', () => {
       expect(Backendless.Utils.castArray()).to.eql([])
       expect(Backendless.Utils.castArray(undefined)).to.eql([])
       expect(Backendless.Utils.castArray(null)).to.eql([null])
@@ -174,7 +174,7 @@ describe('Namespace', function() {
       expect(Backendless.Utils.castArray(['str'])).to.eql(['str'])
     })
 
-    xit('isCustomClassInstance returns true is the passed object is an instance of custom class only', () => {
+    it('isCustomClassInstance returns true is the passed object is an instance of custom class only', () => {
       class FooClass {
       }
 
@@ -227,16 +227,16 @@ describe('Namespace', function() {
 
       expect(Backendless.Utils.getClassName(classes.FooFn)).to.equal('FooFn')
       expect(Backendless.Utils.getClassName(classes.FooVar)).to.equal('FooVar')
-      // expect(Backendless.Utils.getClassName({ ___class: 'MyClass' })).to.equal('MyClass')
+      expect(Backendless.Utils.getClassName({ ___class: 'MyClass' })).to.equal('MyClass')
 
-      // expect(Backendless.Utils.getClassName()).to.equal(null)
-      // expect(Backendless.Utils.getClassName(null)).to.equal(null)
-      // expect(Backendless.Utils.getClassName(0)).to.equal(null)
-      // expect(Backendless.Utils.getClassName(123)).to.equal(null)
-      // expect(Backendless.Utils.getClassName('str')).to.equal(null)
-      // expect(Backendless.Utils.getClassName({})).to.equal(null)
-      // expect(Backendless.Utils.getClassName([])).to.equal(null)
-      // expect(Backendless.Utils.getClassName(() => ({}))).to.equal(null)
+      expect(Backendless.Utils.getClassName()).to.equal(null)
+      expect(Backendless.Utils.getClassName(null)).to.equal(null)
+      expect(Backendless.Utils.getClassName(0)).to.equal(null)
+      expect(Backendless.Utils.getClassName(123)).to.equal(null)
+      expect(Backendless.Utils.getClassName('str')).to.equal(null)
+      expect(Backendless.Utils.getClassName({})).to.equal(null)
+      expect(Backendless.Utils.getClassName([])).to.equal(null)
+      expect(Backendless.Utils.getClassName(() => ({}))).to.equal(null)
     })
 
     it('uuid returns uniq string', () => {

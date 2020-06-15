@@ -21,7 +21,7 @@ describe('<Data> Relations', function() {
   })
 
   describe('Load', () => {
-    xit('loads children', async () => {
+    it('loads children', async () => {
       const req1 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
       const req2 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
 
@@ -49,7 +49,7 @@ describe('<Data> Relations', function() {
     it('loads instances', async () => {
       const req1 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
       const req2 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
-      // const req3 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
+      const req3 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
 
       class ClassPerson {
       }
@@ -61,30 +61,30 @@ describe('<Data> Relations', function() {
       query2.setRelationModel(ClassPerson)
       query2.setRelationName(relationName)
 
-      const result1 = await dataStore.loadRelations(parent.objectId, query1)
-      const result2 = await dataStore.loadRelations(parent.objectId, query2)
-      // const result3 = await dataStore.loadRelations(parent, { relationName, relationModel: ClassPerson })
+      const result1 = await dataStore.loadRelations(parent, query1)
+      const result2 = await dataStore.loadRelations(parent, query2)
+      const result3 = await dataStore.loadRelations(parent, { relationName, relationModel: ClassPerson })
 
       expect(req1).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=10&offset=0`,
+        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=10`,
         headers: {},
         body   : undefined
       })
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=10&offset=0`,
+        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=10`,
         headers: {},
         body   : undefined
       })
 
-      // expect(req3).to.deep.include({
-      //   method : 'GET',
-      //   path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}`,
-      //   headers: {},
-      //   body   : undefined
-      // })
+      expect(req3).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}`,
+        headers: {},
+        body   : undefined
+      })
 
       expect(result1).to.be.eql([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
       expect(result1[0]).to.be.instanceof(ClassPerson)
@@ -96,10 +96,10 @@ describe('<Data> Relations', function() {
       expect(result2[1]).to.be.instanceof(ClassPerson)
       expect(result2[2]).to.be.instanceof(ClassPerson)
 
-      // expect(result3).to.be.eql([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
-      // expect(result3[0]).to.be.instanceof(ClassPerson)
-      // expect(result3[1]).to.be.instanceof(ClassPerson)
-      // expect(result3[2]).to.be.instanceof(ClassPerson)
+      expect(result3).to.be.eql([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
+      expect(result3[0]).to.be.instanceof(ClassPerson)
+      expect(result3[1]).to.be.instanceof(ClassPerson)
+      expect(result3[2]).to.be.instanceof(ClassPerson)
     })
 
     it('with all query options', async () => {
@@ -167,37 +167,37 @@ describe('<Data> Relations', function() {
         relationsPageSize: 70,
       }
 
-      const result1 = await dataStore.loadRelations(parent.objectId, query)
+      const result1 = await dataStore.loadRelations(parent, query)
       const result2 = await dataStore.loadRelations(parent.objectId, query2)
-      // const result3 = await dataStore.loadRelations(parent.objectId, query3)
+      const result3 = await dataStore.loadRelations(parent.objectId, query3)
 
       expect(req1).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=50&offset=15&sortBy=created&groupBy=objectId&relationsDepth=3&relationsPageSize=25&loadRelations=rel1,rel2,rel3&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&props=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8,prop9,*`,
+        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
         headers: {},
         body   : undefined
       })
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=10&offset=0`,
+        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=10`,
         headers: {},
         body   : undefined
       })
 
-      // expect(req3).to.deep.include({
-      //   method : 'GET',
-      //   path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
-      //   headers: {},
-      //   body   : undefined
-      // })
+      expect(req3).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/${parent.objectId}/${relationName}?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
+        headers: {},
+        body   : undefined
+      })
 
       expect(result1).to.be.eql(fakeResult)
       expect(result2).to.be.eql(fakeResult)
-      // expect(result3).to.be.eql(fakeResult)
+      expect(result3).to.be.eql(fakeResult)
     })
 
-    xit('fails when parentObjectId is invalid', async () => {
+    it('fails when parentObjectId is invalid', async () => {
       const errorMsg = 'Parent Object Id must be provided and must be a string.'
 
       await expect(dataStore.loadRelations()).to.eventually.be.rejectedWith(errorMsg)
@@ -212,7 +212,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.loadRelations(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when relationName is invalid', async () => {
+    it('fails when relationName is invalid', async () => {
       const errorMsg = 'Relation Name must be provided and must be a string.'
 
       await expect(dataStore.loadRelations('parent-id', {})).to.eventually.be.rejectedWith(errorMsg)
@@ -227,7 +227,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.loadRelations('parent-id', { relationName: () => ({}) })).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when relationName in LoadRelationsQueryBuilder is invalid', async () => {
+    it('fails when relationName in LoadRelationsQueryBuilder is invalid', async () => {
       const errorMsg = 'Relation Name must be provided and must be a string.'
 
       const createQuery = relationName => {
@@ -295,7 +295,7 @@ describe('<Data> Relations', function() {
       expect(result1).to.be.equal(fakeResult)
     })
 
-    xit('fails when parentId is invalid', async () => {
+    it('fails when parentId is invalid', async () => {
       const errorMsg = 'Relation Parent must be provided and must be a string or an object with objectId property.'
 
       await expect(dataStore.setRelation()).to.eventually.be.rejectedWith(errorMsg)
@@ -311,7 +311,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.setRelation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when columnName is invalid', async () => {
+    it('fails when columnName is invalid', async () => {
       const errorMsg = 'Relation Column Name must be provided and must be a string.'
 
       await expect(dataStore.setRelation(parent)).to.eventually.be.rejectedWith(errorMsg)
@@ -328,7 +328,7 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when children is invalid', async () => {
-      const errorMsg = 'Invalid value for the third argument. The argument is required and must contain string values if it sets whereClause or array if it sets childObjects.'
+      const errorMsg = 'Relation Children must be provided and must be a string or a list of objects.'
 
       await expect(dataStore.setRelation(parent, relationName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, '')).to.eventually.be.rejectedWith(errorMsg)
@@ -342,7 +342,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.setRelation(parent, relationName, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least one item is invalid', async () => {
+    it('fails when at least one item is invalid', async () => {
       const errorMsg = 'Child Id must be provided and must be a string.'
 
       await expect(dataStore.setRelation(parent, relationName, [''])).to.eventually.be.rejectedWith(errorMsg)
@@ -357,7 +357,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.setRelation(parent, relationName, [() => ({})])).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least one item has invalid objectId', async () => {
+    it('fails when at least one item has invalid objectId', async () => {
       const errorMsg = 'Child Id must be provided and must be a string.'
 
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: '' }])).to.eventually.be.rejectedWith(errorMsg)
@@ -421,7 +421,7 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when parentId is invalid', async () => {
-      const errorMsg = 'Invalid value for the "parent" argument. The argument is required and must contain only string or object values.'
+      const errorMsg = 'Relation Parent must be provided and must be a string or an object with objectId property.'
 
       await expect(dataStore.addRelation()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation('')).to.eventually.be.rejectedWith(errorMsg)
@@ -436,7 +436,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.addRelation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when columnName is invalid', async () => {
+    it('fails when columnName is invalid', async () => {
       const errorMsg = 'Relation Column Name must be provided and must be a string.'
 
       await expect(dataStore.addRelation(parent)).to.eventually.be.rejectedWith(errorMsg)
@@ -453,7 +453,7 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when children is invalid', async () => {
-      const errorMsg = 'Invalid value for the third argument. The argument is required and must contain string values if it sets whereClause or array if it sets childObjects.'
+      const errorMsg = 'Relation Children must be provided and must be a string or a list of objects.'
 
       await expect(dataStore.addRelation(parent, relationName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, '')).to.eventually.be.rejectedWith(errorMsg)
@@ -467,7 +467,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.addRelation(parent, relationName, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least one item is invalid', async () => {
+    it('fails when at least one item is invalid', async () => {
       const errorMsg = 'Child Id must be provided and must be a string.'
 
       await expect(dataStore.addRelation(parent, relationName, [''])).to.eventually.be.rejectedWith(errorMsg)
@@ -482,7 +482,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.addRelation(parent, relationName, [() => ({})])).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least one item has invalid objectId', async () => {
+    it('fails when at least one item has invalid objectId', async () => {
       const errorMsg = 'Child Id must be provided and must be a string.'
 
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: '' }])).to.eventually.be.rejectedWith(errorMsg)
@@ -546,7 +546,7 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when parentId is invalid', async () => {
-      const errorMsg = 'Invalid value for the "parent" argument. The argument is required and must contain only string or object values.'
+      const errorMsg = 'Relation Parent must be provided and must be a string or an object with objectId property.'
 
       await expect(dataStore.deleteRelation()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation('')).to.eventually.be.rejectedWith(errorMsg)
@@ -561,7 +561,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.deleteRelation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when columnName is invalid', async () => {
+    it('fails when columnName is invalid', async () => {
       const errorMsg = 'Relation Column Name must be provided and must be a string.'
 
       await expect(dataStore.deleteRelation(parent)).to.eventually.be.rejectedWith(errorMsg)
@@ -578,7 +578,7 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when children is invalid', async () => {
-      const errorMsg = 'Invalid value for the third argument. The argument is required and must contain string values if it sets whereClause or array if it sets childObjects.'
+      const errorMsg = 'Relation Children must be provided and must be a string or a list of objects.'
 
       await expect(dataStore.deleteRelation(parent, relationName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, '')).to.eventually.be.rejectedWith(errorMsg)
@@ -592,7 +592,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.deleteRelation(parent, relationName, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least one item is invalid', async () => {
+    it('fails when at least one item is invalid', async () => {
       const errorMsg = 'Child Id must be provided and must be a string.'
 
       await expect(dataStore.deleteRelation(parent, relationName, [''])).to.eventually.be.rejectedWith(errorMsg)
@@ -607,7 +607,7 @@ describe('<Data> Relations', function() {
       await expect(dataStore.deleteRelation(parent, relationName, [() => ({})])).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when at least one item has invalid objectId', async () => {
+    it('fails when at least one item has invalid objectId', async () => {
       const errorMsg = 'Child Id must be provided and must be a string.'
 
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: '' }])).to.eventually.be.rejectedWith(errorMsg)

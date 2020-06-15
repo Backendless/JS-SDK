@@ -17,7 +17,7 @@ describe('<Messaging> Messages', function() {
 
   describe('Subscribe', () => {
     it('fails when channelName is invalid', async () => {
-      const errorMsg = '"channelName" must be non empty string'
+      const errorMsg = 'Channel Name must be provided and must be a string.'
 
       expect(() => Backendless.Messaging.subscribe()).to.throw(errorMsg)
       expect(() => Backendless.Messaging.subscribe(undefined)).to.throw(errorMsg)
@@ -33,7 +33,7 @@ describe('<Messaging> Messages', function() {
     })
 
     it('fails when channelName has a slash char', async () => {
-      const errorMsg = '"channelName" can not contains slash chars'
+      const errorMsg = 'Channel Name can not contain slash chars'
 
       expect(() => Backendless.Messaging.subscribe('/channelName')).to.throw(errorMsg)
       expect(() => Backendless.Messaging.subscribe('channel/Name')).to.throw(errorMsg)
@@ -103,7 +103,7 @@ describe('<Messaging> Messages', function() {
       const req1 = prepareMockRequest({ fakeResult })
       const req2 = prepareMockRequest({ fakeResult })
       const req3 = prepareMockRequest({ fakeResult })
-      // const req4 = prepareMockRequest({ fakeResult })
+      const req4 = prepareMockRequest({ fakeResult })
 
       const publishOptions1 = new Backendless.Messaging.PublishOptions({})
 
@@ -120,17 +120,17 @@ describe('<Messaging> Messages', function() {
       publishOptions3.subtopic = 'test-subtopic'
       publishOptions3.foo = '222'
 
-      // const publishOptions4 = {
-      //   publisherId: 'test-publisherId',
-      //   headers    : 'test-headers',
-      //   subtopic   : 'test-subtopic',
-      //   foo        : '333',
-      // }
+      const publishOptions4 = {
+        publisherId: 'test-publisherId',
+        headers    : 'test-headers',
+        subtopic   : 'test-subtopic',
+        foo        : '333',
+      }
 
       const result1 = await Backendless.Messaging.publish(channelName, message, publishOptions1)
       const result2 = await Backendless.Messaging.publish(channelName, message, publishOptions2)
       const result3 = await Backendless.Messaging.publish(channelName, message, publishOptions3)
-      // const result4 = await Backendless.Messaging.publish(channelName, message, publishOptions4)
+      const result4 = await Backendless.Messaging.publish(channelName, message, publishOptions4)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -166,30 +166,30 @@ describe('<Messaging> Messages', function() {
         }
       })
 
-      // expect(req4).to.deep.include({
-      //   method : 'POST',
-      //   path   : `${APP_PATH}/messaging/${channelName}`,
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body   : {
-      //     message,
-      //     publisherId: 'test-publisherId',
-      //     headers    : 'test-headers',
-      //     subtopic   : 'test-subtopic',
-      //     foo        : '333',
-      //   }
-      // })
+      expect(req4).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/messaging/${channelName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          message,
+          publisherId: 'test-publisherId',
+          headers    : 'test-headers',
+          subtopic   : 'test-subtopic',
+          foo        : '333',
+        }
+      })
 
       expect(result1).to.be.eql({ fakeResult })
       expect(result2).to.be.eql({ fakeResult })
       expect(result3).to.be.eql({ fakeResult })
-      // expect(result4).to.be.eql({ fakeResult })
+      expect(result4).to.be.eql({ fakeResult })
     })
 
     it('publishes a basic message with deliveryOptions', async () => {
       const req1 = prepareMockRequest({ fakeResult })
       const req2 = prepareMockRequest({ fakeResult })
       const req3 = prepareMockRequest({ fakeResult })
-      // const req4 = prepareMockRequest({ fakeResult })
+      const req4 = prepareMockRequest({ fakeResult })
 
       const deliveryOptions1 = new Backendless.Messaging.DeliveryOptions({})
 
@@ -212,20 +212,20 @@ describe('<Messaging> Messages', function() {
       deliveryOptions3.repeatExpiresAt = 'test-repeatExpiresAt'
       deliveryOptions3.foo = '222'
 
-      // const deliveryOptions4 = {
-      //   publishPolicy  : 'test-publishPolicy',
-      //   pushBroadcast  : 'test-pushBroadcast',
-      //   pushSinglecast : 'test-pushSinglecast',
-      //   publishAt      : 'test-publishAt',
-      //   repeatEvery    : 'test-repeatEvery',
-      //   repeatExpiresAt: 'test-repeatExpiresAt',
-      //   foo            : '333',
-      // }
+      const deliveryOptions4 = {
+        publishPolicy  : 'test-publishPolicy',
+        pushBroadcast  : 'test-pushBroadcast',
+        pushSinglecast : 'test-pushSinglecast',
+        publishAt      : 'test-publishAt',
+        repeatEvery    : 'test-repeatEvery',
+        repeatExpiresAt: 'test-repeatExpiresAt',
+        foo            : '333',
+      }
 
       const result1 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions1)
       const result2 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions2)
       const result3 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions3)
-      // const result4 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions4)
+      const result4 = await Backendless.Messaging.publish(channelName, message, null, deliveryOptions4)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -267,29 +267,29 @@ describe('<Messaging> Messages', function() {
         }
       })
 
-      // expect(req4).to.deep.include({
-      //   method : 'POST',
-      //   path   : `${APP_PATH}/messaging/${channelName}`,
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body   : {
-      //     message,
-      //     publishPolicy  : 'test-publishPolicy',
-      //     pushBroadcast  : 'test-pushBroadcast',
-      //     pushSinglecast : 'test-pushSinglecast',
-      //     publishAt      : 'test-publishAt',
-      //     repeatEvery    : 'test-repeatEvery',
-      //     repeatExpiresAt: 'test-repeatExpiresAt',
-      //     foo            : '333',
-      //   }
-      // })
+      expect(req4).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/messaging/${channelName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          message,
+          publishPolicy  : 'test-publishPolicy',
+          pushBroadcast  : 'test-pushBroadcast',
+          pushSinglecast : 'test-pushSinglecast',
+          publishAt      : 'test-publishAt',
+          repeatEvery    : 'test-repeatEvery',
+          repeatExpiresAt: 'test-repeatExpiresAt',
+          foo            : '333',
+        }
+      })
 
       expect(result1).to.be.eql({ fakeResult })
       expect(result2).to.be.eql({ fakeResult })
       expect(result3).to.be.eql({ fakeResult })
-      // expect(result4).to.be.eql({ fakeResult })
+      expect(result4).to.be.eql({ fakeResult })
     })
 
-    xit('publishes a basic message with publishOptions and deliveryOptions', async () => {
+    it('publishes a basic message with publishOptions and deliveryOptions', async () => {
       const req1 = prepareMockRequest({ fakeResult })
 
       const publishOptions1 = {
@@ -375,7 +375,7 @@ describe('<Messaging> Messages', function() {
       expect(result3).to.be.eql({ fakeResult })
     })
 
-    xit('fails when channelName is invalid', async () => {
+    it('fails when channelName is invalid', async () => {
       const errorMsg = 'Channel Name must be provided and must be a string.'
 
       await expect(Backendless.Messaging.publish()).to.eventually.be.rejectedWith(errorMsg)
@@ -391,7 +391,7 @@ describe('<Messaging> Messages', function() {
       await expect(Backendless.Messaging.publish(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when channelName has a slash char', async () => {
+    it('fails when channelName has a slash char', async () => {
       const errorMsg = 'Channel Name can not contain slash chars'
 
       await expect(Backendless.Messaging.publish('/channelName')).to.eventually.be.rejectedWith(errorMsg)
@@ -450,7 +450,7 @@ describe('<Messaging> Messages', function() {
     })
 
     it('fails when publishOptions is invalid', async () => {
-      const errorMsg = 'Use PublishOption as publishOptions argument'
+      const errorMsg = '"publishOptions" argument must be an object.'
 
       await expect(Backendless.Messaging.publish(channelName, message, true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Messaging.publish(channelName, message, 123)).to.eventually.be.rejectedWith(errorMsg)
@@ -460,7 +460,7 @@ describe('<Messaging> Messages', function() {
     })
 
     it('fails when deliveryOptions is invalid', async () => {
-      const errorMsg = 'Use DeliveryOptions as deliveryTarget argument'
+      const errorMsg = '"deliveryOptions" argument must be an object.'
 
       await expect(Backendless.Messaging.publish(channelName, message, null, true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Messaging.publish(channelName, message, null, 123)).to.eventually.be.rejectedWith(errorMsg)
@@ -501,7 +501,7 @@ describe('<Messaging> Messages', function() {
     expect(result1).to.be.eql({ fakeResult })
   })
 
-  xit('fails when messageId is invalid on getting Message Status', async () => {
+  it('fails when messageId is invalid on getting Message Status', async () => {
     const errorMsg = 'Message ID must be provided and must be a string.'
 
     await expect(Backendless.Messaging.getMessageStatus()).to.eventually.be.rejectedWith(errorMsg)
@@ -517,7 +517,7 @@ describe('<Messaging> Messages', function() {
     await expect(Backendless.Messaging.getMessageStatus(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
   })
 
-  xit('fails when messageId is invalid on canceling Message', async () => {
+  it('fails when messageId is invalid on canceling Message', async () => {
     const errorMsg = 'Message ID must be provided and must be a string.'
 
     await expect(Backendless.Messaging.cancel()).to.eventually.be.rejectedWith(errorMsg)

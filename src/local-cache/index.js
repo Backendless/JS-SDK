@@ -1,21 +1,46 @@
 import Utils from '../utils'
-import Cache from './cache'
-import LocalStorageCache from './local-storage-cache'
+
+import VirtualStorage from './virtual-storage'
+import LocalStorage from './local-storage'
+
+const STORAGE_KEY_NAMESPACE = 'Backendless'
 
 export default class LocalCache {
-  constructor(...args) {
-    const cache = Utils.isLocalStorageSupported
-      ? new LocalStorageCache(...args)
-      : new Cache(...args)
+  constructor(app) {
+    this.app = app
 
-    cache.flushExpired()
+    this.storageName = this.app.standalone
+      ? `${STORAGE_KEY_NAMESPACE}-${this.app.applicationId}`
+      : STORAGE_KEY_NAMESPACE
 
-    cache.Keys = {
+    const Storage = Utils.isLocalStorageSupported
+      ? LocalStorage
+      : VirtualStorage
+
+    this.setStorage(Storage)
+
+    this.Keys = {
       USER_TOKEN     : 'user-token',
       CURRENT_USER_ID: 'current-user-id',
       STAY_LOGGED_IN : 'stayLoggedIn',
     }
-
-    return cache
   }
+
+  setStorage(Storage) {
+    this.storage = new Storage(this.storageName)
+  }
+
+  set(key, value) {
+    this.storage.set(key, value)
+  }
+
+  get(key) {
+    return this.storage.get(key)
+  }
+
+  remove(key) {
+    this.storage.remove(key)
+  }
+
 }
+

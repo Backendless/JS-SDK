@@ -56,7 +56,6 @@ export default class EmailEnvelope {
    * @returns {EmailEnvelope}
    */
   setCc(addresses) {
-
     this.ccAddresses = Utils.castArray(addresses)
 
     return this

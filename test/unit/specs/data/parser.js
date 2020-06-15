@@ -19,10 +19,12 @@ describe('<Data> Parser', function() {
   })
 
   describe('Related Methods', () => {
-    let spy_parseFindResponse
+    let spy_parseResponse
+    let spy_parseRelationsResponse
 
     beforeEach(() => {
-      spy_parseFindResponse = dataStore.parseFindResponse = chai.spy()
+      spy_parseResponse = dataStore.parseResponse = chai.spy()
+      spy_parseRelationsResponse = dataStore.parseRelationsResponse = chai.spy()
     })
 
     it('is called with response only', async () => {
@@ -31,7 +33,7 @@ describe('<Data> Parser', function() {
 
         await processor()
 
-        expect(spy_parseFindResponse).on.nth(index).be.called.with.exactly({ resultType })
+        expect(spy_parseResponse).on.nth(index).be.called.with.exactly({ resultType })
       }
 
       await check(1, 'save', () => dataStore.save({}))
@@ -40,20 +42,17 @@ describe('<Data> Parser', function() {
       await check(4, 'findFirst', () => dataStore.findFirst())
       await check(5, 'findLast', () => dataStore.findLast())
 
-      expect(spy_parseFindResponse).to.have.been.called.exactly(5)
+      expect(spy_parseResponse).to.have.been.called.exactly(5)
     })
 
     it('is called without relation model', async () => {
       prepareMockRequest({ result: 'test-1' })
 
-      const query = Backendless.LoadRelationsQueryBuilder.create().setRelationName('rel-1')
-      // const query = { relationName: 'rel-1' }
+      await dataStore.loadRelations('parent-id', { relationName: 'rel-1' })
 
-      await dataStore.loadRelations('parent-id', query)
+      expect(spy_parseRelationsResponse).on.nth(1).be.called.with.exactly({ result: 'test-1' }, undefined)
 
-      expect(spy_parseFindResponse).on.nth(1).be.called.with.exactly({ result: 'test-1' }, undefined)
-
-      expect(spy_parseFindResponse).to.have.been.called.exactly(1)
+      expect(spy_parseRelationsResponse).to.have.been.called.exactly(1)
     })
 
     it('is called with relation model', async () => {
@@ -66,16 +65,13 @@ describe('<Data> Parser', function() {
       prepareMockRequest({ result: 'test-1' })
       prepareMockRequest({ result: 'test-2' })
 
-      const query1 = Backendless.LoadRelationsQueryBuilder.of(FooClass1).setRelationName('rel-1')
-      const query2 = Backendless.LoadRelationsQueryBuilder.of(FooClass2).setRelationName('rel-2')
+      await dataStore.loadRelations('parent-id', { relationName: 'rel-1', relationModel: FooClass1 })
+      await dataStore.loadRelations('parent-id', { relationName: 'rel-2', relationModel: FooClass2 })
 
-      await dataStore.loadRelations('parent-id', query1)
-      await dataStore.loadRelations('parent-id', query2)
+      expect(spy_parseRelationsResponse).on.nth(1).be.called.with.exactly({ result: 'test-1' }, FooClass1)
+      expect(spy_parseRelationsResponse).on.nth(2).be.called.with.exactly({ result: 'test-2' }, FooClass2)
 
-      expect(spy_parseFindResponse).on.nth(1).be.called.with.exactly({ result: 'test-1' }, FooClass1)
-      expect(spy_parseFindResponse).on.nth(2).be.called.with.exactly({ result: 'test-2' }, FooClass2)
-
-      expect(spy_parseFindResponse).to.have.been.called.exactly(2)
+      expect(spy_parseRelationsResponse).to.have.been.called.exactly(2)
     })
   })
 
@@ -89,7 +85,7 @@ describe('<Data> Parser', function() {
     it('circular relations #1', async () => {
       Backendless.Data.mapTableToClass('Child', Child)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           created : 1589141341078,
           updated : 1589141357683,
@@ -114,18 +110,18 @@ describe('<Data> Parser', function() {
                   key     : '222',
                   ___class: 'Child',
                   children: [
-                    { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+                    { __originSubID: 'child-222-rel' }
                   ],
-                  __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
+                  __subID : 'child-222-rel'
                 },
-                { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
-                { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
+                { __originSubID: 'child-333-rel' },
+                { __originSubID: 'child-111-rel' }
               ],
-              __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+              __subID : 'child-333-rel'
             },
-            { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+            { __originSubID: 'child-222-rel' }
           ],
-          __subID : 'D6DF05BF-158E-FE0F-FFE0-F245B8652000'
+          __subID : 'child-111-rel'
         },
         {
           created : 1589141337125,
@@ -135,9 +131,9 @@ describe('<Data> Parser', function() {
           key     : '222',
           ___class: 'Child',
           children: [
-            { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+            { __originSubID: 'child-222-rel' }
           ],
-          __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
+          __subID : 'child-222-rel'
         },
         {
           created : 1589141335441,
@@ -155,14 +151,14 @@ describe('<Data> Parser', function() {
               key     : '222',
               ___class: 'Child',
               children: [
-                { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+                { __originSubID: 'child-222-rel' }
               ],
-              __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
+              __subID : 'child-222-rel'
             },
-            { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
-            { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
+            { __originSubID: 'child-333-rel' },
+            { __originSubID: 'child-111-rel' }
           ],
-          __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+          __subID : 'child-333-rel'
         }
       ])
 
@@ -326,7 +322,7 @@ describe('<Data> Parser', function() {
     it('circular relations #2', async () => {
       Backendless.Data.mapTableToClass('Child', Child)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           created : 1589141341078,
           updated : 1589141357683,
@@ -335,7 +331,7 @@ describe('<Data> Parser', function() {
           key     : '111',
           ___class: 'Child',
           children: [
-            { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
+            { __originSubID: 'child-222-rel' }
           ],
         },
         {
@@ -345,7 +341,7 @@ describe('<Data> Parser', function() {
           ownerId : null,
           key     : '222',
           ___class: 'Child',
-          __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900',
+          __subID : 'child-222-rel',
           children: []
         },
       ])
@@ -396,7 +392,7 @@ describe('<Data> Parser', function() {
     it('circular relations #3', async () => {
       Backendless.Data.mapTableToClass('Child', Child)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           created : 1589141341078,
           updated : 1589141357683,
@@ -413,9 +409,9 @@ describe('<Data> Parser', function() {
               key     : '333',
               ___class: 'Child',
               children: [
-                { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
+                { __originSubID: 'child-333-rel' },
               ],
-              __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+              __subID : 'child-333-rel'
             },
             { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
           ],
@@ -485,7 +481,7 @@ describe('<Data> Parser', function() {
     it('circular relations #4', async () => {
       Backendless.Data.mapTableToClass('Child', Child)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           created : 1589141341078,
           updated : 1589141357683,
@@ -514,10 +510,10 @@ describe('<Data> Parser', function() {
                   ],
                   __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
                 },
-                { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
+                { __originSubID: 'child-333-rel' },
                 { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
               ],
-              __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+              __subID : 'child-333-rel'
             },
             { __originSubID: '79785C66-CA2D-86E7-FF38-5BA5BB4DE900' }
           ],
@@ -555,10 +551,10 @@ describe('<Data> Parser', function() {
               ],
               __subID : '79785C66-CA2D-86E7-FF38-5BA5BB4DE900'
             },
-            { __originSubID: '415CC1B9-BB8B-7542-FF10-032D17A55900' },
+            { __originSubID: 'child-333-rel' },
             { __originSubID: 'D6DF05BF-158E-FE0F-FFE0-F245B8652000' }
           ],
-          __subID : '415CC1B9-BB8B-7542-FF10-032D17A55900'
+          __subID : 'child-333-rel'
         }
       ])
 
@@ -613,7 +609,7 @@ describe('<Data> Parser', function() {
       Backendless.Data.mapTableToClass('Child', Child)
       Backendless.Data.mapTableToClass('Parent', Parent)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created'   : 1589194994102,
           'updated'   : null,
@@ -842,7 +838,7 @@ describe('<Data> Parser', function() {
       Backendless.Data.mapTableToClass('Child', Child)
       Backendless.Data.mapTableToClass('Parent', Parent)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created'   : 1589194994102,
           'updated'   : null,
@@ -991,7 +987,7 @@ describe('<Data> Parser', function() {
 
     it('circular relations #7', async () => {
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created'   : 1589194994102,
           'updated'   : null,
@@ -1226,7 +1222,7 @@ describe('<Data> Parser', function() {
       Backendless.Data.mapTableToClass('Parent', Foo)
       Backendless.Data.mapTableToClass('Child', Bar)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created'   : 1589194994102,
           'updated'   : null,
@@ -1376,7 +1372,7 @@ describe('<Data> Parser', function() {
     it('circular relations #9', async () => {
       Backendless.Data.mapTableToClass('Parent', Parent)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created'   : 1589194994102,
           'updated'   : null,
@@ -1524,7 +1520,7 @@ describe('<Data> Parser', function() {
     })
 
     it('circular relations #10', async () => {
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created'   : 1589194994102,
           'updated'   : null,
@@ -1671,11 +1667,90 @@ describe('<Data> Parser', function() {
       expect(child3).to.be.instanceof(Object)
     })
 
+    it('circular relations #11', async () => {
+      Backendless.Data.mapTableToClass(Parent)
+      Backendless.Data.mapTableToClass(Child)
+
+      const result1 = dataStore.parseResponse([
+        {
+          '___class': 'Parent',
+          'value'   : 1,
+          'children': [
+            { '__originSubID': 'rel-to-c1' }
+          ],
+        },
+        {
+          '___class': 'Parent',
+          'value'   : 2,
+          'children': [
+            { '___class': 'Child', '__subID': 'rel-to-c1' }
+          ],
+        },
+        {
+          '___class': 'Parent',
+          'value'   : 3,
+          'children': [
+            { '__originSubID': 'rel-to-c1' }
+          ],
+        },
+      ])
+
+      const parent1 = result1[0]
+      const parent2 = result1[1]
+      const parent3 = result1[2]
+
+      const child1 = parent2.children[0]
+
+      expect(parent1).to.be.instanceof(Parent)
+      expect(parent2).to.be.instanceof(Parent)
+      expect(parent3).to.be.instanceof(Parent)
+
+      expect(parent1.value).to.be.equal(1)
+      expect(parent2.value).to.be.equal(2)
+      expect(parent3.value).to.be.equal(3)
+
+      expect(child1).to.be.instanceof(Child)
+    })
+
+    it('circular relations #12', async () => {
+      Backendless.Data.mapTableToClass(Parent)
+      Backendless.Data.mapTableToClass(Child)
+
+      const result1 = dataStore.parseResponse([
+        {
+          '___class': 'Parent',
+          'value'   : 1,
+          '__subID' : 'rel-to-p1',
+          'child'   : {
+            '___class': 'Child',
+            'value'   : 2,
+            'child'   : {
+              '___class': 'Child',
+              'value'   : 3,
+              'parent'  : { '__originSubID': 'rel-to-p1' },
+            },
+          },
+        },
+      ])
+
+      const parent1 = result1[0]
+
+      const child1 = parent1.child
+      const child2 = parent1.child.child
+
+      expect(parent1).to.be.instanceof(Parent)
+
+      expect(child1).to.be.instanceof(Child)
+      expect(child2).to.be.instanceof(Child)
+
+      expect(parent1).to.be.equal(child2.parent)
+    })
+
   })
 
   describe('GEO Relations', () => {
     it('relations #1', async () => {
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created' : 1589203761669,
           'updated' : null,
@@ -2136,7 +2211,7 @@ describe('<Data> Parser', function() {
       Backendless.Data.mapTableToClass('ParentGeo', ParentGeo)
       Backendless.Data.mapTableToClass('GeoItems', GeoItems)
 
-      const result1 = dataStore.parseFindResponse([
+      const result1 = dataStore.parseResponse([
         {
           'created' : 1589203761669,
           'updated' : null,
@@ -2591,7 +2666,7 @@ describe('<Data> Parser', function() {
   describe('GEO Types', () => {
 
     it('fails due to unsupported GEO types', async () => {
-      const check = geoData => dataStore.parseFindResponse([{ ___class: 'ParentGeo', geoData, }])
+      const check = geoData => dataStore.parseResponse([{ ___class: 'ParentGeo', geoData, }])
 
       const geoData1 = { type: 'InvalidTestType', ___class: 'com.backendless.persistence.Polygon' }
       const geoData2 = { type: 'InvalidTestType', ___class: 'com.backendless.persistence.LineString' }
@@ -2605,14 +2680,103 @@ describe('<Data> Parser', function() {
     })
   })
 
+  describe('Performance', () => {
+    class Child {
+    }
+
+    it.performance('circular relations #1', async () => {
+      prepareMockRequest([
+        {
+          created : 1589141341078,
+          updated : 1589141357683,
+          objectId: '1CA70A3A-A3C4-B454-FF43-2A0595AD0200',
+          ownerId : null,
+          key     : '111',
+          ___class: 'Child',
+          children: [
+            {
+              created : 1589141335441,
+              updated : 1589141359837,
+              objectId: 'C573DC58-F893-C42F-FF7D-E66ED6AB8C00',
+              ownerId : null,
+              key     : '333',
+              ___class: 'Child',
+              children: [
+                {
+                  created : 1589141337125,
+                  updated : 1589141358968,
+                  objectId: 'A8A4B67C-52ED-8D47-FF4C-F2095BC97900',
+                  ownerId : null,
+                  key     : '222',
+                  ___class: 'Child',
+                  children: [
+                    { __originSubID: 'child-222-rel' }
+                  ],
+                  __subID : 'child-222-rel'
+                },
+                { __originSubID: 'child-333-rel' },
+                { __originSubID: 'child-111-rel' }
+              ],
+              __subID : 'child-333-rel'
+            },
+            { __originSubID: 'child-222-rel' }
+          ],
+          __subID : 'child-111-rel'
+        },
+        {
+          created : 1589141337125,
+          updated : 1589141358968,
+          objectId: 'A8A4B67C-52ED-8D47-FF4C-F2095BC97900',
+          ownerId : null,
+          key     : '222',
+          ___class: 'Child',
+          children: [
+            { __originSubID: 'child-222-rel' }
+          ],
+          __subID : 'child-222-rel'
+        },
+        {
+          created : 1589141335441,
+          updated : 1589141359837,
+          objectId: 'C573DC58-F893-C42F-FF7D-E66ED6AB8C00',
+          ownerId : null,
+          key     : '333',
+          ___class: 'Child',
+          children: [
+            {
+              created : 1589141337125,
+              updated : 1589141358968,
+              objectId: 'A8A4B67C-52ED-8D47-FF4C-F2095BC97900',
+              ownerId : null,
+              key     : '222',
+              ___class: 'Child',
+              children: [
+                { __originSubID: 'child-222-rel' }
+              ],
+              __subID : 'child-222-rel'
+            },
+            { __originSubID: 'child-333-rel' },
+            { __originSubID: 'child-111-rel' }
+          ],
+          __subID : 'child-333-rel'
+        }
+      ])
+
+      Backendless.Data.mapTableToClass('Child', Child)
+
+      await dataStore.find()
+    }, { limit: 0.15 })
+
+  })
+
   it('data store instance', async () => {
     class FooClass {
     }
 
     dataStore = Backendless.Data.of(FooClass)
 
-    const result1 = dataStore.parseFindResponse({ foo: 123, bar: 'str' })
-    const result2 = dataStore.parseFindResponse([{ foo: 111 }, { foo: 222 }])
+    const result1 = dataStore.parseResponse({ foo: 123, bar: 'str' })
+    const result2 = dataStore.parseResponse([{ foo: 111 }, { foo: 222 }])
 
     expect(result1).to.be.eql({ foo: 123, bar: 'str' })
     expect(result1).to.be.instanceof(FooClass)
@@ -2631,12 +2795,12 @@ describe('<Data> Parser', function() {
 
     dataStore = Backendless.Data.of(tableName)
 
-    const result1 = dataStore.parseFindResponse({
+    const result1 = dataStore.parseResponse({
       foo: { ___class: 'FooClass', value: 1, },
       bar: { ___class: 'BarFun', value: 2, }
     })
 
-    const result2 = dataStore.parseFindResponse([
+    const result2 = dataStore.parseResponse([
       { foo: { ___class: 'FooClass', value: 3, }, bar: { ___class: 'BarFun', value: 5, } },
       { foo: { ___class: 'FooClass', value: 4, }, bar: { ___class: 'BarFun', value: 6, } }
     ])
@@ -2673,12 +2837,12 @@ describe('<Data> Parser', function() {
 
     dataStore = Backendless.Data.of(tableName)
 
-    const result1 = dataStore.parseFindResponse({
+    const result1 = dataStore.parseResponse({
       foo: { ___class: 'FooClass', value: 1, },
       bar: { ___class: 'BarFun', value: 2, }
     })
 
-    const result2 = dataStore.parseFindResponse([
+    const result2 = dataStore.parseResponse([
       { foo: { ___class: 'FooClass', value: 3, }, bar: { ___class: 'BarFun', value: 5, } },
       { foo: { ___class: 'FooClass', value: 4, }, bar: { ___class: 'BarFun', value: 6, } }
     ])
@@ -2706,15 +2870,15 @@ describe('<Data> Parser', function() {
   it('does not create data store instance', async () => {
     dataStore = Backendless.Data.of('Bar')
 
-    const result1 = dataStore.parseFindResponse({ foo: 123, bar: 'str' })
-    const result2 = dataStore.parseFindResponse([{ foo: 111 }, { foo: 222 }])
+    const result1 = dataStore.parseResponse({ foo: 123, bar: 'str' })
+    const result2 = dataStore.parseResponse([{ foo: 111 }, { foo: 222 }])
 
     expect(result1).to.be.eql({ foo: 123, bar: 'str' })
-    //expect(result1.constructor).to.be.equal(Object)
+    expect(result1.constructor).to.be.equal(Object)
 
     expect(result2).to.be.eql([{ foo: 111 }, { foo: 222 }])
-    // expect(result2[0].constructor).to.be.equal(Object)
-    // expect(result2[1].constructor).to.be.equal(Object)
+    expect(result2[0].constructor).to.be.equal(Object)
+    expect(result2[1].constructor).to.be.equal(Object)
   })
 
 })

@@ -1,36 +1,259 @@
-import Utils from '../utils'
-import { deprecated } from '../decorators'
+import { UsersUtils } from './utils'
 
-import { register } from './register'
-import { assignRole, getUserRoles, unassignRole } from './roles'
-import { login } from './login'
-import { loginAsGuest } from './login-as-guest'
-import { logout } from './logout'
-import { update } from './update'
-import { describeUserClass } from './describe-class'
-import { restorePassword } from './restore-password'
-import { resendEmailConfirmation } from './email-confirmation'
-import { enableUser, disableUser } from './status'
-import {
-  loginWithGooglePlusSdk,
-  loginWithGooglePlus,
-  loginWithFacebookSdk,
-  loginWithFacebook,
-  loginWithTwitter
-} from './social'
-import {
-  setLocalCurrentUser,
-  getLocalCurrentUser,
-  getCurrentUserToken,
-  setCurrentUserToken,
-  getCurrentUser,
-  isValidLogin,
-  loggedInUser
-} from './current-user'
+import User from './user'
+import UsersRoles from './roles'
+import UsersSocial from './social'
 
-class Users {
+export default class Users {
   constructor(app) {
     this.app = app
+
+    this.roles = new UsersRoles(this)
+    this.social = new UsersSocial(this)
+
+    this.dataStore = this.app.Data.of(User)
+  }
+
+  async register(user) {
+    user = { ...user }
+
+    if (!user.blUserLocale) {
+      const clientUserLocale = UsersUtils.getClientUserLocale()
+
+      if (clientUserLocale) {
+        user.blUserLocale = clientUserLocale
+      }
+    }
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userRegister(),
+        data: user
+      })
+      .then(data => this.dataStore.parseResponse(data))
+  }
+
+  async login(login, password, stayLoggedIn) {
+    const data = {}
+
+    if (typeof login !== 'string' && typeof login !== 'number') {
+      throw new Error('Login must a string or number.')
+    }
+
+    if (!login) {
+      throw new Error('Login can not be empty value.')
+    }
+
+    if (typeof password === 'boolean') {
+      stayLoggedIn = password
+      password = undefined
+    }
+
+    if (typeof login === 'string' && password === undefined) {
+      data.objectId = login
+
+    } else {
+      if (!password) {
+        throw new Error('Password can not be empty')
+      }
+
+      data.login = login
+      data.password = password
+    }
+
+    stayLoggedIn = stayLoggedIn === true
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userLogin(),
+        data: data,
+      })
+      .then(data => this.setLocalCurrentUser(data, stayLoggedIn))
+  }
+
+  async loginAsGuest(stayLoggedIn) {
+    stayLoggedIn = stayLoggedIn === true
+
+    return this.app.request
+      .post({
+        url: this.app.urls.guestLogin(),
+      })
+      .then(data => this.setLocalCurrentUser(data, stayLoggedIn))
+  }
+
+  async loginWithFacebook(fieldsMapping, permissions, stayLoggedIn) {
+    return this.social.loginWithFacebook(fieldsMapping, permissions, stayLoggedIn)
+  }
+
+  async loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options) {
+    return this.social.loginWithFacebookSdk(accessToken, fieldsMapping, stayLoggedIn, options)
+  }
+
+  async loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn) {
+    return this.social.loginWithGooglePlus(fieldsMapping, permissions, container, stayLoggedIn)
+  }
+
+  async loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithGooglePlusSdk(accessToken, fieldsMapping, stayLoggedIn)
+  }
+
+  async loginWithTwitter(fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithTwitter(fieldsMapping, stayLoggedIn)
+  }
+
+  async logout() {
+    return this.app.request
+      .get({
+        url: this.app.urls.userLogout(),
+      })
+      .then(() => {
+        this.setLocalCurrentUser(null)
+      })
+      .catch(error => {
+        if ([3023, 3064, 3090, 3091].includes(error.code)) {
+          this.setLocalCurrentUser(null)
+        }
+
+        throw error
+      })
+  }
+
+  async getCurrentUser() {
+    if (this.currentUser) {
+      return this.currentUser
+    }
+
+    if (this.currentUserRequest) {
+      return this.currentUserRequest
+    }
+
+    const currentUserId = this.getCurrentUserId()
+
+    if (currentUserId) {
+      return this.currentUserRequest = this.dataStore.findById(currentUserId)
+        .then(user => {
+          this.currentUserRequest = null
+
+          return this.currentUser = user
+        })
+        .catch(error => {
+          this.currentUserRequest = null
+
+          throw error
+        })
+    }
+
+    return null
+  }
+
+  async isValidLogin() {
+    const userToken = this.getCurrentUserToken()
+
+    if (userToken) {
+      return this.app.request.get({
+        url: this.app.urls.userTokenCheck(userToken),
+      })
+    }
+
+    return false
+  }
+
+  async restorePassword(emailAddress) {
+    if (!emailAddress || typeof emailAddress !== 'string') {
+      throw new Error('Email Address must be provided and must be a string.')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.userRestorePassword(emailAddress),
+    })
+  }
+
+  async resendEmailConfirmation(emailAddress) {
+    if (!emailAddress || typeof emailAddress !== 'string') {
+      throw new Error('Email Address must be provided and must be a string.')
+    }
+
+    return this.app.request.post({
+      url: this.app.urls.userResendConfirmation(emailAddress),
+    })
+  }
+
+  async update(user) {
+    return this.app.request
+      .put({
+        url : this.app.urls.userObject(user.objectId),
+        data: user
+      })
+      .then(data => this.dataStore.parseResponse(data))
+  }
+
+  async getUserRoles() {
+    return this.roles.getUserRoles()
+  }
+
+  async assignRole(identity, rolename) {
+    return this.roles.assignRole(identity, rolename)
+  }
+
+  async unassignRole(identity, rolename) {
+    return this.roles.unassignRole(identity, rolename)
+  }
+
+  async describeUserClass() {
+    return this.app.request.get({
+      url: this.app.urls.userClassProps(),
+    })
+  }
+
+  async enableUser(userId) {
+    return this.updateUserStatus(userId, 'ENABLED')
+  }
+
+  async disableUser(userId) {
+    return this.updateUserStatus(userId, 'DISABLED')
+  }
+
+  async updateUserStatus(userId, userStatus) {
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('User objectId must be non empty string')
+    }
+
+    if (!userStatus || typeof userStatus !== 'string') {
+      throw new Error('User Status must be a valid string')
+    }
+
+    return this.app.request.put({
+      url : this.app.urls.userStatus(userId),
+      data: { userStatus },
+    })
+  }
+
+  loggedInUser() {
+    return this.getCurrentUserId()
+  }
+
+  getCurrentUserToken() {
+    if (this.currentUser && this.currentUser['user-token']) {
+      return this.currentUser['user-token']
+    }
+
+    return this.app.LocalCache.get(this.app.LocalCache.Keys.USER_TOKEN) || null
+  }
+
+  setCurrentUserToken(userToken) {
+    userToken = userToken || null
+
+    if (this.currentUser) {
+      this.currentUser['user-token'] = userToken
+    }
+
+    if (this.app.LocalCache.get('user-token')) {
+      this.app.LocalCache.set('user-token', userToken)
+    }
+
+    if (this.app.__RT) {
+      this.app.RT.updateUserTokenIfNeeded()
+    }
   }
 
   getCurrentUserId() {
@@ -40,86 +263,34 @@ class Users {
 
     return this.app.LocalCache.get(this.app.LocalCache.Keys.CURRENT_USER_ID) || null
   }
+
+  getLocalCurrentUser() {
+    return this.currentUser
+  }
+
+  setLocalCurrentUser(user, stayLoggedIn) {
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.USER_TOKEN)
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.CURRENT_USER_ID)
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.STAY_LOGGED_IN)
+
+    this.currentUser = user || null
+
+    if (this.currentUser) {
+      if (!(this.currentUser instanceof User)) {
+        this.currentUser = this.dataStore.parseResponse(this.currentUser)
+      }
+
+      if (stayLoggedIn) {
+        this.app.LocalCache.set(this.app.LocalCache.Keys.STAY_LOGGED_IN, true)
+        this.app.LocalCache.set(this.app.LocalCache.Keys.USER_TOKEN, this.currentUser['user-token'])
+        this.app.LocalCache.set(this.app.LocalCache.Keys.CURRENT_USER_ID, this.currentUser.objectId)
+      }
+    }
+
+    if (this.app.__RT) {
+      this.app.RT.updateUserTokenIfNeeded()
+    }
+
+    return this.currentUser
+  }
 }
-
-Object.assign(Users.prototype, {
-
-  @deprecated('Backendless.Users', 'Backendless.Users.register')
-  registerSync: Utils.synchronized(register),
-  register    : Utils.promisified(register),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.getUserRoles')
-  getUserRolesSync: Utils.synchronized(getUserRoles),
-  getUserRoles    : Utils.promisified(getUserRoles),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.assignRole')
-  assignRoleSync: Utils.synchronized(assignRole),
-  assignRole    : Utils.promisified(assignRole),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.unassignRole')
-  unassignRoleSync: Utils.synchronized(unassignRole),
-  unassignRole    : Utils.promisified(unassignRole),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.login')
-  loginSync: Utils.synchronized(login),
-  login    : Utils.promisified(login),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.loginAsGuest')
-  loginAsGuestSync: Utils.synchronized(loginAsGuest),
-  loginAsGuest    : Utils.promisified(loginAsGuest),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.describeUserClass')
-  describeUserClassSync: Utils.synchronized(describeUserClass),
-  describeUserClass    : Utils.promisified(describeUserClass),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.restorePassword')
-  restorePasswordSync: Utils.synchronized(restorePassword),
-  restorePassword    : Utils.promisified(restorePassword),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.logout')
-  logoutSync: Utils.synchronized(logout),
-  logout    : Utils.promisified(logout),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.getCurrentUser')
-  getCurrentUserSync: Utils.synchronized(getCurrentUser),
-  getCurrentUser    : Utils.promisified(getCurrentUser),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.update')
-  updateSync: Utils.synchronized(update),
-  update    : Utils.promisified(update),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.loginWithFacebook')
-  loginWithFacebookSync: Utils.synchronized(loginWithFacebook),
-  loginWithFacebook    : Utils.promisified(loginWithFacebook),
-  loginWithFacebookSdk : loginWithFacebookSdk,
-
-  @deprecated('Backendless.Users', 'Backendless.Users.loginWithGooglePlus')
-  loginWithGooglePlusSync: Utils.synchronized(loginWithGooglePlus),
-  loginWithGooglePlus    : Utils.promisified(loginWithGooglePlus),
-  loginWithGooglePlusSdk : loginWithGooglePlusSdk,
-
-  @deprecated('Backendless.Users', 'Backendless.Users.loginWithTwitter')
-  loginWithTwitterSync: Utils.synchronized(loginWithTwitter),
-  loginWithTwitter    : Utils.promisified(loginWithTwitter),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.isValidLogin')
-  isValidLoginSync: Utils.synchronized(isValidLogin),
-  isValidLogin    : Utils.promisified(isValidLogin),
-
-  @deprecated('Backendless.Users', 'Backendless.Users.resendEmailConfirmation')
-  resendEmailConfirmationSync: Utils.synchronized(resendEmailConfirmation),
-  resendEmailConfirmation    : Utils.promisified(resendEmailConfirmation),
-
-  loggedInUser: loggedInUser,
-
-  getCurrentUserToken: getCurrentUserToken,
-  setCurrentUserToken: setCurrentUserToken,
-
-  getLocalCurrentUser: getLocalCurrentUser,
-  setLocalCurrentUser: setLocalCurrentUser,
-
-  enableUser : Utils.promisified(enableUser),
-  disableUser: Utils.promisified(disableUser)
-})
-
-export default Users

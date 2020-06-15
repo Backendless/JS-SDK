@@ -4,6 +4,13 @@ import Polygon from './polygon'
 import { GeoTypes } from './constants'
 import SpatialReferenceSystem from './spatial-reference-system'
 
+export const GEO_CLASSES = [
+  'com.backendless.persistence.Polygon',
+  'com.backendless.persistence.LineString',
+  'com.backendless.persistence.Point',
+  'com.backendless.persistence.Geometry',
+]
+
 const pointConstructor = (coordinates, srs) => {
   const [x, y] = coordinates
 
@@ -29,8 +36,9 @@ const Constructors = {
   [GeoTypes.POLYGON]    : polygonConstructor,
 }
 
-export default function (geoObject, srs) {
+export default function geoConstructor(geoObject, srs) {
   const constructor = Constructors[geoObject.type]
+
   srs = srs || SpatialReferenceSystem.valueBySRSId(geoObject.srsId)
 
   if (constructor) {

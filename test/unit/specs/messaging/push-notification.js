@@ -50,7 +50,7 @@ describe('<Messaging> Push Notifications', function() {
     expect(result1).to.be.eql([{ type: 'MY_DEVICE_TYPE' }])
   })
 
-  xit('fails when deviceType is invalid', async () => {
+  it('fails when deviceType is invalid', async () => {
     const errorMsg = 'Device Type must be provided and must be a string.'
 
     await expect(Backendless.Messaging.getPushTemplates()).to.eventually.be.rejectedWith(errorMsg)
@@ -66,7 +66,7 @@ describe('<Messaging> Push Notifications', function() {
     await expect(Backendless.Messaging.getPushTemplates(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
   })
 
-  xit('fails when templateName is invalid', async () => {
+  it('fails when templateName is invalid', async () => {
     const errorMsg = 'Push Template Name must be provided and must be a string.'
 
     await expect(Backendless.Messaging.pushWithTemplate()).to.eventually.be.rejectedWith(errorMsg)

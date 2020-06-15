@@ -42,7 +42,7 @@ describe('<Data> Store', function() {
     expect(dataStore.className).to.be.eql('VarPersons')
   })
 
-  xit('fails when className is invalid', async () => {
+  it('fails when className is invalid', async () => {
     const errorMsg = 'Class name should be specified'
 
     expect(() => Backendless.Data.of()).to.throw(errorMsg)

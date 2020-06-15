@@ -151,6 +151,12 @@ describe('<Data> GEO', function() {
 
   describe('LineString', function() {
 
+    it('should create LineString without points', function() {
+      const lineString = new Backendless.Data.LineString()
+
+      expect(lineString.getPoints()).to.eql([])
+    })
+
     it('two same linestrings should be equal', function() {
       const point1 = createPoint()
       const point2 = createPoint()
@@ -345,6 +351,14 @@ describe('<Data> GEO', function() {
   })
 
   describe('Parse from WKT', function() {
+    let Geometry
+
+    const wktStringError = 'WKT string is invalid'
+
+    beforeEach(()=>{
+      Geometry = Backendless.Data.Geometry
+    })
+
     it('should correctly parse wkt point', function() {
       const pointWKT = 'POINT(10 20)'
       const pointObj = Backendless.Data.Geometry.fromWKT(pointWKT)
@@ -399,7 +413,41 @@ describe('<Data> GEO', function() {
     it('fails when wktString is invalid', function() {
       const invalidWKT = 'INVALID((,,7 2))'
 
-      expect(() => Backendless.Data.Geometry.fromWKT(invalidWKT)).to.throw('WKT string is invalid')
+      expect(() => Geometry.fromWKT(invalidWKT)).to.throw(wktStringError)
+    })
+
+    it('fails when wktString is invalid Point', function() {
+      expect(() => Geometry.fromWKT('POINT(10)')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT((), ())')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT(())')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT()')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT(abc)')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT((1, 2))')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT(1, 2)')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT(1 2')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POINT(1 2abc3')).to.throw(wktStringError)
+    })
+
+    it('fails when wktString is invalid LineString', function() {
+      expect(() => Geometry.fromWKT('LINESTRING(10)')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING((), ())')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING(())')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING()')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING(abc)')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING((1, 2))')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING((1 2')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING((1 2)')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('LINESTRING(1 2, 2 3')).to.throw(wktStringError)
+    })
+
+    it('fails when wktString is invalid Polygon', function() {
+      expect(() => Geometry.fromWKT('POLYGON((10 20,20 30,30 10),())')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POLYGON((),(2 3,3 7,7 2))')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POLYGON((),())')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POLYGON(())')).to.throw(wktStringError)
+      expect(() => Geometry.fromWKT('POLYGON((1 1, 2 2, 3 3, 4 4)')).to.throw(wktStringError)
     })
   })
 

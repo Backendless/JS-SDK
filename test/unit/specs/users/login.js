@@ -38,13 +38,13 @@ describe('<Users> Login', function() {
     expect(user1.objectId).to.be.equal(objectId)
     expect(user1['user-token']).to.be.equal(userToken)
 
-    // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
     expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-    // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
   })
 
-  xit('fails when login has incorrect type', async () => {
-    const errorMsg = 'Login can not be empty'
+  it('fails when login has incorrect type', async () => {
+    const errorMsg = 'Login must a string or number.'
 
     await expect(Backendless.UserService.login(undefined, '123')).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.UserService.login(null, '123')).to.eventually.be.rejectedWith(errorMsg)
@@ -55,7 +55,7 @@ describe('<Users> Login', function() {
     await expect(Backendless.UserService.login(() => ({}), '123')).to.eventually.be.rejectedWith(errorMsg)
   })
 
-  xit('fails when login is missed', async () => {
+  it('fails when login is missed', async () => {
     const errorMsg = 'Login can not be empty value.'
 
     await expect(Backendless.UserService.login(0)).to.eventually.be.rejectedWith(errorMsg)
@@ -93,29 +93,29 @@ describe('<Users> Login', function() {
     expect(user1.objectId).to.be.equal(objectId)
     expect(user1['user-token']).to.be.equal(userToken)
 
-    // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
     expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-    // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
 
-    // const user2 = await Backendless.UserService.login(objectId, false)
+    const user2 = await Backendless.UserService.login(objectId, false)
 
-    // expect(req2).to.deep.include({
-    //   method : 'POST',
-    //   path   : `${APP_PATH}/users/login`,
-    //   headers: { 'Content-Type': 'application/json', 'user-token': userToken },
-    //   body   : {
-    //     objectId
-    //   }
-    // })
-    //
-    // expect(user2).to.be.an.instanceof(Backendless.User)
-    // expect(user2.___class).to.be.equal('Users')
-    // expect(user2.objectId).to.be.equal(objectId)
-    // expect(user2['user-token']).to.be.equal(userToken)
+    expect(req2).to.deep.include({
+      method : 'POST',
+      path   : `${APP_PATH}/users/login`,
+      headers: { 'Content-Type': 'application/json', 'user-token': userToken },
+      body   : {
+        objectId
+      }
+    })
 
-    // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
-    // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-    // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+    expect(user2).to.be.an.instanceof(Backendless.User)
+    expect(user2.___class).to.be.equal('Users')
+    expect(user2.objectId).to.be.equal(objectId)
+    expect(user2['user-token']).to.be.equal(userToken)
+
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
   })
 
   describe('with stayLoggedIn', () => {
@@ -158,7 +158,7 @@ describe('<Users> Login', function() {
       expect(Backendless.UserService.getCurrentUserId()).to.be.equal(objectId)
     })
 
-    xit('login with objectId', async () => {
+    it('login with objectId', async () => {
       const objectId = Utils.objectId()
       const userToken = Utils.uid()
 
@@ -233,9 +233,9 @@ describe('<Users> Login', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('with stayLoggedIn=undefined', async () => {
@@ -258,9 +258,9 @@ describe('<Users> Login', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
   })

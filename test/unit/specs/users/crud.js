@@ -161,21 +161,21 @@ describe('<Users> CRUD', function() {
     })
 
     it('fails when objectId is invalid', async () => {
-      const errorMsg = 'Invalid value for the "value" argument. The argument must contain only string or object values'
+      const errorMsg = 'Object Id must be provided and must be a string.'
 
       const dataStore = Backendless.Data.of(tableName)
 
-      // await expect(dataStore.remove()).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove('')).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(false)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(undefined)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(0)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(123)).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove({})).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove([])).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 

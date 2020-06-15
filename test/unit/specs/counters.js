@@ -129,7 +129,7 @@ describe('<Counters>', function() {
     })
 
     describe('fails when counterName is not a string', () => {
-      const noCounterNameError = 'Counter Name must be non empty String'
+      const noCounterNameError = 'Counter Name must be provided and must be a string.'
 
       it('get', async () => {
         await expect(Backendless.Counters.get()).to.eventually.be.rejectedWith(noCounterNameError)
@@ -224,7 +224,7 @@ describe('<Counters>', function() {
     })
 
     it('fails when passed value to addAndGet is not a number', async () => {
-      const errorMsg = 'Counter Value must number'
+      const errorMsg = 'Counter Value must be a number.'
 
       await expect(Backendless.Counters.addAndGet(counterName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Counters.addAndGet(counterName, null)).to.eventually.be.rejectedWith(errorMsg)
@@ -235,7 +235,7 @@ describe('<Counters>', function() {
     })
 
     it('fails when passed value to getAndAdd is not a number', async () => {
-      const errorMsg = 'Counter "value" must be Number'
+      const errorMsg = 'Counter Value must be a number.'
 
       await expect(Backendless.Counters.getAndAdd(counterName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Counters.getAndAdd(counterName, null)).to.eventually.be.rejectedWith(errorMsg)
@@ -246,8 +246,8 @@ describe('<Counters>', function() {
     })
 
     it('fails when passed expected/updated to compareAndSet are not numbers', async () => {
-      const expectedValueErrorMsg = 'Counter "expected" value must be Number'
-      const updatedValueErrorMsg = 'Counter "updated" value must be Number'
+      const expectedValueErrorMsg = 'Counter Expected Value must be a number.'
+      const updatedValueErrorMsg = 'Counter Updated Value must be a number.'
 
       await expect(Backendless.Counters.compareAndSet(counterName)).to.eventually.be.rejectedWith(expectedValueErrorMsg)
       await expect(Backendless.Counters.compareAndSet(counterName, null)).to.eventually.be.rejectedWith(expectedValueErrorMsg)

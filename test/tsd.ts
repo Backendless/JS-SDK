@@ -22,28 +22,20 @@ function testLocalCache() {
     const bol: boolean = true;
     const nul: any = null;
 
-    const result: boolean = Backendless.LocalCache.enabled;
-    const result1: boolean = Backendless.LocalCache.exists(key);
-    const result2: boolean = Backendless.LocalCache.set(key);
-    const result3: Object = Backendless.LocalCache.set(key, obj);
-    const result4: any[] = Backendless.LocalCache.set(key, arr);
-    const result5: number = Backendless.LocalCache.set(key, num);
-    const result6: string = Backendless.LocalCache.set(key, str);
-    const result7: any = Backendless.LocalCache.set(key, nul);
-    const result8: boolean = Backendless.LocalCache.set(key, bol);
-    const result9: any = Backendless.LocalCache.get(key);
-    const result11: boolean = Backendless.LocalCache.remove(key);
-    const result12: Object = Backendless.LocalCache.getAll();
-    const result13: Object = Backendless.LocalCache.getCachePolicy(key);
-    const result14: string = Backendless.LocalCache.serialize(obj);
-    const result15: string = Backendless.LocalCache.serialize(arr);
-    const result16: string = Backendless.LocalCache.serialize(num);
-    const result17: string = Backendless.LocalCache.serialize(str);
-    const result18: string = Backendless.LocalCache.serialize(bol);
-    const result19: any = Backendless.LocalCache.deserialize(key);
-
-    Backendless.LocalCache.clear();
-    Backendless.LocalCache.flushExpired();
+    const result2: void = Backendless.LocalCache.set(key);
+    const result3: void = Backendless.LocalCache.set(key, obj);
+    const result4: void = Backendless.LocalCache.set(key, arr);
+    const result5: void = Backendless.LocalCache.set(key, num);
+    const result6: void = Backendless.LocalCache.set(key, str);
+    const result7: void = Backendless.LocalCache.set(key, nul);
+    const result8: void = Backendless.LocalCache.set(key, bol);
+    const result9: void = Backendless.LocalCache.remove(key);
+    const result10: any = Backendless.LocalCache.get(key);
+    const result11: string = Backendless.LocalCache.get<string>(key);
+    const result12: boolean = Backendless.LocalCache.get<boolean>(key);
+    const result13: number = Backendless.LocalCache.get<number>(key);
+    const result14: object = Backendless.LocalCache.get<object>(key);
+    const result15: string[] = Backendless.LocalCache.get<string[]>(key);
 }
 
 function testDataQueryClass() {
@@ -238,38 +230,27 @@ function testDataStoreClass() {
     let promiseNum: Promise<number>;
 
 
-    resultObj = dataStore.saveSync(item);
     promiseObject = dataStore.save(item);
     promisePerson = dataStore.save<Person>(person);
 
-    resultObj = dataStore.removeSync('str');
-    resultObj = dataStore.removeSync(item);
     promiseObject = dataStore.remove('str');
     promiseObject = dataStore.remove(item);
 
-    resultObj = dataStore.findSync(dataQueryBuilder);
-    resultObj = dataStore.findSync();
     promiseObject = dataStore.find(dataQueryBuilder);
     promiseObject = dataStore.find();
     promisePersons = dataStore.find<Person>();
 
-    resultObj = dataStore.findByIdSync('myId');
     promiseObject = dataStore.findById('myId');
     promisePerson = dataStore.findById<Person>('myId');
 
-    resultObj = dataStore.findFirstSync();
     promiseObject = dataStore.findFirst();
     promisePerson = dataStore.findFirst<Person>();
 
-    resultObj = dataStore.findLastSync();
     promiseObject = dataStore.findLast();
     promisePerson = dataStore.findLast<Person>();
 
-    dataStore.loadRelationsSync(parentTableName, loadRelationsQueryBuilder);
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
 
-    resultNum = dataStore.getObjectCountSync();
-    resultNum = dataStore.getObjectCountSync(dataQueryBuilder);
     promiseNum = dataStore.getObjectCount();
     promiseNum = dataStore.getObjectCount(dataQueryBuilder);
 
@@ -281,32 +262,18 @@ function testPersistence() {
     let Model: Function;
     let promiseObject: Promise<Object>;
 
-    resultObj = Backendless.Data.saveSync('model', {});
-    resultObj = Backendless.Data.saveSync(dataStore, {});
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
 
-    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123, 123);
-    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123);
-    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause');
-    resultObj = Backendless.Data.getViewSync('viewName');
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause');
     promiseObject = Backendless.Data.getView('viewName');
 
-    resultObj = Backendless.Data.callStoredProcedureSync('spName', 'argumentValues');
-    resultObj = Backendless.Data.callStoredProcedureSync('spName', {});
-    promiseObject = Backendless.Data.callStoredProcedure('spName', 'argumentValues');
-    promiseObject = Backendless.Data.callStoredProcedure('spName', {});
-
     dataStore = Backendless.Data.of(Model);
     dataStore = Backendless.Data.of('str');
     dataStore = Backendless.Data.of({});
 
-    resultObj = Backendless.Data.describeSync(Model);
-    resultObj = Backendless.Data.describeSync('str');
-    resultObj = Backendless.Data.describeSync({});
     promiseObject = Backendless.Data.describe(Model);
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
@@ -400,32 +367,18 @@ function testData() {
     let Model: Function;
     let promiseObject: Promise<Object>;
 
-    resultObj = Backendless.Data.saveSync('model', {});
-    resultObj = Backendless.Data.saveSync(dataStore, {});
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
 
-    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123, 123);
-    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause', 123);
-    resultObj = Backendless.Data.getViewSync('viewName', 'whereClause');
-    resultObj = Backendless.Data.getViewSync('viewName');
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause');
     promiseObject = Backendless.Data.getView('viewName');
 
-    resultObj = Backendless.Data.callStoredProcedureSync('spName', 'argumentValues');
-    resultObj = Backendless.Data.callStoredProcedureSync('spName', {});
-    promiseObject = Backendless.Data.callStoredProcedure('spName', 'argumentValues');
-    promiseObject = Backendless.Data.callStoredProcedure('spName', {});
-
     dataStore = Backendless.Data.of(Model);
     dataStore = Backendless.Data.of('str');
     dataStore = Backendless.Data.of({});
 
-    resultObj = Backendless.Data.describeSync(Model);
-    resultObj = Backendless.Data.describeSync('str');
-    resultObj = Backendless.Data.describeSync({});
     promiseObject = Backendless.Data.describe(Model);
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
@@ -441,20 +394,13 @@ function testBulkOperations() {
     let resultString: string;
 
     resultPromiseListOfString = dataStore.bulkCreate([{}, {}, {}]);
-    resultListOfString = dataStore.bulkCreateSync([{}, {}, {}]);
 
     resultPromiseString = dataStore.bulkUpdate('where clause string', {foo: 'bar'});
-    resultString = dataStore.bulkUpdateSync('where clause string', {foo: 'bar'});
 
     resultPromiseString = dataStore.bulkDelete('where clause string');
     resultPromiseString = dataStore.bulkDelete(['objectId1', 'objectId2', 'objectId3']);
     resultPromiseString = dataStore.bulkDelete([{objectId: 'objectId1'}]);
     resultPromiseString = dataStore.bulkDelete([{objectId: 'objectId1', foo: 'bar'}]);
-
-    resultString = dataStore.bulkDeleteSync('where clause string');
-    resultString = dataStore.bulkDeleteSync(['objectId1', 'objectId2', 'objectId3']);
-    resultString = dataStore.bulkDeleteSync([{objectId: 'objectId1'}]);
-    resultString = dataStore.bulkDeleteSync([{objectId: 'objectId1', foo: 'bar'}]);
 }
 
 function testDataPermissions() {
@@ -463,27 +409,6 @@ function testDataPermissions() {
     const dataObj: Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
     let resultObj: Backendless.ExistDataItemI;
     let promiseObject: Promise<Object>;
-
-    resultObj = Backendless.Data.Permissions.FIND.grantUserSync(userId, dataObj);
-    resultObj = Backendless.Data.Permissions.FIND.grantRoleSync(roleName, dataObj);
-    resultObj = Backendless.Data.Permissions.FIND.grantSync(dataObj);
-    resultObj = Backendless.Data.Permissions.FIND.denyUserSync(userId, dataObj);
-    resultObj = Backendless.Data.Permissions.FIND.denyRoleSync(roleName, dataObj);
-    resultObj = Backendless.Data.Permissions.FIND.denySync(dataObj);
-
-    resultObj = Backendless.Data.Permissions.REMOVE.grantUserSync(userId, dataObj);
-    resultObj = Backendless.Data.Permissions.REMOVE.grantRoleSync(roleName, dataObj);
-    resultObj = Backendless.Data.Permissions.REMOVE.grantSync(dataObj);
-    resultObj = Backendless.Data.Permissions.REMOVE.denyUserSync(userId, dataObj);
-    resultObj = Backendless.Data.Permissions.REMOVE.denyRoleSync(roleName, dataObj);
-    resultObj = Backendless.Data.Permissions.REMOVE.denySync(dataObj);
-
-    resultObj = Backendless.Data.Permissions.UPDATE.grantUserSync(userId, dataObj);
-    resultObj = Backendless.Data.Permissions.UPDATE.grantRoleSync(roleName, dataObj);
-    resultObj = Backendless.Data.Permissions.UPDATE.grantSync(dataObj);
-    resultObj = Backendless.Data.Permissions.UPDATE.denyUserSync(userId, dataObj);
-    resultObj = Backendless.Data.Permissions.UPDATE.denyRoleSync(roleName, dataObj);
-    resultObj = Backendless.Data.Permissions.UPDATE.denySync(dataObj);
 
     promiseObject = Backendless.Data.Permissions.FIND.grantUser(userId, dataObj);
     promiseObject = Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj);
@@ -568,49 +493,30 @@ function testUserService() {
     const restUrl: string = Backendless.UserService.restUrl;
     const loggedInUser: boolean = Backendless.UserService.loggedInUser();
 
-    resultVoid = Backendless.UserService.restorePasswordSync('email');
     promiseVoid = Backendless.UserService.restorePassword('email');
 
-    newUser = Backendless.UserService.registerSync(newUser);
     promiseObject = Backendless.UserService.register(newUser);
 
-    resultListOfString = Backendless.UserService.getUserRolesSync();
     promiseListOfString = Backendless.UserService.getUserRoles();
 
-    resultVoid = Backendless.UserService.assignRoleSync(identity, roleName);
     promiseVoid = Backendless.UserService.assignRole(identity, roleName);
 
-    resultVoid = Backendless.UserService.unassignRoleSync(identity, roleName);
     promiseVoid = Backendless.UserService.unassignRole(identity, roleName);
 
-    newUser = Backendless.UserService.loginSync(userName, password);
-    newUser = Backendless.UserService.loginSync(userName, password, bol);
     promiseObject = Backendless.UserService.login(userName, password);
     promiseObject = Backendless.UserService.login(userName, password, bol);
 
-    newUser = Backendless.UserService.loginAsGuestSync();
-    newUser = Backendless.UserService.loginAsGuestSync(bol);
     promiseObject = Backendless.UserService.loginAsGuest();
     promiseObject = Backendless.UserService.loginAsGuest(bol);
 
-    resultListOfObjects = Backendless.UserService.describeUserClassSync();
     promiseListOfObject = Backendless.UserService.describeUserClass();
 
-    Backendless.UserService.logoutSync();
     promiseVoid = Backendless.UserService.logout();
 
-    newUser = Backendless.UserService.getCurrentUserSync();
     promiseObject = Backendless.UserService.getCurrentUser();
 
-    newUser = Backendless.UserService.updateSync(newUser);
     promiseObject = Backendless.UserService.update(newUser);
 
-    Backendless.UserService.loginWithFacebookSync();
-    Backendless.UserService.loginWithFacebookSync({});
-    Backendless.UserService.loginWithFacebookSync({}, {});
-    Backendless.UserService.loginWithFacebookSync({}, {}, true);
-    Backendless.UserService.loginWithFacebookSync({}, null, true);
-    Backendless.UserService.loginWithFacebookSync(null, null, true);
     promiseVoid = Backendless.UserService.loginWithFacebook();
     promiseVoid = Backendless.UserService.loginWithFacebook({});
     promiseVoid = Backendless.UserService.loginWithFacebook({}, {});
@@ -618,14 +524,6 @@ function testUserService() {
     promiseVoid = Backendless.UserService.loginWithFacebook({}, null, true);
     promiseVoid = Backendless.UserService.loginWithFacebook(null, null, true);
 
-    Backendless.UserService.loginWithGooglePlusSync();
-    Backendless.UserService.loginWithGooglePlusSync({});
-    Backendless.UserService.loginWithGooglePlusSync({}, {});
-    Backendless.UserService.loginWithGooglePlusSync({}, {}, document.createElement('div'));
-    Backendless.UserService.loginWithGooglePlusSync({}, {}, document.createElement('div'), true);
-    Backendless.UserService.loginWithGooglePlusSync({}, {}, null, true);
-    Backendless.UserService.loginWithGooglePlusSync({}, null, null, true);
-    Backendless.UserService.loginWithGooglePlusSync(null, null, null, true);
     promiseVoid = Backendless.UserService.loginWithGooglePlus();
     promiseVoid = Backendless.UserService.loginWithGooglePlus({});
     promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {});
@@ -635,17 +533,10 @@ function testUserService() {
     promiseVoid = Backendless.UserService.loginWithGooglePlus({}, null, null, true);
     promiseVoid = Backendless.UserService.loginWithGooglePlus(null, null, null, true);
 
-    Backendless.UserService.loginWithTwitterSync();
-    Backendless.UserService.loginWithTwitterSync({});
-    Backendless.UserService.loginWithTwitterSync({}, true);
-    Backendless.UserService.loginWithTwitterSync(null, true);
     promiseVoid = Backendless.UserService.loginWithTwitter();
     promiseVoid = Backendless.UserService.loginWithTwitter({});
     promiseVoid = Backendless.UserService.loginWithTwitter({}, true);
     promiseVoid = Backendless.UserService.loginWithTwitter(null, true);
-
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk({});
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk({}, true);
 
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, true);
@@ -654,9 +545,6 @@ function testUserService() {
     promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {});
     promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {}, true);
 
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk({});
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk({}, true);
-
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, true);
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {});
@@ -664,10 +552,8 @@ function testUserService() {
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {});
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, true);
 
-    bol = Backendless.UserService.isValidLoginSync();
     promiseObject = Backendless.UserService.isValidLogin();
 
-    Backendless.UserService.resendEmailConfirmationSync('email');
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
 
     promiseVoid = Backendless.UserService.enableUser(userId);
@@ -735,64 +621,43 @@ function testGoeService() {
         }
     };
 
-    existPoint = Backendless.Geo.savePointSync(newGeoPoint);
     promiseObject = Backendless.Geo.savePoint(newGeoPoint);
 
-    geoCollectionResult = Backendless.Geo.findSync(baseGeoQuery);
     promiseObject = Backendless.Geo.find(baseGeoQuery);
 
-    geoCollectionResult = Backendless.Geo.findSync(rectangleGeoQuery);
     promiseObject = Backendless.Geo.find(rectangleGeoQuery);
 
-    geoCollectionResult = Backendless.Geo.findSync(circleGeoQuery);
     promiseObject = Backendless.Geo.find(circleGeoQuery);
 
-    resultNum = Backendless.Geo.getGeopointCountSync(baseGeoQuery);
-    resultNum = Backendless.Geo.getGeopointCountSync(fenceName, baseGeoQuery);
     promiseNum = Backendless.Geo.getGeopointCount(baseGeoQuery);
     promiseNum = Backendless.Geo.getGeopointCount(fenceName, baseGeoQuery);
 
-    errorStr = Backendless.Geo.deletePointSync(categoryName);
-    errorStr = Backendless.Geo.deletePointSync(existPoint);
     promiseObject = Backendless.Geo.deletePoint(categoryName);
     promiseObject = Backendless.Geo.deletePoint(existPoint);
 
-    resultObj = Backendless.Geo.loadMetadataSync(existPoint);
-    resultObj = Backendless.Geo.loadMetadataSync(geoClaster);
     promiseObject = Backendless.Geo.loadMetadata(existPoint);
     promiseObject = Backendless.Geo.loadMetadata(geoClaster);
 
-    geoCollectionResult = Backendless.Geo.getClusterPointsSync(geoClaster);
     promiseObject = Backendless.Geo.getClusterPoints(geoClaster);
 
-    geoCollectionResult = Backendless.Geo.getFencePointsSync(fenceName, baseGeoQuery);
     promiseObject = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery);
 
-    geoCollectionResult = Backendless.Geo.relativeFindSync(baseGeoQuery);
     promiseObject = Backendless.Geo.relativeFind(baseGeoQuery);
 
-    geoCategory = Backendless.Geo.addCategorySync(categoryName);
     promiseObject = Backendless.Geo.addCategory(categoryName);
 
-    bool = Backendless.Geo.deleteCategorySync(categoryName);
     promiseObject = Backendless.Geo.deleteCategory(categoryName);
 
-    geoCategories = Backendless.Geo.getCategoriesSync();
     promiseObject = Backendless.Geo.getCategories();
 
-    resultObj = Backendless.Geo.runOnStayActionSync(fenceName, existPoint);
     promiseObject = Backendless.Geo.runOnStayAction(fenceName, existPoint);
 
-    resultObj = Backendless.Geo.runOnExitActionSync(fenceName, existPoint);
     promiseObject = Backendless.Geo.runOnExitAction(fenceName, existPoint);
 
-    resultObj = Backendless.Geo.runOnEnterActionSync(fenceName, existPoint);
     promiseObject = Backendless.Geo.runOnEnterAction(fenceName, existPoint);
 
-    Backendless.Geo.startGeofenceMonitoringWithInAppCallbackSync(fenceName, inAppCallback);
     promiseVoid = Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback);
 
-    Backendless.Geo.startGeofenceMonitoringWithRemoteCallbackSync(fenceName, existPoint);
     promiseVoid = Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint);
 
     Backendless.Geo.stopGeofenceMonitoring(fenceName);
@@ -848,35 +713,26 @@ function testMessaging() {
     const deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
 
     let channel: Backendless.ChannelClass;
-    const subscriptionOptions: Backendless.SubscriptionOptions = new Backendless.SubscriptionOptions();
     const subscriptionCallback = function (data: Object): void {
         const messagesArray: Array<String> = data["messages"];
     };
 
     channel = Backendless.Messaging.subscribe(channelName);
 
-    resultObj = Backendless.Messaging.publishSync(channelName, message, publishOptions, deliveryOptions);
     promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
 
-    resultString = Backendless.Messaging.sendEmailSync(subject, bodyParts, recipients, attachments);
     PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
-    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject, templateValues);
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
 
-    resultObj = Backendless.Messaging.sendEmailFromTemplateSync(templateName, envelopeObject);
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
 
-    resultBool = Backendless.Messaging.cancelSync(messageId);
     promiseObject = Backendless.Messaging.cancel(messageId);
 
-    resultObj = Backendless.Messaging.registerDeviceSync(deviceToken, channels, expiration);
     promiseObject = Backendless.Messaging.registerDevice(deviceToken, channels, expiration);
 
-    resultObj = Backendless.Messaging.getRegistrationsSync();
     promiseObject = Backendless.Messaging.getRegistrations();
 
-    resultObj = Backendless.Messaging.unregisterDeviceSync();
     promiseObject = Backendless.Messaging.unregisterDevice();
 
     promiseObject = Backendless.Messaging.getPushTemplates('ios');
@@ -917,27 +773,13 @@ function testFilesService() {
 
     resultStr = Backendless.Files.restUrl;
 
-    resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent, overwrite);
-    resultBool = Backendless.Files.saveFileSync(path, fileName, fileContent);
-
     promiseObject = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
     promiseObject = Backendless.Files.saveFile(path, fileName, fileContent);
-
-    Backendless.Files.uploadSync(file, path, overwrite);
-    Backendless.Files.uploadSync(files, path, overwrite);
-    Backendless.Files.uploadSync(file, path, null);
-    Backendless.Files.uploadSync(files, path, null);
 
     promiseVoid = Backendless.Files.upload(file, path, overwrite);
     promiseVoid = Backendless.Files.upload(files, path, overwrite);
     promiseVoid = Backendless.Files.upload(file, path, null);
     promiseVoid = Backendless.Files.upload(files, path, null);
-
-    resultObj = Backendless.Files.listingSync(path);
-    resultObj = Backendless.Files.listingSync(path, pattern);
-    resultObj = Backendless.Files.listingSync(path, pattern, sub);
-    resultObj = Backendless.Files.listingSync(path, pattern, sub, pageSize);
-    resultObj = Backendless.Files.listingSync(path, pattern, sub, pageSize, offset);
 
     promiseObject = Backendless.Files.listing(path);
     promiseObject = Backendless.Files.listing(path, pattern);
@@ -950,38 +792,17 @@ function testFilesService() {
     promiseNumber = Backendless.Files.getFileCount(path, pattern, sub);
     promiseNumber = Backendless.Files.getFileCount(path, pattern, sub, countDirectories);
 
-    resultObj = Backendless.Files.renameFileSync(oldPathName, newName);
     promiseObject = Backendless.Files.renameFile(oldPathName, newName);
 
-    resultObj = Backendless.Files.moveFileSync(sourcePath, targetPath);
     promiseObject = Backendless.Files.moveFile(sourcePath, targetPath);
 
-    resultObj = Backendless.Files.copyFileSync(sourcePath, targetPath);
     promiseObject = Backendless.Files.copyFile(sourcePath, targetPath);
 
-    resultNumber = Backendless.Files.removeSync(fileURL);
     promiseNumber = Backendless.Files.remove(fileURL);
 
-    resultObj = Backendless.Files.existsSync(path);
     promiseObject = Backendless.Files.exists(path);
 
-    resultNumber = Backendless.Files.removeDirectorySync(path);
     promiseNumber = Backendless.Files.removeDirectory(path);
-
-    resultObj = Backendless.Files.Permissions.READ.grantUserSync(userid, url);
-    resultObj = Backendless.Files.Permissions.READ.grantRoleSync(roleName, url);
-    resultObj = Backendless.Files.Permissions.READ.denyUserSync(userid, url);
-    resultObj = Backendless.Files.Permissions.READ.denyRoleSync(roleName, url);
-
-    resultObj = Backendless.Files.Permissions.DELETE.grantUserSync(userid, url);
-    resultObj = Backendless.Files.Permissions.DELETE.grantRoleSync(roleName, url);
-    resultObj = Backendless.Files.Permissions.DELETE.denyUserSync(userid, url);
-    resultObj = Backendless.Files.Permissions.DELETE.denyRoleSync(roleName, url);
-
-    resultObj = Backendless.Files.Permissions.WRITE.grantUserSync(userid, url);
-    resultObj = Backendless.Files.Permissions.WRITE.grantRoleSync(roleName, url);
-    resultObj = Backendless.Files.Permissions.WRITE.denyUserSync(userid, url);
-    resultObj = Backendless.Files.Permissions.WRITE.denyRoleSync(roleName, url);
 
     promiseObject = Backendless.Files.Permissions.READ.grantUser(userid, url);
     promiseObject = Backendless.Files.Permissions.READ.grantRole(roleName, url);
@@ -1039,13 +860,10 @@ function testCommerce() {
 
     resultStr = Backendless.Commerce.restUrl;
 
-    resultObj = Backendless.Commerce.validatePlayPurchaseSync(packageName, productId, token);
     promiseObject = Backendless.Commerce.validatePlayPurchase(packageName, productId, token);
 
-    resultObj = Backendless.Commerce.cancelPlaySubscriptionSync(packageName, subscriptionId, token);
     promiseObject = Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, token);
 
-    resultObj = Backendless.Commerce.getPlaySubscriptionStatusSync(packageName, subscriptionId, token);
     promiseObject = Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, token);
 }
 
@@ -1059,7 +877,6 @@ function testEvents() {
 
     resultStr = Backendless.Events.restUrl;
 
-    resultObj = Backendless.Events.dispatchSync(eventName, eventArgs);
     promiseObject = Backendless.Events.dispatch(eventName, eventArgs);
     promiseObject = Backendless.Events.dispatch(eventName, eventArgs, Backendless.BL.ExecutionTypes.SYNC);
     promiseObject = Backendless.Events.dispatch(eventName, eventArgs, Backendless.BL.ExecutionTypes.ASYNC);
@@ -1077,28 +894,19 @@ function testCache() {
     let resultObj: Object;
     let promiseObject: Promise<Object>;
 
-    resultObj = Backendless.Cache.putSync(key, value);
-    resultObj = Backendless.Cache.putSync(key, value, timeToLive);
     promiseObject = Backendless.Cache.put(key, value);
     promiseObject = Backendless.Cache.put(key, value, timeToLive);
 
-    resultObj = Backendless.Cache.expireInSync(key, seconds);
-    resultObj = Backendless.Cache.expireInSync(key, date);
     promiseObject = Backendless.Cache.expireIn(key, seconds);
     promiseObject = Backendless.Cache.expireIn(key, date);
 
-    resultObj = Backendless.Cache.expireAtSync(key, seconds);
-    resultObj = Backendless.Cache.expireAtSync(key, date);
     promiseObject = Backendless.Cache.expireAt(key, seconds);
     promiseObject = Backendless.Cache.expireAt(key, date);
 
-    resultObj = Backendless.Cache.containsSync(key);
     promiseObject = Backendless.Cache.contains(key);
 
-    resultObj = Backendless.Cache.getSync(key);
     promiseObject = Backendless.Cache.get(key);
 
-    resultObj = Backendless.Cache.removeSync(key);
     promiseObject = Backendless.Cache.remove(key);
 }
 
@@ -1112,60 +920,42 @@ function testCounters() {
     //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
     let resultNum: number = 123;
 
-    resultNum = Backendless.Counters.getSync(counterName);
     promiseObject = Backendless.Counters.get(counterName);
 
-    resultNum = Backendless.Counters.getAndIncrementSync(counterName);
     promiseObject = Backendless.Counters.getAndIncrement(counterName);
 
-    resultNum = Backendless.Counters.incrementAndGetSync(counterName);
     promiseObject = Backendless.Counters.incrementAndGet(counterName);
 
-    resultNum = Backendless.Counters.getAndDecrementSync(counterName);
     promiseObject = Backendless.Counters.getAndDecrement(counterName);
 
-    resultNum = Backendless.Counters.decrementAndGetSync(counterName);
     promiseObject = Backendless.Counters.decrementAndGet(counterName);
 
-    resultNum = Backendless.Counters.addAndGetSync(counterName, value);
     promiseObject = Backendless.Counters.addAndGet(counterName, value);
 
-    resultNum = Backendless.Counters.getAndAddSync(counterName, value);
     promiseObject = Backendless.Counters.getAndAdd(counterName, value);
 
-    resultNum = Backendless.Counters.compareAndSetSync(counterName, expected, updated);
     promiseObject = Backendless.Counters.compareAndSet(counterName, expected, updated);
 
-    resultNum = Backendless.Counters.resetSync(counterName);
     promiseObject = Backendless.Counters.reset(counterName);
 
     const counter: Counter = Backendless.Counters.of(counterName);
 
-    resultNum = counter.getSync();
     promiseObject = counter.get();
 
-    resultNum = counter.getAndIncrementSync();
     promiseObject = counter.getAndIncrement();
 
-    resultNum = counter.incrementAndGetSync();
     promiseObject = counter.incrementAndGet();
 
-    resultNum = counter.getAndDecrementSync();
     promiseObject = counter.getAndDecrement();
 
-    resultNum = counter.decrementAndGetSync();
     promiseObject = counter.decrementAndGet();
 
-    resultNum = counter.addAndGetSync(value);
     promiseObject = counter.addAndGet(value);
 
-    resultNum = counter.getAndAddSync(value);
     promiseObject = counter.getAndAdd(value);
 
-    resultNum = counter.compareAndSetSync(expected, updated);
     promiseObject = counter.compareAndSet(expected, updated);
 
-    resultNum = counter.resetSync();
     promiseObject = counter.reset();
 }
 
@@ -1175,8 +965,6 @@ function testCustomServices() {
     const parameters: Object = {};
     let resultObj: any
     let promiseAny: Promise<any>
-
-    resultObj = Backendless.CustomServices.invokeSync(serviceName, method, parameters);
 
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
@@ -1388,3 +1176,293 @@ function RTChannel() {
 
 }
 
+async function testBaseTransactions() {
+    class Person {
+        foo?: string = 'bar'
+    }
+
+    const personInst: Person = new Person()
+    const personObj: object = {foo: 'bar'}
+    const personClassName: string = 'Persons'
+    const personObjectId: string = 'PersonId'
+    const propertyName: string = 'propName'
+    const columnName: string = 'columnName'
+    const whereClause: string = 'whereClause';
+
+    const dataQueryBuilder: Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
+
+    const uow: Backendless.UnitOfWork = new Backendless.UnitOfWork()
+
+    let opResult: Backendless.OpResult;
+    let opResultValueReference: Backendless.OpResultValueReference;
+    let promiseResult: Promise<Backendless.UnitOfWorkResult>;
+    let unitOfWorkResult: Backendless.UnitOfWorkResult;
+    let changesObj: object;
+    let propertyValueObj: object;
+    let opResultId: string;
+    let tableName: string;
+    let isSuccess: boolean;
+    let results: object
+    let transactionOperationError: Backendless.TransactionOperationError;
+
+    opResultId = opResult.getOpResultId()
+    opResult.setOpResultId(opResultId)
+
+    tableName = opResult.getTableName()
+
+    opResultValueReference = opResult.resolveTo(1)
+    opResultValueReference = opResult.resolveTo(1, 'propName')
+    opResultValueReference = opResult.resolveTo('propName')
+
+    promiseResult = uow.execute()
+    unitOfWorkResult = await uow.execute()
+
+    isSuccess = unitOfWorkResult.isSuccess()
+    transactionOperationError = unitOfWorkResult.getError()
+    results = unitOfWorkResult.getResults()
+
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_UNCOMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_COMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.REPEATABLE_READ)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.SERIALIZABLE)
+
+    ///
+    opResult = uow.create(personInst);
+    opResult = uow.create(personClassName, personObj);
+    ///
+    opResult = uow.update(personInst);
+    opResult = uow.update(personClassName, personObj);
+    opResult = uow.update(opResult, personObj);
+    opResult = uow.update(opResult, propertyName, propertyValueObj);
+    opResult = uow.update(opResultValueReference, changesObj);
+    opResult = uow.update(opResultValueReference, propertyName, opResultValueReference);
+    opResult = uow.update(opResultValueReference, propertyName, 123);
+    opResult = uow.update(opResultValueReference, propertyName, 'str');
+    opResult = uow.update(opResultValueReference, propertyName, true);
+    ///
+    opResult = uow.delete(opResult);
+    opResult = uow.delete(opResultValueReference);
+    opResult = uow.delete(personInst);
+    opResult = uow.delete(personClassName, personObjectId);
+    ///
+    opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
+    opResult = uow.bulkCreate([personInst, personInst, personInst]);
+    ///
+    opResult = uow.bulkUpdate(whereClause, personInst);
+    opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
+    opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);
+    opResult = uow.bulkUpdate(personClassName, [personObj, personObj, personObj], changesObj);
+    opResult = uow.bulkUpdate(personClassName, [personInst, personInst, personInst], changesObj);
+    opResult = uow.bulkUpdate(opResult, changesObj);
+    ///
+    opResult = uow.bulkDelete(personClassName, [changesObj, changesObj, changesObj]);
+    opResult = uow.bulkDelete([personInst, personInst, personInst]);
+    opResult = uow.bulkDelete(personClassName, [personObjectId, personObjectId, personObjectId]);
+    opResult = uow.bulkDelete(opResult);
+    opResult = uow.bulkDelete(personClassName, whereClause);
+    ///
+    opResult = uow.find(personClassName, dataQueryBuilder);
+    ///
+    opResult = uow.addToRelation(opResult, columnName, whereClause);
+    opResult = uow.addToRelation(opResult, columnName, personInst);
+    opResult = uow.addToRelation(opResult, columnName, personObj);
+    opResult = uow.addToRelation(opResult, columnName, opResult);
+    opResult = uow.addToRelation(opResult, columnName, opResultValueReference);
+    opResult = uow.addToRelation(opResult, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(opResult, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(opResult, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(opResult, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(opResult, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(opResultValueReference, columnName, whereClause);
+    opResult = uow.addToRelation(opResultValueReference, columnName, personInst);
+    opResult = uow.addToRelation(opResultValueReference, columnName, personObj);
+    opResult = uow.addToRelation(opResultValueReference, columnName, opResult);
+    opResult = uow.addToRelation(opResultValueReference, columnName, opResultValueReference);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(opResultValueReference, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personInst, columnName, whereClause);
+    opResult = uow.addToRelation(personInst, columnName, personInst);
+    opResult = uow.addToRelation(personInst, columnName, personObj);
+    opResult = uow.addToRelation(personInst, columnName, opResult);
+    opResult = uow.addToRelation(personInst, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personClassName, personInst, columnName, whereClause);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, personInst);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, personObj);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, opResult);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personClassName, personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personClassName, personObj, columnName, whereClause);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, personInst);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, personObj);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, opResult);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personClassName, personObj, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, whereClause);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, personInst);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, personObj);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, opResult);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, opResultValueReference);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [opResult, opResult, opResult]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [personInst, personInst, personInst]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [personObj, personObj, personObj]);
+    opResult = uow.addToRelation(personClassName, personObjectId, columnName, [personObjectId, personObjectId, personObjectId]);
+    ///
+
+    ///
+    opResult = uow.setRelation(opResult, columnName, whereClause);
+    opResult = uow.setRelation(opResult, columnName, personInst);
+    opResult = uow.setRelation(opResult, columnName, personObj);
+    opResult = uow.setRelation(opResult, columnName, opResult);
+    opResult = uow.setRelation(opResult, columnName, opResultValueReference);
+    opResult = uow.setRelation(opResult, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(opResult, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(opResult, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(opResult, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(opResult, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(opResultValueReference, columnName, whereClause);
+    opResult = uow.setRelation(opResultValueReference, columnName, personInst);
+    opResult = uow.setRelation(opResultValueReference, columnName, personObj);
+    opResult = uow.setRelation(opResultValueReference, columnName, opResult);
+    opResult = uow.setRelation(opResultValueReference, columnName, opResultValueReference);
+    opResult = uow.setRelation(opResultValueReference, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(opResultValueReference, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personInst, columnName, whereClause);
+    opResult = uow.setRelation(personInst, columnName, personInst);
+    opResult = uow.setRelation(personInst, columnName, personObj);
+    opResult = uow.setRelation(personInst, columnName, opResult);
+    opResult = uow.setRelation(personInst, columnName, opResultValueReference);
+    opResult = uow.setRelation(personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personClassName, personInst, columnName, whereClause);
+    opResult = uow.setRelation(personClassName, personInst, columnName, personInst);
+    opResult = uow.setRelation(personClassName, personInst, columnName, personObj);
+    opResult = uow.setRelation(personClassName, personInst, columnName, opResult);
+    opResult = uow.setRelation(personClassName, personInst, columnName, opResultValueReference);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personClassName, personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personClassName, personObj, columnName, whereClause);
+    opResult = uow.setRelation(personClassName, personObj, columnName, personInst);
+    opResult = uow.setRelation(personClassName, personObj, columnName, personObj);
+    opResult = uow.setRelation(personClassName, personObj, columnName, opResult);
+    opResult = uow.setRelation(personClassName, personObj, columnName, opResultValueReference);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personClassName, personObj, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, whereClause);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, personInst);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, personObj);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, opResult);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, opResultValueReference);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [opResult, opResult, opResult]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [personInst, personInst, personInst]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [personObj, personObj, personObj]);
+    opResult = uow.setRelation(personClassName, personObjectId, columnName, [personObjectId, personObjectId, personObjectId]);
+    ///
+
+    ///
+    opResult = uow.deleteRelation(opResult, columnName, whereClause);
+    opResult = uow.deleteRelation(opResult, columnName, personInst);
+    opResult = uow.deleteRelation(opResult, columnName, personObj);
+    opResult = uow.deleteRelation(opResult, columnName, opResult);
+    opResult = uow.deleteRelation(opResult, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(opResult, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(opResult, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(opResult, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(opResult, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(opResult, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(opResultValueReference, columnName, whereClause);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, personInst);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, personObj);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, opResult);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(opResultValueReference, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personInst, columnName, whereClause);
+    opResult = uow.deleteRelation(personInst, columnName, personInst);
+    opResult = uow.deleteRelation(personInst, columnName, personObj);
+    opResult = uow.deleteRelation(personInst, columnName, opResult);
+    opResult = uow.deleteRelation(personInst, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, whereClause);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, personInst);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, personObj);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, opResult);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personClassName, personInst, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, whereClause);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, personInst);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, personObj);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, opResult);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personClassName, personObj, columnName, [personObjectId, personObjectId, personObjectId]);
+
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, whereClause);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, personInst);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, personObj);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, opResult);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, opResultValueReference);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [opResult, opResult, opResult]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [opResultValueReference, opResultValueReference, opResultValueReference]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [personInst, personInst, personInst]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [personObj, personObj, personObj]);
+    opResult = uow.deleteRelation(personClassName, personObjectId, columnName, [personObjectId, personObjectId, personObjectId]);
+    ///
+}

@@ -10,12 +10,16 @@ function Foo(opts) {
   this.___class = 'Foo'
 }
 
+class Bar {
+}
+
 describe('<Cache>', function() {
 
   forSuite(this)
 
   before(() => {
     Backendless.Cache.setObjectFactory('Foo', Foo)
+    Backendless.Cache.setObjectFactory('Bar', Bar)
   })
 
   const cacheKey = 'MY_CACHE_KEY'
@@ -63,6 +67,30 @@ describe('<Cache>', function() {
       })
     })
 
+    it('should add ___class', async () => {
+      class MyClass {
+        constructor() {
+          this.testValue = 123
+        }
+      }
+
+      const req1 = prepareMockRequest()
+
+      const myClass = new MyClass()
+
+      await Backendless.Cache.put(cacheKey, myClass)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/cache/${cacheKey}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ___class : 'MyClass',
+          testValue: 123
+        }
+      })
+    })
+
     it('should put with ttl', async () => {
       const req1 = prepareMockRequest()
 
@@ -77,7 +105,7 @@ describe('<Cache>', function() {
     })
 
     it('fails when key is not a string', async () => {
-      const errorMsg = 'Cache Key must be non empty String'
+      const errorMsg = 'Cache Key must be provided and must be a string.'
 
       await expect(Backendless.Cache.put()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Cache.put(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -88,7 +116,7 @@ describe('<Cache>', function() {
       await expect(Backendless.Cache.put(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when timeToLive is not a positive number', async () => {
+    it('fails when timeToLive is not a positive number', async () => {
       const errorMsg = 'Cache TimeToLive must be a positive number.'
 
       await expect(Backendless.Cache.put(cacheKey, cacheValue, -123)).to.eventually.be.rejectedWith(errorMsg)
@@ -102,9 +130,7 @@ describe('<Cache>', function() {
 
   describe('Cache.get', () => {
     it('should get primitive value', async () => {
-      const req1 = prepareMockRequest(() => ({
-        body: 123
-      }))
+      const req1 = prepareMockRequest(123)
 
       const result = await Backendless.Cache.get(cacheKey)
 
@@ -118,13 +144,25 @@ describe('<Cache>', function() {
     })
 
     it('should get object', async () => {
-      const req1 = prepareMockRequest(() => ({
-        body: 123
-      }))
+      const req1 = prepareMockRequest({ foo: 123, bar: 'abc' })
 
       const result = await Backendless.Cache.get(cacheKey)
 
-      expect(result).to.equal(123)
+      expect(result).to.eql({ foo: 123, bar: 'abc' })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/cache/${cacheKey}`,
+        headers: {},
+      })
+    })
+
+    it('should get object', async () => {
+      const req1 = prepareMockRequest({ foo: 123, bar: 'abc' })
+
+      const result = await Backendless.Cache.get(cacheKey)
+
+      expect(result).to.eql({ foo: 123, bar: 'abc' })
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -150,8 +188,23 @@ describe('<Cache>', function() {
       })
     })
 
+    it('should get instance of Unknown Class', async () => {
+      const req1 = prepareMockRequest({ ___class: 'UnknownClass', bar: 123 })
+
+      const result = await Backendless.Cache.get(cacheKey)
+
+      expect(result.constructor).to.be.equal(Object)
+      expect(result).to.eql({ ___class: 'UnknownClass', bar: 123 })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/cache/${cacheKey}`,
+        headers: {},
+      })
+    })
+
     it('fails when key is not a string', async () => {
-      const errorMsg = 'Cache Key must be non empty String'
+      const errorMsg = 'Cache Key must be provided and must be a string.'
 
       await expect(Backendless.Cache.get()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Cache.get(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -177,7 +230,7 @@ describe('<Cache>', function() {
     })
 
     it('fails when key is not a string', async () => {
-      const errorMsg = 'Cache Key must be non empty String'
+      const errorMsg = 'Cache Key must be provided and must be a string.'
 
       await expect(Backendless.Cache.remove()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Cache.remove(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -203,7 +256,7 @@ describe('<Cache>', function() {
     })
 
     it('fails when key is not a string', async () => {
-      const errorMsg = 'Cache Key must be non empty String'
+      const errorMsg = 'Cache Key must be provided and must be a string.'
 
       await expect(Backendless.Cache.contains()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Cache.contains(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -229,7 +282,7 @@ describe('<Cache>', function() {
     })
 
     it('fails when key is not a string', async () => {
-      const errorMsg = 'Cache Key must be non empty String'
+      const errorMsg = 'Cache Key must be provided and must be a string.'
 
       await expect(Backendless.Cache.expireIn()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Cache.expireIn(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -240,7 +293,7 @@ describe('<Cache>', function() {
       await expect(Backendless.Cache.expireIn(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when expireIn is not a positive number', async () => {
+    it('fails when expireIn is not a positive number', async () => {
       const errorMsg = 'Cache Expiration must be provided and must be a number of seconds.'
 
       await expect(Backendless.Cache.expireIn(cacheKey)).to.eventually.be.rejectedWith(errorMsg)
@@ -282,7 +335,7 @@ describe('<Cache>', function() {
     })
 
     it('fails when key is not a string', async () => {
-      const errorMsg = 'Cache Key must be non empty String'
+      const errorMsg = 'Cache Key must be provided and must be a string.'
 
       await expect(Backendless.Cache.expireAt()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Cache.expireAt(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -293,7 +346,7 @@ describe('<Cache>', function() {
       await expect(Backendless.Cache.expireAt(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when expireAt is not a positive number', async () => {
+    it('fails when expireAt is not a positive number', async () => {
       const errorMsg = 'Cache Expiration must be provided and must be a timestamp or an instance of Date.'
 
       await expect(Backendless.Cache.expireAt(cacheKey)).to.eventually.be.rejectedWith(errorMsg)

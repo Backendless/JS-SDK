@@ -45,9 +45,9 @@ describe('<Users> Social Login with SDK', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping', async () => {
@@ -73,9 +73,9 @@ describe('<Users> Social Login with SDK', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping and stayLoggedIn', async () => {
@@ -112,7 +112,7 @@ describe('<Users> Social Login with SDK', function() {
 
       const req1 = prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
 
-      const user1 = await Backendless.UserService.loginWithFacebookSdk(accessToken, {}, true)
+      const user1 = await Backendless.UserService.loginWithFacebookSdk(accessToken, true)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -120,7 +120,6 @@ describe('<Users> Social Login with SDK', function() {
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
-          fieldsMapping: {}
         }
       })
 
@@ -134,7 +133,7 @@ describe('<Users> Social Login with SDK', function() {
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
     })
 
-    xit('fails when accessToken is invalid', async () => {
+    it('fails when accessToken is invalid', async () => {
       const errorMsg = '"accessToken" must be non empty string.'
 
       await expect(Backendless.UserService.loginWithFacebookSdk()).to.eventually.be.rejectedWith(errorMsg)
@@ -173,9 +172,9 @@ describe('<Users> Social Login with SDK', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping', async () => {
@@ -201,9 +200,9 @@ describe('<Users> Social Login with SDK', function() {
       expect(user1.objectId).to.be.equal(objectId)
       expect(user1['user-token']).to.be.equal(userToken)
 
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
-      // expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(undefined)
     })
 
     it('login with fieldsMapping and stayLoggedIn', async () => {
@@ -240,7 +239,7 @@ describe('<Users> Social Login with SDK', function() {
 
       const req1 = prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
 
-      const user1 = await Backendless.UserService.loginWithGooglePlusSdk(accessToken, {}, true)
+      const user1 = await Backendless.UserService.loginWithGooglePlusSdk(accessToken, true)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -248,7 +247,6 @@ describe('<Users> Social Login with SDK', function() {
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
-          fieldsMapping: {}
         }
       })
 
@@ -262,7 +260,7 @@ describe('<Users> Social Login with SDK', function() {
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
     })
 
-    xit('fails when accessToken is invalid', async () => {
+    it('fails when accessToken is invalid', async () => {
       const errorMsg = '"accessToken" must be non empty string.'
 
       await expect(Backendless.UserService.loginWithGooglePlusSdk()).to.eventually.be.rejectedWith(errorMsg)

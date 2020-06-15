@@ -1,6 +1,3 @@
-import Utils from '../utils'
-import { deprecated } from '../decorators'
-
 import Channel from './channel'
 
 import {
@@ -8,24 +5,10 @@ import {
   PublishOptions,
   DeliveryOptions,
   Bodyparts,
-  SubscriptionOptions,
   EmailEnvelope
 } from './helpers'
 
-import {
-  publish,
-  sendEmail,
-  pushWithTemplate,
-  cancel,
-  registerDevice,
-  unregisterDevice,
-  getRegistrations,
-  getMessageStatus,
-  getPushTemplates,
-  sendEmailFromTemplate
-} from './methods'
-
-class Messaging {
+export default class Messaging {
   constructor(app) {
     this.app = app
 
@@ -34,62 +17,198 @@ class Messaging {
     this.DeliveryOptions = DeliveryOptions
     this.PublishOptionsHeaders = PublishOptionsHeaders
     this.EmailEnvelope = EmailEnvelope
-
-    /** @deprecated */
-    this.SubscriptionOptions = SubscriptionOptions
-
   }
 
   subscribe(channelName) {
-    if (!channelName || typeof channelName !== 'string') {
-      throw new Error('"channelName" must be non empty string')
-    }
+    validateChannelName(channelName)
 
-    if (channelName.indexOf('/') >= 0) {
-      throw new Error('"channelName" can not contains slash chars')
-    }
-
-    return new Channel({ name: channelName.trim() }, this.app)
+    return new Channel({ name: channelName }, this.app)
   }
+
+  async publish(channelName, message, publishOptions, deliveryOptions) {
+    validateChannelName(channelName)
+
+    const data = {
+      message: message
+    }
+
+    if (publishOptions) {
+      if (Array.isArray(publishOptions) || typeof publishOptions !== 'object') {
+        throw new Error('"publishOptions" argument must be an object.')
+      }
+
+      Object.assign(data, publishOptions)
+    }
+
+    if (deliveryOptions) {
+      if (Array.isArray(deliveryOptions) || typeof deliveryOptions !== 'object') {
+        throw new Error('"deliveryOptions" argument must be an object.')
+      }
+
+      Object.assign(data, deliveryOptions)
+    }
+
+    return this.app.request.post({
+      url : this.app.urls.messagingChannel(channelName),
+      data: data
+    })
+  }
+
+  async pushWithTemplate(templateName, templateValues) {
+    if (!templateName || typeof templateName !== 'string') {
+      throw new Error('Push Template Name must be provided and must be a string.')
+    }
+
+    const data = {}
+
+    if (templateValues) {
+      data.templateValues = templateValues
+    }
+
+    return this.app.request.post({
+      url: this.app.urls.messagingPushWithTemplate(templateName),
+      data
+    })
+  }
+
+  async sendEmail(subject, bodyParts, recipients, attachments) {
+    if (!subject || typeof subject !== 'string') {
+      throw new Error('Email Subject must be provided and must be a string.')
+    }
+
+    if (!bodyParts || Array.isArray(bodyParts) || typeof bodyParts !== 'object') {
+      throw new Error('BodyParts must be an object')
+    }
+
+    if (!bodyParts.textmessage && !bodyParts.htmlmessage) {
+      throw new Error('BodyParts must contain at least one property of [ textmessage | htmlmessage ]')
+    }
+
+    if (!Array.isArray(recipients) || !recipients.length) {
+      throw new Error('Recipients must be a non empty array.')
+    }
+
+    const data = {
+      subject,
+      bodyparts: bodyParts,
+      to       : recipients,
+    }
+
+    if (Array.isArray(attachments) && attachments.length) {
+      data.attachment = attachments
+    }
+
+    return this.app.request
+      .post({
+        url: this.app.urls.messagingEmail(),
+        data
+      })
+      .then(data => data.status)
+  }
+
+  async sendEmailFromTemplate(templateName, envelopeObject, templateValues) {
+    if (!templateName || typeof templateName !== 'string') {
+      throw new Error('Email Template Name must be provided and must be a string.')
+    }
+
+    if (!(envelopeObject instanceof EmailEnvelope)) {
+      throw new Error('EmailEnvelope is required and should be instance of Backendless.Messaging.EmailEnvelope')
+    }
+
+    const data = envelopeObject.toJSON()
+
+    data['template-name'] = templateName
+
+    if (templateValues) {
+      data['template-values'] = templateValues
+    }
+
+    return this.app.request.post({
+      url : this.app.urls.emailTemplateSend(),
+      data: data
+    })
+  }
+
+  async cancel(messageId) {
+    if (!messageId || typeof messageId !== 'string') {
+      throw new Error('Message ID must be provided and must be a string.')
+    }
+
+    return this.app.request.delete({
+      url: this.app.urls.messagingMessage(messageId),
+    })
+  }
+
+  async registerDevice(deviceToken, channels, expiration) {
+    const device = this.app.device
+
+    const data = {
+      deviceToken: deviceToken,
+      deviceId   : device.uuid,
+      os         : device.platform,
+      osVersion  : device.version
+    }
+
+    if (Array.isArray(channels)) {
+      data.channels = channels
+    }
+
+    if (typeof expiration === 'number') {
+      data.expiration = expiration
+    } else if (expiration instanceof Date) {
+      data.expiration = expiration.getTime() / 1000
+    }
+
+    return this.app.request.post({
+      url : this.app.urls.messagingRegistrations(),
+      data: data,
+    })
+  }
+
+  async getRegistrations() {
+    const device = this.app.device
+
+    return this.app.request.get({
+      url: this.app.urls.messagingRegistrationDevice(device.uuid),
+    })
+  }
+
+  async unregisterDevice() {
+    const device = this.app.device
+
+    return this.app.request.delete({
+      url: this.app.urls.messagingRegistrationDevice(device.uuid),
+    })
+  }
+
+  async getMessageStatus(messageId) {
+    if (!messageId || typeof messageId !== 'string') {
+      throw new Error('Message ID must be provided and must be a string.')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.messagingMessage(messageId),
+    })
+  }
+
+  async getPushTemplates(deviceType) {
+    if (!deviceType || typeof deviceType !== 'string') {
+      throw new Error('Device Type must be provided and must be a string.')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.messagingPushTemplates(deviceType),
+    })
+  }
+
 }
 
-Object.assign(Messaging.prototype, {
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.publish')
-  publishSync: Utils.synchronized(publish),
-  publish    : Utils.promisified(publish),
+function validateChannelName(channelName) {
+  if (!channelName || typeof channelName !== 'string') {
+    throw new Error('Channel Name must be provided and must be a string.')
+  }
 
-  pushWithTemplate: Utils.promisified(pushWithTemplate),
-
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmail')
-  sendEmailSync: Utils.synchronized(sendEmail),
-  sendEmail    : Utils.promisified(sendEmail),
-
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.sendEmailFromTemplate')
-  sendEmailFromTemplateSync: Utils.synchronized(sendEmailFromTemplate),
-  sendEmailFromTemplate    : Utils.promisified(sendEmailFromTemplate),
-
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.cancel')
-  cancelSync: Utils.synchronized(cancel),
-  cancel    : Utils.promisified(cancel),
-
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.registerDevice')
-  registerDeviceSync: Utils.synchronized(registerDevice),
-  registerDevice    : Utils.promisified(registerDevice),
-
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.getRegistrations')
-  getRegistrationsSync: Utils.synchronized(getRegistrations),
-  getRegistrations    : Utils.promisified(getRegistrations),
-
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.unregisterDevice')
-  unregisterDeviceSync: Utils.synchronized(unregisterDevice),
-  unregisterDevice    : Utils.promisified(unregisterDevice),
-
-  @deprecated('Backendless.Messaging', 'Backendless.Messaging.getMessageStatus')
-  getMessageStatusSync: Utils.synchronized(getMessageStatus),
-  getMessageStatus    : Utils.promisified(getMessageStatus),
-
-  getPushTemplates: Utils.promisified(getPushTemplates),
-
-})
-
-export default Messaging
+  if (channelName.indexOf('/') >= 0) {
+    throw new Error('Channel Name can not contain slash chars')
+  }
+}

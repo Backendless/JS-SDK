@@ -13,6 +13,10 @@ describe('<Data> Relations Query Builder', function() {
     query = Backendless.Data.LoadRelationsQueryBuilder.create()
   })
 
+  it('should be inherited of DataQueryBuilder', async () => {
+    expect(query).to.be.an.instanceof(Backendless.Data.QueryBuilder)
+  })
+
   it('should has default values', async () => {
     expect(query.getPageSize()).to.be.equal(10)
     expect(query.getOffset()).to.be.equal(0)
@@ -182,6 +186,11 @@ describe('<Data> Relations Query Builder', function() {
   })
 
   it('should return query object', async () => {
+    class TestModel {
+    }
+
+    query.setRelationModel(TestModel)
+    query.setRelationName('test-rel-name')
     query.setPageSize(111)
     query.setOffset(222)
     query.setProperties(['p1', 'p2'])
@@ -195,13 +204,15 @@ describe('<Data> Relations Query Builder', function() {
     query.setRelationsPageSize(123)
 
     expect(query.toJSON()).to.be.eql({
+      'relationModel'    : TestModel,
+      'relationName'     : 'test-rel-name',
       'excludeProps'     : ['e1', 'e2'],
       'groupBy'          : ['g1'],
       'having'           : 'h1',
       'offset'           : 222,
       'pageSize'         : 111,
-      'props'       : ['p1', 'p2'],
-      'loadRelations'        : ['r1'],
+      'properties'       : ['p1', 'p2'],
+      'relations'        : ['r1'],
       'relationsDepth'   : 123,
       'relationsPageSize': 123,
       'sortBy'           : ['s1'],

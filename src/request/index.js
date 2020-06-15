@@ -1,4 +1,4 @@
-import { sendRequest } from './request'
+import BackendlessRequest from 'backendless-request'
 
 const Methods = {
   GET   : 'GET',
@@ -15,23 +15,41 @@ export default class Request {
     this.Methods = Methods
   }
 
-  send(...args) {
-    return sendRequest.call(this, ...args)
+  send(options) {
+    BackendlessRequest.verbose = !!this.app.debugMode
+    BackendlessRequest.XMLHttpRequest = this.app.XMLHttpRequest
+
+    const method = options.method.toLowerCase()
+    const headers = options.headers || {}
+    const userToken = this.app.getCurrentUserToken()
+
+    if (userToken) {
+      headers['user-token'] = userToken
+    }
+
+    if (options.queryString) {
+      options.url = `${options.url}?${options.queryString}`
+    }
+
+    return BackendlessRequest[method](options.url, options.data)
+      .set(headers)
+      .query(options.query)
+      .form(options.form)
   }
 
-  get(config) {
-    return this.send({ ...config, method: Methods.GET })
+  get(options) {
+    return this.send({ ...options, method: Methods.GET })
   }
 
-  post(config) {
-    return this.send({ ...config, method: Methods.POST })
+  post(options) {
+    return this.send({ ...options, method: Methods.POST })
   }
 
-  put(config) {
-    return this.send({ ...config, method: Methods.PUT })
+  put(options) {
+    return this.send({ ...options, method: Methods.PUT })
   }
 
-  delete(config) {
-    return this.send({ ...config, method: Methods.DELETE })
+  delete(options) {
+    return this.send({ ...options, method: Methods.DELETE })
   }
 }
