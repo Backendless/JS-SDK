@@ -196,6 +196,21 @@ describe('<Files> Basic', function() {
       expect(result1).to.be.eql([{ resultFileURL }])
     })
 
+    it('gets files list with empty pattern', async () => {
+      const req1 = prepareMockRequest([{ resultFileURL }])
+
+      const result1 = await Backendless.Files.listing(filePath, '')
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/files/test/path`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql([{ resultFileURL }])
+    })
+
     it('gets files list with [pattern, sub]', async () => {
       const req1 = prepareMockRequest([{ resultFileURL }])
       const req2 = prepareMockRequest([{ resultFileURL }])

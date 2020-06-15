@@ -74,7 +74,7 @@ export default class Files {
 
     filePath = FilesUtils.preventSlashInPath(filePath)
 
-    if (typeof pattern === 'string') {
+    if (pattern && typeof pattern === 'string') {
       query.pattern = pattern
     }
 
