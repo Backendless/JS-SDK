@@ -1,4 +1,3 @@
-import '../../helpers/global'
 import sandbox from '../../helpers/sandbox'
 
 const Backendless = sandbox.Backendless

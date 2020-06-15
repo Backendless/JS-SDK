@@ -288,7 +288,7 @@ describe('<GEO> (Deprecated)', function() {
 
       queryObject = {
         searchRectangle: [32.78, -96.8, 25.79, -80.22],
-        categories     : [categoryName]
+        categories: [categoryName]
       }
 
       const result1 = await Backendless.Geo.find(queryObject)

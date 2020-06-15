@@ -46,7 +46,7 @@ describe('<BusinessLogic> API Services', function() {
   describe('Fails', function() {
 
     it('fails when eventName is not a string', async () => {
-      const errorMsg = 'Event Name must be provided and must be not an empty STRING!'
+      const errorMsg = 'Event Name must be provided and must be a string.'
 
       await expect(Backendless.BL.Events.dispatch()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.BL.Events.dispatch(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -57,7 +57,7 @@ describe('<BusinessLogic> API Services', function() {
       await expect(Backendless.BL.Events.dispatch(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when eventArgs is not an object', async () => {
+    it('fails when eventArgs is not an object', async () => {
       const errorMsg = 'Event Arguments must be an object.'
 
       await expect(Backendless.BL.Events.dispatch(eventName, 'str')).to.eventually.be.rejectedWith(errorMsg)

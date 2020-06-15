@@ -72,7 +72,7 @@ describe('<Messaging> Channel', function() {
     it('publishes a basic message with publishOptions', async () => {
       const req1 = prepareMockRequest({ fakeResult })
       const req2 = prepareMockRequest({ fakeResult })
-      // const req3 = prepareMockRequest({ fakeResult })
+      const req3 = prepareMockRequest({ fakeResult })
 
       const publishOptions1 = new Backendless.Messaging.PublishOptions({})
 
@@ -83,16 +83,16 @@ describe('<Messaging> Channel', function() {
         foo        : '111',
       })
 
-      // const publishOptions3 = {
-      //   publisherId: 'test-publisherId',
-      //   headers    : 'test-headers',
-      //   subtopic   : 'test-subtopic',
-      //   foo        : '222',
-      // }
+      const publishOptions3 = {
+        publisherId: 'test-publisherId',
+        headers    : 'test-headers',
+        subtopic   : 'test-subtopic',
+        foo        : '222',
+      }
 
       const result1 = await channel.publish(message, publishOptions1)
       const result2 = await channel.publish(message, publishOptions2)
-      // const result3 = await channel.publish(message, publishOptions3)
+      const result3 = await channel.publish(message, publishOptions3)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -115,28 +115,28 @@ describe('<Messaging> Channel', function() {
         }
       })
 
-      // expect(req3).to.deep.include({
-      //   method : 'POST',
-      //   path   : `${APP_PATH}/messaging/${channelName}`,
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body   : {
-      //     message,
-      //     publisherId: 'test-publisherId',
-      //     headers    : 'test-headers',
-      //     subtopic   : 'test-subtopic',
-      //     foo        : '222',
-      //   }
-      // })
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/messaging/${channelName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          message,
+          publisherId: 'test-publisherId',
+          headers    : 'test-headers',
+          subtopic   : 'test-subtopic',
+          foo        : '222',
+        }
+      })
 
       expect(result1).to.be.eql({ fakeResult })
       expect(result2).to.be.eql({ fakeResult })
-      // expect(result3).to.be.eql({ fakeResult })
+      expect(result3).to.be.eql({ fakeResult })
     })
 
     it('publishes a basic message with deliveryOptions', async () => {
       const req1 = prepareMockRequest({ fakeResult })
       const req2 = prepareMockRequest({ fakeResult })
-      // const req3 = prepareMockRequest({ fakeResult })
+      const req3 = prepareMockRequest({ fakeResult })
 
       const deliveryOptions1 = new Backendless.Messaging.DeliveryOptions({})
 
@@ -162,7 +162,7 @@ describe('<Messaging> Channel', function() {
 
       const result1 = await channel.publish(message, null, deliveryOptions1)
       const result2 = await channel.publish(message, null, deliveryOptions2)
-      // const result3 = await channel.publish(message, null, deliveryOptions3)
+      const result3 = await channel.publish(message, null, deliveryOptions3)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -188,28 +188,28 @@ describe('<Messaging> Channel', function() {
         }
       })
 
-      // expect(req3).to.deep.include({
-      //   method : 'POST',
-      //   path   : `${APP_PATH}/messaging/${channelName}`,
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body   : {
-      //     message,
-      //     publishPolicy  : 'test-publishPolicy',
-      //     pushBroadcast  : 'test-pushBroadcast',
-      //     pushSinglecast : 'test-pushSinglecast',
-      //     publishAt      : 'test-publishAt',
-      //     repeatEvery    : 'test-repeatEvery',
-      //     repeatExpiresAt: 'test-repeatExpiresAt',
-      //     foo            : '222',
-      //   }
-      // })
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/messaging/${channelName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          message,
+          publishPolicy  : 'test-publishPolicy',
+          pushBroadcast  : 'test-pushBroadcast',
+          pushSinglecast : 'test-pushSinglecast',
+          publishAt      : 'test-publishAt',
+          repeatEvery    : 'test-repeatEvery',
+          repeatExpiresAt: 'test-repeatExpiresAt',
+          foo            : '222',
+        }
+      })
 
       expect(result1).to.be.eql({ fakeResult })
       expect(result2).to.be.eql({ fakeResult })
-      // expect(result3).to.be.eql({ fakeResult })
+      expect(result3).to.be.eql({ fakeResult })
     })
 
-    xit('publishes a basic message with publishOptions and deliveryOptions', async () => {
+    it('publishes a basic message with publishOptions and deliveryOptions', async () => {
       const req1 = prepareMockRequest({ fakeResult })
 
       const publishOptions1 = {
@@ -296,7 +296,7 @@ describe('<Messaging> Channel', function() {
     })
 
     it('fails when channelName is invalid', async () => {
-      const errorMsg = '"channelName" must be non empty string'
+      const errorMsg = 'Channel Name must be provided and must be a string.'
 
       expect(() => Backendless.Messaging.subscribe()).to.throw(errorMsg)
       expect(() => Backendless.Messaging.subscribe(undefined)).to.throw(errorMsg)
@@ -312,7 +312,7 @@ describe('<Messaging> Channel', function() {
     })
 
     it('fails when channelName has a slash char', async () => {
-      const errorMsg = '"channelName" can not contains slash chars'
+      const errorMsg = 'Channel Name can not contain slash chars'
 
       expect(() => Backendless.Messaging.subscribe('/channelName')).to.throw(errorMsg)
       expect(() => Backendless.Messaging.subscribe('channel/Name')).to.throw(errorMsg)
@@ -370,7 +370,7 @@ describe('<Messaging> Channel', function() {
     })
 
     it('fails when publishOptions is invalid', async () => {
-      const errorMsg = 'Use PublishOption as publishOptions argument'
+      const errorMsg = '"publishOptions" argument must be an object.'
 
       await expect(channel.publish(message, true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(channel.publish(message, 123)).to.eventually.be.rejectedWith(errorMsg)
@@ -380,7 +380,7 @@ describe('<Messaging> Channel', function() {
     })
 
     it('fails when deliveryOptions is invalid', async () => {
-      const errorMsg = 'Use DeliveryOptions as deliveryTarget argument'
+      const errorMsg = '"deliveryOptions" argument must be an object.'
 
       await expect(channel.publish(message, null, true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(channel.publish(message, null, 123)).to.eventually.be.rejectedWith(errorMsg)

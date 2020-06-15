@@ -1,75 +1,48 @@
-import Utils from '../utils'
-import { deprecated } from '../decorators'
-
-import {
-  incrementAndGet,
-  decrementAndGet,
-  get,
-  getAndIncrement,
-  getAndDecrement,
-  getAndAdd,
-  addAndGet,
-  compareAndSet,
-  reset
-} from './methods'
-
-class Counter {
-  constructor(name, app) {
-    if (!name || !Utils.isString(name)) {
+export default class Counter {
+  constructor(name, counters) {
+    if (!name || typeof name !== 'string') {
       throw new Error('Counter Name must be non empty String')
     }
 
     this.name = name
-    this.app = app
+    this.counters = counters
+  }
+
+  incrementAndGet() {
+    return this.counters.incrementAndGet(this.name)
+  }
+
+  getAndIncrement() {
+    return this.counters.getAndIncrement(this.name)
+  }
+
+  decrementAndGet() {
+    return this.counters.decrementAndGet(this.name)
+  }
+
+  getAndDecrement() {
+    return this.counters.getAndDecrement(this.name)
+  }
+
+  reset() {
+    return this.counters.reset(this.name)
+  }
+
+  get() {
+    return this.counters.get(this.name)
+  }
+
+  addAndGet(value) {
+    return this.counters.addAndGet(this.name, value)
+  }
+
+  getAndAdd(value) {
+    return this.counters.getAndAdd(this.name, value)
+  }
+
+  compareAndSet(expected, updated) {
+    return this.counters.compareAndSet(this.name, expected, updated)
   }
 }
 
-const withCounterName = method => function(...args) {
-  return method.call(this, this.name, ...args)
-}
-
-//TODO: will be removed when remove sync methods
-const namespaceLabel = 'Backendless.Counter.of(<CounterName>)'
-
-Object.assign(Counter.prototype, {
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.incrementAndGet`)
-  incrementAndGetSync: Utils.synchronized(withCounterName(incrementAndGet)),
-  incrementAndGet    : Utils.promisified(withCounterName(incrementAndGet)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.getAndIncrement`)
-  getAndIncrementSync: Utils.synchronized(withCounterName(getAndIncrement)),
-  getAndIncrement    : Utils.promisified(withCounterName(getAndIncrement)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.decrementAndGet`)
-  decrementAndGetSync: Utils.synchronized(withCounterName(decrementAndGet)),
-  decrementAndGet    : Utils.promisified(withCounterName(decrementAndGet)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.getAndDecrement`)
-  getAndDecrementSync: Utils.synchronized(withCounterName(getAndDecrement)),
-  getAndDecrement    : Utils.promisified(withCounterName(getAndDecrement)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.reset`)
-  resetSync: Utils.synchronized(withCounterName(reset)),
-  reset    : Utils.promisified(withCounterName(reset)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.get`)
-  getSync: Utils.synchronized(withCounterName(get)),
-  get    : Utils.promisified(withCounterName(get)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.addAndGet`)
-  addAndGetSync: Utils.synchronized(withCounterName(addAndGet)),
-  addAndGet    : Utils.promisified(withCounterName(addAndGet)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.getAndAdd`)
-  getAndAddSync: Utils.synchronized(withCounterName(getAndAdd)),
-  getAndAdd    : Utils.promisified(withCounterName(getAndAdd)),
-
-  @deprecated(namespaceLabel, `${namespaceLabel}.compareAndSet`)
-  compareAndSetSync: Utils.synchronized(withCounterName(compareAndSet)),
-  compareAndSet    : Utils.promisified(withCounterName(compareAndSet)),
-
-})
-
-export default Counter
 

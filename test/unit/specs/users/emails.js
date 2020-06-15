@@ -22,7 +22,7 @@ describe('<Users> Emails', function() {
     })
   })
 
-  xit('fails when there is an incorrect email is passed in the request to restore password', async () => {
+  it('fails when there is an incorrect email is passed in the request to restore password', async () => {
     const errorMsg = 'Email Address must be provided and must be a string.'
 
     await expect(Backendless.UserService.restorePassword()).to.eventually.be.rejectedWith(errorMsg)
@@ -51,7 +51,7 @@ describe('<Users> Emails', function() {
     })
   })
 
-  xit('fails when there is an incorrect email is passed in the request to resend email confirmation', async () => {
+  it('fails when there is an incorrect email is passed in the request to resend email confirmation', async () => {
     const errorMsg = 'Email Address must be provided and must be a string.'
 
     await expect(Backendless.UserService.resendEmailConfirmation()).to.eventually.be.rejectedWith(errorMsg)

@@ -1,6 +1,5 @@
 import Utils from '../utils'
-import Async from '../request/async'
-import DataQueryBuilder from '../data/query-builder'
+import DataQueryBuilder from '../data/data-query-builder'
 
 import { OperationType, IsolationLevelEnum } from './constants'
 import { OpResult } from './op-result'
@@ -92,38 +91,33 @@ class UnitOfWork {
     }
   }
 
-  execute() {
-    return Promise.resolve()
-      .then(() => new Promise((resolve, reject) => {
-        return this.app.request.post({
-          url         : this.app.urls.transactions(),
-          data        : this.composePayload(),
-          asyncHandler: new Async(resolve, reject),
-        })
-      }))
-      .then(({ success, error, results }) => {
-        if (results) {
-          this.payload.operations.forEach(operation => {
-            const opResultId = operation.meta.opResult.getOpResultId()
+  async execute() {
+    const result = await this.app.request.post({
+      url : this.app.urls.transactions(),
+      data: this.composePayload(),
+    })
 
-            if (results[opResultId]) {
-              operation.meta.opResult.setResult(results[opResultId].result)
-            }
-          })
+    if (result.results) {
+      this.payload.operations.forEach(operation => {
+        const opResultId = operation.meta.opResult.getOpResultId()
+
+        if (result.results[opResultId]) {
+          operation.meta.opResult.setResult(result.results[opResultId].result)
         }
-
-        if (error) {
-          const operation = this.payload.operations.find(op => {
-            return error.operation.opResultId === op.meta.opResult.getOpResultId()
-          })
-
-          error = new TransactionOperationError(error.message, operation.meta.opResult)
-
-          operation.meta.opResult.setError(error)
-        }
-
-        return new UnitOfWorkResult({ success, results, error })
       })
+    }
+
+    if (result.error) {
+      const operation = this.payload.operations.find(op => {
+        return result.error.operation.opResultId === op.meta.opResult.getOpResultId()
+      })
+
+      result.error = new TransactionOperationError(result.error.message, operation.meta.opResult)
+
+      operation.meta.opResult.setError(result.error)
+    }
+
+    return new UnitOfWorkResult(result)
   }
 
   find(tableName, queryBuilder) {
@@ -151,8 +145,12 @@ class UnitOfWork {
       payload.offset = query.offset
     }
 
-    if (query.props) {
-      payload.properties = query.props
+    if (query.properties) {
+      payload.properties = query.properties
+    }
+
+    if (query.excludeProps) {
+      payload.excludeProps = query.excludeProps
     }
 
     if (query.excludeProps) {
@@ -175,8 +173,8 @@ class UnitOfWork {
       payload.queryOptions.sortBy = query.sortBy
     }
 
-    if (query.loadRelations) {
-      payload.queryOptions.related = query.loadRelations
+    if (query.relations) {
+      payload.queryOptions.related = query.relations
     }
 
     if (query.relationsDepth) {

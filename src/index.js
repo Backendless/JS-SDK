@@ -372,20 +372,40 @@ class Backendless {
 
   //TODO: do we need to remove it?
 
+  /** @deprecated */
   get GeoQuery() {
+    console.warn(
+      'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
+      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
+    )
+
     return this.Geo.Query
   }
 
+  /** @deprecated */
   get GeoPoint() {
+    console.warn(
+      'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
+      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
+    )
+
     return this.Geo.Point
   }
 
+  /** @deprecated */
   get GeoCluster() {
+    console.warn(
+      'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
+      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
+    )
+
     return this.Geo.Cluster
   }
 
   /** @deprecated */
   get Persistence() {
+    console.warn('Backendless.Persistence is deprecated namespace, use Backendless.Data instead')
+
     return this.Data
   }
 
@@ -415,11 +435,6 @@ class Backendless {
 
   get EmailEnvelope() {
     return this.Messaging.EmailEnvelope
-  }
-
-  /** @deprecated */
-  get SubscriptionOptions() {
-    return this.Messaging.SubscriptionOptions
   }
 
   ///--------BACKWARD COMPATIBILITY-------///

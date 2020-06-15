@@ -213,7 +213,7 @@ describe('Data', function() {
         error = e
       }
 
-      expect(error.message).to.be.equal('Invalid value for the "value" argument. The argument must contain only string or object values')
+      expect(error.message).to.be.equal('Object Id must be provided and must be a string.')
     })
 
   })

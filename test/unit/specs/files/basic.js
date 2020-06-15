@@ -31,7 +31,7 @@ describe('<Files> Basic', function() {
 
       expect(req2).to.deep.include({
         method : 'PUT',
-        path   : `${APP_PATH}/files/binary//test/path/test-name.txt`,
+        path   : `${APP_PATH}/files/binary/test/path/test-name.txt`,
         headers: { 'Content-Type': 'text/plain' },
         body   : 'dGVzdC1jb250ZW50' // === base64('test-content')
       })
@@ -121,7 +121,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when filePath is invalid', async () => {
-      const errorMsg = 'Missing value for the "path" argument. The argument must contain a string value'
+      const errorMsg = '"filePath" must be provided and must be a string.'
 
       await expect(Backendless.Files.saveFile()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.saveFile(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -137,7 +137,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when fileName is invalid', async () => {
-      const errorMsg = 'Missing value for the "fileName" argument. The argument must contain a string value'
+      const errorMsg = 'File Name must be provided and must be a string.'
 
       await expect(Backendless.Files.saveFile(filePath)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.saveFile(filePath, undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -172,7 +172,7 @@ describe('<Files> Basic', function() {
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/files//test/path`,
+        path   : `${APP_PATH}/files/test/path`,
         headers: {},
         body   : undefined
       })
@@ -223,11 +223,11 @@ describe('<Files> Basic', function() {
 
     it('gets files list with [pattern, sub, pagesize]', async () => {
       const req1 = prepareMockRequest([{ resultFileURL }])
-      // const req2 = prepareMockRequest([{ resultFileURL }])
+      const req2 = prepareMockRequest([{ resultFileURL }])
       const req3 = prepareMockRequest([{ resultFileURL }])
 
       const result1 = await Backendless.Files.listing(filePath, '*.html', true, 20)
-      // const result2 = await Backendless.Files.listing(filePath, '*.html', true, -20)
+      const result2 = await Backendless.Files.listing(filePath, '*.html', true, -20)
       const result3 = await Backendless.Files.listing(filePath, '*.html', true, 0)
 
       expect(req1).to.deep.include({
@@ -237,12 +237,12 @@ describe('<Files> Basic', function() {
         body   : undefined
       })
 
-      // expect(req2).to.deep.include({
-      //   method : 'GET',
-      //   path   : `${APP_PATH}/files/test/path?pattern=*.html&sub=true`,
-      //   headers: {},
-      //   body   : undefined
-      // })
+      expect(req2).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/files/test/path?pattern=*.html&sub=true`,
+        headers: {},
+        body   : undefined
+      })
 
       expect(req3).to.deep.include({
         method : 'GET',
@@ -252,17 +252,17 @@ describe('<Files> Basic', function() {
       })
 
       expect(result1).to.be.eql([{ resultFileURL }])
-      // expect(result2).to.be.eql([{ resultFileURL }])
+      expect(result2).to.be.eql([{ resultFileURL }])
       expect(result3).to.be.eql([{ resultFileURL }])
     })
 
     it('gets files list with [pattern, sub, pagesize, offset]', async () => {
       const req1 = prepareMockRequest([{ resultFileURL }])
-      // const req2 = prepareMockRequest([{ resultFileURL }])
+      const req2 = prepareMockRequest([{ resultFileURL }])
       const req3 = prepareMockRequest([{ resultFileURL }])
 
       const result1 = await Backendless.Files.listing(filePath, '*.html', true, 20, 100)
-      // const result2 = await Backendless.Files.listing(filePath, '*.html', true, 20, -100)
+      const result2 = await Backendless.Files.listing(filePath, '*.html', true, 20, -100)
       const result3 = await Backendless.Files.listing(filePath, '*.html', true, 20, 0)
 
       expect(req1).to.deep.include({
@@ -272,12 +272,12 @@ describe('<Files> Basic', function() {
         body   : undefined
       })
 
-      // expect(req2).to.deep.include({
-      //   method : 'GET',
-      //   path   : `${APP_PATH}/files/test/path?pattern=*.html&sub=true&pagesize=20`,
-      //   headers: {},
-      //   body   : undefined
-      // })
+      expect(req2).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/files/test/path?pattern=*.html&sub=true&pagesize=20`,
+        headers: {},
+        body   : undefined
+      })
 
       expect(req3).to.deep.include({
         method : 'GET',
@@ -287,11 +287,11 @@ describe('<Files> Basic', function() {
       })
 
       expect(result1).to.be.eql([{ resultFileURL }])
-      // expect(result2).to.be.eql([{ resultFileURL }])
+      expect(result2).to.be.eql([{ resultFileURL }])
       expect(result3).to.be.eql([{ resultFileURL }])
     })
 
-    xit('fails when filePath is invalid', async () => {
+    it('fails when filePath is invalid', async () => {
       const errorMsg = '"filePath" must be provided and must be a string.'
 
       await expect(Backendless.Files.listing()).to.eventually.be.rejectedWith(errorMsg)
@@ -327,7 +327,7 @@ describe('<Files> Basic', function() {
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/files//test/path?action=count&pattern=*&sub=false&countDirectories=false`,
+        path   : `${APP_PATH}/files/test/path?action=count&pattern=*&sub=false&countDirectories=false`,
         headers: {},
         body   : undefined
       })
@@ -402,7 +402,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when filesPath is invalid', async () => {
-      const errorMsg = 'Files "path" must not be empty and must be String'
+      const errorMsg = '"filesPath" must be provided and must be a string.'
 
       await expect(Backendless.Files.getFileCount()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.getFileCount(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -418,7 +418,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when pattern is invalid', async () => {
-      const errorMsg = 'Files "path" must not be empty and must be String'
+      const errorMsg = 'Files Pattern must be provided and must be a string.'
 
       await expect(Backendless.Files.getFileCount(filePath, true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.getFileCount(filePath, 123)).to.eventually.be.rejectedWith(errorMsg)
@@ -461,7 +461,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when oldPathName is invalid', async () => {
-      const errorMsg = 'Old File "path" must not be empty and must be String'
+      const errorMsg = '"oldPathName" must be provided and must be a string.'
 
       await expect(Backendless.Files.renameFile()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.renameFile(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -477,7 +477,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when newName is invalid', async () => {
-      const errorMsg = 'New File "path" must not be empty and must be String'
+      const errorMsg = 'New File Name must be provided and must be a string.'
 
       await expect(Backendless.Files.renameFile(filePath)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.renameFile(filePath, undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -602,7 +602,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when filePath is invalid', async () => {
-      const errorMsg = 'File "path" must not be empty and must be String'
+      const errorMsg = '"filePath" must be provided and must be a string.'
 
       await expect(Backendless.Files.remove()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.remove(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -636,7 +636,7 @@ describe('<Files> Basic', function() {
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/files//test/path/test-name.txt?action=exists`,
+        path   : `${APP_PATH}/files/test/path/test-name.txt?action=exists`,
         headers: {},
         body   : undefined
       })
@@ -646,7 +646,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when filePath is invalid', async () => {
-      const errorMsg = 'Files "path" must not be empty and must be String'
+      const errorMsg = '"filePath" must be provided and must be a string.'
 
       await expect(Backendless.Files.exists()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.exists(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -680,7 +680,7 @@ describe('<Files> Basic', function() {
 
       expect(req2).to.deep.include({
         method : 'DELETE',
-        path   : `${APP_PATH}/files//test/path`,
+        path   : `${APP_PATH}/files/test/path`,
         headers: {},
         body   : undefined
       })
@@ -690,7 +690,7 @@ describe('<Files> Basic', function() {
     })
 
     it('fails when directoryPath is invalid', async () => {
-      const errorMsg = 'Directory "path" must not be empty and must be String'
+      const errorMsg = 'Directory "path" must be provided and must be a string.'
 
       await expect(Backendless.Files.removeDirectory()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Files.removeDirectory(undefined)).to.eventually.be.rejectedWith(errorMsg)

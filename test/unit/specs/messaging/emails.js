@@ -16,7 +16,7 @@ describe('<Messaging> Emails', function() {
 
   const fakeResult = { foo: 123 }
 
-  xit('sends an email with "textmessage"', async () => {
+  it('sends an email with "textmessage"', async () => {
     const req1 = prepareMockRequest({ status: fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { textmessage }, recipients)
@@ -35,7 +35,7 @@ describe('<Messaging> Emails', function() {
     expect(result1).to.be.eql(fakeResult)
   })
 
-  xit('sends an email with "htmlmessage"', async () => {
+  it('sends an email with "htmlmessage"', async () => {
     const req1 = prepareMockRequest({ status: fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { htmlmessage }, recipients)
@@ -93,7 +93,7 @@ describe('<Messaging> Emails', function() {
     expect(result2).to.be.eql(fakeResult)
   })
 
-  xit('sends an email with any "bodyParts"', async () => {
+  it('sends an email with any "bodyParts"', async () => {
     const req1 = prepareMockRequest({ status: fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { textmessage, htmlmessage, foo: 123 }, recipients)
@@ -112,7 +112,7 @@ describe('<Messaging> Emails', function() {
     expect(result1).to.be.eql(fakeResult)
   })
 
-  xit('sends an email with "attachments"', async () => {
+  it('sends an email with "attachments"', async () => {
     const req1 = prepareMockRequest({ status: fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { textmessage }, recipients, attachment)
@@ -132,7 +132,7 @@ describe('<Messaging> Emails', function() {
     expect(result1).to.be.eql(fakeResult)
   })
 
-  xit('sends an email without "attachments"', async () => {
+  it('sends an email without "attachments"', async () => {
     const check = async attachments => {
       const req1 = prepareMockRequest({ status: fakeResult })
 
@@ -155,7 +155,7 @@ describe('<Messaging> Emails', function() {
   })
 
   it('fails when subject is invalid', async () => {
-    const errorMsg = 'Subject is required parameter and must be a nonempty string'
+    const errorMsg = 'Email Subject must be provided and must be a string.'
 
     await expect(Backendless.Messaging.sendEmail()).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.Messaging.sendEmail(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -171,7 +171,7 @@ describe('<Messaging> Emails', function() {
   })
 
   it('fails when bodyParts are invalid', async () => {
-    const errorMsg = 'Use Bodyparts as bodyParts argument, must contain at least one property'
+    const errorMsg = 'BodyParts must be an object'
 
     await expect(Backendless.Messaging.sendEmail(subject)).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.Messaging.sendEmail(subject, undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -186,13 +186,13 @@ describe('<Messaging> Emails', function() {
   })
 
   it('fails when bodyParts do not container [ textmessage | htmlmessage ]', async () => {
-    const errorMsg = 'Use Bodyparts as bodyParts argument, must contain at least one property'
+    const errorMsg = 'BodyParts must contain at least one property of [ textmessage | htmlmessage ]'
 
     await expect(Backendless.Messaging.sendEmail(subject, {})).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.Messaging.sendEmail(subject, { foo: 123 })).to.eventually.be.rejectedWith(errorMsg)
   })
 
-  xit('fails when recipients are invalid', async () => {
+  it('fails when recipients are invalid', async () => {
     const errorMsg = 'Recipients must be a non empty array.'
 
     await expect(Backendless.Messaging.sendEmail(subject, bodyParts)).to.eventually.be.rejectedWith(errorMsg)
@@ -217,7 +217,7 @@ describe('<Messaging> Emails', function() {
       emailEnvelope = new Backendless.EmailEnvelope({ addresses: ['foo@bar.com'] })
     })
 
-    xit('sends an email with template', async () => {
+    it('sends an email with template', async () => {
       const req1 = prepareMockRequest({ fakeResult })
 
       const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope)
@@ -255,7 +255,7 @@ describe('<Messaging> Emails', function() {
     })
 
     it('fails when subject is invalid', async () => {
-      const errorMsg = 'Template name is required and must be a string'
+      const errorMsg = 'Email Template Name must be provided and must be a string.'
 
       await expect(Backendless.Messaging.sendEmailFromTemplate()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Messaging.sendEmailFromTemplate(undefined)).to.eventually.be.rejectedWith(errorMsg)

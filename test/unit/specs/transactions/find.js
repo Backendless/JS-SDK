@@ -62,11 +62,11 @@ describe('<Transactions> Find Operation', function() {
     uow.find(PERSONS_TABLE_NAME, {
       pageSize         : 50,
       offset           : 15,
-      props            : ['foo', 'bar', 'prop1', 'prop2', 'prop3', 'prop4', 'prop5', 'prop6', 'prop7', 'prop8', 'prop9', '*'],
+      properties       : ['foo', 'bar', 'prop1', 'prop2', 'prop3', 'prop4', 'prop5', 'prop6', 'prop7', 'prop8', 'prop9', '*'],
       excludeProps     : ['ex-foo', 'ex-bar', 'ex-prop1', 'ex-prop2', 'ex-prop3', 'ex-prop4', 'ex-prop5', 'ex-prop6', 'ex-prop7', 'ex-prop8',],
       where            : 'age >= 100',
       having           : 'age >= 200',
-      loadRelations    : ['rel1', 'rel2', 'rel3'],
+      relations        : ['rel1', 'rel2', 'rel3'],
       relationsDepth   : 3,
       relationsPageSize: 25
     })
@@ -99,13 +99,6 @@ describe('<Transactions> Find Operation', function() {
 
   describe('Paging', () => {
     it('basic options', async () => {
-      class DataQueryBuilder {
-        // setPageSize(pageSize)
-        // setOffset(offset)
-        // prepareNextPage()
-        // preparePreviousPage()
-      }
-
       query
         .setPageSize(50)
         .setOffset(15)

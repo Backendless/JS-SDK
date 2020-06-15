@@ -1,4 +1,3 @@
-import '../../helpers/global'
 import sandbox from '../../helpers/sandbox'
 
 const Backendless = sandbox.Backendless
@@ -26,13 +25,11 @@ describe('Transactions - Find Operation', function() {
   before(async function() {
     personsStore = Backendless.Data.of(Person)
 
-    await Promise.all([
-      personsStore.save({ name: 'p-1', age: 10 }),
-      personsStore.save({ name: 'p-2', age: 10 }),
-      personsStore.save({ name: 'p-3', age: 22 }),
-      personsStore.save({ name: 'p-4', age: 25 }),
-      personsStore.save({ name: 'p-5', age: 30 }),
-    ])
+    await personsStore.save({ name: 'p-1', age: 10 })
+    await personsStore.save({ name: 'p-2', age: 10 })
+    await personsStore.save({ name: 'p-3', age: 22 })
+    await personsStore.save({ name: 'p-4', age: 25 })
+    await personsStore.save({ name: 'p-5', age: 30 })
   })
 
   beforeEach(function() {

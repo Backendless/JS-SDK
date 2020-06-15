@@ -1,7 +1,14 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { forTest, prepareMockRequest, createMockRTServer, APP_PATH, API_KEY, Utils } from '../../helpers/sandbox'
+import Backendless, {
+  forTest,
+  prepareMockRequest,
+  createMockRTServer,
+  APP_PATH,
+  API_KEY,
+  Utils
+} from '../../helpers/sandbox'
 
 describe('<RT> Basic', function() {
 
@@ -134,6 +141,43 @@ describe('<RT> Basic', function() {
     expect(met1.id).to.be.not.equal(met2.id)
     expect(met1.id).to.be.not.equal(met3.id)
     expect(met2.id).to.be.not.equal(met3.id)
+  })
+
+  it('should update connection user-token after setCurrentUserToken', async () => {
+    prepareMockRequest(rtClient.host)
+    prepareMockRequest()
+
+    Backendless.Messaging.subscribe(channelName)
+
+    await rtClient.getNext_CONNECT()
+
+    const met1Promise = rtClient.getNext_MET_REQ()
+    const met2Promise = rtClient.getNext_MET_REQ()
+
+    Backendless.UserService.currentUser = {}
+    Backendless.UserService.setCurrentUserToken('new-token')
+
+    const met1 = await met1Promise
+
+    expect(met1.id).to.be.a('string')
+    expect(met1.name).to.be.equal('SET_USER_TOKEN')
+    expect(met1.options).to.be.eql({ userToken: 'new-token' })
+
+    Backendless.UserService.setCurrentUserToken()
+
+    const met2 = await met2Promise
+
+    expect(met2.id).to.be.a('string')
+    expect(met2.name).to.be.equal('SET_USER_TOKEN')
+    expect(met2.options).to.be.eql({ userToken: null })
+  })
+
+  it('should not set user-token after setCurrentUserToken', async () => {
+    Backendless.RT.methods.setUserToken = chai.spy()
+
+    Backendless.UserService.setCurrentUserToken('new-token')
+
+    expect(Backendless.RT.methods.setUserToken).to.not.have.been.called();
   })
 
 })

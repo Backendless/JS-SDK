@@ -1,43 +1,39 @@
-import Utils from '../utils'
-
-import { parseResponse } from './utils'
-
-function roleHelper(identity, rolename, asyncHandler, operation) {
-  if (!identity) {
-    throw new Error('User identity can not be empty')
+export default class UsersRoles {
+  constructor(users) {
+    this.users = users
+    this.app = users.app
   }
 
-  if (!rolename) {
-    throw new Error('Rolename can not be empty')
+  async getUserRoles() {
+    return this.app.request.get({
+      url: this.app.urls.userRoles(),
+    })
   }
 
-  const responder = Utils.extractResponder(arguments)
+  async assignRole(identity, rolename) {
+    return this.changeRole(identity, rolename, 'assignRole')
+  }
 
-  return this.app.request.post({
-    url         : this.app.urls.userRoleOperation(operation),
-    isAsync     : !!responder,
-    asyncHandler: responder,
-    data        : { user: identity, roleName: rolename }
-  })
-}
+  async unassignRole(identity, rolename) {
+    return this.changeRole(identity, rolename, 'unassignRole')
+  }
 
-export function getUserRoles(/** async */) {
-  const responder = Utils.extractResponder(arguments)
-  const isAsync = !!responder
+  async changeRole(identity, roleName, operation) {
+    if (!identity || !(typeof identity === 'string' || typeof identity === 'number')) {
+      throw new Error('User identity must be a string or number and can not be empty.')
+    }
 
-  const result = this.app.request.get({
-    url         : this.app.urls.userRoles(),
-    isAsync     : isAsync,
-    asyncHandler: responder
-  })
+    if (!roleName || typeof roleName !== 'string') {
+      throw new Error('Role Name must be a string and can not be empty.')
+    }
 
-  return isAsync ? result : parseResponse.call(this, result)
-}
+    return this.app.request.post({
+      url : this.app.urls.userRoleOperation(operation),
+      data: {
+        user: identity,
+        roleName
+      },
+    })
+  }
 
-export function assignRole(identity, rolename, asyncHandler) {
-  return roleHelper.call(this, identity, rolename, asyncHandler, 'assignRole')
-}
-
-export function unassignRole(identity, rolename, asyncHandler) {
-  return roleHelper.call(this, identity, rolename, asyncHandler, 'unassignRole')
 }

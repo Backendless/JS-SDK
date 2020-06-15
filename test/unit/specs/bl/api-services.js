@@ -46,7 +46,7 @@ describe('<BusinessLogic> API Services', function() {
 
   describe('Fails', function() {
 
-    xit('fails when serviceName is not a string', async () => {
+    it('fails when serviceName is not a string', async () => {
       const errorMsg = 'Service Name must be provided and must be a string.'
 
       await expect(Backendless.BL.CustomServices.invoke()).to.eventually.be.rejectedWith(errorMsg)
@@ -58,7 +58,7 @@ describe('<BusinessLogic> API Services', function() {
       await expect(Backendless.BL.CustomServices.invoke(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    xit('fails when methodName is not a string', async () => {
+    it('fails when methodName is not a string', async () => {
       const errorMsg = 'Method Name must be provided and must be a string.'
 
       await expect(Backendless.BL.CustomServices.invoke(serviceName)).to.eventually.be.rejectedWith(errorMsg)

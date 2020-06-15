@@ -1,6 +1,6 @@
 import geoConstructor from './geo-constructor'
 
-class GeoJSONParser {
+export default class GeoJSONParser {
   constructor(srs) {
     this.srs = srs
   }
@@ -9,5 +9,3 @@ class GeoJSONParser {
     return geoConstructor(geoJSON, this.srs)
   }
 }
-
-export default GeoJSONParser

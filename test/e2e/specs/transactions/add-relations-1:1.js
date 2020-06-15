@@ -44,19 +44,17 @@ describe('Transactions - Add 1:1 Relations Operations', function() {
     personsStore = Backendless.Data.of(Person)
     ordersStore = Backendless.Data.of(Order)
 
-    await Promise.all([
-      personsStore.save({ name: 'initial-1', age: 5 }),
-      personsStore.save({ name: 'initial-2', age: 10 }),
-      personsStore.save({ name: 'initial-3', age: 22 }),
-      personsStore.save({ name: 'initial-4', age: 25 }),
-      personsStore.save({ name: 'initial-5', age: 30 }),
+    await personsStore.save({ name: 'initial-1', age: 5 })
+    await personsStore.save({ name: 'initial-2', age: 10 })
+    await personsStore.save({ name: 'initial-3', age: 22 })
+    await personsStore.save({ name: 'initial-4', age: 25 })
+    await personsStore.save({ name: 'initial-5', age: 30 })
 
-      ordersStore.save({ label: 'initial-1', price: 115 }),
-      ordersStore.save({ label: 'initial-2', price: 120 }),
-      ordersStore.save({ label: 'initial-3', price: 125 }),
-      ordersStore.save({ label: 'initial-4', price: 130 }),
-      ordersStore.save({ label: 'initial-5', price: 135 }),
-    ])
+    await ordersStore.save({ label: 'initial-1', price: 115 })
+    await ordersStore.save({ label: 'initial-2', price: 120 })
+    await ordersStore.save({ label: 'initial-3', price: 125 })
+    await ordersStore.save({ label: 'initial-4', price: 130 })
+    await ordersStore.save({ label: 'initial-5', price: 135 })
 
     await tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ORDER_COLUMN, ORDERS_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_ONE)
   })

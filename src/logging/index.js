@@ -1,33 +1,86 @@
-import { deprecated } from '../decorators'
+import Logger from './logger'
 
-import LoggingCollector from './collector'
+export default class Logging {
 
-class Logging {
   constructor(app) {
     this.app = app
-    this.loggingCollector = new LoggingCollector(app)
+
+    this.reset()
   }
 
-  getLogger(...args) {
-    return this.loggingCollector.getLogger(...args)
+  reset() {
+    this.loggers = {}
+    this.pool = []
+    this.numOfMessages = 10
+    this.timeFrequency = 1
   }
 
-  @deprecated('Backendless.Logging', 'Backendless.Logging.flush')
-  flushSync(...args) {
-    return this.loggingCollector.flushSync(...args)
+  getLogger(loggerName) {
+    if (!loggerName || typeof loggerName !== 'string') {
+      throw new Error('Logger Name must be provided and must be a string.')
+    }
+
+    if (!this.loggers[loggerName]) {
+      this.loggers[loggerName] = new Logger(loggerName, this)
+    }
+
+    return this.loggers[loggerName]
   }
 
-  flush(...args) {
-    return this.loggingCollector.flush(...args)
+  async flush() {
+    if (!this.flushRequest && this.pool.length) {
+      this.stopFlushInterval()
+
+      this.flushRequest = this.app.request
+        .put({
+          url : this.app.urls.logging(),
+          data: this.pool
+        })
+        .then(() => {
+          delete this.flushRequest
+        })
+
+      this.pool = []
+    }
+
+    return this.flushRequest
   }
 
-  reset(...args) {
-    return this.loggingCollector.reset(...args)
+  push(logger, logLevel, message, exception) {
+    this.pool.push({ logger, message, exception, 'log-level': logLevel, timestamp: Date.now() })
+
+    this.checkMessagesLen()
   }
 
-  setLogReportingPolicy(...args) {
-    return this.loggingCollector.setLogReportingPolicy(...args)
+  checkMessagesLen() {
+    if (this.pool.length >= this.numOfMessages) {
+      this.startFlushInterval()
+    }
   }
+
+  startFlushInterval() {
+    if (!this.flushInterval) {
+      this.flushInterval = setTimeout(() => this.flush(), this.timeFrequency * 1000)
+    }
+  }
+
+  stopFlushInterval() {
+    if (this.flushInterval) {
+      clearTimeout(this.flushInterval)
+
+      delete this.flushInterval
+    }
+  }
+
+  setLogReportingPolicy(numOfMessages, timeFrequency) {
+    if (timeFrequency !== undefined && this.timeFrequency !== timeFrequency) {
+      this.stopFlushInterval()
+    }
+
+    this.numOfMessages = numOfMessages
+    this.timeFrequency = timeFrequency
+
+    this.checkMessagesLen()
+  }
+
 }
-
-export default Logging

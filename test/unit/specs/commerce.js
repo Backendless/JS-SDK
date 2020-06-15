@@ -14,7 +14,7 @@ describe('<Commerce>', function() {
 
   describe('validatePlayPurchase', () => {
     it('fails when packageName is not a string', async () => {
-      const errorMsg = 'Package Name must be provided and must be not an empty STRING!'
+      const errorMsg = 'Package Name must be provided and must be a string.'
 
       await expect(Backendless.Commerce.validatePlayPurchase()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.validatePlayPurchase(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -26,7 +26,7 @@ describe('<Commerce>', function() {
     })
 
     it('fails when productId is not a string', async () => {
-      const errorMsg = 'Product Id must be provided and must be not an empty STRING!'
+      const errorMsg = 'Product Id must be provided and must be a string.'
 
       await expect(Backendless.Commerce.validatePlayPurchase(packageName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.validatePlayPurchase(packageName, null)).to.eventually.be.rejectedWith(errorMsg)
@@ -38,7 +38,7 @@ describe('<Commerce>', function() {
     })
 
     it('fails when token is not a string', async () => {
-      const errorMsg = 'Token must be provided and must be not an empty STRING!'
+      const errorMsg = 'Token must be provided and must be a string.'
 
       await expect(Backendless.Commerce.validatePlayPurchase(packageName, productId)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.validatePlayPurchase(packageName, productId, null)).to.eventually.be.rejectedWith(errorMsg)
@@ -65,7 +65,7 @@ describe('<Commerce>', function() {
 
   describe('getPlaySubscriptionStatus', () => {
     it('fails when packageName is not a string', async () => {
-      const errorMsg = 'Package Name must be provided and must be not an empty STRING!'
+      const errorMsg = 'Package Name must be provided and must be a string.'
 
       await expect(Backendless.Commerce.getPlaySubscriptionStatus()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.getPlaySubscriptionStatus(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -77,7 +77,7 @@ describe('<Commerce>', function() {
     })
 
     it('fails when subscriptionId is not a string', async () => {
-      const errorMsg = 'Subscription Id must be provided and must be not an empty STRING!'
+      const errorMsg = 'Subscription Id must be provided and must be a string.'
 
       await expect(Backendless.Commerce.getPlaySubscriptionStatus(packageName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.getPlaySubscriptionStatus(packageName, null)).to.eventually.be.rejectedWith(errorMsg)
@@ -89,7 +89,7 @@ describe('<Commerce>', function() {
     })
 
     it('fails when token is not a string', async () => {
-      const errorMsg = 'Token must be provided and must be not an empty STRING!'
+      const errorMsg = 'Token must be provided and must be a string.'
 
       await expect(Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.getPlaySubscriptionStatus(packageName, subscriptionId, null)).to.eventually.be.rejectedWith(errorMsg)
@@ -116,7 +116,7 @@ describe('<Commerce>', function() {
 
   describe('cancelPlaySubscription', () => {
     it('fails when packageName is not a string', async () => {
-      const errorMsg = 'Package Name must be provided and must be not an empty STRING!'
+      const errorMsg = 'Package Name must be provided and must be a string.'
 
       await expect(Backendless.Commerce.cancelPlaySubscription()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.cancelPlaySubscription(null)).to.eventually.be.rejectedWith(errorMsg)
@@ -128,7 +128,7 @@ describe('<Commerce>', function() {
     })
 
     it('fails when subscriptionId is not a string', async () => {
-      const errorMsg = 'Subscription Id must be provided and must be not an empty STRING!'
+      const errorMsg = 'Subscription Id must be provided and must be a string.'
 
       await expect(Backendless.Commerce.cancelPlaySubscription(packageName)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.cancelPlaySubscription(packageName, null)).to.eventually.be.rejectedWith(errorMsg)
@@ -140,7 +140,7 @@ describe('<Commerce>', function() {
     })
 
     it('fails when token is not a string', async () => {
-      const errorMsg = 'Token must be provided and must be not an empty STRING!'
+      const errorMsg = 'Token must be provided and must be a string.'
 
       await expect(Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Commerce.cancelPlaySubscription(packageName, subscriptionId, null)).to.eventually.be.rejectedWith(errorMsg)

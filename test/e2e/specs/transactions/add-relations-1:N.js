@@ -43,19 +43,17 @@ describe('Transactions - Add 1:N Relations Operations', function() {
     personsStore = Backendless.Data.of(Person)
     addressesStore = Backendless.Data.of(Address)
 
-    await Promise.all([
-      personsStore.save({ name: 'initial-1', age: 5 }),
-      personsStore.save({ name: 'initial-2', age: 10 }),
-      personsStore.save({ name: 'initial-3', age: 22 }),
-      personsStore.save({ name: 'initial-4', age: 25 }),
-      personsStore.save({ name: 'initial-5', age: 30 }),
+    await personsStore.save({ name: 'initial-1', age: 5 })
+    await personsStore.save({ name: 'initial-2', age: 10 })
+    await personsStore.save({ name: 'initial-3', age: 22 })
+    await personsStore.save({ name: 'initial-4', age: 25 })
+    await personsStore.save({ name: 'initial-5', age: 30 })
 
-      addressesStore.save({ address: 'initial-1' }),
-      addressesStore.save({ address: 'initial-2' }),
-      addressesStore.save({ address: 'initial-3' }),
-      addressesStore.save({ address: 'initial-4' }),
-      addressesStore.save({ address: 'initial-5' }),
-    ])
+    await addressesStore.save({ address: 'initial-1' })
+    await addressesStore.save({ address: 'initial-2' })
+    await addressesStore.save({ address: 'initial-3' })
+    await addressesStore.save({ address: 'initial-4' })
+    await addressesStore.save({ address: 'initial-5' })
 
     await tablesAPI.createRelationColumn(PERSONS_TABLE_NAME, ADDRESSES_COLUMN, ADDRESSES_TABLE_NAME, tablesAPI.RelationTypes.ONE_TO_MANY)
   })

@@ -3,10 +3,10 @@ export const deprecated = (namespace, alternative) => function(target, prop, des
 
   descriptor.initializer = () => function() {
     const mainMessage = `"${namespace}.${prop}" is deprecated and will be removed in the nearest release.`
-    const helpMessage = `Please use ${alternative}.`
+    const helpMessage = ` Please use ${alternative}.`
 
     // eslint-disable-next-line no-console
-    console.warn(`${mainMessage} ${alternative ? helpMessage : ''}`)
+    console.warn(`${mainMessage}${alternative ? helpMessage : ''}`)
 
     return value.apply(this, arguments)
   }

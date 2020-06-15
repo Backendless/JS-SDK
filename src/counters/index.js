@@ -1,65 +1,120 @@
-import Utils from '../utils'
-import { deprecated } from '../decorators'
-
 import Counter from './counter'
-import {
-  incrementAndGet,
-  decrementAndGet,
-  get,
-  getAndIncrement,
-  getAndDecrement,
-  getAndAdd,
-  addAndGet,
-  compareAndSet,
-  reset
-} from './methods'
 
-class Counters {
+export default class Counters {
   constructor(app) {
     this.app = app
   }
 
   of(name) {
-    return new Counter(name, this.app)
+    return new Counter(name, this)
+  }
+
+  async incrementAndGet(counterName) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    return this.app.request.put({
+      url: this.app.urls.counterIncrementAndGet(counterName),
+    })
+  }
+
+  async getAndIncrement(counterName) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    return this.app.request.put({
+      url: this.app.urls.counterGetAndIncrement(counterName),
+    })
+  }
+
+  async decrementAndGet(counterName) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    return this.app.request.put({
+      url: this.app.urls.counterDecrementAndGet(counterName),
+    })
+  }
+
+  async getAndDecrement(counterName) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    return this.app.request.put({
+      url: this.app.urls.counterGetAndDecrement(counterName),
+    })
+  }
+
+  async reset(counterName) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    return this.app.request.put({
+      url: this.app.urls.counterReset(counterName),
+    })
+  }
+
+  async get(counterName) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.counter(counterName),
+    })
+  }
+
+  async addAndGet(counterName, value) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    if (typeof value !== 'number') {
+      throw new Error('Counter Value must be a number.')
+    }
+
+    return this.app.request.put({
+      url  : this.app.urls.counterAddAndGet(counterName),
+      query: { value },
+    })
+  }
+
+  async getAndAdd(counterName, value) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    if (typeof value !== 'number') {
+      throw new Error('Counter Value must be a number.')
+    }
+
+    return this.app.request.put({
+      url  : this.app.urls.counterGetAndAdd(counterName),
+      query: { value },
+    })
+  }
+
+  async compareAndSet(counterName, expected, updated) {
+    if (!counterName || typeof counterName !== 'string') {
+      throw new Error('Counter Name must be provided and must be a string.')
+    }
+
+    if (typeof expected !== 'number') {
+      throw new Error('Counter Expected Value must be a number.')
+    }
+
+    if (typeof updated !== 'number') {
+      throw new Error('Counter Updated Value must be a number.')
+    }
+
+    return this.app.request.put({
+      url  : this.app.urls.counterCompareAndSet(counterName),
+      query: { expected, updatedvalue: updated },
+    })
   }
 }
-
-Object.assign(Counters.prototype, {
-  @deprecated('Backendless.Counters', 'Backendless.Counters.incrementAndGet')
-  incrementAndGetSync: Utils.synchronized(incrementAndGet),
-  incrementAndGet    : Utils.promisified(incrementAndGet),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.getAndIncrement')
-  getAndIncrementSync: Utils.synchronized(getAndIncrement),
-  getAndIncrement    : Utils.promisified(getAndIncrement),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.decrementAndGet')
-  decrementAndGetSync: Utils.synchronized(decrementAndGet),
-  decrementAndGet    : Utils.promisified(decrementAndGet),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.getAndDecrement')
-  getAndDecrementSync: Utils.synchronized(getAndDecrement),
-  getAndDecrement    : Utils.promisified(getAndDecrement),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.reset')
-  resetSync: Utils.synchronized(reset),
-  reset    : Utils.promisified(reset),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.get')
-  getSync: Utils.synchronized(get),
-  get    : Utils.promisified(get),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.addAndGet')
-  addAndGetSync: Utils.synchronized(addAndGet),
-  addAndGet    : Utils.promisified(addAndGet),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.getAndAdd')
-  getAndAddSync: Utils.synchronized(getAndAdd),
-  getAndAdd    : Utils.promisified(getAndAdd),
-
-  @deprecated('Backendless.Counters', 'Backendless.Counters.compareAndSet')
-  compareAndSetSync: Utils.synchronized(compareAndSet),
-  compareAndSet    : Utils.promisified(compareAndSet),
-})
-
-export default Counters

@@ -52,8 +52,8 @@ describe('<Users> Roles', function() {
     })
   })
 
-  xit('fails when "identity" is invalid', async () => {
-    const errorMsg = 'User identity can not be empty'
+  it('fails when "identity" is invalid', async () => {
+    const errorMsg = 'User identity must be a string or number and can not be empty.'
 
     await expect(Backendless.UserService.assignRole(null)).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.UserService.assignRole(false)).to.eventually.be.rejectedWith(errorMsg)
@@ -74,8 +74,8 @@ describe('<Users> Roles', function() {
     await expect(Backendless.UserService.unassignRole(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
   })
 
-  xit('fails when "roleName" is invalid', async () => {
-    const errorMsg = 'Rolename can not be empty'
+  it('fails when "roleName" is invalid', async () => {
+    const errorMsg = 'Role Name must be a string and can not be empty.'
 
     await expect(Backendless.UserService.assignRole('identity', null)).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.UserService.assignRole('identity', false)).to.eventually.be.rejectedWith(errorMsg)

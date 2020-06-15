@@ -35,7 +35,7 @@ describe('<Users> Current User', function() {
   }
 
   it('loggedInUser returns user-id from LocalCache', async () => {
-    expect(Backendless.UserService.loggedInUser()).to.be.equal(undefined)
+    expect(Backendless.UserService.loggedInUser()).to.be.equal(null)
 
     Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, 'test-id')
 
@@ -107,7 +107,7 @@ describe('<Users> Current User', function() {
     expect(currentUser['user-token']).to.be.equal(undefined)
   })
 
-  xit('returns the same promise result for getting the current user from the server by id', async () => {
+  it('returns the same promise result for getting the current user from the server by id', async () => {
     prepareMockRequest(() => ({ delay: 200, body: { objectId: '1' } }))
     prepareMockRequest(() => ({ delay: 200, body: { objectId: '2' } })) // won't be requested
     prepareMockRequest(() => ({ delay: 200, body: { objectId: '3' } })) // won't be requested
@@ -216,6 +216,14 @@ describe('<Users> Current User', function() {
     expect(result1).to.be.equal(false)
   })
 
+  it('should not wrap new current user', async () => {
+    const user = new Backendless.User()
+
+    Backendless.UserService.setLocalCurrentUser(user)
+
+    expect(Backendless.UserService.getLocalCurrentUser()).to.be.equal(user)
+  })
+
   describe('User Token', () => {
     it('should get current user token', async () => {
       const token1 = 'test-1'
@@ -279,6 +287,7 @@ describe('<Users> Current User', function() {
     it('should replace current user token in the LocalCache', async () => {
       const token1 = 'test-1'
       const token2 = 'test-2'
+      const token3 = 'test-3'
 
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.USER_TOKEN, 'old-token')
 
@@ -302,12 +311,23 @@ describe('<Users> Current User', function() {
         .to.be.equal(Backendless.getCurrentUserToken())
         .to.be.equal(Backendless.UserService.getCurrentUserToken())
         .to.be.equal(Backendless.UserService.currentUser['user-token'])
+
+      expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
+
+      Backendless.UserService.setLocalCurrentUser({ 'user-token': token3 }, true)
+
+      expect(token3)
+        .to.be.equal(Backendless.getCurrentUserToken())
+        .to.be.equal(Backendless.UserService.getCurrentUserToken())
+        .to.be.equal(Backendless.UserService.currentUser['user-token'])
         .to.be.equal(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN))
     })
 
     it('should reset current user token and id in the LocalCache after initApp', async () => {
       const testToken = 'test-token'
       const testUserId = 'test-id'
+
+      Backendless.UserService.setLocalCurrentUser({ 'user-token': testToken }, true)
 
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.USER_TOKEN, testToken)
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, testUserId)
@@ -316,6 +336,12 @@ describe('<Users> Current User', function() {
 
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal(undefined)
+    })
+
+    it('should not set user-token', async () => {
+      Backendless.setCurrentUserToken('new-token')
+
+      expect(Backendless.getCurrentUserToken()).to.be.equal(null)
     })
 
   })

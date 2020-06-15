@@ -29,11 +29,11 @@ describe('<LocalCache> Browser', function() {
     delete global.localStorage
   })
 
-  xit('has default storage name', () => {
+  it('has default storage name', () => {
     expect(Backendless.LocalCache.storageName).to.be.equal('Backendless')
   })
 
-  xit('has particular storage name for standalone', () => {
+  it('has particular storage name for standalone', () => {
     const app1 = Backendless.initApp({ appId: 'appId-1', apiKey: 'apiKey-1', standalone: true })
     const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
 
@@ -105,7 +105,7 @@ describe('<LocalCache> Browser', function() {
     expect(Backendless.LocalCache.get('key-7')).to.be.eql({ foo: 'bar' })
   })
 
-  xit('returns empty storage even if there is broken string', () => {
+  it('returns empty storage even if there is broken string', () => {
     const warn = console.warn
 
     let warnMessage

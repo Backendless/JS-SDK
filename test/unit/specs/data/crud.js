@@ -143,10 +143,6 @@ describe('<Data> CRUD', function() {
 
       const requestBody = req1.body
 
-      // TODO: currently, it mutates parent object, but I assume we have to not do that
-
-      expect(requestBody).to.be.eql(parent)
-
       const obj1__id = requestBody.obj1.__subID
       const obj2__id = requestBody.obj1.obj2.__subID
       const obj3__id = requestBody.obj1.obj2.obj3.__subID
@@ -196,6 +192,120 @@ describe('<Data> CRUD', function() {
         'obj3'  : { '__originSubID': obj3__id },
         'child2': { '__originSubID': child2__id },
         'child4': { '__originSubID': child4__id }
+      })
+    })
+
+    it('should process Geometry instances', async () => {
+      const point1 = new Backendless.Data.Point().setX(10).setY(20)
+      const point2 = new Backendless.Data.Point().setX(30).setY(40)
+      const point3 = new Backendless.Data.Point().setX(50).setY(60)
+      const point4 = new Backendless.Data.Point().setX(70).setY(80)
+      const point5 = new Backendless.Data.Point().setX(90).setY(100)
+
+      const lineString1 = new Backendless.Data.LineString([point1, point2, point3, point4, point4, point5])
+      const lineString2 = new Backendless.Data.LineString([point3, point4, point5])
+      const lineString3 = new Backendless.Data.LineString([point4, point5, point1])
+
+      const polygon1 = new Backendless.Data.Polygon(lineString1)
+      const polygon2 = new Backendless.Data.Polygon(lineString2)
+      const polygon3 = new Backendless.Data.Polygon(lineString3, [lineString1, lineString2])
+
+      const parent = {
+        point1,
+        point2,
+        point3,
+        point4,
+        point5,
+        lineString1,
+        lineString2,
+        lineString3,
+        polygon1,
+        polygon2,
+        polygon3,
+      }
+
+      const req1 = prepareMockRequest(fakeResult)
+
+      await Backendless.Data.of(tableName).save(parent)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}`,
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      const requestBody = req1.body
+
+      expect(requestBody).to.be.eql({
+        'point1'     : { 'type': 'Point', 'coordinates': [10, 20] },
+        'point2'     : { 'type': 'Point', 'coordinates': [30, 40] },
+        'point3'     : { 'type': 'Point', 'coordinates': [50, 60] },
+        'point4'     : { 'type': 'Point', 'coordinates': [70, 80] },
+        'point5'     : { 'type': 'Point', 'coordinates': [90, 100] },
+        'lineString1': {
+          'type'       : 'LineString',
+          'coordinates': [[10, 20], [30, 40], [50, 60], [70, 80], [70, 80], [90, 100]]
+        },
+        'lineString2': {
+          'type'       : 'LineString',
+          'coordinates': [[50, 60], [70, 80], [90, 100]]
+        },
+        'lineString3': {
+          'type'       : 'LineString',
+          'coordinates': [[70, 80], [90, 100], [10, 20]]
+        },
+        'polygon1'   : {
+          'type'       : 'Polygon',
+          'coordinates': [[[10, 20], [30, 40], [50, 60], [70, 80], [70, 80], [90, 100]]]
+        },
+        'polygon2'   : {
+          'type'       : 'Polygon',
+          'coordinates': [[[50, 60], [70, 80], [90, 100]]]
+        },
+        'polygon3'   : {
+          'type'       : 'Polygon',
+          'coordinates': [[[70, 80], [90, 100], [10, 20]], [[10, 20], [30, 40], [50, 60], [70, 80], [70, 80], [90, 100]], [[50, 60], [70, 80], [90, 100]]]
+        }
+      })
+    })
+
+    it('should convert Date into timestamp', async () => {
+      const date1 = new Date()
+      const date2 = new Date()
+      const date3 = new Date()
+      const date4 = new Date()
+
+      const newObject = {
+        date  : date1,
+        sub   : {
+          date  : date2,
+          dates1: [date1, date2]
+        },
+        dates2: [date1, date2],
+        dates3: {
+          values: [date3, date4]
+        },
+      }
+
+      const req1 = prepareMockRequest({})
+
+      await Backendless.Data.of(tableName).save(newObject)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          date  : date1.getTime(),
+          sub   : {
+            date  : date2.getTime(),
+            dates1: [date1.getTime(), date2.getTime()]
+          },
+          dates2: [date1.getTime(), date2.getTime()],
+          dates3: {
+            values: [date3.getTime(), date4.getTime()]
+          }
+        }
       })
     })
   })
@@ -277,21 +387,21 @@ describe('<Data> CRUD', function() {
     })
 
     it('fails when objectId is invalid', async () => {
-      const errorMsg = 'Invalid value for the "value" argument. The argument must contain only string or object values'
+      const errorMsg = 'Object Id must be provided and must be a string.'
 
       const dataStore = Backendless.Data.of(tableName)
 
-      // await expect(dataStore.remove()).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove('')).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(false)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(undefined)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(0)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(123)).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove({})).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove([])).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(dataStore.remove(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.remove(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 

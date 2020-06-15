@@ -7,11 +7,11 @@ describe('<LocalCache> Virtual', function() {
 
   forTest(this)
 
-  xit('has default storage name', () => {
+  it('has default storage name', () => {
     expect(Backendless.LocalCache.storageName).to.be.equal('Backendless')
   })
 
-  xit('has particular storage name for standalone', () => {
+  it('has particular storage name for standalone', () => {
     const app1 = Backendless.initApp({ appId: 'appId-1', apiKey: 'apiKey-1', standalone: true })
     const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
 
