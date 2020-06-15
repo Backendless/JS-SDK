@@ -1,4 +1,3 @@
-import '../helpers/global'
 import sandbox from '../helpers/sandbox'
 
 const APP_ID = 'A98AF58F-6B83-0C7A-FFA9-6A88FD113200'

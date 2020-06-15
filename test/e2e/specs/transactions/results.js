@@ -114,9 +114,9 @@ describe('Transactions - Results', function() {
 
     it('has an access to operationType', async function() {
       expect(uow.create(PERSONS_TABLE_NAME, {}).getType()).to.equal('CREATE')
-      expect(uow.bulkCreate(PERSONS_TABLE_NAME, {}).getType()).to.equal('CREATE_BULK')
+      expect(uow.bulkCreate(PERSONS_TABLE_NAME, [{}]).getType()).to.equal('CREATE_BULK')
       expect(uow.update(PERSONS_TABLE_NAME, {}).getType()).to.equal('UPDATE')
-      expect(uow.bulkUpdate(PERSONS_TABLE_NAME, {}).getType()).to.equal('UPDATE_BULK')
+      expect(uow.bulkUpdate(PERSONS_TABLE_NAME, '1=1', {}).getType()).to.equal('UPDATE_BULK')
       expect(uow.delete(PERSONS_TABLE_NAME, {}).getType()).to.equal('DELETE')
       expect(uow.bulkDelete(PERSONS_TABLE_NAME, '1=1').getType()).to.equal('DELETE_BULK')
       expect(uow.find(PERSONS_TABLE_NAME, {}).getType()).to.equal('FIND')

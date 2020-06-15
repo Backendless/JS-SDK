@@ -58,7 +58,7 @@ const destroyAllTestApps = (() => {
 })()
 
 const createDestroyer = sandbox => async () => {
-  if (DESTROY_APP_AFTER_TEST) {
+  if (DESTROY_APP_AFTER_TEST && !PERSISTED_APP_ID) {
     log(`destroy after tests application: ${sandbox.app.id} (${sandbox.app.name})`)
 
     await sandbox.api.apps.deleteApp(sandbox.app.id)
@@ -105,6 +105,8 @@ const createSandbox = async api => {
   const appSettings = await api.settings.getAppSettings(app.id)
 
   Object.assign(app, appSettings)
+
+  log('created sandbox', sandbox)
 
   return sandbox
 }
