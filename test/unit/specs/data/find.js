@@ -55,6 +55,21 @@ describe('<Data> Find', function() {
       expect(result1).to.be.eql(fakeResult)
     })
 
+    it('with object', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await dataStore.findById({ objectId })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/pk?objectId=${objectId}`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql(fakeResult)
+    })
+
     it('with all query options', async () => {
       const req1 = prepareMockRequest(fakeResult)
       const req2 = prepareMockRequest(fakeResult)

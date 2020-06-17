@@ -66,8 +66,8 @@ export default class DataStore {
     if (objectId && typeof objectId === 'object' && !Array.isArray(objectId)) {
       // this is relevant for External Data Connectors where may be more that on primary key
 
-      if (Object.keys(objectId).length < 2) {
-        throw new Error('Provided object must have at least 2 primary keys.')
+      if (!Object.keys(objectId).length) {
+        throw new Error('Provided object must have at least 1 primary keys.')
       }
 
       result = await this.app.request.get({

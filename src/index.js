@@ -23,6 +23,28 @@ const root = (
 
 const previousBackendless = root && root.Backendless
 
+const showLegacyDataWarning = () => {
+  if (!showLegacyDataWarning.isShown) {
+    // eslint-disable-next-line no-console
+    console.warn('Backendless.Persistence is deprecated namespace, use Backendless.Data instead')
+
+    showLegacyDataWarning.isShown = true
+  }
+}
+
+const showLegacyGEOWarning = () => {
+  if (!showLegacyGEOWarning.isShown) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Legacy GEO API are deprecated and will be removed in the nearest release. ' +
+      'Please use Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
+      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
+    )
+
+    showLegacyGEOWarning.isShown = true
+  }
+}
+
 // Backendless supports two signatures for the initApp method
 // two args - applicationId {String} and secretKey {String}
 // or one argument - whole set of options {Object}
@@ -374,41 +396,28 @@ class Backendless {
 
   /** @deprecated */
   get GeoQuery() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
-      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
-    )
+    showLegacyGEOWarning()
 
     return this.Geo.Query
   }
 
   /** @deprecated */
   get GeoPoint() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
-      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
-    )
+    showLegacyGEOWarning()
 
     return this.Geo.Point
   }
 
   /** @deprecated */
   get GeoCluster() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
-      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
-    )
+    showLegacyGEOWarning()
 
     return this.Geo.Cluster
   }
 
   /** @deprecated */
   get Persistence() {
-    // eslint-disable-next-line no-console
-    console.warn('Backendless.Persistence is deprecated namespace, use Backendless.Data instead')
+    showLegacyDataWarning()
 
     return this.Data
   }

@@ -127,10 +127,9 @@ describe('<Data> Data Connectors', function() {
     })
 
     it('fails when objectId is invalid', async () => {
-      const errorMsg = 'Provided object must have at least 2 primary keys.'
+      const errorMsg = 'Provided object must have at least 1 primary keys.'
 
       await expect(dataStore.findById({})).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById({ foo: '123' })).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 
