@@ -133,7 +133,7 @@ const createSandboxFor = each => context => {
   const beforeHook = each ? beforeEach : before
 
   if (context) {
-    context.timeout(5000)
+    context.timeout(10000)
   }
 
   beforeEach(function() {

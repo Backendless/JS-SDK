@@ -9,9 +9,7 @@ export default class LocalCache {
   constructor(app) {
     this.app = app
 
-    this.storageName = this.app.standalone
-      ? `${STORAGE_KEY_NAMESPACE}-${this.app.applicationId}`
-      : STORAGE_KEY_NAMESPACE
+    this.storageName = `${STORAGE_KEY_NAMESPACE}_${this.app.applicationId}`
 
     const Storage = Utils.isLocalStorageSupported
       ? LocalStorage
@@ -27,7 +25,7 @@ export default class LocalCache {
   }
 
   setStorage(Storage) {
-    this.storage = new Storage(this.storageName)
+    this.storage = new Storage(this.storageName, STORAGE_KEY_NAMESPACE)
   }
 
   set(key, value) {
