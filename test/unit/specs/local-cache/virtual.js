@@ -1,22 +1,22 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { forTest } from '../../helpers/sandbox'
+import Backendless, { APP_ID, forTest } from '../../helpers/sandbox'
 
 describe('<LocalCache> Virtual', function() {
 
   forTest(this)
 
   it('has default storage name', () => {
-    expect(Backendless.LocalCache.storageName).to.be.equal('Backendless')
+    expect(Backendless.LocalCache.storageName).to.be.equal(`Backendless_${APP_ID}`)
   })
 
   it('has particular storage name for standalone', () => {
     const app1 = Backendless.initApp({ appId: 'appId-1', apiKey: 'apiKey-1', standalone: true })
     const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
 
-    expect(app1.LocalCache.storageName).to.be.equal('Backendless-appId-1')
-    expect(app2.LocalCache.storageName).to.be.equal('Backendless-appId-2')
+    expect(app1.LocalCache.storageName).to.be.equal('Backendless_appId-1')
+    expect(app2.LocalCache.storageName).to.be.equal('Backendless_appId-2')
   })
 
   it('has KEYS shortcuts', () => {

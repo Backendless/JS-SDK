@@ -1,7 +1,22 @@
+function migrateLegacyStorageData(storage, legacyStorageName) {
+  //TODO: this will be removed in the nearest release
+
+  if (!localStorage.getItem(storage.storageName)) {
+    const legacyStorageData = localStorage.getItem(legacyStorageName)
+
+    if (legacyStorageData) {
+      localStorage.setItem(storage.storageName, legacyStorageData)
+      localStorage.removeItem(legacyStorageName)
+    }
+  }
+}
+
 export default class LocalStorage {
 
-  constructor(storageName) {
+  constructor(storageName, legacyStorageName) {
     this.storageName = storageName
+
+    migrateLegacyStorageData(this, legacyStorageName)
   }
 
   getStore() {

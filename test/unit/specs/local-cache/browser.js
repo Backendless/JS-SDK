@@ -30,15 +30,35 @@ describe('<LocalCache> Browser', function() {
   })
 
   it('has default storage name', () => {
-    expect(Backendless.LocalCache.storageName).to.be.equal('Backendless')
+    expect(Backendless.LocalCache.storageName).to.be.equal(`Backendless_${APP_ID}`)
+  })
+
+  it('should migrate legacy storage', () => {
+    localStorage.setItem('Backendless', JSON.stringify({
+      [Backendless.LocalCache.Keys.USER_TOKEN]     : 'old-USER_TOKEN',
+      [Backendless.LocalCache.Keys.CURRENT_USER_ID]: 'old-CURRENT_USER_ID',
+      [Backendless.LocalCache.Keys.STAY_LOGGED_IN] : 'old-STAY_LOGGED_IN',
+      CUSTOM_FOO                                   : 'old-CUSTOM_FOO',
+      CUSTOM_BAR                                   : 'old-CUSTOM_BAR',
+    }))
+
+    Backendless.initApp('NEW_appId-1', 'NEW_apiKey-1')
+
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal('old-USER_TOKEN')
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.CURRENT_USER_ID)).to.be.equal('old-CURRENT_USER_ID')
+    expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal('old-STAY_LOGGED_IN')
+    expect(Backendless.LocalCache.get('CUSTOM_FOO')).to.be.equal('old-CUSTOM_FOO')
+    expect(Backendless.LocalCache.get('CUSTOM_BAR')).to.be.equal('old-CUSTOM_BAR')
+
+    expect(Backendless.LocalCache.storageName).to.be.equal('Backendless_NEW_appId-1')
   })
 
   it('has particular storage name for standalone', () => {
     const app1 = Backendless.initApp({ appId: 'appId-1', apiKey: 'apiKey-1', standalone: true })
     const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
 
-    expect(app1.LocalCache.storageName).to.be.equal('Backendless-appId-1')
-    expect(app2.LocalCache.storageName).to.be.equal('Backendless-appId-2')
+    expect(app1.LocalCache.storageName).to.be.equal('Backendless_appId-1')
+    expect(app2.LocalCache.storageName).to.be.equal('Backendless_appId-2')
   })
 
   it('has KEYS shortcuts', () => {
