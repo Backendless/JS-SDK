@@ -147,6 +147,74 @@ describe('<Data> GEO', function() {
 
       expect(point.asWKT()).to.equal(`POINT(${point.getX()} ${point.getY()})`)
     })
+
+    describe('Shortcuts for Maps', function() {
+
+      it('coordinates of point should be same as during creation', function() {
+        const x = createRandomCoordinate()
+        const y = createRandomCoordinate()
+
+        const point = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.WGS84)
+          .setX(x)
+          .setY(y)
+
+        expect(point.lng).to.be.equal(x)
+        expect(point.lat).to.be.equal(y)
+      })
+
+      it('has methods for working with Longitude and Latitude', function() {
+        const x = createRandomCoordinate()
+        const y = createRandomCoordinate()
+
+        const point = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.WGS84)
+
+        point.lng = x
+        point.lat = y
+
+        expect(point.getLongitude()).to.be.equal(point.getX()).to.be.equal(x)
+        expect(point.getLatitude()).to.be.equal(point.getY()).to.be.equal(y)
+      })
+
+      it('two same points should be equal', function() {
+        const x = createRandomCoordinate()
+        const y = createRandomCoordinate()
+
+        const point1 = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.WGS84)
+
+        point1.lng = x
+        point1.lat = y
+
+        const point2 = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.WGS84)
+
+        point2.lng = x
+        point2.lat = y
+
+        const point3 = point2
+
+        expect(point1.equals(point2)).to.equal(true)
+        expect(point2.equals(point3)).to.equal(true)
+      })
+
+      it('two same points should not be equal', function() {
+        const x = createRandomCoordinate()
+        const y = createRandomCoordinate()
+
+        const point1 = new Backendless.Data.Point(Backendless.Data.SpatialReferenceSystem.WGS84)
+
+        point1.lng = x
+        point1.lat = y
+
+        const point2 = {
+          srs: point1.srs,
+          x  : point1.lng,
+          y  : point1.lat
+        }
+
+        expect(point1.equals(point2)).to.equal(false)
+      })
+
+    })
+
   })
 
   describe('LineString', function() {
