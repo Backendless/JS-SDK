@@ -262,6 +262,7 @@ describe('Namespace', function() {
       expect(Backendless.PublishOptionsHeaders).to.equal(Backendless.Messaging.PublishOptionsHeaders)
 
       expect(Backendless.CustomServices).to.equal(Backendless.BL.CustomServices)
+      expect(Backendless.APIServices).to.equal(Backendless.CustomServices)
       expect(Backendless.Events).to.equal(Backendless.BL.Events)
     })
 
