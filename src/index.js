@@ -343,6 +343,10 @@ class Backendless {
     return this.BL.CustomServices
   }
 
+  get APIServices() {
+    return this.BL.CustomServices
+  }
+
   get Events() {
     return this.BL.Events
   }
