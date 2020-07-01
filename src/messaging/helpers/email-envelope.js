@@ -14,9 +14,9 @@ export default class EmailEnvelope {
   constructor(data) {
     data = data || {}
 
-    this.addresses = data.addresses || []
-    this.ccAddresses = data.ccAddresses || []
-    this.bccAddresses = data.bccAddresses || []
+    this.addresses = Utils.castArray(data.addresses) || []
+    this.ccAddresses = Utils.castArray(data.ccAddresses) || []
+    this.bccAddresses = Utils.castArray(data.bccAddresses) || []
     this.query = data.query || null
   }
 

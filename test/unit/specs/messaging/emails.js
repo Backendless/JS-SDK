@@ -312,6 +312,23 @@ describe('<Messaging> Emails', function() {
       })
     })
 
+    it('initial create with options without an array', async () => {
+      emailEnvelope = Backendless.EmailEnvelope.create({
+        addresses   : 'test-address',
+        ccAddresses : 'test-ccAddress',
+        bccAddresses: 'test-bccAddress',
+        query       : 'foo>123',
+        foo         : 123
+      })
+
+      expect(emailEnvelope.toJSON()).to.be.eql({
+        'addresses'    : ['test-address'],
+        'bcc-addresses': ['test-bccAddress'],
+        'cc-addresses' : ['test-ccAddress'],
+        criteria       : 'foo>123',
+      })
+    })
+
     it('initial create without any options', async () => {
       emailEnvelope = Backendless.EmailEnvelope.create()
 
