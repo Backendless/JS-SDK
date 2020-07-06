@@ -660,26 +660,27 @@ declare module Backendless {
         blUserLocale?: string;
     }
 
-    /**
-     * @private
-     * @class DataQuery
-     * @constructor
-     */
-    class DataQuery implements Backendless.DataQueryValueI {
-        properties: string[];
-        condition: string;
-        options: Object;
-        url: string;
+    interface DataQueryI {
+        pageSize?: number;
+        offset?: number;
 
-        addProperty(prop: string): void;
+        properties?: Array<string>;
+        excludeProps?: Array<string>;
 
-        setOption(name: string, value: string | Array<string> | number): void;
+        where?: string;
+        having?: string;
 
-        setOptions(options: Object): void;
+        sortBy?: Array<string>;
+        groupBy?: Array<string>;
 
-        getOption(name: string): string | Array<string> | number;
+        relations?: Array<string>;
+        relationsDepth?: number;
+        relationsPageSize?: number;
+    }
 
-        toJSON(): Object;
+    interface RelationsQueryI extends DataQueryI {
+        relationName: string;
+        relationModel?: Function;
     }
 
     /**
@@ -747,6 +748,8 @@ declare module Backendless {
         setRelationsPageSize(relationsPageSize: number): this;
 
         build(): Backendless.DataQueryValueI;
+
+        toJSON(): DataQueryI;
     }
 
     /**
@@ -761,10 +764,14 @@ declare module Backendless {
         static of(RelationModel: Object): Backendless.LoadRelationsQueryBuilder;
 
         setRelationModel(RelationModel: Object): this;
+
         getRelationModel(): Object;
 
         setRelationName(relationName: string): this;
+
         getRelationName(): string;
+
+        toJSON(): RelationsQueryI;
     }
 
     /**
@@ -1002,43 +1009,35 @@ declare module Backendless {
 
         constructor(name: string | Object | Function, classToTableMap: Object);
 
-        save(obj: Object): Promise<Object>;
-        save<T>(obj: T): Promise<T>;
+        save<T = object>(obj: T|object): Promise<T>;
 
-        remove(id: Object | string): Promise<Object>;
+        remove(id: object | string): Promise<object>;
 
-        find(obj?: Backendless.DataQueryBuilder): Promise<Object[]>;
-        find<T>(obj?: Backendless.DataQueryBuilder): Promise<T[]>;
+        find<T = object>(obj?: Backendless.DataQueryBuilder | DataQueryI): Promise<Array<T>>;
 
-        findById(query: Object | string): Promise<Object>;
-        findById<T>(query: Object | string): Promise<T>;
+        findById<T = object>(objectId: string, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
+        findById<T = object>(primaryKeys: object, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
-        findFirst(query?: Object): Promise<Object>;
-        findFirst<T>(query?: Object): Promise<T>;
+        findFirst<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
-        findLast(query?: Object): Promise<Object>;
-        findLast<T>(query?: Object): Promise<T>;
+        findLast<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
-        loadRelations(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<Array<Object>>;
-        loadRelations<T>(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<T[]>;
+        loadRelations<T = object>(parent: string | object, query: Backendless.LoadRelationsQueryBuilder | RelationsQueryI): Promise<Array<T>>;
 
         getObjectCount(query?: Backendless.DataQueryBuilder | string): Promise<number>
 
-        setRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        setRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        setRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        setRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        setRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        addRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        addRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        addRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        addRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        addRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        deleteRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        deleteRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        deleteRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        deleteRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        deleteRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        bulkCreate(objects: Array<Object>): Promise<Array<string>>;
+        bulkCreate(objects: Array<object>): Promise<Array<string>>;
 
-        bulkUpdate(whereClause: string, changes: Object): Promise<string>;
+        bulkUpdate(whereClause: string, changes: object): Promise<string>;
 
         bulkDelete(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): Promise<string>;
 
