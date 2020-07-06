@@ -38,17 +38,6 @@ function testLocalCache() {
     const result15: string[] = Backendless.LocalCache.get<string[]>(key);
 }
 
-function testDataQueryClass() {
-    const dataQuery: Backendless.DataQuery = new Backendless.DataQuery();
-    const properties: string[] = dataQuery.properties;
-    const condition: string = dataQuery.condition;
-    const options: Object = dataQuery.options;
-    const url: string = dataQuery.url;
-    const str: string = 'str';
-
-    dataQuery.addProperty(str);
-}
-
 function testDataQueryBuilderClass() {
     let dataQuery: Backendless.DataQueryBuilder = new Backendless.DataQueryBuilder();
     dataQuery = Backendless.DataQueryBuilder.create();
@@ -236,22 +225,54 @@ function testDataStoreClass() {
     promiseObject = dataStore.remove('str');
     promiseObject = dataStore.remove(item);
 
-    promiseObject = dataStore.find(dataQueryBuilder);
     promiseObject = dataStore.find();
+    promiseObject = dataStore.find(dataQueryBuilder);
+    promiseObject = dataStore.find({pageSize: 123, offset: 0});
+
     promisePersons = dataStore.find<Person>();
+    promisePersons = dataStore.find<Person>(dataQueryBuilder);
+    promisePersons = dataStore.find<Person>({pageSize: 123, offset: 0});
 
     promiseObject = dataStore.findById('myId');
+    promiseObject = dataStore.findById('myId', dataQueryBuilder);
+    promiseObject = dataStore.findById('myId', {pageSize: 123});
+    promiseObject = dataStore.findById({foo: 'myId'});
+    promiseObject = dataStore.findById({foo: 'myId'}, dataQueryBuilder);
+    promiseObject = dataStore.findById({foo: 'myId'}, {pageSize: 123});
+
     promisePerson = dataStore.findById<Person>('myId');
+    promisePerson = dataStore.findById<Person>('myId', dataQueryBuilder);
+    promisePerson = dataStore.findById<Person>('myId', {pageSize: 123});
+    promisePerson = dataStore.findById<Person>({foo: 'myId'});
+    promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
+    promisePerson = dataStore.findById<Person>({foo: 'myId'}, {pageSize: 123});
 
     promiseObject = dataStore.findFirst();
+    promiseObject = dataStore.findFirst(dataQueryBuilder);
+    promiseObject = dataStore.findFirst({pageSize: 123});
+
     promisePerson = dataStore.findFirst<Person>();
+    promisePerson = dataStore.findFirst<Person>(dataQueryBuilder);
+    promisePerson = dataStore.findFirst<Person>({pageSize: 123});
 
     promiseObject = dataStore.findLast();
+    promiseObject = dataStore.findLast(dataQueryBuilder);
+    promiseObject = dataStore.findLast({pageSize: 123});
+
     promisePerson = dataStore.findLast<Person>();
+    promisePerson = dataStore.findLast<Person>(dataQueryBuilder);
+    promisePerson = dataStore.findLast<Person>({pageSize: 123});
 
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
+    promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1'});
+    promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1', relationModel: Person});
+
+    promisePersons = dataStore.loadRelations<Person>(parentTableName, loadRelationsQueryBuilder);
+    promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1'});
+    promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1', relationModel: Person});
 
     promiseNum = dataStore.getObjectCount();
+    promiseNum = dataStore.getObjectCount('foo=123');
     promiseNum = dataStore.getObjectCount(dataQueryBuilder);
 
 }
