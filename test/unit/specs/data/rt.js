@@ -2237,7 +2237,7 @@ describe('<Data> RT', function() {
     })
 
     it('fails when parent objects list is invalid  on adding listener', async () => {
-      const errorMsg = 'Parent Object must be an array'
+      const errorMsg = 'Parent Objects must be an array'
 
       const callback = () => ({})
 
@@ -2646,7 +2646,7 @@ describe('<Data> RT', function() {
     })
 
     it('fails when parent objects list is invalid  on adding listener', async () => {
-      const errorMsg = 'Parent Object must be an array'
+      const errorMsg = 'Parent Objects must be an array'
 
       const callback = () => ({})
 
@@ -3055,7 +3055,7 @@ describe('<Data> RT', function() {
     })
 
     it('fails when parent objects list is invalid  on adding listener', async () => {
-      const errorMsg = 'Parent Object must be an array'
+      const errorMsg = 'Parent Objects must be an array'
 
       const callback = () => ({})
 
