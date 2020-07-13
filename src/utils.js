@@ -1,201 +1,56 @@
-import Async from './request/async'
-
 const Utils = {
-  isObject(obj) {
-    return obj === Object(obj)
-  },
-
-  isArray: (Array.isArray || function(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Array'
-  }),
-
-  isString(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'String'
-  },
-
-  isNumber(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Number'
-  },
-
-  isFunction(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Function'
-  },
-
-  isBoolean(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Boolean'
-  },
-
-  isDate(obj) {
-    return Object.prototype.toString.call(obj).slice(8, -1) === 'Date'
-  },
 
   isBrowser: isBrowser(),
 
   isLocalStorageSupported: isLocalStorageSupported(),
 
+  globalScope: (
+    (typeof self === 'object' && self.self === self && self) ||
+    (typeof global === 'object' && global.global === global && global)
+  ),
+
   castArray(value) {
-    if (Utils.isArray(value)) {
+    if (Array.isArray(value)) {
       return value
+    }
+
+    if (typeof value === 'undefined') {
+      return []
     }
 
     return [value]
   },
 
-  isEmpty(obj) {
-    if (obj === null || obj === undefined) {
-      return true
+  isCustomClassInstance(item) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      return false
     }
 
-    if (Utils.isArray(obj) || Utils.isString(obj)) {
-      return obj.length === 0
-    }
-
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key) && obj[key] !== undefined && obj[key] !== null) {
-        return false
-      }
-    }
-
-    return true
-  },
-
-  toQueryParams(params) {
-    params = params || {}
-    const result = []
-
-    for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        result.push(key + '=' + encodeURIComponent(params[key]))
-      }
-    }
-
-    return result.join('&')
-  },
-
-  tryParseJSON(s) {
-    try {
-      return typeof s === 'string' ? JSON.parse(s) : s
-    } catch (e) {
-      return s
-    }
+    return item.constructor !== Object
   },
 
   getClassName(obj) {
-    if (obj.prototype && obj.prototype.___class) {
-      return obj.prototype.___class
+    if (obj && obj.className) {
+      return obj.className
     }
 
-    if (Utils.isFunction(obj) && obj.name) {
-      return obj.name
-    }
-
-    const instStringified = (Utils.isFunction(obj) ? obj.toString() : obj.constructor.toString())
-    const results = instStringified.match(/function\s+(\w+)/)
-
-    return (results && results.length > 1) ? results[1] : ''
-  },
-
-  encodeArrayToUriComponent(arr) {
-    return arr.map(item => encodeURIComponent(item)).join(',')
-  },
-
-  deepExtend(destination, source, classToTableMap = {}) {
-    //TODO: refactor it
-    for (const property in source) {
-      if (source[property] !== undefined && source.hasOwnProperty(property)) {
-        destination[property] = destination[property] || {}
-        destination[property] = classWrapper(source[property], classToTableMap)
-
-        if (
-          destination[property]
-          && destination[property].hasOwnProperty(property)
-          && destination[property][property]
-          && destination[property][property].hasOwnProperty('__originSubID')
-        ) {
-
-          destination[property][property] = classWrapper(destination[property], classToTableMap)
-        }
+    if (typeof obj === 'function') {
+      if (obj.name) {
+        return obj.name
       }
     }
 
-    return destination
-  },
-
-  extractResponder(args) {
-    for (let i = 0; i < args.length; i++) {
-      if (args[i] instanceof Async) {
-        return args[i]
-      }
-    }
-  },
-
-  wrapAsync(asyncHandler, parser, context) {
-    //TODO: should we remove it?
-    if (asyncHandler instanceof Async && !parser) {
-      return asyncHandler
-    }
-
-    const success = data => {
-      if (parser) {
-        data = parser.call(context, data)
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      if (obj.___class) {
+        return obj.___class
       }
 
-      asyncHandler.success(data)
-    }
-
-    const error = data => {
-      asyncHandler.fault(data)
-    }
-
-    return new Async(success, error)
-  },
-
-  promisified(method) {
-    return function() {
-      Utils.checkPromiseSupport()
-
-      const args = [].slice.call(arguments)
-      const context = this
-      const fn = typeof method === 'function' ? method : context[method]
-
-      return new Promise(function(resolve, reject) {
-        args.push(new Async(resolve, reject, context))
-        fn.apply(context, args)
-      })
-    }
-  },
-
-  synchronized(method) {
-    return function() {
-      // eslint-disable-next-line no-console
-      console.warn('Using of sync methods is an outdated approach. Please use async methods.')
-
-      const context = this
-      const fn = typeof method === 'function' ? method : context[method]
-
-      return fn.apply(context, arguments)
-    }
-  },
-
-  checkPromiseSupport() {
-    if (typeof Promise === 'undefined') {
-      throw new Error(
-        'This browser doesn\'t support Promise API. Please use polyfill.\n' +
-        'More info is in the Backendless JS-SDK docs: https://backendless.com/docs/js/doc.html#sync-and-async-calls'
-      )
-    }
-  },
-
-  mirrorKeys(obj) {
-    const mirroredObject = {}
-
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        mirroredObject[key] = key
+      if (obj.constructor !== Object) {
+        return Utils.getClassName(obj.constructor)
       }
     }
 
-    return mirroredObject
+    return null
   },
 
   uuid() {
@@ -205,7 +60,6 @@ const Utils = {
 
     return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
   },
-
 }
 
 function isBrowser() {
@@ -217,52 +71,13 @@ function isLocalStorageSupported() {
     if (isBrowser() && window.localStorage) {
       localStorage.setItem('localStorageTest', true)
       localStorage.removeItem('localStorageTest')
+
       return true
-    } else {
-      return false
     }
   } catch (e) {
-    return false
-  }
-}
-
-function classWrapper(obj, classToTableMap) {
-  //TODO: refactor it
-  const wrapper = obj => {
-    let wrapperName = null
-    let Wrapper = null
-
-    for (const property in obj) {
-      if (obj.hasOwnProperty(property)) {
-        if (property === '___class') {
-          wrapperName = obj[property]
-          break
-        }
-      }
-    }
-
-    if (wrapperName) {
-      try {
-        Wrapper = classToTableMap[wrapperName] || eval(wrapperName)
-        obj = Utils.deepExtend(new Wrapper(), obj, classToTableMap)
-      } catch (e) {
-      }
-    }
-
-    return obj
   }
 
-  if (Utils.isObject(obj) && obj != null) {
-    if (Utils.isArray(obj)) {
-      for (let i = obj.length; i--;) {
-        obj[i] = wrapper(obj[i])
-      }
-    } else {
-      obj = wrapper(obj)
-    }
-  }
-
-  return obj
+  return false
 }
 
 export default Utils

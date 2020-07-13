@@ -1,6 +1,3 @@
-import Utils from '../../utils'
-import Async from '../../request/async'
-
 import GeoPoint from '../point'
 
 //TODO: refactor me
@@ -10,14 +7,9 @@ export default class GeoFenceActions {
     this.app = app
   }
 
-  run(action, geoFenceName, geoPoint, asyncHandler) {
-    if (geoPoint instanceof Async) {
-      asyncHandler = geoPoint
-      geoPoint = undefined
-    }
-
-    if (!Utils.isString(geoFenceName)) {
-      throw new Error("Invalid value for parameter 'geoFenceName'. Geo Fence Name must be a String")
+  async run(action, geoFenceName, geoPoint) {
+    if (typeof geoFenceName !== 'string') {
+      throw new Error('Invalid value for parameter \'geoFenceName\'. Geo Fence Name must be a String')
     }
 
     if (geoPoint && !(geoPoint instanceof GeoPoint) && !geoPoint.objectId) {
@@ -25,22 +17,20 @@ export default class GeoFenceActions {
     }
 
     return this.app.request.post({
-      url         : this.app.urls.geoFence(action, geoFenceName),
-      isAsync     : !!asyncHandler,
-      data        : geoPoint,
-      asyncHandler: asyncHandler
+      url : this.app.urls.geoFence(action, geoFenceName),
+      data: geoPoint,
     })
   }
 
-  enter(geoFenceName, geoPoint, asyncHandler) {
-    return this.run('onenter', geoFenceName, geoPoint, asyncHandler)
+  enter(geoFenceName, geoPoint) {
+    return this.run('onenter', geoFenceName, geoPoint)
   }
 
-  stay(geoFenceName, geoPoint, asyncHandler) {
-    return this.run('onstay', geoFenceName, geoPoint, asyncHandler)
+  stay(geoFenceName, geoPoint) {
+    return this.run('onstay', geoFenceName, geoPoint)
   }
 
-  exit(geoFenceName, geoPoint, asyncHandler) {
-    return this.run('onexit', geoFenceName, geoPoint, asyncHandler)
+  exit(geoFenceName, geoPoint) {
+    return this.run('onexit', geoFenceName, geoPoint)
   }
 }

@@ -1,8 +1,8 @@
 import Request from 'backendless-request'
 
 import APIRequest from './request'
-import Utils from './utils'
 import Urls from './urls'
+import Utils from './utils'
 
 const DEFAULT_PROPS = {
   appId         : null,
@@ -23,13 +23,35 @@ const root = (
 
 const previousBackendless = root && root.Backendless
 
+const showLegacyDataWarning = () => {
+  if (!showLegacyDataWarning.isShown) {
+    // eslint-disable-next-line no-console
+    console.warn('Backendless.Persistence is deprecated namespace, use Backendless.Data instead')
+
+    showLegacyDataWarning.isShown = true
+  }
+}
+
+const showLegacyGEOWarning = () => {
+  if (!showLegacyGEOWarning.isShown) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Legacy GEO API are deprecated and will be removed in the nearest release. ' +
+      'Please use Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
+      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
+    )
+
+    showLegacyGEOWarning.isShown = true
+  }
+}
+
 // Backendless supports two signatures for the initApp method
 // two args - applicationId {String} and secretKey {String}
 // or one argument - whole set of options {Object}
 const parseInitConfig = (...args) => {
   const [appId, apiKey] = args
 
-  if (Utils.isObject(appId)) {
+  if (appId && typeof appId === 'object') {
     return appId
   }
 
@@ -53,6 +75,7 @@ const SERVICES = {
   'RT'          : () => require('./rt').default,
   'SharedObject': () => require('./rso').default,
   'LocalCache'  : () => require('./local-cache').default,
+  'UnitOfWork'  : () => require('./unit-of-work').default,
 }
 
 class Backendless {
@@ -99,11 +122,32 @@ class Backendless {
     app.initConfig(config)
 
     app.resetRT()
-    app.Logging.reset()
-    app.Geo.resetGeofenceMonitoring()
-    app.Users.setLocalCurrentUser()
+
+    app.__removeService('LocalCache')
+
+    if (app.__hasService('Logging')) {
+      app.Logging.reset()
+    }
+
+    if (app.__hasService('Geo')) {
+      app.Geo.resetGeofenceMonitoring()
+    }
+
+    if (app.__hasService('Users')) {
+      app.Users.currentUser = null
+    }
+
+    delete this.__device
 
     return app
+  }
+
+  __hasService(name) {
+    return !!this[`__${name}`]
+  }
+
+  __removeService(name) {
+    delete this[`__${name}`]
   }
 
   __getService(name) {
@@ -187,7 +231,10 @@ class Backendless {
 
     if (this.__debugMode !== debugMode) {
       this.__debugMode = debugMode
-      this.RT.setDebugMode(debugMode)
+
+      if (this.__RT) {
+        this.RT.setDebugMode(debugMode)
+      }
     }
   }
 
@@ -225,16 +272,24 @@ class Backendless {
     )
   }
 
-  setupDevice(...args) {
-    const { default: Device } = require('./device')
+  setupDevice(device) {
+    const Device = require('./device').default
 
-    this.__device = new Device(...args)
+    this.__device = new Device(device)
   }
 
   ///----------UTIL METHODS--------///
 
+  get Utils() {
+    return Utils
+  }
+
   getCurrentUserToken() {
     return this.Users.getCurrentUserToken()
+  }
+
+  setCurrentUserToken(userToken) {
+    this.Users.setCurrentUserToken(userToken)
   }
 
   get browser() {
@@ -276,11 +331,19 @@ class Backendless {
     return require('./users/user').default
   }
 
+  get UserService() {
+    return this.Users
+  }
+
   get BL() {
     return this.__getService('BL')
   }
 
   get CustomServices() {
+    return this.BL.CustomServices
+  }
+
+  get APIServices() {
     return this.BL.CustomServices
   }
 
@@ -323,6 +386,10 @@ class Backendless {
     return this.__getService('LocalCache')
   }
 
+  get UnitOfWork() {
+    return this.__getService('UnitOfWork')
+  }
+
   ///-------------- SERVICES -------------///
   ///-------------------------------------///
 
@@ -331,24 +398,31 @@ class Backendless {
 
   //TODO: do we need to remove it?
 
-  get UserService() {
-    return this.Users
-  }
-
+  /** @deprecated */
   get GeoQuery() {
+    showLegacyGEOWarning()
+
     return this.Geo.Query
   }
 
+  /** @deprecated */
   get GeoPoint() {
+    showLegacyGEOWarning()
+
     return this.Geo.Point
   }
 
+  /** @deprecated */
   get GeoCluster() {
+    showLegacyGEOWarning()
+
     return this.Geo.Cluster
   }
 
   /** @deprecated */
   get Persistence() {
+    showLegacyDataWarning()
+
     return this.Data
   }
 
@@ -378,11 +452,6 @@ class Backendless {
 
   get EmailEnvelope() {
     return this.Messaging.EmailEnvelope
-  }
-
-  /** @deprecated */
-  get SubscriptionOptions() {
-    return this.Messaging.SubscriptionOptions
   }
 
   ///--------BACKWARD COMPATIBILITY-------///

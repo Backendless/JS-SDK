@@ -4,6 +4,7 @@ export default class GeoPoint {
     args = args || {}
 
     this.___class = 'GeoPoint'
+
     this.categories = args.categories
     this.latitude = args.latitude
     this.longitude = args.longitude

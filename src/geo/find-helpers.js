@@ -1,5 +1,3 @@
-import Utils from '../utils'
-
 //TODO: refactor me
 const FindHelpers = {
   searchRectangle: function(arg) {
@@ -30,9 +28,9 @@ const FindHelpers = {
   },
 
   categories: function(arg) {
-    arg = Utils.isString(arg) ? [arg] : arg
+    arg = typeof arg === 'string' ? [arg] : arg
 
-    return 'categories=' + Utils.encodeArrayToUriComponent(arg)
+    return 'categories=' + arg.map(item => encodeURIComponent(item)).join(',')
   },
 
   includeMetadata: function(arg) {

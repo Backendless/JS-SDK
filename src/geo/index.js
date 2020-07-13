@@ -1,7 +1,6 @@
+import { deprecated } from '../decorators'
 import Utils from '../utils'
 import GeoUtils from './utils'
-
-import { deprecated } from '../decorators'
 
 import { EARTH_RADIUS, UNITS } from './constants'
 
@@ -10,17 +9,14 @@ import GeoCluster from './cluster'
 import GeoPoint from './point'
 import GeoQuery from './query'
 
-import { savePoint } from './save-point'
-import { addCategory } from './add-category'
-import { deleteCategory } from './delete-category'
-import { getCategories } from './get-categories'
-import { deletePoint } from './delete-point'
-import { getGeopointCount } from './get-points-count'
-import { getClusterPoints } from './get-cluster-points'
-import { loadPoints } from './load-points'
-import { loadMetadata } from './load-metadata'
-import { relativeFind } from './relative-find'
-import { loadFencePoints } from './load-fence-points'
+import FindHelpers from './find-helpers'
+import { validateQueryObject } from './query-validator'
+import { toQueryParams } from './query-params'
+
+const alternativeForDepreciation = (
+  'Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
+  'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
+)
 
 export default class Geo {
   constructor(app) {
@@ -36,156 +32,263 @@ export default class Geo {
     this.Query = GeoQuery
   }
 
-  /** @deprecated */
-  addPoint(/** geopoint, async */) {
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async addPoint(/** geopoint */) {
     return this.savePoint.apply(this, arguments)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.savePoint')
-  savePointSync(...args) {
-    return Utils.synchronized(savePoint).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async savePoint(geoPoint) {
+    if (typeof geoPoint.latitude !== 'number' || typeof geoPoint.longitude !== 'number') {
+      throw new Error('Latitude or Longitude not a number')
+    }
+
+    geoPoint.categories = Utils.castArray(geoPoint.categories || ['Default'])
+
+    const method = geoPoint.objectId
+      ? this.app.request.Methods.PATCH
+      : this.app.request.Methods.POST
+
+    const url = geoPoint.objectId
+      ? this.app.urls.geoPoint(geoPoint.objectId)
+      : this.app.urls.geoPoints()
+
+    return this.app.request
+      .send({
+        method,
+        url,
+        data: geoPoint,
+      })
+      .then(parseResponse)
+
+    function parseResponse(resp) {
+      const geoPoint = new GeoPoint()
+
+      geoPoint.categories = resp.geopoint.categories
+      geoPoint.latitude = resp.geopoint.latitude
+      geoPoint.longitude = resp.geopoint.longitude
+      geoPoint.metadata = resp.geopoint.metadata
+      geoPoint.objectId = resp.geopoint.objectId
+
+      return geoPoint
+    }
   }
 
-  savePoint(...args) {
-    return Utils.promisified(savePoint).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async find(query) {
+    query.url = this.app.urls.geo()
+
+    return loadItems.call(this, query)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.find')
-  findSync(...args) {
-    return Utils.synchronized(loadPoints).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async loadMetadata(geoObject) {
+    const isCluster = geoObject instanceof GeoCluster
+    const isPoint = geoObject instanceof GeoPoint
+
+    if (!geoObject.objectId || !isCluster && !isPoint) {
+      throw new Error('Method argument must be a valid instance of GeoPoint or GeoCluster persisted on the server')
+    }
+
+    let url = this.app.urls.geoPointMetaData(geoObject.objectId)
+
+    if (isCluster) {
+      const geoQuery = geoObject.geoQuery
+
+      if (!(geoQuery instanceof GeoQuery)) {
+        throw new Error(
+          'Invalid GeoCluster object. ' +
+          'Make sure to obtain an instance of GeoCluster using the Backendless.Geo.find API'
+        )
+      }
+
+      url += '?'
+
+      for (const prop in geoQuery) {
+        if (geoQuery.hasOwnProperty(prop) && FindHelpers.hasOwnProperty(prop) && geoQuery[prop] != null) {
+          url += '&' + FindHelpers[prop](geoQuery[prop])
+        }
+      }
+
+    }
+
+    return this.app.request.get({
+      url: url,
+    })
   }
 
-  find(...args) {
-    return Utils.promisified(loadPoints).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async getClusterPoints(geoObject) {
+    if (!geoObject.objectId || !(geoObject instanceof GeoCluster)) {
+      throw new Error('Method argument must be a valid instance of GeoCluster persisted on the server')
+    }
+
+    if (!(geoObject.geoQuery instanceof GeoQuery)) {
+      throw new Error(
+        'Invalid GeoCluster object. ' +
+        'Make sure to obtain an instance of GeoCluster using the Backendless.Geo.find API'
+      )
+    }
+
+    let url = this.app.urls.geoClusterPoints(geoObject.objectId) + '?'
+
+    const geoQuery = geoObject.geoQuery
+
+    for (const prop in geoQuery) {
+      if (geoQuery.hasOwnProperty(prop) && FindHelpers.hasOwnProperty(prop) && geoQuery[prop] != null) {
+        url += '&' + FindHelpers[prop](geoQuery[prop])
+      }
+    }
+
+    const parser = geoCollection => {
+      for (let i = 0; i < geoCollection.length; i++) {
+        geoCollection[i] = new GeoPoint(geoCollection[i])
+      }
+
+      return geoCollection
+    }
+
+    return this.app.request
+      .get({
+        url: url,
+      })
+      .then(parser)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.loadMetadata')
-  loadMetadataSync(...args) {
-    return Utils.synchronized(loadMetadata).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async relativeFind(query) {
+    if (!(query.relativeFindMetadata && query.relativeFindPercentThreshold)) {
+      throw new Error(
+        'Inconsistent geo query. ' +
+        'Query should contain both relativeFindPercentThreshold and relativeFindMetadata'
+      )
+    }
+
+    validateQueryObject(query)
+
+    query.url = this.app.urls.geoRelative()
+
+    const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
+
+    return this.app.request
+      .get({
+        url: url,
+      })
+      .then(resp => responseParser(resp))
+
+    function responseParser(items) {
+      return items.map(item => ({
+        geoPoint: new GeoPoint(item.geoPoint),
+        matches : item.matches
+      }))
+    }
   }
 
-  loadMetadata(...args) {
-    return Utils.promisified(loadMetadata).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async addCategory(name) {
+    if (!name) {
+      throw new Error('Category name is required.')
+    }
+
+    return this.app.request.put({
+      url: this.app.urls.geoCategory(name),
+    })
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.getClusterPoints')
-  getClusterPointsSync(...args) {
-    return Utils.synchronized(getClusterPoints).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async getCategories() {
+    return this.app.request.get({
+      url: this.app.urls.geoCategories(),
+    })
   }
 
-  getClusterPoints(...args) {
-    return Utils.promisified(getClusterPoints).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async deleteCategory(name) {
+    if (!name) {
+      throw new Error('Category name is required.')
+    }
+
+    return this.app.request.delete({
+      url: this.app.urls.geoCategory(name),
+    })
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.relativeFind')
-  relativeFindSync(...args) {
-    return Utils.synchronized(relativeFind).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async deletePoint(point) {
+    const pointId = point && point.objectId || point
+
+    if (!pointId || typeof pointId !== 'string') {
+      throw new Error('Point argument name is required, must be string (object Id), or point object')
+    }
+
+    return this.app.request
+      .delete({
+        url: this.app.urls.geoPoint(pointId),
+      })
+      .then(data => data.result || data)
   }
 
-  relativeFind(...args) {
-    return Utils.promisified(relativeFind).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async getFencePoints(geoFenceName, query) {
+    query = query || new GeoQuery()
+
+    query.geoFence = geoFenceName
+    query.url = this.app.urls.geo()
+
+    return loadItems.call(this, query)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.addCategory')
-  addCategorySync(...args) {
-    return Utils.synchronized(addCategory).call(this, ...args)
+  @deprecated('Backendless.Geo', alternativeForDepreciation)
+  async getGeopointCount(fenceName, query) {
+    if (fenceName && typeof fenceName === 'object') {
+      query = fenceName
+      fenceName = undefined
+    }
+
+    if (!query || typeof query !== 'object') {
+      throw new Error('Geo query must be specified')
+    }
+
+    if (fenceName) {
+      query['geoFence'] = fenceName
+    }
+
+    validateQueryObject(query)
+
+    const url = this.app.urls.geoCount() + '?' + toQueryParams(query)
+
+    return this.app.request.get({
+      url: url,
+    })
   }
 
-  addCategory(...args) {
-    return Utils.promisified(addCategory).call(this, ...args)
-  }
-
-  @deprecated('Backendless.Geo', 'Backendless.Geo.getCategories')
-  getCategoriesSync(...args) {
-    return Utils.synchronized(getCategories).call(this, ...args)
-  }
-
-  getCategories(...args) {
-    return Utils.promisified(getCategories).call(this, ...args)
-  }
-
-  @deprecated('Backendless.Geo', 'Backendless.Geo.deleteCategory')
-  deleteCategorySync(...args) {
-    return Utils.synchronized(deleteCategory).call(this, ...args)
-  }
-
-  deleteCategory(...args) {
-    return Utils.promisified(deleteCategory).call(this, ...args)
-  }
-
-  @deprecated('Backendless.Geo', 'Backendless.Geo.deletePoint')
-  deletePointSync(...args) {
-    return Utils.synchronized(deletePoint).call(this, ...args)
-  }
-
-  deletePoint(...args) {
-    return Utils.promisified(deletePoint).call(this, ...args)
-  }
-
-  @deprecated('Backendless.Geo', 'Backendless.Geo.getFencePoints')
-  getFencePointsSync(...args) {
-    return Utils.synchronized(loadFencePoints).call(this, ...args)
-  }
-
-  getFencePoints(...args) {
-    return Utils.promisified(loadFencePoints).call(this, ...args)
-  }
-
-  @deprecated('Backendless.Geo', 'Backendless.Geo.getGeopointCount')
-  getGeopointCountSync(...args) {
-    return Utils.synchronized(getGeopointCount).call(this, ...args)
-  }
-
-  getGeopointCount(...args) {
-    return Utils.promisified(getGeopointCount).call(this, ...args)
-  }
-
-  @deprecated('Backendless.Geo', 'Backendless.Geo.runOnEnterAction')
-  runOnEnterActionSync(...args) {
-    return this.trackerMonitor.runOnEnterActionSync(...args)
-  }
-
-  runOnEnterAction(...args) {
+  @deprecated('Backendless.Geo')
+  async runOnEnterAction(...args) {
     return this.trackerMonitor.runOnEnterAction(...args)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.runOnStayAction')
-  runOnStayActionSync(...args) {
-    return this.trackerMonitor.runOnStayActionSync(...args)
-  }
-
-  runOnStayAction(...args) {
+  @deprecated('Backendless.Geo')
+  async runOnStayAction(...args) {
     return this.trackerMonitor.runOnStayAction(...args)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.runOnExitAction')
-  runOnExitActionSync(...args) {
-    return this.trackerMonitor.runOnExitActionSync(...args)
-  }
-
-  runOnExitAction(...args) {
+  @deprecated('Backendless.Geo')
+  async runOnExitAction(...args) {
     return this.trackerMonitor.runOnExitAction(...args)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.startGeofenceMonitoringWithInAppCallback')
-  startGeofenceMonitoringWithInAppCallbackSync(...args) {
-    return this.trackerMonitor.startGeofenceMonitoringWithInAppCallbackSync(...args)
-  }
-
-  startGeofenceMonitoringWithInAppCallback(...args) {
+  @deprecated('Backendless.Geo')
+  async startGeofenceMonitoringWithInAppCallback(...args) {
     return this.trackerMonitor.startGeofenceMonitoringWithInAppCallback(...args)
   }
 
-  @deprecated('Backendless.Geo', 'Backendless.Geo.startGeofenceMonitoringWithRemoteCallback')
-  startGeofenceMonitoringWithRemoteCallbackSync(...args) {
-    return this.trackerMonitor.startGeofenceMonitoringWithRemoteCallbackSync(...args)
-  }
-
-  startGeofenceMonitoringWithRemoteCallback(...args) {
+  @deprecated('Backendless.Geo')
+  async startGeofenceMonitoringWithRemoteCallback(...args) {
     return this.trackerMonitor.startGeofenceMonitoringWithRemoteCallback(...args)
   }
 
-  stopGeofenceMonitoring(...args) {
+  @deprecated('Backendless.Geo')
+  async stopGeofenceMonitoring(...args) {
     return this.trackerMonitor.stopGeofenceMonitoring(...args)
   }
 
@@ -193,3 +296,26 @@ export default class Geo {
     return this.trackerMonitor.reset(...args)
   }
 }
+
+function loadItems(query) {
+  validateQueryObject(query)
+
+  const url = query.url + (query.searchRectangle ? '/rect' : '/points') + '?' + toQueryParams(query)
+
+  return this.app.request
+    .get({
+      url: url,
+    })
+    .then(resp => responseParser(resp, query))
+
+  function responseParser(resp, geoQuery) {
+    return resp.map(geoObject => {
+      const GeoItem = geoObject.hasOwnProperty('totalPoints')
+        ? GeoCluster
+        : GeoPoint
+
+      return new GeoItem({ ...geoObject, geoQuery })
+    })
+  }
+}
+

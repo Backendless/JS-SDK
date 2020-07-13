@@ -1,30 +1,61 @@
-import Utils from '../utils'
-import { deprecated } from '../decorators'
-
-import { validatePlayPurchase } from './validate-play-purchase'
-import { cancelPlaySubscription } from './cancel-play-subscription'
-import { getPlaySubscriptionStatus } from './get-play-subscription-status'
-
-class Commerce {
+export default class Commerce {
   constructor(app) {
     this.app = app
   }
+
+  async validatePlayPurchase(packageName, productId, token) {
+    if (!packageName || typeof packageName !== 'string') {
+      throw new Error('Package Name must be provided and must be a string.')
+    }
+
+    if (!productId || typeof productId !== 'string') {
+      throw new Error('Product Id must be provided and must be a string.')
+    }
+
+    if (!token || typeof token !== 'string') {
+      throw new Error('Token must be provided and must be a string.')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.commerceValidate(packageName, productId, token),
+    })
+  }
+
+  async cancelPlaySubscription(packageName, subscriptionId, token) {
+    if (!packageName || typeof packageName !== 'string') {
+      throw new Error('Package Name must be provided and must be a string.')
+    }
+
+    if (!subscriptionId || typeof subscriptionId !== 'string') {
+      throw new Error('Subscription Id must be provided and must be a string.')
+    }
+
+    if (!token || typeof token !== 'string') {
+      throw new Error('Token must be provided and must be a string.')
+    }
+
+    return this.app.request.post({
+      url: this.app.urls.commerceSubCancel(packageName, subscriptionId, token),
+    })
+  }
+
+  async getPlaySubscriptionStatus(packageName, subscriptionId, token) {
+    if (!packageName || typeof packageName !== 'string') {
+      throw new Error('Package Name must be provided and must be a string.')
+    }
+
+    if (!subscriptionId || typeof subscriptionId !== 'string') {
+      throw new Error('Subscription Id must be provided and must be a string.')
+    }
+
+    if (!token || typeof token !== 'string') {
+      throw new Error('Token must be provided and must be a string.')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.commerceSubStatus(packageName, subscriptionId, token),
+    })
+  }
+
 }
-
-Object.assign(Commerce.prototype, {
-  @deprecated('Backendless.Commerce', 'Backendless.Commerce.validatePlayPurchase')
-  validatePlayPurchaseSync: Utils.synchronized(validatePlayPurchase),
-  validatePlayPurchase    : Utils.promisified(validatePlayPurchase),
-
-  @deprecated('Backendless.Commerce', 'Backendless.Commerce.cancelPlaySubscription')
-  cancelPlaySubscriptionSync: Utils.synchronized(cancelPlaySubscription),
-  cancelPlaySubscription    : Utils.promisified(cancelPlaySubscription),
-
-  @deprecated('Backendless.Commerce', 'Backendless.Commerce.getPlaySubscriptionStatus')
-  getPlaySubscriptionStatusSync: Utils.synchronized(getPlaySubscriptionStatus),
-  getPlaySubscriptionStatus    : Utils.promisified(getPlaySubscriptionStatus),
-
-})
-
-export default Commerce
 

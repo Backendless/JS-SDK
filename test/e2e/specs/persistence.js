@@ -1,6 +1,4 @@
-import '../helpers/global'
-import sandbox from '../helpers/sandbox'
-import * as Utils from '../helpers/utils'
+import sandbox, { Utils } from '../helpers/sandbox'
 
 const Backendless = sandbox.Backendless
 
@@ -215,7 +213,7 @@ describe('Data', function() {
         error = e
       }
 
-      expect(error.message).to.be.equal('Invalid value for the "value" argument. The argument must contain only string or object values')
+      expect(error.message).to.be.equal('Object Id must be provided and must be a string.')
     })
 
   })
@@ -444,7 +442,15 @@ describe('Data', function() {
 
       result.forEach(schemaObject => {
         expect(schemaObject).to.have.all.keys([
-          'name', 'required', 'type', 'defaultValue', 'relatedTable', 'customRegex', 'autoLoad', 'isPrimaryKey'
+          'name',
+          'required',
+          'type',
+          'defaultValue',
+          'expression',
+          'relatedTable',
+          'customRegex',
+          'autoLoad',
+          'isPrimaryKey'
         ])
       })
     })

@@ -1,34 +1,31 @@
 export default class Logger {
-  /**
-   * @param {string} name
-   * @param {LoggingCollector} loggingCollector
-   */
-  constructor(name, loggingCollector) {
+
+  constructor(name, logging) {
     this.name = name
-    this.loggingCollector = loggingCollector
+    this.logging = logging
   }
 
   debug(message) {
-    return this.loggingCollector.push(this.name, 'DEBUG', message)
+    return this.logging.push(this.name, 'DEBUG', message)
   }
 
   info(message) {
-    return this.loggingCollector.push(this.name, 'INFO', message)
+    return this.logging.push(this.name, 'INFO', message)
   }
 
   warn(message, exception) {
-    return this.loggingCollector.push(this.name, 'WARN', message, exception)
+    return this.logging.push(this.name, 'WARN', message, exception)
   }
 
   error(message, exception) {
-    return this.loggingCollector.push(this.name, 'ERROR', message, exception)
+    return this.logging.push(this.name, 'ERROR', message, exception)
   }
 
   fatal(message, exception) {
-    return this.loggingCollector.push(this.name, 'FATAL', message, exception)
+    return this.logging.push(this.name, 'FATAL', message, exception)
   }
 
   trace(message) {
-    return this.loggingCollector.push(this.name, 'TRACE', message)
+    return this.logging.push(this.name, 'TRACE', message)
   }
 }

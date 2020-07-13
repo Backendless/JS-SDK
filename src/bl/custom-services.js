@@ -1,19 +1,35 @@
-import Utils from '../utils'
-import { deprecated } from '../decorators'
+import { EXECUTION_TYPE_HEADER, isExecutionType } from './constants'
 
-import { invokeServiceMethod } from './invoke-service-method'
-
-class CustomServices {
+export default class CustomServices {
   constructor(app) {
     this.app = app
   }
+
+  async invoke(serviceName, methodName, parameters, executionType) {
+    if (!serviceName || typeof serviceName !== 'string') {
+      throw new Error('Service Name must be provided and must be a string.')
+    }
+
+    if (!methodName || typeof methodName !== 'string') {
+      throw new Error('Method Name must be provided and must be a string.')
+    }
+
+    if (typeof parameters === 'string' && isExecutionType(parameters)) {
+      executionType = parameters
+      parameters = undefined
+    }
+
+    const headers = {}
+
+    if (executionType) {
+      headers[EXECUTION_TYPE_HEADER] = executionType
+    }
+
+    return this.app.request.post({
+      url    : this.app.urls.blServiceMethod(serviceName, methodName),
+      data   : parameters,
+      headers: headers
+    })
+  }
 }
-
-Object.assign(CustomServices.prototype, {
-  @deprecated('Backendless.CustomServices', 'Backendless.CustomServices.invoke')
-  invokeSync: Utils.synchronized(invokeServiceMethod),
-  invoke    : Utils.promisified(invokeServiceMethod),
-})
-
-export default CustomServices
 

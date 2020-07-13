@@ -105,6 +105,10 @@ export default class Urls {
     return `${this.dataTable(tableName)}/find`
   }
 
+  dataTablePrimaryKey(tableName) {
+    return `${this.dataTable(tableName)}/pk`
+  }
+
   dataTableObject(tableName, objectId) {
     return `${this.dataTable(tableName)}/${objectId}`
   }
@@ -130,7 +134,11 @@ export default class Urls {
   }
 
   dataObjectPermission(tableName, permissionType, objectId) {
-    return `${this.dataTable(tableName)}/permissions/${permissionType}/${encodeURIComponent(objectId)}`
+    return `${this.dataTable(tableName)}/permissions/${permissionType}/${objectId}`
+  }
+
+  transactions() {
+    return `${this.root()}/transaction/unit-of-work`
   }
 
   //messaging
@@ -338,5 +346,9 @@ export default class Urls {
 
   guestLogin() {
     return `${this.users()}/register/guest`
+  }
+
+  userStatus(userId) {
+    return `${this.userObject(userId)}/status`
   }
 }

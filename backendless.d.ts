@@ -47,29 +47,11 @@ declare module Backendless {
      * @namespace Backendless.LocalCache
      **/
     namespace LocalCache {
-        let enabled: boolean;
+        function set(key: string, value?: any): void;
 
-        function exists(key: string): boolean;
+        function remove(key: string): void;
 
-        function set(key: string): boolean;
-
-        function set<T>(key: string, val: T): T;
-
-        function remove(key: string): boolean;
-
-        function get(key: string): any;
-
-        function getAll(): Object;
-
-        function getCachePolicy(key: string): Object;
-
-        function serialize(value: any): string;
-
-        function deserialize(value: string): any;
-
-        function clear(): void;
-
-        function flushExpired(): void;
+        function get<T = any>(key: string): T;
     }
 
     /**
@@ -82,11 +64,6 @@ declare module Backendless {
          * @private
          */
         interface PersistencePermissionI {
-            /** @deprecated */
-            grantUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-            /** @deprecated */
-            denyUserSync(userId: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
             /** @deprecated */
             grantUser(userId: string, dataItem: ExistDataItemI): Promise<Backendless.ExistDataItemI>;
@@ -95,22 +72,10 @@ declare module Backendless {
             denyUser(userId: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
 
             /** @deprecated */
-            grantRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-            /** @deprecated */
-            denyRoleSync(roleName: string, dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-            /** @deprecated */
             grantRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
 
             /** @deprecated */
             denyRole(roleName: string, dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
-
-            /** @deprecated */
-            grantSync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
-
-            /** @deprecated */
-            denySync(dataItem: Backendless.ExistDataItemI): Backendless.ExistDataItemI;
 
             /** @deprecated */
             grant(dataItem: Backendless.ExistDataItemI): Promise<Backendless.ExistDataItemI>;
@@ -288,21 +253,12 @@ declare module Backendless {
 
         function save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
 
-        function saveSync(model: Backendless.DataStore | string, data: Object): Object;
-
         function getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
-
-        function getViewSync(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Object;
 
         function describe(model: string | Object | Function): Promise<Object>;
 
-        function describeSync(model: string | Object | Function): Object;
-
-        function callStoredProcedure(spName: string, argumentValues: Object | string): Promise<Object>;
-
-        function callStoredProcedureSync(spName: string, argumentValues: Object | string): Object;
-
-        function mapTableToClass(tableName: string, clientClass: Function);
+        function mapTableToClass(tableName: string, clientClass: Function): void;
+        function mapTableToClass(clientClass: Function): void;
     }
 
     /**
@@ -312,173 +268,128 @@ declare module Backendless {
     namespace UserService {
         let restUrl: string;
 
-        function registerSync(user: Backendless.User): Backendless.User;
-        function registerSync<T>(user: T): T;
-
         function register(user: Backendless.User): Promise<Backendless.User>;
         function register<T>(user: T): Promise<T>;
 
-        function getUserRolesSync(): string[];
-
         function getUserRoles(): Promise<string[]>;
-
-        function describeUserClassSync(): Object[] ;
 
         function describeUserClass(): Promise<Object[]>;
 
-        function restorePasswordSync(email: string): void;
-
         function restorePassword(email: string): Promise<void>;
-
-        function assignRoleSync(identity: string, roleName: string): void;
 
         function assignRole(identity: string, roleName: string): Promise<void>;
 
-        function unassignRoleSync(identity: string, roleName: string): void;
-
         function unassignRole(identity: string, roleName: string): Promise<void>;
-
-        function loginSync(userName: string, password: string, stayLoggedIn?: boolean): Backendless.User;
-        function loginSync<T>(userName: string, password: string, stayLoggedIn?: boolean): T;
 
         function login(identity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
         function login<T>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
-
-        function loginAsGuestSync(stayLoggedIn?: boolean): Backendless.User;
-        function loginAsGuestSync<T>(stayLoggedIn?: boolean): T;
 
         function loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
         function loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;
 
         function loggedInUser(): boolean;
 
-        function logoutSync(): void;
-
         function logout(): Promise<void>;
-
-        function getCurrentUserSync(): Backendless.User;
-        function getCurrentUserSync<T>(): T;
 
         function getCurrentUser(): Promise<Backendless.User>;
         function getCurrentUser<T>(): Promise<T>;
 
-        function updateSync(user: Backendless.User): Backendless.User;
-        function updateSync<T>(user: T): T;
-
         function update(user: Backendless.User): Promise<Backendless.User>;
         function update<T>(user: T): Promise<T>;
 
-        /**@deprecated */
-        function loginWithFacebookSync(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): void;
-
-        /**@deprecated */
         function loginWithFacebook(fields?: Object, permissions?: Object, stayLoggedIn?: boolean): Promise<void>;
 
-        /**@deprecated */
-        function loginWithGooglePlusSync(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): void;
-
-        /**@deprecated */
         function loginWithGooglePlus(fields?: Object, permissions?: Object, container?: HTMLElement, stayLoggedIn?: boolean): Promise<void>;
-
-        function loginWithTwitterSync(fields?: Object, stayLoggedIn?: boolean): void;
 
         function loginWithTwitter(fields?: Object, stayLoggedIn?: boolean): Promise<void>;
 
-        /**@deprecated */
-        function loginWithFacebookSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fields: Object, stayLoggedIn?: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object, stayLoggedIn: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
+        function loginWithFacebookSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
-        /**@deprecated */
-        function loginWithGooglePlusSdk<T = Backendless.User>(fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fields?: Object, stayLoggedIn?: boolean): Promise<T>;
-
-        function isValidLoginSync(): boolean;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object, stayLoggedIn: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
+        function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
         function isValidLogin(): Promise<boolean>;
 
-        function resendEmailConfirmationSync(email: string): void;
-
         function resendEmailConfirmation(email: string): Promise<void>;
+
+        function enableUser(userId: string): Promise<void>;
+
+        function disableUser(userId: string): Promise<void>;
     }
 
     /**
      * @public
+     * @deprecated
      * @namespace Backendless.Geo
      **/
     namespace Geo {
+
+        /** @deprecated */
         let restUrl: string;
 
+        /** @deprecated */
         let UNITS: Object;
+
+        /** @deprecated */
         let EARTH_RADIUS: number;
 
-        function savePointSync(point: Backendless.GeoPoint): Backendless.GeoPoint;
-
+        /** @deprecated */
         function savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
 
-        function findSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
+        /** @deprecated */
         function find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
+        /** @deprecated */
         function getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
 
+        /** @deprecated */
         function getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
 
-        function getGeopointCountSync(fenceName: string, query: Backendless.GeoQueryI): number
-
-        function getGeopointCountSync(query: Backendless.GeoQueryI): number
-
-        function deletePointSync(point: string | Backendless.GeoPoint): string;
-
+        /** @deprecated */
         function deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
 
-        function loadMetadataSync(point: Backendless.GeoPoint | Backendless.GeoCluster): Object;
-
+        /** @deprecated */
         function loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
 
-        function getClusterPointsSync(cluster: Backendless.GeoCluster): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
+        /** @deprecated */
         function getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
-        function getFencePointsSync(fenceName: string, query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
+        /** @deprecated */
         function getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
-        function relativeFindSync(query: Backendless.GeoQueryI): Array<Backendless.GeoPoint | Backendless.GeoCluster>;
-
+        /** @deprecated */
         function relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
 
-        function addCategorySync(name: string): Backendless.GeoCategoryI;
-
+        /** @deprecated */
         function addCategory(name: string): Promise<Backendless.GeoCategoryI>;
 
-        function deleteCategorySync(name: string): boolean;
-
+        /** @deprecated */
         function deleteCategory(name: string): Promise<boolean>;
 
-        function getCategoriesSync(): Array<Backendless.GeoCategoryI>;
-
+        /** @deprecated */
         function getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
 
-        function runOnStayActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
-
+        /** @deprecated */
         function runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
 
-        function runOnExitActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
-
+        /** @deprecated */
         function runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
 
-        function runOnEnterActionSync(fenceName: string, point: Backendless.GeoPoint): Object;
-
+        /** @deprecated */
         function runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
 
-        function startGeofenceMonitoringWithInAppCallbackSync(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): void;
-
+        /** @deprecated */
         function startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
 
-        function startGeofenceMonitoringWithRemoteCallbackSync(fenceName: string, point: Backendless.GeoPoint): void;
-
+        /** @deprecated */
         function startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
 
+        /** @deprecated */
         function stopGeofenceMonitoring(fenceName: string): void;
     }
 
@@ -492,41 +403,25 @@ declare module Backendless {
 
         function subscribe(channelName: string): ChannelClass;
 
-        function publishSync(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Object;
-
         function publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
-
-        function sendEmailSync(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): String;
 
         function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
 
-        function sendEmailFromTemplateSync(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): object;
-
         function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): Promise<object>;
-
-        function cancelSync(messageId: string): boolean;
 
         function cancel(messageId: string): Promise<boolean>;
 
-        function registerDeviceSync(deviceToken: string, channels?: string[], expiration?: number | Date): Object;
-
         function registerDevice(deviceToken: string, channels?: string[], expiration?: number | Date): Promise<Object>;
-
-        function getRegistrationsSync(): Object;
 
         function getRegistrations(): Promise<Object>;
 
-        function unregisterDeviceSync(): Object;
-
         function unregisterDevice(): Promise<Object>;
-
-        function getMessageStatusSync(messageId: string): boolean;
 
         function getMessageStatus(messageId: string): Promise<boolean>;
 
         function getPushTemplates(deviceType: string): Promise<Object>;
 
-        function pushWithTemplate(templateName: string): Promise<Object>;
+        function pushWithTemplate(templateName: string, templateValues?: object): Promise<Object>;
     }
 
     /**
@@ -536,26 +431,15 @@ declare module Backendless {
     namespace Files {
 
         interface FilePermissionI {
-            /** @deprecated */
-            grantUserSync(userId: string, url: string): boolean;
 
             /** @deprecated */
             grantUser(userId: string, url: string): Promise<boolean>;
 
             /** @deprecated */
-            grantRoleSync(roleName: string, url: string): boolean;
-
-            /** @deprecated */
             grantRole(roleName: string, url: string): Promise<boolean>;
 
             /** @deprecated */
-            denyUserSync(userId: string, url: string): boolean;
-
-            /** @deprecated */
             denyUser(userId: string, url: string): Promise<boolean>;
-
-            /** @deprecated */
-            denyRoleSync(roleName: string, url: string): boolean;
 
             /** @deprecated */
             denyRole(roleName: string, url: string): Promise<boolean>;
@@ -589,39 +473,23 @@ declare module Backendless {
 
         let restUrl: string;
 
-        function saveFileSync(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): boolean;
-
         function saveFile(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): Promise<boolean>;
-
-        function uploadSync(files: File | File[], path: string, overwrite?: boolean): void;
 
         function upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
 
-        function listingSync(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Object;
+        function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 
-        function listing(path: string, pattern?: string, recursively?: boolean, pageSize?: number, offset?: number): Promise<Object>;
-
-        function renameFileSync(oldPathName: string, newName: string): Object;
+        function getFileCount(path: string, pattern?: string, sub?: boolean, countDirectories?: boolean): Promise<number>;
 
         function renameFile(oldPathName: string, newName: string): Promise<Object>;
 
-        function moveFileSync(sourcePath: string, targetPath: string): Object;
-
         function moveFile(sourcePath: string, targetPath: string): Promise<Object>;
-
-        function copyFileSync(sourcePath: string, targetPath: string): Object;
 
         function copyFile(sourcePath: string, targetPath: string): Promise<Object>;
 
-        function removeSync(fileURL: string): number;
-
         function remove(fileURL: string): Promise<number>;
 
-        function existsSync(path: string): Object;
-
         function exists(path: string): Promise<Object>;
-
-        function removeDirectorySync(path: string): number;
 
         function removeDirectory(path: string): Promise<number>;
     }
@@ -633,15 +501,9 @@ declare module Backendless {
     namespace Commerce {
         let restUrl: string;
 
-        function validatePlayPurchaseSync(packageName: string, productId: string, token: string): Object;
-
         function validatePlayPurchase(packageName: string, productId: string, token: string): Promise<Object>;
 
-        function cancelPlaySubscriptionSync(packageName: string, subscriptionId: string, token: string): Object;
-
         function cancelPlaySubscription(packageName: string, subscriptionId: string, token: string): Promise<Object>;
-
-        function getPlaySubscriptionStatusSync(packageName: string, subscriptionId: string, token: string): Object;
 
         function getPlaySubscriptionStatus(packageName: string, subscriptionId: string, token: string): Promise<Object>;
     }
@@ -658,8 +520,6 @@ declare module Backendless {
         }
 
         export interface CustomServicesI {
-            invokeSync(serviceName: string, method: string, parameters: Object): any;
-
             invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
 
             invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
@@ -676,8 +536,6 @@ declare module Backendless {
 
         export interface EventsI {
             restUrl: string;
-
-            dispatchSync(eventName: string, eventArgs: Object): Object;
 
             dispatch(eventName: string): Promise<Object>;
 
@@ -702,27 +560,16 @@ declare module Backendless {
      * @namespace Backendless.Cache
      **/
     namespace Cache {
-        function putSync(key: string, value: any, timeToLive?: number): Object;
 
         function put(key: string, value: any, timeToLive?: number): Promise<Object>;
 
-        function expireInSync(key: string, time: number | Date): Object;
-
         function expireIn(key: string, time: number | Date): Promise<Object>;
-
-        function expireAtSync(key: string, time: number | Date): Object;
 
         function expireAt(key: string, time: number | Date): Promise<Object>;
 
-        function containsSync(key: string): Object;
-
         function contains(key: string): Promise<Object>;
 
-        function getSync(key: string): Object;
-
         function get(key: string): Promise<Object>;
-
-        function removeSync(key: string): Object;
 
         function remove(key: string): Promise<Object>;
     }
@@ -733,39 +580,21 @@ declare module Backendless {
     namespace Counters {
         function of(counterName: string): Counter;
 
-        function getSync(counterName: string): number;
-
         function get(counterName: string): Promise<number>;
-
-        function getAndIncrementSync(counterName: string): number;
 
         function getAndIncrement(counterName: string): Promise<number>;
 
-        function incrementAndGetSync(counterName: string): number;
-
         function incrementAndGet(counterName: string): Promise<number>;
-
-        function getAndDecrementSync(counterName: string): number;
 
         function getAndDecrement(counterName: string): Promise<number>;
 
-        function decrementAndGetSync(counterName: string): number;
-
         function decrementAndGet(counterName: string): Promise<number>;
-
-        function addAndGetSync(counterName: string, value: number): number;
 
         function addAndGet(counterName: string, value: number): Promise<number>;
 
-        function getAndAddSync(counterName: string, value: number): number;
-
         function getAndAdd(counterName: string, value: number): Promise<number>
 
-        function compareAndSetSync(counterName: string, expected: number, updated: number): number;
-
         function compareAndSet(counterName: string, expected: number, updated: number): Promise<number>;
-
-        function resetSync(counterName: string): number;
 
         function reset(counterName: string): Promise<number>;
     }
@@ -818,19 +647,6 @@ declare module Backendless {
     }
 
     /**
-     * @private
-     * @class Async
-     * @constructor
-     */
-    class Async {
-        constructor(onSuccess?: (data?: Object) => void, onError?: ((data: Object) => void) | Object, context?: Object);
-
-        success(data: Object): void;
-
-        fault(data: Object): void;
-    }
-
-    /**
      * @public
      * @class Backendless.User
      * @constructor
@@ -839,31 +655,32 @@ declare module Backendless {
         ___class: string;
         objectId?: string;
         username?: string;
-        password: string;
+        password?: string;
         email?: string;
         blUserLocale?: string;
     }
 
-    /**
-     * @private
-     * @class DataQuery
-     * @constructor
-     */
-    class DataQuery implements Backendless.DataQueryValueI {
-        properties: string[];
-        condition: string;
-        options: Object;
-        url: string;
+    interface DataQueryI {
+        pageSize?: number;
+        offset?: number;
 
-        addProperty(prop: string): void;
+        properties?: Array<string>;
+        excludeProps?: Array<string>;
 
-        setOption(name: string, value: string | Array<string> | number): void;
+        where?: string;
+        having?: string;
 
-        setOptions(options: Object): void;
+        sortBy?: Array<string>;
+        groupBy?: Array<string>;
 
-        getOption(name: string): string | Array<string> | number;
+        relations?: Array<string>;
+        relationsDepth?: number;
+        relationsPageSize?: number;
+    }
 
-        toJSON(): Object;
+    interface RelationsQueryI extends DataQueryI {
+        relationName: string;
+        relationModel?: Function;
     }
 
     /**
@@ -874,65 +691,65 @@ declare module Backendless {
     class DataQueryBuilder {
         static create(): Backendless.DataQueryBuilder;
 
-        setPageSize(pageSize: number): Backendless.DataQueryBuilder;
+        setPageSize(pageSize: number): this;
 
-        setOffset(offset: number): Backendless.DataQueryBuilder;
+        getPageSize(): number;
 
-        prepareNextPage(): Backendless.DataQueryBuilder;
+        setOffset(offset: number): this;
 
-        preparePreviousPage(): Backendless.DataQueryBuilder;
+        getOffset(): number;
+
+        prepareNextPage(): this;
+
+        preparePreviousPage(): this;
 
         getProperties(): Array<string>;
 
-        setProperties(properties: string | Array<string>): Backendless.DataQueryBuilder;
+        setProperties(properties: string | Array<string>): this;
 
-        addProperty(property: string): Backendless.DataQueryBuilder;
+        addProperty(property: string): this;
 
-        addProperties(...properties: Array<string | Array<string>>): Backendless.DataQueryBuilder;
+        addProperties(...properties: Array<string | Array<string>>): this;
+
+        addAllProperties(): this;
+
+        excludeProperty(property: string): this;
+
+        excludeProperties(...properties: Array<string | Array<string>>): this;
 
         getWhereClause(): string;
 
-        setWhereClause(whereClause: string): Backendless.DataQueryBuilder;
+        setWhereClause(whereClause: string): this;
+
+        getHavingClause(): string;
+
+        setHavingClause(havingClause: string): this;
 
         getSortBy(): Array<string>;
 
-        setSortBy(sortBy: string | Array<string>): Backendless.DataQueryBuilder;
+        setSortBy(sortBy: string | Array<string>): this;
+
+        getGroupBy(): Array<string>;
+
+        setGroupBy(groupBy: string | Array<string>): this;
 
         getRelated(): Array<string>;
 
-        setRelated(relations: string | Array<string>): Backendless.DataQueryBuilder;
+        setRelated(relations: string | Array<string>): this;
 
-        addRelated(relations: string | Array<string>): Backendless.DataQueryBuilder;
+        addRelated(relations: string | Array<string>): this;
 
         getRelationsDepth(): number;
 
-        setRelationsDepth(relationsDepth: number): Backendless.DataQueryBuilder;
+        setRelationsDepth(relationsDepth: number): this;
 
         getRelationsPageSize(): number;
 
-        setRelationsPageSize(relationsPageSize: number): Backendless.DataQueryBuilder;
+        setRelationsPageSize(relationsPageSize: number): this;
 
         build(): Backendless.DataQueryValueI;
-    }
 
-    /**
-     * @private
-     * @class PagingQueryBuilder
-     * @constructor
-     */
-    class PagingQueryBuilder {
-        offset: number;
-        pageSize: number;
-
-        setPageSize(pageSize: number): PagingQueryBuilder;
-
-        setOffset(offset: number): PagingQueryBuilder;
-
-        prepareNextPage(): PagingQueryBuilder;
-
-        preparePreviousPage(): PagingQueryBuilder;
-
-        build(): Object;
+        toJSON(): DataQueryI;
     }
 
     /**
@@ -941,40 +758,25 @@ declare module Backendless {
      * @constructor
      */
 
-    class LoadRelationsQueryBuilder {
+    class LoadRelationsQueryBuilder extends DataQueryBuilder {
         static create(): Backendless.LoadRelationsQueryBuilder;
 
         static of(RelationModel: Object): Backendless.LoadRelationsQueryBuilder;
 
-        setRelationName(relationName: string): Backendless.LoadRelationsQueryBuilder;
+        setRelationModel(RelationModel: Object): this;
 
-        getProperties(): Array<string>;
+        getRelationModel(): Object;
 
-        setProperties(properties: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
+        setRelationName(relationName: string): this;
 
-        addProperty(properties: string): Backendless.LoadRelationsQueryBuilder;
+        getRelationName(): string;
 
-        getWhereClause(): string;
-
-        setWhereClause(whereClause: string): Backendless.LoadRelationsQueryBuilder;
-
-        setPageSize(pageSize: number): Backendless.LoadRelationsQueryBuilder;
-
-        setOffset(offset: number): Backendless.LoadRelationsQueryBuilder;
-
-        getSortBy(): Array<string>;
-
-        setSortBy(sortBy: string | Array<string>): Backendless.LoadRelationsQueryBuilder;
-
-        prepareNextPage(): Backendless.LoadRelationsQueryBuilder;
-
-        preparePreviousPage(): Backendless.LoadRelationsQueryBuilder;
-
-        build(): Backendless.DataQueryValueI;
+        toJSON(): RelationsQueryI;
     }
 
     /**
      * @public
+     * @deprecated
      * @class Backendless.GeoPoint
      * @constructor
      */
@@ -989,6 +791,7 @@ declare module Backendless {
 
     /**
      * @public
+     * @deprecated
      * @class Backendless.GeoCluster
      * @extends GeoPoint
      * @constructor
@@ -1000,6 +803,7 @@ declare module Backendless {
 
     /**
      * @public
+     * @deprecated
      * @class Backendless.GeoQuery
      * @constructor
      */
@@ -1098,20 +902,6 @@ declare module Backendless {
     }
 
     /**
-     * @public
-     * @deprecated
-     * @class Backendless.SubscriptionOptions
-     * @constructor
-     */
-    class SubscriptionOptions {
-        subscriberId: string;
-        subtopic: string;
-        selector: string;
-
-        constructor(args?: Object);
-    }
-
-    /**
      * @private
      * @class Logger
      */
@@ -1120,11 +910,11 @@ declare module Backendless {
 
         info(message: string): void;
 
-        warn(message: string): void;
+        warn(message: string, exception?: string): void;
 
-        error(message: string): void;
+        error(message: string, exception?: string): void;
 
-        fatal(message: string): void;
+        fatal(message: string, exception?: string): void;
 
         trace(message: string): void;
     }
@@ -1250,79 +1040,37 @@ declare module Backendless {
 
         constructor(name: string | Object | Function, classToTableMap: Object);
 
-        save(obj: Object): Promise<Object>;
-        save<T>(obj: T): Promise<T>;
+        save<T = object>(obj: T|object): Promise<T>;
 
-        saveSync(obj: Object): Object;
+        remove(id: object | string): Promise<object>;
 
-        remove(id: Object | string): Promise<Object>;
+        find<T = object>(obj?: Backendless.DataQueryBuilder | DataQueryI): Promise<Array<T>>;
 
-        removeSync(obj: Object | string): Object;
+        findById<T = object>(objectId: string, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
+        findById<T = object>(primaryKeys: object, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
-        find(obj?: Backendless.DataQueryBuilder): Promise<Object[]>;
-        find<T>(obj?: Backendless.DataQueryBuilder): Promise<T[]>;
+        findFirst<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
-        findSync(obj?: Backendless.DataQueryBuilder): Array<Object>;
+        findLast<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
-        findById(query: Object | string): Promise<Object>;
-        findById<T>(query: Object | string): Promise<T>;
-
-        findByIdSync(query: Object | string): Object;
-
-        findFirst(query?: Object): Promise<Object>;
-        findFirst<T>(query?: Object): Promise<T>;
-
-        findFirstSync(query?: Object): Object;
-
-        findLast(query?: Object): Promise<Object>;
-        findLast<T>(query?: Object): Promise<T>;
-
-        findLastSync(query?: Object): Object;
-
-        loadRelations(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<Array<Object>>;
-        loadRelations<T>(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<T[]>;
-
-        loadRelationsSync(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Array<Object>;
+        loadRelations<T = object>(parent: string | object, query: Backendless.LoadRelationsQueryBuilder | RelationsQueryI): Promise<Array<T>>;
 
         getObjectCount(query?: Backendless.DataQueryBuilder | string): Promise<number>
 
-        getObjectCountSync(query?: Backendless.DataQueryBuilder | string): number
+        setRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        setRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        setRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        setRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        setRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        addRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        addRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        setRelationSync(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): string;
-        setRelationSync(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): string;
-        setRelationSync(parentObject: Object, columnName: string, whereClause: string): string;
+        deleteRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        deleteRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        addRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        addRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        addRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        bulkCreate(objects: Array<object>): Promise<Array<string>>;
 
-        addRelationSync(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): string;
-        addRelationSync(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): string;
-        addRelationSync(parentObject: Object, columnName: string, whereClause: string): string;
-
-        deleteRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        deleteRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        deleteRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
-
-        deleteRelationSync(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): string;
-        deleteRelationSync(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): string;
-        deleteRelationSync(parentObject: Object, columnName: string, whereClause: string): string;
-
-        bulkCreate(objects: Array<Object>): Promise<Array<string>>;
-
-        bulkCreateSync(objects: Array<Object>): Array<string>;
-
-        bulkUpdate(whereClause: string, changes: Object): Promise<string>;
-
-        bulkUpdateSync(whereClause: string, changes: Object): string;
+        bulkUpdate(whereClause: string, changes: object): Promise<string>;
 
         bulkDelete(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): Promise<string>;
-
-        bulkDeleteSync(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): string;
 
         rt(): EventHandler;
     }
@@ -1335,39 +1083,21 @@ declare module Backendless {
 
         constructor(name: string, restUrl: string);
 
-        getSync(): number;
-
         get(): Promise<number>;
-
-        getAndIncrementSync(): number;
 
         getAndIncrement(): Promise<number>;
 
-        incrementAndGetSync(): number;
-
         incrementAndGet(): Promise<number>;
-
-        getAndDecrementSync(): number;
 
         getAndDecrement(): Promise<number>;
 
-        decrementAndGetSync(): number;
-
         decrementAndGet(): Promise<number>;
-
-        addAndGetSync(value: number): number;
 
         addAndGet(value: number): Promise<number>;
 
-        getAndAddSync(value: number): number;
-
         getAndAdd(value: number): Promise<number>
 
-        compareAndSetSync(expected: number, updated: number): number;
-
         compareAndSet(expected: number, updated: number): Promise<number>;
-
-        resetSync(): number;
 
         reset(): Promise<number>;
     }
@@ -1379,16 +1109,19 @@ declare module Backendless {
         url?: string;
     }
 
+    /** @deprecated */
     interface GeoCategoryI {
         objectId: string;
         size: number;
         name: string;
     }
 
+    /** @deprecated */
     interface GeofenceMonitoringCallbackI {
         (geoFenceName: string, geoFenceId: string, latitude: number, longitude: number): void;
     }
 
+    /** @deprecated */
     interface GeofenceMonitoringCallbacksI {
         onenter?: Backendless.GeofenceMonitoringCallbackI;
         onstay?: Backendless.GeofenceMonitoringCallbackI;
@@ -1445,6 +1178,7 @@ declare module Backendless {
         send(type: string, command: Object): Promise<void>;
     }
 
+    /** @deprecated */
     interface GeoQueryI {
         categories?: string | string[];
         includeMetadata?: boolean;
@@ -1456,15 +1190,227 @@ declare module Backendless {
         offset?: number;
     }
 
+    /** @deprecated */
     interface RectangleGeoQueryI extends Backendless.GeoQueryI {
         searchRectangle: number[];
     }
 
+    /** @deprecated */
     interface CircleGeoQueryI extends Backendless.GeoQueryI {
         latitude: number;
         longitude: number;
         radius: number;
         units: string;
+    }
+
+    class TransactionOperationError extends Error {
+        operation: OpResult;
+    }
+
+    class UnitOfWorkResult {
+        setIsolationLevel(isolationLevel: IsolationLevelEnum): UnitOfWorkResult;
+
+        isSuccess(): boolean;
+
+        getError(): TransactionOperationError;
+
+        getResults(): object;
+    }
+
+    class OpResultValueReference {
+
+    }
+
+    class OpResult {
+        opResultId: string;
+
+        getTableName(): string;
+
+        getOpResultId(): string;
+
+        setOpResultId(opResultId: string): void;
+
+        resolveTo(index: number, property?: string): OpResultValueReference
+        resolveTo(property: string): OpResultValueReference
+    }
+
+    enum IsolationLevelEnum {
+        READ_UNCOMMITTED,
+        READ_COMMITTED,
+        REPEATABLE_READ,
+        SERIALIZABLE
+    }
+
+    class UnitOfWork {
+        constructor(isolation?: IsolationLevelEnum);
+
+        find(tableName: string, dataQueryBuilder: DataQueryBuilder): OpResult;
+
+        create(object: object): OpResult;
+        create(tableName: string, object: object): OpResult;
+
+        update(object: object): OpResult;
+        update(tableName: string, object: object): OpResult;
+        update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
+        update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: OpResultValueReference): OpResult;
+        update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: number | string | boolean): OpResult;
+
+        delete(opResult: OpResult | OpResultValueReference): OpResult;
+        delete(object: object): OpResult;
+        delete(tableName: string, object: object): OpResult;
+        delete(tableName: string, objectId: string): OpResult;
+
+        bulkCreate(tableName: string, objects: object[]): OpResult;
+        bulkCreate(objects: object[]): OpResult;
+
+        bulkUpdate(whereClause: string, changes: object): OpResult;
+        bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
+        bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;
+        bulkUpdate(tableName: string, objects: object[], changes: object): OpResult;
+        bulkUpdate(opResult: OpResult, changes: object): OpResult;
+
+        bulkDelete(opResult: OpResult): OpResult;
+        bulkDelete(objects: object[]): OpResult;
+        bulkDelete(tableName: string, objects: object[]): OpResult;
+        bulkDelete(tableName: string, objectIds: string[]): OpResult;
+        bulkDelete(tableName: string, whereClause: string): OpResult;
+
+        addToRelation(parentObject: OpResult, columnName: string, whereClause: string): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, child: OpResult): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, child: object): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, children: object[]): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(parentObject: OpResult, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(parentObject: OpResultValueReference, columnName: string, whereClause: string): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, child: OpResult): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, child: object): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, children: object[]): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(parentObject: OpResultValueReference, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(parentObject: object, columnName: string, whereClause: string): OpResult;
+        addToRelation(parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(parentObject: object, columnName: string, child: OpResult): OpResult;
+        addToRelation(parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(parentObject: object, columnName: string, child: object): OpResult;
+        addToRelation(parentObject: object, columnName: string, children: object[]): OpResult;
+        addToRelation(parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(tableName: string, parentObject: object, columnName: string, whereClause: string): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, child: OpResult): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, child: object): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, children: object[]): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(tableName: string, parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, whereClause: string): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, objectIds: string[]): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResult): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResultValueReference): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, child: object): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, children: object[]): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResult[]): OpResult;
+        addToRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(parentObject: OpResult, columnName: string, whereClause: string): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, objectIds: string[]): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, child: OpResult): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, child: object): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, children: object[]): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, children: OpResult[]): OpResult;
+        setRelation(parentObject: OpResult, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(parentObject: OpResultValueReference, columnName: string, whereClause: string): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, objectIds: string[]): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, child: OpResult): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, child: object): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, children: object[]): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, children: OpResult[]): OpResult;
+        setRelation(parentObject: OpResultValueReference, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(parentObject: object, columnName: string, whereClause: string): OpResult;
+        setRelation(parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        setRelation(parentObject: object, columnName: string, child: OpResult): OpResult;
+        setRelation(parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(parentObject: object, columnName: string, child: object): OpResult;
+        setRelation(parentObject: object, columnName: string, children: object[]): OpResult;
+        setRelation(parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        setRelation(parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(tableName: string, parentObject: object, columnName: string, whereClause: string): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, child: OpResult): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, child: object): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, children: object[]): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        setRelation(tableName: string, parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        setRelation(tableName: string, parentObjectId: string, columnName: string, whereClause: string): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, objectIds: string[]): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResult): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResultValueReference): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, child: object): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, children: object[]): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResult[]): OpResult;
+        setRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(parentObject: OpResult, columnName: string, whereClause: string): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, child: OpResult): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, child: object): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, children: object[]): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(parentObject: OpResult, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, whereClause: string): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, child: OpResult): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, child: object): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, children: object[]): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(parentObject: OpResultValueReference, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(parentObject: object, columnName: string, whereClause: string): OpResult;
+        deleteRelation(parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(parentObject: object, columnName: string, child: OpResult): OpResult;
+        deleteRelation(parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(parentObject: object, columnName: string, child: object): OpResult;
+        deleteRelation(parentObject: object, columnName: string, children: object[]): OpResult;
+        deleteRelation(parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(tableName: string, parentObject: object, columnName: string, whereClause: string): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, child: OpResult): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, child: object): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, children: object[]): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(tableName: string, parentObject: object, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, whereClause: string): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, objectIds: string[]): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResult): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, child: OpResultValueReference): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, child: object): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, children: object[]): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResult[]): OpResult;
+        deleteRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResultValueReference[]): OpResult;
+
+        execute(): Promise<UnitOfWorkResult>
     }
 }
 

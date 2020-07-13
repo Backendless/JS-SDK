@@ -1,9 +1,7 @@
-import Utils from '../utils'
-
 //TODO: refactor me
 
 export function validateQueryObject(query) {
-  if (query.geoFence !== undefined && !Utils.isString(query.geoFence)) {
+  if (query.geoFence !== undefined && typeof query.geoFence !== 'string') {
     throw new Error('Invalid value for argument "geoFenceName". Geo Fence Name must be a String')
   }
 

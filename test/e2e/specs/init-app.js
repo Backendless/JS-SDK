@@ -1,4 +1,3 @@
-import '../helpers/global'
 import sandbox from '../helpers/sandbox'
 
 const APP_ID = 'A98AF58F-6B83-0C7A-FFA9-6A88FD113200'
@@ -36,5 +35,19 @@ describe('initApp', function() {
     expect(Backendless.applicationId).to.be.equal(APP_ID)
     expect(Backendless.secretKey).to.be.equal(API_KEY)
     expect(Backendless.appPath).to.be.equal(appPath)
+  })
+
+  describe('Standalone', function() {
+
+    it('has several Backendless apps at the same time', function() {
+      const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
+      const app3 = Backendless.initApp({ appId: 'appId-3', apiKey: 'apiKey-3', standalone: true })
+
+      expect(app2.applicationId).to.be.equal('appId-2')
+      expect(app2.secretKey).to.be.equal('apiKey-2')
+
+      expect(app3.applicationId).to.be.equal('appId-3')
+      expect(app3.secretKey).to.be.equal('apiKey-3')
+    })
   })
 })

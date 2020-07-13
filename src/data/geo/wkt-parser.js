@@ -1,7 +1,7 @@
 import wktToGeoJSON from './wkt-to-geojson'
 import geoConstructor from './geo-constructor'
 
-export class WKTParser {
+export default class WKTParser {
   constructor(srs) {
     this.srs = srs
   }
@@ -16,5 +16,3 @@ export class WKTParser {
     return geoConstructor(geoObject, this.srs)
   }
 }
-
-export default WKTParser

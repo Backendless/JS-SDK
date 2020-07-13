@@ -1,4 +1,3 @@
-//TODO: refactor me
 export class SocialContainer {
 
   constructor(socialType, container) {
@@ -16,7 +15,7 @@ export class SocialContainer {
   processContainer() {
     let client
 
-    const container = this.container[0]
+    const container = this.container[0] || this.container
 
     const loadingMsg = document.createElement('div')
     loadingMsg.innerHTML = 'Loading...'
@@ -60,10 +59,6 @@ export class SocialContainer {
 
     this.closeContainer = function() {
       container.close()
-    }
-
-    this.removeLoading = function() {
-      body.innerHTML = null
     }
 
     this.doAuthorizationActivity = function(url) {
