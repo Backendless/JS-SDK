@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { forTest, prepareMockRequest, createMockRTServer } from '../../helpers/sandbox'
+import Backendless, { forTest, prepareMockRequest, createMockRTServer, Utils } from '../../helpers/sandbox'
 
 describe('<Data> RT', function() {
 
@@ -10,6 +10,7 @@ describe('<Data> RT', function() {
   this.timeout(15000)
 
   const tableName = 'TEST_TABLE_NAME'
+  const relationColumnName = 'TEST_REL_COLUMN_NAME'
 
   let rtClient
 
@@ -1854,6 +1855,1233 @@ describe('<Data> RT', function() {
     })
   })
 
+  describe('Add Relations Listener', () => {
+    it('should add a simple listener', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addAddRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event             : 'add',
+        tableName         : 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME'
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should add a simple listener with parent objects', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addAddRelationListener(relationColumnName, ['object-1', { objectId: 'object-2' }], data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event             : 'add',
+        tableName         : 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+        parentObjects     : [
+          'object-1',
+          'object-2'
+        ]
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should add several listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callback1Promise = new Promise(resolve => {
+        rtHandlers.addAddRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const callback2Promise = new Promise(resolve => {
+        rtHandlers.addAddRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const callback3Promise = new Promise(resolve => {
+        rtHandlers.addAddRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'add',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      expect(sub2.id).to.be.a('string')
+      expect(sub2.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub2.options).to.be.eql({
+        event    : 'add',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      expect(sub3.id).to.be.a('string')
+      expect(sub3.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub3.options).to.be.eql({
+        event    : 'add',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId-1',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      rtClient.subRes(sub2.id, {
+        parentObjectId: 'test-parentObjectId-2',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      rtClient.subRes(sub3.id, {
+        parentObjectId: 'test-parentObjectId-3',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callback1Result = await callback1Promise
+      const callback2Result = await callback2Promise
+      const callback3Result = await callback3Promise
+
+      expect(callback1Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-1',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      expect(callback2Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-2',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      expect(callback3Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-3',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should not remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+
+      rtHandlers.addAddRelationListener(relationColumnName, callback1)
+
+      await sub1Promise
+
+      rtHandlers.removeSetRelationListeners()
+      rtHandlers.removeDeleteRelationListeners()
+
+      await Utils.shouldNotBeCalledInTime(() => sub2Promise)
+    })
+
+    it('should remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addAddRelationListener(relationColumnName, callback1)
+      rtHandlers.addAddRelationListener(relationColumnName, callback2)
+      rtHandlers.addAddRelationListener(relationColumnName, callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeAddRelationListener(callback2)
+      rtHandlers.removeAddRelationListener(callback3)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove all listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub6Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addAddRelationListener('rel-1', callback1)
+      rtHandlers.addAddRelationListener('rel-2', callback2)
+      rtHandlers.addAddRelationListener('rel-3', callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeAddRelationListeners()
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+      const sub6 = await sub6Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+      expect(sub6.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #1', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addAddRelationListener('rel-1', callback1)
+      rtHandlers.addAddRelationListener('rel-1', callback2)
+      rtHandlers.addAddRelationListener('rel-2', callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeAddRelationListener(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #2', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub6Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addAddRelationListener('rel-1', callback1)
+      rtHandlers.addAddRelationListener('rel-1', callback2)
+      rtHandlers.addAddRelationListener('rel-2', callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeAddRelationListeners('rel-1', callback1)
+      rtHandlers.removeAddRelationListeners(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+      const sub6 = await sub6Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+      expect(sub6.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #3', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addAddRelationListener('rel-1', callback1)
+      rtHandlers.addAddRelationListener('rel-1', callback2)
+      rtHandlers.addAddRelationListener('rel-2',callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeAddRelationListeners('rel-1')
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+    })
+
+    it('fails when callback is not a function on adding listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, [])).to.throw(errorMsg)
+
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'])).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, ['foo'], [])).to.throw(errorMsg)
+    })
+
+    it('fails when relationColumnName is not valid on adding listener', async () => {
+      const errorMsg = 'Relation Column Name must be a string.'
+
+      expect(() => rtHandlers.addAddRelationListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener([])).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(() => {
+      })).to.throw(errorMsg)
+    })
+
+    it('fails when parent objects list is invalid  on adding listener', async () => {
+      const errorMsg = 'Parent Object must be an array'
+
+      const callback = () => ({})
+
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, true, callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, 123, callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, 'str', callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addAddRelationListener(relationColumnName, {}, callback)).to.throw(errorMsg)
+    })
+
+    it('fails when callback is not a function on removing listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.removeAddRelationListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener('str')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.removeAddRelationListener([])).to.throw(errorMsg)
+    })
+  })
+
+  describe('Set Relations Listener', () => {
+    it('should add a simple listener', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addSetRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event             : 'set',
+        tableName         : 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME'
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should add a simple listener with parent objects', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addSetRelationListener(relationColumnName, ['object-1', { objectId: 'object-2' }], data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event             : 'set',
+        tableName         : 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+        parentObjects     : [
+          'object-1',
+          'object-2'
+        ]
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should add several listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callback1Promise = new Promise(resolve => {
+        rtHandlers.addSetRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const callback2Promise = new Promise(resolve => {
+        rtHandlers.addSetRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const callback3Promise = new Promise(resolve => {
+        rtHandlers.addSetRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'set',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      expect(sub2.id).to.be.a('string')
+      expect(sub2.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub2.options).to.be.eql({
+        event    : 'set',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      expect(sub3.id).to.be.a('string')
+      expect(sub3.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub3.options).to.be.eql({
+        event    : 'set',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId-1',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      rtClient.subRes(sub2.id, {
+        parentObjectId: 'test-parentObjectId-2',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      rtClient.subRes(sub3.id, {
+        parentObjectId: 'test-parentObjectId-3',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callback1Result = await callback1Promise
+      const callback2Result = await callback2Promise
+      const callback3Result = await callback3Promise
+
+      expect(callback1Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-1',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      expect(callback2Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-2',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      expect(callback3Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-3',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should not remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+
+      rtHandlers.addSetRelationListener(relationColumnName, callback1)
+
+      await sub1Promise
+
+      rtHandlers.removeAddRelationListeners()
+      rtHandlers.removeDeleteRelationListeners()
+
+      await Utils.shouldNotBeCalledInTime(() => sub2Promise)
+    })
+
+    it('should remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addSetRelationListener(relationColumnName, callback1)
+      rtHandlers.addSetRelationListener(relationColumnName, callback2)
+      rtHandlers.addSetRelationListener(relationColumnName, callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeSetRelationListener(callback2)
+      rtHandlers.removeSetRelationListener(callback3)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove all listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub6Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addSetRelationListener('rel-1', callback1)
+      rtHandlers.addSetRelationListener('rel-2', callback2)
+      rtHandlers.addSetRelationListener('rel-3', callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeSetRelationListeners()
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+      const sub6 = await sub6Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+      expect(sub6.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #1', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addSetRelationListener('rel-1', callback1)
+      rtHandlers.addSetRelationListener('rel-1', callback2)
+      rtHandlers.addSetRelationListener('rel-2', callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeSetRelationListener(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #2', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub6Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addSetRelationListener('rel-1', callback1)
+      rtHandlers.addSetRelationListener('rel-1', callback2)
+      rtHandlers.addSetRelationListener('rel-2', callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeSetRelationListeners('rel-1', callback1)
+      rtHandlers.removeSetRelationListeners(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+      const sub6 = await sub6Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+      expect(sub6.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #3', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addSetRelationListener('rel-1', callback1)
+      rtHandlers.addSetRelationListener('rel-1', callback2)
+      rtHandlers.addSetRelationListener('rel-2',callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeSetRelationListeners('rel-1')
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+    })
+
+    it('fails when callback is not a function on adding listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, [])).to.throw(errorMsg)
+
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'])).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, ['foo'], [])).to.throw(errorMsg)
+    })
+
+    it('fails when relationColumnName is not valid on adding listener', async () => {
+      const errorMsg = 'Relation Column Name must be a string.'
+
+      expect(() => rtHandlers.addSetRelationListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener([])).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(() => {
+      })).to.throw(errorMsg)
+    })
+
+    it('fails when parent objects list is invalid  on adding listener', async () => {
+      const errorMsg = 'Parent Object must be an array'
+
+      const callback = () => ({})
+
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, true, callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, 123, callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, 'str', callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addSetRelationListener(relationColumnName, {}, callback)).to.throw(errorMsg)
+    })
+
+    it('fails when callback is not a function on removing listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.removeSetRelationListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener('str')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.removeSetRelationListener([])).to.throw(errorMsg)
+    })
+  })
+
+  describe('Delete Relations Listener', () => {
+    it('should add a simple listener', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addDeleteRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event             : 'delete',
+        tableName         : 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME'
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should add a simple listener with parent objects', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addDeleteRelationListener(relationColumnName, ['object-1', { objectId: 'object-2' }], data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event             : 'delete',
+        tableName         : 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+        parentObjects     : [
+          'object-1',
+          'object-2'
+        ]
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({
+        parentObjectId: 'test-parentObjectId',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should add several listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+
+      const callback1Promise = new Promise(resolve => {
+        rtHandlers.addDeleteRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const callback2Promise = new Promise(resolve => {
+        rtHandlers.addDeleteRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const callback3Promise = new Promise(resolve => {
+        rtHandlers.addDeleteRelationListener(relationColumnName, data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'delete',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      expect(sub2.id).to.be.a('string')
+      expect(sub2.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub2.options).to.be.eql({
+        event    : 'delete',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      expect(sub3.id).to.be.a('string')
+      expect(sub3.name).to.be.equal('RELATIONS_CHANGES')
+      expect(sub3.options).to.be.eql({
+        event    : 'delete',
+        tableName: 'TEST_TABLE_NAME',
+        relationColumnName: 'TEST_REL_COLUMN_NAME',
+      })
+
+      rtClient.subRes(sub1.id, {
+        parentObjectId: 'test-parentObjectId-1',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      rtClient.subRes(sub2.id, {
+        parentObjectId: 'test-parentObjectId-2',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      rtClient.subRes(sub3.id, {
+        parentObjectId: 'test-parentObjectId-3',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      const callback1Result = await callback1Promise
+      const callback2Result = await callback2Promise
+      const callback3Result = await callback3Promise
+
+      expect(callback1Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-1',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      expect(callback2Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-2',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+
+      expect(callback3Result).to.be.eql({
+        parentObjectId: 'test-parentObjectId-3',
+        whereClause   : null,
+        children      : ['test-child-1', 'test-child-2'],
+        conditional   : false
+      })
+    })
+
+    it('should not remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+
+      rtHandlers.addDeleteRelationListener(relationColumnName, callback1)
+
+      await sub1Promise
+
+      rtHandlers.removeAddRelationListeners()
+      rtHandlers.removeSetRelationListeners()
+
+      await Utils.shouldNotBeCalledInTime(() => sub2Promise)
+    })
+
+    it('should remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addDeleteRelationListener(relationColumnName, callback1)
+      rtHandlers.addDeleteRelationListener(relationColumnName, callback2)
+      rtHandlers.addDeleteRelationListener(relationColumnName, callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeDeleteRelationListener(callback2)
+      rtHandlers.removeDeleteRelationListener(callback3)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove all listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub6Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addDeleteRelationListener('rel-1', callback1)
+      rtHandlers.addDeleteRelationListener('rel-2', callback2)
+      rtHandlers.addDeleteRelationListener('rel-3', callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeDeleteRelationListeners()
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+      const sub6 = await sub6Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+      expect(sub6.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #1', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addDeleteRelationListener('rel-1', callback1)
+      rtHandlers.addDeleteRelationListener('rel-1', callback2)
+      rtHandlers.addDeleteRelationListener('rel-2', callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeDeleteRelationListener(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #2', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub6Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addDeleteRelationListener('rel-1', callback1)
+      rtHandlers.addDeleteRelationListener('rel-1', callback2)
+      rtHandlers.addDeleteRelationListener('rel-2', callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeDeleteRelationListeners('rel-1', callback1)
+      rtHandlers.removeDeleteRelationListeners(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+      const sub6 = await sub6Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+      expect(sub6.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with relationColumnName #3', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addDeleteRelationListener('rel-1', callback1)
+      rtHandlers.addDeleteRelationListener('rel-1', callback2)
+      rtHandlers.addDeleteRelationListener('rel-2',callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeDeleteRelationListeners('rel-1')
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+    })
+
+    it('fails when callback is not a function on adding listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, [])).to.throw(errorMsg)
+
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'])).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, ['foo'], [])).to.throw(errorMsg)
+    })
+
+    it('fails when relationColumnName is not valid on adding listener', async () => {
+      const errorMsg = 'Relation Column Name must be a string.'
+
+      expect(() => rtHandlers.addDeleteRelationListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener([])).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(() => {
+      })).to.throw(errorMsg)
+    })
+
+    it('fails when parent objects list is invalid  on adding listener', async () => {
+      const errorMsg = 'Parent Object must be an array'
+
+      const callback = () => ({})
+
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, true, callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, 123, callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, 'str', callback)).to.throw(errorMsg)
+      expect(() => rtHandlers.addDeleteRelationListener(relationColumnName, {}, callback)).to.throw(errorMsg)
+    })
+
+    it('fails when callback is not a function on removing listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.removeDeleteRelationListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener('str')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.removeDeleteRelationListener([])).to.throw(errorMsg)
+    })
+  })
+
   it('should remove only particular listener', async () => {
     const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
     const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
@@ -1892,6 +3120,9 @@ describe('<Data> RT', function() {
     const sub7Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
     const sub8Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
     const sub9Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+    const sub10Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+    const sub11Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
+    const sub12Promise = rtClient.getNext_SUB_ON() // RELATIONS_CHANGES
 
     const subOff1Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
     const subOff2Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
@@ -1902,6 +3133,9 @@ describe('<Data> RT', function() {
     const subOff7Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
     const subOff8Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
     const subOff9Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+    const subOff10Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+    const subOff11Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
+    const subOff12Promise = rtClient.getNext_SUB_OFF() // RELATIONS_CHANGES
 
     const callback1 = () => ({})
     const callback2 = () => ({})
@@ -1918,6 +3152,10 @@ describe('<Data> RT', function() {
     rtHandlers.addBulkUpdateListener('foo=1', callback2)
     rtHandlers.addBulkDeleteListener('foo=1', callback2)
 
+    rtHandlers.addSetRelationListener('rel-1', callback2)
+    rtHandlers.addAddRelationListener('rel-1', callback2)
+    rtHandlers.addDeleteRelationListener('rel-1', callback2)
+
     const sub1 = await sub1Promise
     const sub2 = await sub2Promise
     const sub3 = await sub3Promise
@@ -1927,6 +3165,9 @@ describe('<Data> RT', function() {
     const sub7 = await sub7Promise
     const sub8 = await sub8Promise
     const sub9 = await sub9Promise
+    const sub10 = await sub10Promise
+    const sub11 = await sub11Promise
+    const sub12 = await sub12Promise
 
     expect(sub1.options.event).to.be.equal('created')
     expect(sub2.options.event).to.be.equal('updated')
@@ -1937,6 +3178,9 @@ describe('<Data> RT', function() {
     expect(sub7.options.event).to.be.equal('bulk-created')
     expect(sub8.options.event).to.be.equal('bulk-updated')
     expect(sub9.options.event).to.be.equal('bulk-deleted')
+    expect(sub10.options.event).to.be.equal('set')
+    expect(sub11.options.event).to.be.equal('add')
+    expect(sub12.options.event).to.be.equal('delete')
 
     rtHandlers.removeAllListeners()
 
@@ -1949,9 +3193,38 @@ describe('<Data> RT', function() {
     const subOff7 = await subOff7Promise
     const subOff8 = await subOff8Promise
     const subOff9 = await subOff9Promise
+    const subOff10 = await subOff10Promise
+    const subOff11 = await subOff11Promise
+    const subOff12 = await subOff12Promise
 
-    const subIds = [sub1.id, sub2.id, sub3.id, sub4.id, sub5.id, sub6.id, sub7.id, sub8.id, sub9.id]
-    const subOffIds = [subOff1.id, subOff2.id, subOff3.id, subOff4.id, subOff5.id, subOff6.id, subOff7.id, subOff8.id, subOff9.id]
+    const subIds = [
+      sub1.id,
+      sub2.id,
+      sub3.id,
+      sub4.id,
+      sub5.id,
+      sub6.id,
+      sub7.id,
+      sub8.id,
+      sub9.id,
+      sub10.id,
+      sub11.id,
+      sub12.id,
+    ]
+    const subOffIds = [
+      subOff1.id,
+      subOff2.id,
+      subOff3.id,
+      subOff4.id,
+      subOff5.id,
+      subOff6.id,
+      subOff7.id,
+      subOff8.id,
+      subOff9.id,
+      subOff10.id,
+      subOff11.id,
+      subOff12.id,
+    ]
 
     expect(subIds.sort()).to.be.eql(subOffIds.sort())
   })

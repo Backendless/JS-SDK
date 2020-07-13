@@ -137,24 +137,48 @@ export default class RTHandlers extends RTListeners {
     this.addRelationsChangesListener(RelationsChangesTypes.SET, relationColumnName, parentObjects, callback, onError)
   }
 
-  removeSetRelationListener(relationColumnName, parentObjects, callback) {
-    this.removeRelationsChangesListeners(RelationsChangesTypes.SET, relationColumnName, parentObjects, callback)
+  removeSetRelationListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeRelationsChangesListeners(RelationsChangesTypes.SET, undefined, callback)
+  }
+
+  removeSetRelationListeners(relationColumnName, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.SET, relationColumnName, callback)
   }
 
   addAddRelationListener(relationColumnName, parentObjects, callback, onError) {
     this.addRelationsChangesListener(RelationsChangesTypes.ADD, relationColumnName, parentObjects, callback, onError)
   }
 
-  removeAddRelationListener(relationColumnName, parentObjects, callback) {
-    this.removeRelationsChangesListeners(RelationsChangesTypes.ADD, relationColumnName, parentObjects, callback)
+  removeAddRelationListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeRelationsChangesListeners(RelationsChangesTypes.ADD, undefined, callback)
+  }
+
+  removeAddRelationListeners(relationColumnName, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.ADD, relationColumnName, callback)
   }
 
   addDeleteRelationListener(relationColumnName, parentObjects, callback, onError) {
     this.addRelationsChangesListener(RelationsChangesTypes.DELETE, relationColumnName, parentObjects, callback, onError)
   }
 
-  removeDeleteRelationListener(relationColumnName, parentObjects, callback) {
-    this.removeRelationsChangesListeners(RelationsChangesTypes.DELETE, relationColumnName, parentObjects, callback)
+  removeDeleteRelationListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeRelationsChangesListeners(RelationsChangesTypes.DELETE, undefined, callback)
+  }
+
+  removeDeleteRelationListeners(relationColumnName, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.DELETE, relationColumnName, callback)
   }
 
   addChangesListener(event, whereClause, callback, onError) {
@@ -203,6 +227,10 @@ export default class RTHandlers extends RTListeners {
   }
 
   addRelationsChangesListener(event, relationColumnName, parentObjects, callback, onError) {
+    if (!relationColumnName || typeof relationColumnName !== 'string') {
+      throw new Error('Relation Column Name must be a string.')
+    }
+
     if (typeof parentObjects === 'function') {
       onError = callback
       callback = parentObjects
@@ -210,10 +238,14 @@ export default class RTHandlers extends RTListeners {
     }
 
     if (typeof callback !== 'function') {
-      throw new Error('"callback" must be function.')
+      throw new Error('Listener Function must be passed.')
     }
 
     if (parentObjects) {
+      if (!Array.isArray(parentObjects)) {
+        throw new Error('Parent Objects must be an array')
+      }
+
       parentObjects = parentObjects.map(o => o.objectId || o)
     }
 
@@ -229,15 +261,16 @@ export default class RTHandlers extends RTListeners {
   }
 
   removeRelationsChangesListeners(event, relationColumnName, callback) {
+    if (typeof relationColumnName === 'function') {
+      callback = relationColumnName
+      relationColumnName = undefined
+    }
+
     const matcher = subscription => {
       const params = subscription.params
 
-      if (params.event !== event) {
-        return false
-      }
-
-      if (params.relationColumnName !== relationColumnName) {
-        return false
+      if (relationColumnName) {
+        return params.relationColumnName === relationColumnName
       }
 
       if (callback) {

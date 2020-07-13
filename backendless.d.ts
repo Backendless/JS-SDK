@@ -1001,29 +1001,36 @@ declare module Backendless {
 
         removeBulkDeleteListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
 
-        addSetRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addSetRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
         addSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
-        addAddRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addAddRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
         addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
-        addDeleteRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
-        addDeleteRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
         addDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
-        removeSetRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
         removeSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        removeSetRelationListener(callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
 
-        removeAddRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
-        removeAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        removeSetRelationListeners(relationColumnName: string): Backendless.EventHandler;
+        removeSetRelationListeners(): Backendless.EventHandler;
 
-        removeDeleteRelationListener(relationColumnName: string, parentObjectIds: string[], callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
-        removeDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        removeAddRelationListener(callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeAddRelationListeners(relationColumnName: string): Backendless.EventHandler;
+        removeAddRelationListeners(): Backendless.EventHandler;
+
+        removeDeleteRelationListener(callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeDeleteRelationListeners(relationColumnName: string): Backendless.EventHandler;
+        removeDeleteRelationListeners(): Backendless.EventHandler;
 
         removeAllListeners(): Backendless.EventHandler;
     }
