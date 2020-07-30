@@ -430,6 +430,10 @@ class Backendless {
     return this.Data.QueryBuilder
   }
 
+  get JSONUpdateBuilder() {
+    return this.Data.JSONUpdateBuilder
+  }
+
   get LoadRelationsQueryBuilder() {
     return this.Data.LoadRelationsQueryBuilder
   }

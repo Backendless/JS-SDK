@@ -5,6 +5,7 @@ import User from '../users/user'
 import Store from './store'
 import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
+import JSONUpdateBuilder from './json-update-builder'
 
 import Point from './geo/point'
 import LineString from './geo/linestring'
@@ -31,6 +32,7 @@ export default class Data {
 
     this.QueryBuilder = DataQueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
+    this.JSONUpdateBuilder = JSONUpdateBuilder
 
     this.Point = Point
     this.LineString = LineString
