@@ -13,42 +13,33 @@ const OPERATION_FIELD_NAME = '___operation'
 const ARGS_FIELD_NAME = 'args'
 
 export default class JSONUpdateBuilder {
-  constructor() {
-    this.operationName = null
-    this.args = null
-  }
-
-  static initContext(operationName, args) {
-    const jsonUpdateBuilder = new this()
-
-    jsonUpdateBuilder.operationName = operationName
-    jsonUpdateBuilder.args = args
-
-    return jsonUpdateBuilder
+  constructor(operationName, args) {
+    this.operationName = operationName || null
+    this.args = args || null
   }
 
   static SET() {
-    return this.initContext(OPERATIONS.SET, {})
+    return new this(OPERATIONS.SET, {})
   }
 
   static INSERT() {
-    return this.initContext(OPERATIONS.INSERT, {})
+    return new this(OPERATIONS.INSERT, {})
   }
 
   static REPLACE() {
-    return this.initContext(OPERATIONS.REPLACE, {})
+    return new this(OPERATIONS.REPLACE, {})
   }
 
   static REMOVE() {
-    return this.initContext(OPERATIONS.REMOVE, [])
+    return new this(OPERATIONS.REMOVE, [])
   }
 
   static ARRAY_APPEND() {
-    return this.initContext(OPERATIONS.ARRAY_APPEND, {})
+    return new this(OPERATIONS.ARRAY_APPEND, {})
   }
 
   static ARRAY_INSERT() {
-    return this.initContext(OPERATIONS.ARRAY_INSERT, {})
+    return new this(OPERATIONS.ARRAY_INSERT, {})
   }
 
   addArgument(arg, argValue) {
