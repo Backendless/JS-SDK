@@ -7,6 +7,8 @@ const OPERATIONS = {
   ARRAY_INSERT: 'JSON_ARRAY_INSERT'
 }
 
+const OPERATIONS_JOINED = Object.keys(OPERATIONS).join('\', \'')
+
 const OPERATION_FIELD_NAME = '___operation'
 const ARGS_FIELD_NAME = 'args'
 
@@ -17,12 +19,12 @@ export default class JSONUpdateBuilder {
   }
 
   static initContext(operationName, args) {
-    const newThis = new this()
+    const jsonUpdateBuilder = new this()
 
-    newThis.operationName = operationName
-    newThis.args = args
+    jsonUpdateBuilder.operationName = operationName
+    jsonUpdateBuilder.args = args
 
-    return newThis
+    return jsonUpdateBuilder
   }
 
   static SET() {
@@ -51,7 +53,7 @@ export default class JSONUpdateBuilder {
 
   addArgument(arg, argValue) {
     if (!this.args) {
-      throw new Error(`You have to choose an operation type. Use one of ['${Object.keys(OPERATIONS).join('\', \'')}']`)
+      throw new Error(`You have to choose an operation type. Use one of ['${OPERATIONS_JOINED}']`)
     }
 
     if (Array.isArray(this.args)) {
@@ -68,19 +70,19 @@ export default class JSONUpdateBuilder {
   }
 
   create() {
-    const builderRes = {}
+    const payloadData = {}
 
     if (!this.operationName) {
-      throw new Error(`You have to choose an operation type. Use one of ['${Object.keys(OPERATIONS).join('\', \'')}']`)
+      throw new Error(`You have to choose an operation type. Use one of ['${OPERATIONS_JOINED}']`)
     }
 
-    if((Array.isArray(this.args) && !this.args.length) || !Object.keys(this.args).length) {
+    if ((Array.isArray(this.args) && !this.args.length) || !Object.keys(this.args).length) {
       throw new Error('You have to add at least one argument')
     }
 
-    builderRes[OPERATION_FIELD_NAME] = this.operationName
-    builderRes[ARGS_FIELD_NAME] = this.args
+    payloadData[OPERATION_FIELD_NAME] = this.operationName
+    payloadData[ARGS_FIELD_NAME] = this.args
 
-    return builderRes
+    return payloadData
   }
 }

@@ -770,7 +770,7 @@ declare module Backendless {
 
         static ARRAY_INSERT() : Backendless.JSONUpdateBuilder;
 
-        addArgument(arg: string, argValue?: string) : this;
+        addArgument(arg: string, argValue?: any) : this;
 
         create(): Object;
     }

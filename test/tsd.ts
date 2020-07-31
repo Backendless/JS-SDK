@@ -106,6 +106,25 @@ function testDataQueryBuilderClass() {
     const query: Backendless.DataQueryValueI = dataQuery.build();
 }
 
+function testDataJSONUpdateBuilder() {
+    const jsonUpdateBuilder = Backendless.JSONUpdateBuilder
+
+    const argKey: string = '$.number'
+    const argValue: number = 11
+
+    let jsonPayload: object = jsonUpdateBuilder.SET().addArgument(argKey, argValue).create()
+
+    jsonPayload = jsonUpdateBuilder.INSERT().addArgument(argKey, argValue).create()
+
+    jsonPayload = jsonUpdateBuilder.REPLACE().addArgument(argKey, argValue).create()
+
+    jsonPayload = jsonUpdateBuilder.REMOVE().addArgument(argKey).create()
+
+    jsonPayload = jsonUpdateBuilder.ARRAY_APPEND().addArgument(argKey, argValue).create()
+
+    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT().addArgument(argKey, argValue).create()
+}
+
 function testLoadRelationsQueryBuilder() {
     let str: string = 'str';
     let num: number = 123;

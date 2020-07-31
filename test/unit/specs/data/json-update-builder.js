@@ -20,7 +20,7 @@ describe('<Data> JSON Update Builder', function() {
   it('set', async () => {
     const jsonUpdateSet = jsonUpdateBuilder.SET()
 
-    expect(jsonUpdateSet.args).to.be.equal({})
+    expect(jsonUpdateSet.args).to.be.eql({})
     expect(jsonUpdateSet.operationName).to.be.equal('JSON_SET')
   })
 
@@ -70,21 +70,21 @@ describe('<Data> JSON Update Builder', function() {
   it('insert', async () => {
     const jsonUpdateInsert = jsonUpdateBuilder.INSERT()
 
-    expect(jsonUpdateInsert.args).to.be.equal({})
+    expect(jsonUpdateInsert.args).to.be.eql({})
     expect(jsonUpdateInsert.operationName).to.be.equal('JSON_INSERT')
   })
 
   it('replace', async () => {
     const jsonUpdateReplace = jsonUpdateBuilder.REPLACE()
 
-    expect(jsonUpdateReplace.args).to.be.equal({})
+    expect(jsonUpdateReplace.args).to.be.eql({})
     expect(jsonUpdateReplace.operationName).to.be.equal('JSON_REPLACE')
   })
 
   it('remove', async () => {
     const jsonUpdateRemove = jsonUpdateBuilder.REMOVE()
 
-    expect(jsonUpdateRemove.args).to.be.equal([])
+    expect(jsonUpdateRemove.args).to.be.eql([])
     expect(jsonUpdateRemove.operationName).to.be.equal('JSON_REMOVE')
   })
 
@@ -104,14 +104,14 @@ describe('<Data> JSON Update Builder', function() {
   it('array_append', async () => {
     const jsonUpdateArrayAppend = jsonUpdateBuilder.ARRAY_APPEND()
 
-    expect(jsonUpdateArrayAppend.args).to.be.equal({})
+    expect(jsonUpdateArrayAppend.args).to.be.eql({})
     expect(jsonUpdateArrayAppend.operationName).to.be.equal('JSON_ARRAY_APPEND')
   })
 
   it('array_insert', async () => {
     const jsonUpdateArrayInsert = jsonUpdateBuilder.ARRAY_INSERT()
 
-    expect(jsonUpdateArrayInsert.args).to.be.equal({})
+    expect(jsonUpdateArrayInsert.args).to.be.eql({})
     expect(jsonUpdateArrayInsert.operationName).to.be.equal('JSON_ARRAY_INSERT')
   })
 
@@ -143,20 +143,22 @@ describe('<Data> JSON Update Builder', function() {
 
   })
 
-  it('should pass (key, value) pair to arguments for all operations except REMOVE', async () => {
-    let error
+  it('adding argument with a single value when (key,value) pair is expected for all operations except REMOVE',
+    async () => {
+      let error
 
-    try {
-      jsonUpdateBuilder.SET()
-        .addArgument('$.letter')
-        .addArgument('$.number', 36)
-        .create()
-    } catch (e) {
-      error = e
+      try {
+        jsonUpdateBuilder.SET()
+          .addArgument('$.letter')
+          .addArgument('$.number', 36)
+          .create()
+      } catch (e) {
+        error = e
+      }
+
+      expect(error.message).to.be.equal('You have to specify function\'s second argument')
     }
-
-    expect(error.message).to.be.equal('You have to specify function\'s second argument')
-  })
+  )
 
   it('should add at least one argument', async () => {
     let error
@@ -168,5 +170,20 @@ describe('<Data> JSON Update Builder', function() {
     }
 
     expect(error.message).to.be.equal('You have to add at least one argument')
+  })
+
+  it('adding arguments without setting an operation', async () => {
+    let error
+
+    try {
+      jsonUpdateBuilder
+        .addArgument('$.decimals[2]', 20)
+        .addArgument('$.decimals[3]', 25)
+        .create()
+    } catch (e) {
+      error = e
+    }
+
+    expect(error.message).to.be.equal('jsonUpdateBuilder.addArgument is not a function')
   })
 })

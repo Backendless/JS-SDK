@@ -52,24 +52,29 @@ describe('Data - JSON', function() {
 
     const newValues = { myJson: jsonUpdateSet, objectId: savedObj.objectId }
 
-    const result = await TestTable.save(newValues)
+    const updateResult = await TestTable.save(newValues)
 
-    expect(result.myJson).to.deep.include({
-        'letter'     : 'b',
-        'number'     : 36,
-        'state'      : true,
-        'decimals'   : [12.3, 43.28, 56.89],
-        'colours'    : [null, 'green', 'blue'],
-        'description': 'It is an "Example".',
-        'timeMarks'  : {
-          'time'     : '12:18:29.000000',
-          'date'     : '2015-07-29',
-          'date_time': '2015-07-29 12:18:29.000000'
-        },
-        'innerObject': { 'a': 'b' },
-        'innerArray' : [4, 3, 2]
-      }
-    )
+    const expectedJson = {
+      'letter'     : 'b',
+      'number'     : 36,
+      'state'      : true,
+      'decimals'   : [12.3, 43.28, 56.89],
+      'colours'    : [null, 'green', 'blue'],
+      'description': 'It is an "Example".',
+      'timeMarks'  : {
+        'time'     : '12:18:29.000000',
+        'date'     : '2015-07-29',
+        'date_time': '2015-07-29 12:18:29.000000'
+      },
+      'innerObject': { 'a': 'b' },
+      'innerArray' : [4, 3, 2]
+    }
+
+    expect(updateResult.myJson).to.deep.include(expectedJson)
+
+    const getResult = await TestTable.findById(savedObj.objectId)
+
+    expect(getResult.myJson).to.deep.include(expectedJson)
   })
 
   it('insert', async () => {
@@ -82,9 +87,9 @@ describe('Data - JSON', function() {
 
     const newValues = { myJson: jsonUpdateInsert, objectId: savedObj.objectId }
 
-    const result = await TestTable.save(newValues)
+    const updateResult = await TestTable.save(newValues)
 
-    expect(result.myJson).to.deep.include({
+    const expectedJson = {
       'state'      : 'on',
       'letter'     : 'a',
       'number'     : 10,
@@ -96,7 +101,13 @@ describe('Data - JSON', function() {
         'date_time': '2015-07-29 12:18:29.000000'
       },
       'description': 'It is an "Example".'
-    })
+    }
+
+    expect(updateResult.myJson).to.deep.include(expectedJson)
+
+    const getResult = await TestTable.findById(savedObj.objectId)
+
+    expect(getResult.myJson).to.deep.include(expectedJson)
   })
 
   it('replace', async () => {
@@ -109,9 +120,9 @@ describe('Data - JSON', function() {
 
     const newValues = { myJson: jsonUpdateReplace, objectId: savedObj.objectId }
 
-    const result = await TestTable.save(newValues)
+    const updateResult = await TestTable.save(newValues)
 
-    expect(result.myJson).to.deep.include({
+    const expectedJson = {
       'letter'     : 'a',
       'number'     : 11,
       'decimals'   : [12.3, 43.28, 20],
@@ -122,7 +133,13 @@ describe('Data - JSON', function() {
         'date'     : '2015-07-29',
         'date_time': '2015-07-29 12:18:29.000000'
       }
-    })
+    }
+
+    expect(updateResult.myJson).to.deep.include(expectedJson)
+
+    const getResult = await TestTable.findById(savedObj.objectId)
+
+    expect(getResult.myJson).to.deep.include(expectedJson)
   })
 
   it('remove', async () => {
@@ -134,9 +151,9 @@ describe('Data - JSON', function() {
 
     const newValues = { myJson: jsonUpdateRemove, objectId: savedObj.objectId }
 
-    const result = await TestTable.save(newValues)
+    const updateResult = await TestTable.save(newValues)
 
-    expect(result.myJson).to.deep.include({
+    const expectedJson = {
       'letter'     : 'a',
       'colours'    : ['red', 'blue'],
       'decimals'   : [12.3, 43.28, 56.89],
@@ -145,7 +162,13 @@ describe('Data - JSON', function() {
         'time'     : '12:18:29.000000',
         'date_time': '2015-07-29 12:18:29.000000'
       }
-    })
+    }
+
+    expect(updateResult.myJson).to.deep.include(expectedJson)
+
+    const getResult = await TestTable.findById(savedObj.objectId)
+
+    expect(getResult.myJson).to.deep.include(expectedJson)
   })
 
   it('array_append', async () => {
@@ -156,20 +179,26 @@ describe('Data - JSON', function() {
 
     const newValues = { myJson: jsonUpdateArrayAppend, objectId: savedObj.objectId }
 
-    const result = await TestTable.save(newValues)
+    const updateResult = await TestTable.save(newValues)
 
-    expect(result.myJson).to.deep.include({
-        'letter': 'a',
-        'number': 10,
-        'decimals': [12.3, 43.28, 56.89, 432.0],
-        'colours': ['red', 'green', 'blue', 'yellow'],
-        'description': 'It is an "Example".',
-        'timeMarks': {
-          'time': '12:18:29.000000',
-          'date': '2015-07-29',
-          'date_time': '2015-07-29 12:18:29.000000'
-        }
-      })
+    const expectedJson = {
+      'letter': 'a',
+      'number': 10,
+      'decimals': [12.3, 43.28, 56.89, 432.0],
+      'colours': ['red', 'green', 'blue', 'yellow'],
+      'description': 'It is an "Example".',
+      'timeMarks': {
+        'time': '12:18:29.000000',
+        'date': '2015-07-29',
+        'date_time': '2015-07-29 12:18:29.000000'
+      }
+    }
+
+    expect(updateResult.myJson).to.deep.include(expectedJson)
+
+    const getResult = await TestTable.findById(savedObj.objectId)
+
+    expect(getResult.myJson).to.deep.include(expectedJson)
   })
 
   it('array_insert', async () => {
@@ -180,61 +209,25 @@ describe('Data - JSON', function() {
 
     const newValues = { myJson: jsonUpdateArrayInsert, objectId: savedObj.objectId }
 
-    const result = await TestTable.save(newValues)
+    const updateResult = await TestTable.save(newValues)
 
-    expect(result.myJson).to.deep.include({
-        'letter': 'a',
-        'number': 10,
-        'decimals': [12.3, 43.28, 60, 56.89],
-        'colours': ['red', 'cyan', 'green', 'blue'],
-        'description': 'It is an "Example".',
-        'timeMarks': {
-          'time': '12:18:29.000000',
-          'date': '2015-07-29',
-          'date_time': '2015-07-29 12:18:29.000000'
-        }
-      })
-  })
-
-  it('add no arguments and create', async () => {
-    let error
-
-    try {
-      jsonUpdateBuilder.INSERT().create()
-    } catch (e) {
-      error = e
+    const expectedJson = {
+      'letter': 'a',
+      'number': 10,
+      'decimals': [12.3, 43.28, 60, 56.89],
+      'colours': ['red', 'cyan', 'green', 'blue'],
+      'description': 'It is an "Example".',
+      'timeMarks': {
+        'time': '12:18:29.000000',
+        'date': '2015-07-29',
+        'date_time': '2015-07-29 12:18:29.000000'
+      }
     }
 
-    expect(error.message).to.equal('You have to add at least one argument')
-  })
+    expect(updateResult.myJson).to.deep.include(expectedJson)
 
-  it('adding arguments without setting an operation', async () => {
-    let error
+    const getResult = await TestTable.findById(savedObj.objectId)
 
-    try {
-      jsonUpdateBuilder
-        .addArgument('$.decimals[2]', 20)
-        .addArgument('$.decimals[3]', 25)
-        .create()
-    } catch (e) {
-      error = e
-    }
-
-    expect(error.message).to.equal('jsonUpdateBuilder.addArgument is not a function')
-  })
-
-  it('adding argument with a single value when (key,value) pair is expected', async () => {
-    let error
-
-    try {
-      jsonUpdateBuilder.SET()
-        .addArgument('$.letter', 'b')
-        .addArgument('$.number')
-        .create()
-    } catch (e) {
-      error = e
-    }
-
-    expect(error.message).to.equal('You have to specify function\'s second argument')
+    expect(getResult.myJson).to.deep.include(expectedJson)
   })
 })
