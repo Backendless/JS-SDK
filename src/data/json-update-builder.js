@@ -75,6 +75,14 @@ export default class JSONUpdateBuilder {
   create() {
     return this.toJSON()
   }
+
+  static toUpdateObject(data) {
+    if (data && data instanceof JSONUpdateBuilder) {
+      return data.toJSON()
+    }
+
+    return data
+  }
 }
 
 class JSONSetBuilder extends JSONUpdateBuilder {

@@ -195,4 +195,32 @@ describe('<Data> JSON Update Builder', function() {
 
     expect(error.message).to.be.equal('jsonUpdateBuilder.addArgument is not a function')
   })
+
+  it('set with args and without toJSON(), using toUpdateObject()', async () => {
+    const jsonUpdateSet = jsonUpdateBuilder.SET()
+      .addArgument('$.letter', 'b')
+      .addArgument('$.number', 36)
+      .addArgument('$.state', true)
+      .addArgument('$.colours[0]', null)
+      .addArgument('$.innerObject', { a: 'b' })
+      .addArgument('$.innerArray', [4, 3, 2])
+
+    const payloadData = Backendless.Data.JSONUpdateBuilder.toUpdateObject(jsonUpdateSet)
+
+    expect(payloadData).to.eql({
+      '___operation': 'JSON_SET',
+      args          : {
+        '$.letter'     : 'b',
+        '$.number'     : 36,
+        '$.state'      : true,
+        '$.colours[0]' : null,
+        '$.innerObject': { a: 'b' },
+        '$.innerArray' : [4, 3, 2]
+      }
+    })
+
+    const exampleObj = { a: 2 }
+
+    expect(Backendless.Data.JSONUpdateBuilder.toUpdateObject(exampleObj)).to.be.equal(exampleObj)
+  })
 })

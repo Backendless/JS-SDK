@@ -2,6 +2,7 @@ import Utils from '../utils'
 import RTHandlers from './rt-handlers'
 import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
+import JSONUpdateBuilder from './json-update-builder'
 
 import geoConstructor, { GEO_CLASSES } from './geo/geo-constructor'
 import Geometry from './geo/geometry'
@@ -303,6 +304,8 @@ const convertToServerRecord = (() => {
 
   function processTargetProps(context, source, target) {
     for (const prop in source) {
+      source[prop] = JSONUpdateBuilder.toUpdateObject(source[prop])
+
       if (Array.isArray(source[prop])) {
         processTargetProps(context, source[prop], target[prop] = [])
 
