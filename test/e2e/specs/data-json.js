@@ -48,7 +48,7 @@ describe('Data - JSON', function() {
       .addArgument('$.colours[0]', null)
       .addArgument('$.innerObject', { a: 'b' })
       .addArgument('$.innerArray', [4, 3, 2])
-      .create()
+      .toJSON()
 
     const newValues = { myJson: jsonUpdateSet, objectId: savedObj.objectId }
 
@@ -83,7 +83,7 @@ describe('Data - JSON', function() {
       .addArgument('$.decimals[3]', 25)
       .addArgument('$.state', 'on')
       .addArgument('$.number', 11)
-      .create()
+      .toJSON()
 
     const newValues = { myJson: jsonUpdateInsert, objectId: savedObj.objectId }
 
@@ -116,7 +116,7 @@ describe('Data - JSON', function() {
       .addArgument('$.decimals[3]', 25)
       .addArgument('$.state', 'on')
       .addArgument('$.number', 11)
-      .create()
+      .toJSON()
 
     const newValues = { myJson: jsonUpdateReplace, objectId: savedObj.objectId }
 
@@ -147,7 +147,7 @@ describe('Data - JSON', function() {
       .addArgument('$.timeMarks.date')
       .addArgument('$.number')
       .addArgument('$.colours[1]')
-      .create()
+      .toJSON()
 
     const newValues = { myJson: jsonUpdateRemove, objectId: savedObj.objectId }
 
@@ -175,7 +175,7 @@ describe('Data - JSON', function() {
     const jsonUpdateArrayAppend = jsonUpdateBuilder.ARRAY_APPEND()
       .addArgument('$.decimals', 432.0)
       .addArgument('$.colours', 'yellow')
-      .create()
+      .toJSON()
 
     const newValues = { myJson: jsonUpdateArrayAppend, objectId: savedObj.objectId }
 
@@ -205,7 +205,7 @@ describe('Data - JSON', function() {
     const jsonUpdateArrayInsert = jsonUpdateBuilder.ARRAY_INSERT()
       .addArgument('$.decimals[2]', 60)
       .addArgument('$.colours[1]', 'cyan')
-      .create()
+      .toJSON()
 
     const newValues = { myJson: jsonUpdateArrayInsert, objectId: savedObj.objectId }
 
@@ -229,5 +229,27 @@ describe('Data - JSON', function() {
     const getResult = await TestTable.findById(savedObj.objectId)
 
     expect(getResult.myJson).to.deep.include(expectedJson)
+  })
+
+  it('check toJSON() returns the same object as create()', async () => {
+    const dataByToJSON = jsonUpdateBuilder.SET()
+      .addArgument('$.letter', 'b')
+      .addArgument('$.number', 36)
+      .addArgument('$.state', true)
+      .addArgument('$.colours[0]', null)
+      .addArgument('$.innerObject', { a: 'b' })
+      .addArgument('$.innerArray', [4, 3, 2])
+      .toJSON()
+
+    const dataByCreate = jsonUpdateBuilder.SET()
+      .addArgument('$.letter', 'b')
+      .addArgument('$.number', 36)
+      .addArgument('$.state', true)
+      .addArgument('$.colours[0]', null)
+      .addArgument('$.innerObject', { a: 'b' })
+      .addArgument('$.innerArray', [4, 3, 2])
+      .create()
+
+    expect(dataByToJSON).to.deep.eql(dataByCreate)
   })
 })

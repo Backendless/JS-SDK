@@ -772,7 +772,7 @@ declare module Backendless {
 
         addArgument(arg: string, argValue?: any) : Backendless.JSONUpdateBuilder;
 
-        create(): Object;
+        toJSON(): Object;
     }
 
     /**

@@ -112,17 +112,17 @@ function testDataJSONUpdateBuilder() {
     const argKey: string = '$.number'
     const argValue: number = 11
 
-    let jsonPayload: object = jsonUpdateBuilder.SET().addArgument(argKey, argValue).create()
+    let jsonPayload: object = jsonUpdateBuilder.SET().addArgument(argKey, argValue).toJSON()
 
-    jsonPayload = jsonUpdateBuilder.INSERT().addArgument(argKey, argValue).create()
+    jsonPayload = jsonUpdateBuilder.INSERT().addArgument(argKey, argValue).toJSON()
 
-    jsonPayload = jsonUpdateBuilder.REPLACE().addArgument(argKey, argValue).create()
+    jsonPayload = jsonUpdateBuilder.REPLACE().addArgument(argKey, argValue).toJSON()
 
-    jsonPayload = jsonUpdateBuilder.REMOVE().addArgument(argKey).create()
+    jsonPayload = jsonUpdateBuilder.REMOVE().addArgument(argKey).toJSON()
 
-    jsonPayload = jsonUpdateBuilder.ARRAY_APPEND().addArgument(argKey, argValue).create()
+    jsonPayload = jsonUpdateBuilder.ARRAY_APPEND().addArgument(argKey, argValue).toJSON()
 
-    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT().addArgument(argKey, argValue).create()
+    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT().addArgument(argKey, argValue).toJSON()
 }
 
 function testLoadRelationsQueryBuilder() {
