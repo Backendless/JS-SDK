@@ -764,7 +764,7 @@ declare module Backendless {
 
         static REPLACE() : Backendless.JSONUpdateBuilder;
 
-        static REMOVE() : Backendless.JSONRemoveBuilder;
+        static REMOVE() : JSONRemoveBuilder;
 
         static ARRAY_APPEND() : Backendless.JSONUpdateBuilder;
 
