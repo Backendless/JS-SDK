@@ -227,24 +227,14 @@ describe('Data - JSON', function() {
   })
 
   it('check toJSON() returns the same object as create()', async () => {
-    const dataByToJSON = jsonUpdateBuilder.SET()
+    const jsonUpdateSet = jsonUpdateBuilder.SET()
       .addArgument('$.letter', 'b')
       .addArgument('$.number', 36)
       .addArgument('$.state', true)
       .addArgument('$.colours[0]', null)
       .addArgument('$.innerObject', { a: 'b' })
       .addArgument('$.innerArray', [4, 3, 2])
-      .toJSON()
 
-    const dataByCreate = jsonUpdateBuilder.SET()
-      .addArgument('$.letter', 'b')
-      .addArgument('$.number', 36)
-      .addArgument('$.state', true)
-      .addArgument('$.colours[0]', null)
-      .addArgument('$.innerObject', { a: 'b' })
-      .addArgument('$.innerArray', [4, 3, 2])
-      .create()
-
-    expect(dataByToJSON).to.deep.eql(dataByCreate)
+    expect(jsonUpdateSet.toJSON()).to.deep.eql(jsonUpdateSet.create())
   })
 })
