@@ -40,7 +40,7 @@ describe('Data - JSON', function() {
     })
   })
 
-  it('set with toJSON()', async () => {
+  it('set', async () => {
     const jsonUpdateSet = jsonUpdateBuilder.SET()
       .addArgument('$.letter', 'b')
       .addArgument('$.number', 36)
@@ -48,7 +48,6 @@ describe('Data - JSON', function() {
       .addArgument('$.colours[0]', null)
       .addArgument('$.innerObject', { a: 'b' })
       .addArgument('$.innerArray', [4, 3, 2])
-      .toJSON()
 
     const newValues = { myJson: jsonUpdateSet, objectId: savedObj.objectId }
 
