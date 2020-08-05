@@ -33,7 +33,6 @@ export default class Data {
     this.QueryBuilder = DataQueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
     this.JSONUpdateBuilder = JSONUpdateBuilder
-    this.JSONRemoveBuilder = JSONRemoveBuilder
 
     this.Point = Point
     this.LineString = LineString

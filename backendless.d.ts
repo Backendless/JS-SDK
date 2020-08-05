@@ -778,12 +778,11 @@ declare module Backendless {
     }
 
     /**
-     * @public
-     * @class Backendless.JSONRemoveBuilder
+     * @class JSONRemoveBuilder
      * @constructor
      */
-    class JSONRemoveBuilder {
-        addArgument(arg: string) : Backendless.JSONRemoveBuilder;
+    class JSONRemoveBuilder extends JSONUpdateBuilder {
+        addArgument(arg: string) : JSONRemoveBuilder;
 
         toJSON(): Object;
     }
