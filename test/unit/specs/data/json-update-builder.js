@@ -44,7 +44,7 @@ describe('<Data> JSON Update Builder', function() {
     expect(jsonUpdateSet.operationName).to.be.equal('JSON_SET')
   })
 
-  it('set with args and run create()', async () => {
+  it('set with args and run toJSON()', async () => {
     const jsonUpdateSet = jsonUpdateBuilder.SET()
       .addArgument('$.letter', 'b')
       .addArgument('$.number', 36)
@@ -52,7 +52,7 @@ describe('<Data> JSON Update Builder', function() {
       .addArgument('$.colours[0]', null)
       .addArgument('$.innerObject', { a: 'b' })
       .addArgument('$.innerArray', [4, 3, 2])
-      .create()
+      .toJSON()
 
     expect(jsonUpdateSet).to.eql({
       '___operation': 'JSON_SET',
@@ -88,12 +88,12 @@ describe('<Data> JSON Update Builder', function() {
     expect(jsonUpdateRemove.operationName).to.be.equal('JSON_REMOVE')
   })
 
-  it('remove with args and run toJSON', async () => {
+  it('remove with args and run create()', async () => {
     const jsonUpdateRemove = jsonUpdateBuilder.REMOVE()
       .addArgument('$.timeMarks.date')
       .addArgument('$.number')
       .addArgument('$.colours[1]')
-      .toJSON()
+      .create()
 
     expect(jsonUpdateRemove).to.eql({
       '___operation': 'JSON_REMOVE',
@@ -122,8 +122,6 @@ describe('<Data> JSON Update Builder', function() {
       try {
         jsonUpdateBuilder.SET()
           .addArgument('$.letter')
-          .addArgument('$.number', 36)
-          .toJSON()
       } catch (e) {
         error = e
       }
@@ -152,20 +150,5 @@ describe('<Data> JSON Update Builder', function() {
     }
 
     expect(errorRemove.message).to.be.equal(NoArgumentsErrorMessage)
-  })
-
-  it('adding arguments without setting an operation', async () => {
-    let error
-
-    try {
-      jsonUpdateBuilder
-        .addArgument('$.decimals[2]', 20)
-        .addArgument('$.decimals[3]', 25)
-        .toJSON()
-    } catch (e) {
-      error = e
-    }
-
-    expect(error.message).to.be.equal('jsonUpdateBuilder.addArgument is not a function')
   })
 })
