@@ -7,9 +7,6 @@ const OPERATIONS = {
   ARRAY_INSERT: 'JSON_ARRAY_INSERT'
 }
 
-const OPERATION_FIELD_NAME = '___operation'
-const ARGS_FIELD_NAME = 'args'
-
 export default class JSONUpdateBuilder {
   constructor(operationName) {
     this.operationName = operationName
@@ -55,8 +52,8 @@ export default class JSONUpdateBuilder {
 
     this.validateArgs()
 
-    payloadData[OPERATION_FIELD_NAME] = this.operationName
-    payloadData[ARGS_FIELD_NAME] = this.args
+    payloadData['___operation'] = this.operationName
+    payloadData.args = this.args
 
     return payloadData
   }
