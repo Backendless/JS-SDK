@@ -34,7 +34,7 @@ export default class DataStore {
   async save(object) {
     return this.app.request
       .put({
-        url: this.app.urls.dataTable(this.className),
+        url : this.app.urls.dataTable(this.className),
         data: convertToServerRecord(object),
       })
       .then(result => this.parseResponse(result))
@@ -304,8 +304,6 @@ const convertToServerRecord = (() => {
 
   function processTargetProps(context, source, target) {
     for (const prop in source) {
-      source[prop] = JSONUpdateBuilder.toUpdateObject(source[prop])
-
       if (Array.isArray(source[prop])) {
         processTargetProps(context, source[prop], target[prop] = [])
 
@@ -321,6 +319,8 @@ const convertToServerRecord = (() => {
           }
 
           target[prop] = { __originSubID: iteratedTarget.__subID }
+        } else if (source[prop] instanceof JSONUpdateBuilder) {
+          target[prop] = source[prop].toJSON()
         } else {
           const iteratedTarget = target[prop] = {}
 

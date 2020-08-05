@@ -10,7 +10,7 @@ describe('<Data> JSON Update Builder', function() {
     jsonUpdateBuilder = Backendless.Data.JSONUpdateBuilder
   })
 
-  it('should have null as default values', async () => {
+  it('check default values', async () => {
     const jsonUpdateBuilderInstance = new jsonUpdateBuilder()
 
     expect(jsonUpdateBuilderInstance.args).to.be.eql({})
@@ -44,7 +44,7 @@ describe('<Data> JSON Update Builder', function() {
     expect(jsonUpdateSet.operationName).to.be.equal('JSON_SET')
   })
 
-  it('set with args and run toJSON', async () => {
+  it('set with args and run create()', async () => {
     const jsonUpdateSet = jsonUpdateBuilder.SET()
       .addArgument('$.letter', 'b')
       .addArgument('$.number', 36)
@@ -52,7 +52,7 @@ describe('<Data> JSON Update Builder', function() {
       .addArgument('$.colours[0]', null)
       .addArgument('$.innerObject', { a: 'b' })
       .addArgument('$.innerArray', [4, 3, 2])
-      .toJSON()
+      .create()
 
     expect(jsonUpdateSet).to.eql({
       '___operation': 'JSON_SET',
@@ -115,33 +115,6 @@ describe('<Data> JSON Update Builder', function() {
     expect(jsonUpdateArrayInsert.operationName).to.be.equal('JSON_ARRAY_INSERT')
   })
 
-  const ChooseOperationErrorMessage = 'You have to choose an operation type. ' +
-    'Use one of [\'SET\', \'INSERT\', \'REPLACE\', \'REMOVE\', \'ARRAY_APPEND\', \'ARRAY_INSERT\']'
-
-  it('should choose an operation type', async () => {
-    let error1, error2
-
-    const jsonUpdateBuilderInstance = new jsonUpdateBuilder()
-
-    try {
-      jsonUpdateBuilderInstance.addArgument('$.letter', 'b')
-    } catch (e) {
-      error1 = e
-    }
-
-    expect(error1.message).to.be.equal(ChooseOperationErrorMessage)
-    expect(jsonUpdateBuilderInstance.args).to.be.eql({})
-    expect(jsonUpdateBuilderInstance.operationName).to.be.equal(undefined)
-
-    try {
-      jsonUpdateBuilderInstance.create()
-    } catch (e) {
-      error2 = e
-    }
-
-    expect(error2.message).to.be.equal(ChooseOperationErrorMessage)
-  })
-
   it('adding argument with a single value when (key,value) pair is expected for all operations except REMOVE',
     async () => {
       let error
@@ -194,33 +167,5 @@ describe('<Data> JSON Update Builder', function() {
     }
 
     expect(error.message).to.be.equal('jsonUpdateBuilder.addArgument is not a function')
-  })
-
-  it('set with args and without toJSON(), using toUpdateObject()', async () => {
-    const jsonUpdateSet = jsonUpdateBuilder.SET()
-      .addArgument('$.letter', 'b')
-      .addArgument('$.number', 36)
-      .addArgument('$.state', true)
-      .addArgument('$.colours[0]', null)
-      .addArgument('$.innerObject', { a: 'b' })
-      .addArgument('$.innerArray', [4, 3, 2])
-
-    const payloadData = Backendless.Data.JSONUpdateBuilder.toUpdateObject(jsonUpdateSet)
-
-    expect(payloadData).to.eql({
-      '___operation': 'JSON_SET',
-      args          : {
-        '$.letter'     : 'b',
-        '$.number'     : 36,
-        '$.state'      : true,
-        '$.colours[0]' : null,
-        '$.innerObject': { a: 'b' },
-        '$.innerArray' : [4, 3, 2]
-      }
-    })
-
-    const exampleObj = { a: 2 }
-
-    expect(Backendless.Data.JSONUpdateBuilder.toUpdateObject(exampleObj)).to.be.equal(exampleObj)
   })
 })

@@ -40,7 +40,7 @@ describe('Data - JSON', function() {
     })
   })
 
-  it('set', async () => {
+  it('set with toJSON()', async () => {
     const jsonUpdateSet = jsonUpdateBuilder.SET()
       .addArgument('$.letter', 'b')
       .addArgument('$.number', 36)
@@ -83,7 +83,6 @@ describe('Data - JSON', function() {
       .addArgument('$.decimals[3]', 25)
       .addArgument('$.state', 'on')
       .addArgument('$.number', 11)
-      .toJSON()
 
     const newValues = { myJson: jsonUpdateInsert, objectId: savedObj.objectId }
 
@@ -116,7 +115,6 @@ describe('Data - JSON', function() {
       .addArgument('$.decimals[3]', 25)
       .addArgument('$.state', 'on')
       .addArgument('$.number', 11)
-      .toJSON()
 
     const newValues = { myJson: jsonUpdateReplace, objectId: savedObj.objectId }
 
@@ -147,7 +145,6 @@ describe('Data - JSON', function() {
       .addArgument('$.timeMarks.date')
       .addArgument('$.number')
       .addArgument('$.colours[1]')
-      .toJSON()
 
     const newValues = { myJson: jsonUpdateRemove, objectId: savedObj.objectId }
 
@@ -175,7 +172,6 @@ describe('Data - JSON', function() {
     const jsonUpdateArrayAppend = jsonUpdateBuilder.ARRAY_APPEND()
       .addArgument('$.decimals', 432.0)
       .addArgument('$.colours', 'yellow')
-      .toJSON()
 
     const newValues = { myJson: jsonUpdateArrayAppend, objectId: savedObj.objectId }
 
@@ -205,7 +201,6 @@ describe('Data - JSON', function() {
     const jsonUpdateArrayInsert = jsonUpdateBuilder.ARRAY_INSERT()
       .addArgument('$.decimals[2]', 60)
       .addArgument('$.colours[1]', 'cyan')
-      .toJSON()
 
     const newValues = { myJson: jsonUpdateArrayInsert, objectId: savedObj.objectId }
 
@@ -251,39 +246,5 @@ describe('Data - JSON', function() {
       .create()
 
     expect(dataByToJSON).to.deep.eql(dataByCreate)
-  })
-
-  it('save without using toJSON()', async () => {
-    const jsonUpdateInsert = jsonUpdateBuilder.INSERT()
-      .addArgument('$.decimals[2]', 20)
-      .addArgument('$.decimals[3]', 25)
-      .addArgument('$.state', 'on')
-      .addArgument('$.number', 11)
-
-    expect(jsonUpdateInsert instanceof Backendless.JSONUpdateBuilder).to.equal(true)
-
-    const newValues = { myJson: jsonUpdateInsert, objectId: savedObj.objectId }
-
-    const updateResult = await TestTable.save(newValues)
-
-    const expectedJson = {
-      'state'      : 'on',
-      'letter'     : 'a',
-      'number'     : 10,
-      'colours'    : ['red', 'green', 'blue'],
-      'decimals'   : [12.3, 43.28, 56.89, 25],
-      'timeMarks'  : {
-        'date'     : '2015-07-29',
-        'time'     : '12:18:29.000000',
-        'date_time': '2015-07-29 12:18:29.000000'
-      },
-      'description': 'It is an "Example".'
-    }
-
-    expect(updateResult.myJson).to.deep.include(expectedJson)
-
-    const getResult = await TestTable.findById(savedObj.objectId)
-
-    expect(getResult.myJson).to.deep.include(expectedJson)
   })
 })

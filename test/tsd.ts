@@ -122,7 +122,7 @@ function testDataJSONUpdateBuilder() {
 
     jsonPayload = jsonUpdateBuilder.ARRAY_APPEND().addArgument(argKey, argValue).toJSON()
 
-    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT().addArgument(argKey, argValue).toJSON()
+    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT().addArgument(argKey, argValue).create()
 }
 
 function testLoadRelationsQueryBuilder() {
