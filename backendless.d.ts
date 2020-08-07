@@ -783,8 +783,6 @@ declare module Backendless {
      */
     class JSONRemoveBuilder extends JSONUpdateBuilder {
         addArgument(arg: string) : JSONRemoveBuilder;
-
-        toJSON(): Object;
     }
 
     /**

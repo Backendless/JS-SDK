@@ -5,7 +5,7 @@ import User from '../users/user'
 import Store from './store'
 import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
-import JSONUpdateBuilder, { JSONRemoveBuilder } from './json-update-builder'
+import JSONUpdateBuilder from './json-update-builder'
 
 import Point from './geo/point'
 import LineString from './geo/linestring'

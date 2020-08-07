@@ -109,20 +109,92 @@ function testDataQueryBuilderClass() {
 function testDataJSONUpdateBuilder() {
     const jsonUpdateBuilder = Backendless.JSONUpdateBuilder
 
-    const argKey: string = '$.number'
-    const argValue: number = 11
+    const args: { key: string, value: any }[] = [
+        {key: '$.number', value: 11},
+        {key: '$.letter', value: 'b'},
+        {key: '$.innerObject', value: {a: 'b'}},
+        {key: '$.innerArray', value: [4, 3, 2]}
+    ]
 
-    let jsonPayload: object = jsonUpdateBuilder.SET().addArgument(argKey, argValue).toJSON()
+    let jsonPayload: object = jsonUpdateBuilder.SET()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+        .toJSON()
 
-    jsonPayload = jsonUpdateBuilder.INSERT().addArgument(argKey, argValue).toJSON()
+    jsonPayload = jsonUpdateBuilder.INSERT()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+        .toJSON()
 
-    jsonPayload = jsonUpdateBuilder.REPLACE().addArgument(argKey, argValue).toJSON()
+    jsonPayload = jsonUpdateBuilder.REPLACE()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+        .toJSON()
 
-    jsonPayload = jsonUpdateBuilder.REMOVE().addArgument(argKey).toJSON()
+    jsonPayload = jsonUpdateBuilder.REMOVE()
+        .addArgument(args[0].key)
+        .addArgument(args[1].key)
+        .addArgument(args[2].key)
+        .addArgument(args[3].key)
+        .toJSON()
 
-    jsonPayload = jsonUpdateBuilder.ARRAY_APPEND().addArgument(argKey, argValue).toJSON()
+    jsonPayload = jsonUpdateBuilder.ARRAY_APPEND()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+        .toJSON()
 
-    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT().addArgument(argKey, argValue).create()
+    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+        .create()
+
+
+    let jsonUpdate: Backendless.JSONUpdateBuilder | Backendless.JSONRemoveBuilder =
+        jsonUpdateBuilder.SET()
+            .addArgument(args[0].key, args[0].value)
+            .addArgument(args[1].key, args[1].value)
+            .addArgument(args[2].key, args[2].value)
+            .addArgument(args[3].key, args[3].value)
+
+    jsonUpdate = jsonUpdateBuilder.INSERT()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+
+    jsonUpdate = jsonUpdateBuilder.REPLACE()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+
+    jsonUpdate = jsonUpdateBuilder.REMOVE()
+        .addArgument(args[0].key)
+        .addArgument(args[1].key)
+        .addArgument(args[2].key)
+        .addArgument(args[3].key)
+
+    jsonUpdate = jsonUpdateBuilder.ARRAY_APPEND()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
+
+    jsonUpdate = jsonUpdateBuilder.ARRAY_INSERT()
+        .addArgument(args[0].key, args[0].value)
+        .addArgument(args[1].key, args[1].value)
+        .addArgument(args[2].key, args[2].value)
+        .addArgument(args[3].key, args[3].value)
 }
 
 function testLoadRelationsQueryBuilder() {
