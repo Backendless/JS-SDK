@@ -8,7 +8,7 @@ describe('Data - JSON', function() {
 
   let savedObj
 
-  let jsonUpdateBuilder
+  let JsonUpdateBuilder
 
   sandbox.forSuite()
 
@@ -22,7 +22,7 @@ describe('Data - JSON', function() {
   })
 
   beforeEach(async function() {
-    jsonUpdateBuilder = Backendless.JSONUpdateBuilder
+    JsonUpdateBuilder = Backendless.JSONUpdateBuilder
 
     savedObj = await TestTable.save({
       name: 'test', age: 30, myJson: {
@@ -41,7 +41,7 @@ describe('Data - JSON', function() {
   })
 
   it('set', async () => {
-    const jsonUpdateSet = jsonUpdateBuilder.SET()
+    const jsonUpdateSet = JsonUpdateBuilder.SET()
       .addArgument('$.letter', 'b')
       .addArgument('$.number', 36)
       .addArgument('$.state', true)
@@ -77,7 +77,7 @@ describe('Data - JSON', function() {
   })
 
   it('insert', async () => {
-    const jsonUpdateInsert = jsonUpdateBuilder.INSERT()
+    const jsonUpdateInsert = JsonUpdateBuilder.INSERT()
       .addArgument('$.decimals[2]', 20)
       .addArgument('$.decimals[3]', 25)
       .addArgument('$.state', 'on')
@@ -109,7 +109,7 @@ describe('Data - JSON', function() {
   })
 
   it('replace', async () => {
-    const jsonUpdateReplace = jsonUpdateBuilder.REPLACE()
+    const jsonUpdateReplace = JsonUpdateBuilder.REPLACE()
       .addArgument('$.decimals[2]', 20)
       .addArgument('$.decimals[3]', 25)
       .addArgument('$.state', 'on')
@@ -140,7 +140,7 @@ describe('Data - JSON', function() {
   })
 
   it('remove', async () => {
-    const jsonUpdateRemove = jsonUpdateBuilder.REMOVE()
+    const jsonUpdateRemove = JsonUpdateBuilder.REMOVE()
       .addArgument('$.timeMarks.date')
       .addArgument('$.number')
       .addArgument('$.colours[1]')
@@ -168,7 +168,7 @@ describe('Data - JSON', function() {
   })
 
   it('array_append', async () => {
-    const jsonUpdateArrayAppend = jsonUpdateBuilder.ARRAY_APPEND()
+    const jsonUpdateArrayAppend = JsonUpdateBuilder.ARRAY_APPEND()
       .addArgument('$.decimals', 432.0)
       .addArgument('$.colours', 'yellow')
 
@@ -197,7 +197,7 @@ describe('Data - JSON', function() {
   })
 
   it('array_insert', async () => {
-    const jsonUpdateArrayInsert = jsonUpdateBuilder.ARRAY_INSERT()
+    const jsonUpdateArrayInsert = JsonUpdateBuilder.ARRAY_INSERT()
       .addArgument('$.decimals[2]', 60)
       .addArgument('$.colours[1]', 'cyan')
 
@@ -226,7 +226,7 @@ describe('Data - JSON', function() {
   })
 
   it('check toJSON() returns the same object as create()', async () => {
-    const jsonUpdateSet = jsonUpdateBuilder.SET()
+    const jsonUpdateSet = JsonUpdateBuilder.SET()
       .addArgument('$.letter', 'b')
       .addArgument('$.number', 36)
       .addArgument('$.state', true)

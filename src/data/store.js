@@ -308,25 +308,27 @@ const convertToServerRecord = (() => {
         processTargetProps(context, source[prop], target[prop] = [])
 
       } else if (source[prop] && typeof source[prop] === 'object' && !(source[prop] instanceof Geometry)) {
-        if (source[prop] instanceof Date) {
-          target[prop] = source[prop].getTime()
+        if (!(source[prop] instanceof JSONUpdateBuilder)) {
+          if (source[prop] instanceof Date) {
+            target[prop] = source[prop].getTime()
 
-        } else if (context.instancesMap.has(source[prop])) {
-          const iteratedTarget = context.instancesMap.get(source[prop])
+          } else if (context.instancesMap.has(source[prop])) {
+            const iteratedTarget = context.instancesMap.get(source[prop])
 
-          if (!iteratedTarget.__subID) {
-            iteratedTarget.__subID = Utils.uuid()
+            if (!iteratedTarget.__subID) {
+              iteratedTarget.__subID = Utils.uuid()
+            }
+
+            target[prop] = { __originSubID: iteratedTarget.__subID }
+          } else {
+            const iteratedTarget = target[prop] = {}
+
+            context.instancesMap.set(source[prop], iteratedTarget)
+
+            processTargetProps(context, source[prop], iteratedTarget)
           }
-
-          target[prop] = { __originSubID: iteratedTarget.__subID }
-        } else if (source[prop] instanceof JSONUpdateBuilder) {
-          target[prop] = source[prop].toJSON()
         } else {
-          const iteratedTarget = target[prop] = {}
-
-          context.instancesMap.set(source[prop], iteratedTarget)
-
-          processTargetProps(context, source[prop], iteratedTarget)
+          target[prop] = source[prop].toJSON()
         }
       } else {
         target[prop] = source[prop]

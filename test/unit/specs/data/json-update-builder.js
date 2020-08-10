@@ -1,13 +1,11 @@
-import { describe, it } from 'mocha'
-
-import Backendless from '../../helpers/sandbox'
+import Backendless, { prepareMockRequest, forTest } from '../../helpers/sandbox'
 import { expect } from 'chai'
 
 describe('<Data> JSON Update Builder', function() {
   let JsonUpdateBuilder
 
-  beforeEach(() => {
-    JsonUpdateBuilder = Backendless.Data.JSONUpdateBuilder
+  beforeEach(async function() {
+    JsonUpdateBuilder = Backendless.JSONUpdateBuilder
   })
 
   it('check default values', async () => {
@@ -159,5 +157,50 @@ describe('<Data> JSON Update Builder', function() {
     }
 
     expect(errorRemove.message).to.be.equal(NoArgumentsErrorMessage)
+  })
+
+  describe('SAVE', function() {
+    let TestTable
+
+    forTest(this)
+
+    const TABLE_NAME = 'TestTableWithJSON'
+
+    before(async function() {
+      TestTable = Backendless.Data.of(TABLE_NAME)
+    })
+
+    it('set with args and check request body', async () => {
+      const req = prepareMockRequest()
+
+      const jsonUpdateSet = JsonUpdateBuilder.SET()
+        .addArgument('$.letter', 'b')
+        .addArgument('$.number', 36)
+        .addArgument('$.state', true)
+        .addArgument('$.colours[0]', null)
+        .addArgument('$.innerObject', { a: 'b' })
+        .addArgument('$.innerArray', [4, 3, 2])
+
+      const newValues = { myJson: jsonUpdateSet, objectId: 'test-object-id' }
+
+      await TestTable.save(newValues)
+
+      expect(req).to.deep.include({
+        body: {
+          'myJson'  : {
+            '___operation': 'JSON_SET',
+            'args'        : {
+              '$.letter'     : 'b',
+              '$.number'     : 36,
+              '$.state'      : true,
+              '$.colours[0]' : null,
+              '$.innerObject': { 'a': 'b' },
+              '$.innerArray' : [4, 3, 2]
+            }
+          },
+          'objectId': 'test-object-id'
+        }
+      })
+    })
   })
 })
