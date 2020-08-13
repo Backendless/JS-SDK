@@ -764,13 +764,13 @@ declare module Backendless {
 
         static REPLACE() : Backendless.JSONUpdateBuilder;
 
-        static REMOVE() : JSONRemoveBuilder;
+        static REMOVE() : Backendless.JSONRemoveBuilder;
 
         static ARRAY_APPEND() : Backendless.JSONUpdateBuilder;
 
         static ARRAY_INSERT() : Backendless.JSONUpdateBuilder;
 
-        addArgument(arg: string, argValue?: any) : Backendless.JSONUpdateBuilder;
+        addArgument(arg: string, argValue: any) : Backendless.JSONUpdateBuilder;
 
         create(): Object;
 
@@ -778,11 +778,12 @@ declare module Backendless {
     }
 
     /**
-     * @class JSONRemoveBuilder
+     * @private
+     * @class Backendless.JSONRemoveBuilder
      * @constructor
      */
     class JSONRemoveBuilder extends JSONUpdateBuilder {
-        addArgument(arg: string) : JSONRemoveBuilder;
+        addArgument(arg: string) : Backendless.JSONRemoveBuilder;
     }
 
     /**

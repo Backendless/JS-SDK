@@ -107,94 +107,105 @@ function testDataQueryBuilderClass() {
 }
 
 function testDataJSONUpdateBuilder() {
-    const jsonUpdateBuilder = Backendless.JSONUpdateBuilder
+    const JSONUpdateBuilder = Backendless.JSONUpdateBuilder
 
-    const args: { key: string, value: any }[] = [
-        {key: '$.number', value: 11},
-        {key: '$.letter', value: 'b'},
-        {key: '$.innerObject', value: {a: 'b'}},
-        {key: '$.innerArray', value: [4, 3, 2]}
-    ]
+    let baseBuilder: Backendless.JSONUpdateBuilder
+    let removeBuilder: Backendless.JSONRemoveBuilder
 
-    let jsonPayload: object = jsonUpdateBuilder.SET()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
-        .toJSON()
+    class Person {
+    }
 
-    jsonPayload = jsonUpdateBuilder.INSERT()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
-        .toJSON()
+    const prop: string = 'prop'
+    const person: Person = new Person()
+    const date: Date = new Date()
 
-    jsonPayload = jsonUpdateBuilder.REPLACE()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
-        .toJSON()
+    let obj: object
 
-    jsonPayload = jsonUpdateBuilder.REMOVE()
-        .addArgument(args[0].key)
-        .addArgument(args[1].key)
-        .addArgument(args[2].key)
-        .addArgument(args[3].key)
-        .toJSON()
+    baseBuilder = JSONUpdateBuilder.SET()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
 
-    jsonPayload = jsonUpdateBuilder.ARRAY_APPEND()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
-        .toJSON()
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
 
-    jsonPayload = jsonUpdateBuilder.ARRAY_INSERT()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
-        .create()
+    baseBuilder = JSONUpdateBuilder.INSERT()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
 
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
 
-    let jsonUpdate: Backendless.JSONUpdateBuilder | Backendless.JSONRemoveBuilder =
-        jsonUpdateBuilder.SET()
-            .addArgument(args[0].key, args[0].value)
-            .addArgument(args[1].key, args[1].value)
-            .addArgument(args[2].key, args[2].value)
-            .addArgument(args[3].key, args[3].value)
+    baseBuilder = JSONUpdateBuilder.REPLACE()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
 
-    jsonUpdate = jsonUpdateBuilder.INSERT()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
 
-    jsonUpdate = jsonUpdateBuilder.REPLACE()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
+    removeBuilder = JSONUpdateBuilder.REMOVE()
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
 
-    jsonUpdate = jsonUpdateBuilder.REMOVE()
-        .addArgument(args[0].key)
-        .addArgument(args[1].key)
-        .addArgument(args[2].key)
-        .addArgument(args[3].key)
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
 
-    jsonUpdate = jsonUpdateBuilder.ARRAY_APPEND()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
+    baseBuilder = removeBuilder
 
-    jsonUpdate = jsonUpdateBuilder.ARRAY_INSERT()
-        .addArgument(args[0].key, args[0].value)
-        .addArgument(args[1].key, args[1].value)
-        .addArgument(args[2].key, args[2].value)
-        .addArgument(args[3].key, args[3].value)
+    baseBuilder = JSONUpdateBuilder.ARRAY_APPEND()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = JSONUpdateBuilder.ARRAY_INSERT()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
 }
 
 function testLoadRelationsQueryBuilder() {

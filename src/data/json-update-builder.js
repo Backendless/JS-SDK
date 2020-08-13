@@ -1,4 +1,4 @@
-const OPERATIONS = {
+const OperationTypes = {
   SET         : 'JSON_SET',
   INSERT      : 'JSON_INSERT',
   REPLACE     : 'JSON_REPLACE',
@@ -14,15 +14,15 @@ export default class JSONUpdateBuilder {
   }
 
   static SET() {
-    return new JSONUpdateBuilder(OPERATIONS.SET)
+    return new JSONUpdateBuilder(OperationTypes.SET)
   }
 
   static INSERT() {
-    return new JSONUpdateBuilder(OPERATIONS.INSERT)
+    return new JSONUpdateBuilder(OperationTypes.INSERT)
   }
 
   static REPLACE() {
-    return new JSONUpdateBuilder(OPERATIONS.REPLACE)
+    return new JSONUpdateBuilder(OperationTypes.REPLACE)
   }
 
   static REMOVE() {
@@ -30,11 +30,11 @@ export default class JSONUpdateBuilder {
   }
 
   static ARRAY_APPEND() {
-    return new JSONUpdateBuilder(OPERATIONS.ARRAY_APPEND)
+    return new JSONUpdateBuilder(OperationTypes.ARRAY_APPEND)
   }
 
   static ARRAY_INSERT() {
-    return new JSONUpdateBuilder(OPERATIONS.ARRAY_INSERT)
+    return new JSONUpdateBuilder(OperationTypes.ARRAY_INSERT)
   }
 
   addArgument(arg, argValue) {
@@ -48,30 +48,28 @@ export default class JSONUpdateBuilder {
   }
 
   toJSON() {
-    const payloadData = {}
+    this.validate()
 
-    this.validateArgs()
-
-    payloadData['___operation'] = this.operationName
-    payloadData.args = this.args
-
-    return payloadData
+    return {
+      ___operation: this.operationName,
+      args        : this.args,
+    }
   }
 
   create() {
     return this.toJSON()
   }
 
-  validateArgs() {
+  validate() {
     if (!Object.keys(this.args).length) {
       throw new Error('You have to add at least one argument')
     }
   }
 }
 
-export class JSONRemoveBuilder extends JSONUpdateBuilder {
+class JSONRemoveBuilder extends JSONUpdateBuilder {
   constructor() {
-    super(OPERATIONS.REMOVE)
+    super(OperationTypes.REMOVE)
 
     this.args = []
   }
@@ -82,7 +80,7 @@ export class JSONRemoveBuilder extends JSONUpdateBuilder {
     return this
   }
 
-  validateArgs() {
+  validate() {
     if (!this.args.length) {
       throw new Error('You have to add at least one argument')
     }
