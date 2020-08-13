@@ -2,6 +2,7 @@ import Utils from '../utils'
 import RTHandlers from './rt-handlers'
 import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
+import JSONUpdateBuilder from './json-update-builder'
 
 import geoConstructor, { GEO_CLASSES } from './geo/geo-constructor'
 import Geometry from './geo/geometry'
@@ -33,7 +34,7 @@ export default class DataStore {
   async save(object) {
     return this.app.request
       .put({
-        url: this.app.urls.dataTable(this.className),
+        url : this.app.urls.dataTable(this.className),
         data: convertToServerRecord(object),
       })
       .then(result => this.parseResponse(result))
@@ -306,7 +307,11 @@ const convertToServerRecord = (() => {
       if (Array.isArray(source[prop])) {
         processTargetProps(context, source[prop], target[prop] = [])
 
-      } else if (source[prop] && typeof source[prop] === 'object' && !(source[prop] instanceof Geometry)) {
+      } else if (
+        source[prop] && typeof source[prop] === 'object'
+        && !(source[prop] instanceof Geometry)
+        && !(source[prop] instanceof JSONUpdateBuilder)) {
+
         if (source[prop] instanceof Date) {
           target[prop] = source[prop].getTime()
 

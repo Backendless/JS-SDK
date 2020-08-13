@@ -106,6 +106,108 @@ function testDataQueryBuilderClass() {
     const query: Backendless.DataQueryValueI = dataQuery.build();
 }
 
+function testDataJSONUpdateBuilder() {
+    const JSONUpdateBuilder = Backendless.JSONUpdateBuilder
+
+    let baseBuilder: Backendless.JSONUpdateBuilder
+    let removeBuilder: Backendless.JSONRemoveBuilder
+
+    class Person {
+    }
+
+    const prop: string = 'prop'
+    const person: Person = new Person()
+    const date: Date = new Date()
+
+    let obj: object
+
+    baseBuilder = JSONUpdateBuilder.SET()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = JSONUpdateBuilder.INSERT()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = JSONUpdateBuilder.REPLACE()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    removeBuilder = JSONUpdateBuilder.REMOVE()
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = removeBuilder
+
+    baseBuilder = JSONUpdateBuilder.ARRAY_APPEND()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = JSONUpdateBuilder.ARRAY_INSERT()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+}
+
 function testLoadRelationsQueryBuilder() {
     let str: string = 'str';
     let num: number = 123;

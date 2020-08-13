@@ -253,6 +253,7 @@ describe('Namespace', function() {
 
       expect(Backendless.Persistence).to.equal(Backendless.Data)
       expect(Backendless.DataQueryBuilder).to.equal(Backendless.Data.QueryBuilder)
+      expect(Backendless.JSONUpdateBuilder).to.equal(Backendless.Data.JSONUpdateBuilder)
       expect(Backendless.LoadRelationsQueryBuilder).to.equal(Backendless.Data.LoadRelationsQueryBuilder)
 
       expect(Backendless.EmailEnvelope).to.equal(Backendless.Messaging.EmailEnvelope)

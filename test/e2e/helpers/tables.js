@@ -7,6 +7,7 @@ export const DataTypes = {
   TEXT           : 'TEXT',
   STRING_ID      : 'STRING_ID',
   EXTENDED_STRING: 'EXTENDED_STRING',
+  JSON           : 'JSON',
 
   FILE_REF: 'FILE_REF',
   DATA_REF: 'DATA_REF',

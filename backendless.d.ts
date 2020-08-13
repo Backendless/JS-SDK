@@ -754,6 +754,40 @@ declare module Backendless {
 
     /**
      * @public
+     * @class Backendless.JSONUpdateBuilder
+     * @constructor
+     */
+    class JSONUpdateBuilder {
+        static SET() : Backendless.JSONUpdateBuilder;
+
+        static INSERT() : Backendless.JSONUpdateBuilder;
+
+        static REPLACE() : Backendless.JSONUpdateBuilder;
+
+        static REMOVE() : Backendless.JSONRemoveBuilder;
+
+        static ARRAY_APPEND() : Backendless.JSONUpdateBuilder;
+
+        static ARRAY_INSERT() : Backendless.JSONUpdateBuilder;
+
+        addArgument(arg: string, argValue: any) : Backendless.JSONUpdateBuilder;
+
+        create(): Object;
+
+        toJSON(): Object;
+    }
+
+    /**
+     * @private
+     * @class Backendless.JSONRemoveBuilder
+     * @constructor
+     */
+    class JSONRemoveBuilder extends JSONUpdateBuilder {
+        addArgument(arg: string) : Backendless.JSONRemoveBuilder;
+    }
+
+    /**
+     * @public
      * @class Backendless.LoadRelationsQueryBuilder
      * @constructor
      */
