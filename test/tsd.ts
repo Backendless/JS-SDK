@@ -1156,6 +1156,45 @@ function RTData() {
         .removeBulkDeleteListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
 
     eventHandler
+        .addSetRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addSetRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {objectId: '3', foo:123}], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addSetRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {objectId: '3', foo:123}], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .addAddRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addAddRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {objectId: '3', foo:123}], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addAddRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {objectId: '3', foo:123}], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .addDeleteRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addDeleteRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {objectId: '3', foo:123}], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addDeleteRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {objectId: '3', foo:123}], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .removeSetRelationListener((data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeSetRelationListeners('relationColumnName')
+        .removeSetRelationListeners()
+
+    eventHandler
+        .removeAddRelationListener((data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeAddRelationListeners('relationColumnName')
+        .removeAddRelationListeners()
+
+    eventHandler
+        .removeDeleteRelationListener((data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeDeleteRelationListeners('relationColumnName')
+        .removeDeleteRelationListeners()
+
+    eventHandler
         .removeAllListeners()
         .addDeleteListener('whereClause', (obj: Object) => undefined)
 }
