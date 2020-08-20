@@ -54,6 +54,7 @@
     "@babel/core": "^7.10.2",
     "@babel/plugin-proposal-class-properties": "^7.10.1",
     "@babel/plugin-proposal-decorators": "^7.10.1",
+    "@babel/plugin-proposal-private-methods": "^7.10.1",
     "@babel/plugin-transform-object-assign": "^7.10.1",
     "@babel/plugin-transform-runtime": "^7.10.1",
     "@babel/polyfill": "^7.10.1",
@@ -62,11 +63,11 @@
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.12.42",
-    "babel-eslint": "^10.1.0",
+    "babel-eslint": "^11.0.0-beta.2",
     "babel-loader": "^8.0.6",
     "babel-plugin-istanbul": "^6.0.0",
     "babelify": "^10.0.0",
-    "backendless-console-sdk": "^2.10.14",
+    "backendless-console-sdk": "^2.10.26",
     "bannerize": "^1.1.4",
     "browserify": "^16.5.0",
     "chai": "^4.2.0",
@@ -92,6 +93,8 @@
   "dependencies": {
     "@babel/runtime": "^7.8.7",
     "backendless-request": "^0.1.1",
-    "backendless-rt-client": "0.0.23"
+    "backendless-rt-client": "0.0.23",
+    "backendless-where-clause-monitor": "1.1.0",
+    "jsstore": "3.10.3"
   }
 }

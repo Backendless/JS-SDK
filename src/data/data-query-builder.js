@@ -1,3 +1,4 @@
+import DataStore from '../data'
 import Utils from '../utils'
 
 const PAGING_DEFAULTS = {
@@ -27,6 +28,9 @@ export default class DataQueryBuilder {
     this.loadRelations = null
     this.relationsDepth = null
     this.relationsPageSize = null
+
+    this.retrievalPolicy = DataStore.RetrievalPolicy
+    this.localStoragePolicy = DataStore.LocalStoragePolicy
   }
 
   setPageSize(pageSize) {
@@ -67,6 +71,13 @@ export default class DataQueryBuilder {
     this.setOffset(Math.max(this.offset - this.pageSize, 0))
 
     return this
+  }
+
+  getPaging() {
+    return {
+      offset  : this.getOffset(),
+      pageSize: this.getPageSize()
+    }
   }
 
   getProperties() {
@@ -193,6 +204,26 @@ export default class DataQueryBuilder {
 
   getRelationsPageSize() {
     return this.relationsPageSize
+  }
+
+  setRetrievalPolicy(retrievalPolicy) {
+    this.retrievalPolicy = retrievalPolicy
+
+    return this
+  }
+
+  getRetrievalPolicy() {
+    return this.retrievalPolicy
+  }
+
+  setStoragePolicy(localStoragePolicy) {
+    this.localStoragePolicy = localStoragePolicy
+
+    return this
+  }
+
+  getStoragePolicy() {
+    return this.localStoragePolicy
   }
 
   toJSON() {

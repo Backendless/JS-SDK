@@ -60,6 +60,26 @@ const Utils = {
 
     return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
   },
+
+  forEach(obj, fn) {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        fn(obj[key], key)
+      }
+    }
+  },
+
+  omit(obj, propNames) {
+    const result = {}
+
+    this.forEach(obj, (value, key) => {
+      if (!propNames.includes(key)) {
+        result[key] = value
+      }
+    })
+
+    return result
+  }
 }
 
 function isBrowser() {

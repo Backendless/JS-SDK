@@ -3,9 +3,45 @@ import RTHandlers from './rt-handlers'
 import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
 import JSONUpdateBuilder from './json-update-builder'
+import { saveEventually } from './offline/database-manager/save-eventually'
+import { removeEventually } from './offline/database-manager/remove-eventually'
+import { initLocalDatabase } from './offline/database-manager/init-local-database'
+import { isOnline } from './offline/network'
+import { DataRetrievalPolicy, LocalStoragePolicy } from './offline/constants'
+import { ActionTypes, callbackManager } from './offline/callback-manager'
+import { SyncModes } from './offline/constants'
 
 import geoConstructor, { GEO_CLASSES } from './geo/geo-constructor'
 import Geometry from './geo/geometry'
+
+const checkIfOfflineEnabled = () => {
+  if (!Utils.isBrowser) {
+    throw new Error('Offline DB is not available outside of browser')
+  }
+}
+
+function getRetrievalPolicy(dataQuery) {
+  return dataQuery instanceof DataQueryBuilder
+    ? dataQuery.getRetrievalPolicy()
+    : this.app.Data.RetrievalPolicy
+}
+
+function getLocalStoragePolicy(dataQuery) {
+  return dataQuery instanceof DataQueryBuilder
+    ? dataQuery.getStoragePolicy()
+    : this.app.Data.LocalStoragePolicy
+}
+
+function shouldSearchLocally(dataQuery) {
+  if (!Utils.isBrowser) {
+    return false
+  }
+
+  const retrievalPolicy = getRetrievalPolicy.call(this, dataQuery)
+
+  return retrievalPolicy === DataRetrievalPolicy.OFFLINEONLY
+    || (!isOnline() && retrievalPolicy === DataRetrievalPolicy.DYNAMIC)
+}
 
 export default class DataStore {
 
@@ -52,12 +88,48 @@ export default class DataStore {
     })
   }
 
-  async find(query) {
-    return this.app.request
-      .get({
-        url        : this.app.urls.dataTable(this.className),
-        queryString: DataQueryBuilder.toQueryString(query),
+  async findRequest({ offlineFallback, query, ...options }) {
+    const searchLocally = shouldSearchLocally.call(this, query)
+    const localStoragePolicy = getLocalStoragePolicy.call(this, query)
+    const shouldStoreResult = Utils.isBrowser
+      && !searchLocally
+      && localStoragePolicy !== LocalStoragePolicy.DONOTSTOREANY
+
+    console.log('dataQuery: ', query)
+
+    if (searchLocally) {
+      return offlineFallback.call(this, options)
+    }
+
+    const requestOptions = {
+      url: options.url
+    }
+
+    if (options.queryString) {
+      requestOptions.queryString = options.queryString
+    } else {
+      requestOptions.query = query
+    }
+
+    return this.app.request.get(requestOptions)
+      .then(result => {
+        if (shouldStoreResult) {
+          this.app.OfflineDBManager
+            .storeFindResult(this.className, result, localStoragePolicy)
+            .catch(err => console.log(err)) // TODO: remove me
+        }
+
+        return result
       })
+  }
+
+  async find(query) {
+    return this.findRequest({
+      url            : this.app.urls.dataTable(this.className),
+      queryString    : DataQueryBuilder.toQueryString(query),
+      query,
+      offlineFallback: () => this.app.OfflineDBManager.find(this.className, query)
+    })
       .then(result => this.parseResponse(result))
   }
 
@@ -81,32 +153,68 @@ export default class DataStore {
         throw new Error('Object Id must be provided and must be a string or an object of primary keys.')
       }
 
-      result = await this.app.request
-        .get({
-          url        : this.app.urls.dataTableObject(this.className, objectId),
-          queryString: DataQueryBuilder.toQueryString(query),
-        })
+      result = await this.findRequest({
+        url            : this.app.urls.dataTableObject(this.className, objectId),
+        queryString    : DataQueryBuilder.toQueryString(query),
+        query,
+        offlineFallback: () => this.app.OfflineDBManager.findById(this.className, objectId)
+      })
     }
 
     return this.parseResponse(result)
   }
 
   async findFirst(query) {
-    return this.app.request
-      .get({
-        url        : this.app.urls.dataTableObject(this.className, 'first'),
-        queryString: DataQueryBuilder.toQueryString(query),
-      })
+    return this.findRequest({
+      url            : this.app.urls.dataTableObject(this.className, 'first'),
+      queryString    : DataQueryBuilder.toQueryString(query),
+      query,
+      offlineFallback: () => this.app.OfflineDBManager.findFirst(this.className)
+    })
       .then(result => this.parseResponse(result))
   }
 
   async findLast(query) {
-    return this.app.request
-      .get({
-        url        : this.app.urls.dataTableObject(this.className, 'last'),
-        queryString: DataQueryBuilder.toQueryString(query),
-      })
+    return this.findRequest({
+      url            : this.app.urls.dataTableObject(this.className, 'last'),
+      queryString    : DataQueryBuilder.toQueryString(query),
+      query,
+      offlineFallback: () => this.app.OfflineDBManager.findLast(this.className)
+    })
       .then(result => this.parseResponse(result))
+  }
+
+  async fetchAll(queryBuilder) {
+    queryBuilder = queryBuilder || new DataQueryBuilder()
+
+    if (!(queryBuilder instanceof DataQueryBuilder)) {
+      throw new Error('\'queryBuilder\' should be an instance of Backendless.DataQueryBuilder')
+    }
+
+    let offset = 0
+    let lastPageSize = 0
+    const itemsCollection = []
+    const maxPageSize = this.app.Config.getPageSize()
+
+    queryBuilder.setStoragePolicy(this.app.LocalStoragePolicy.DONOTSTOREANY)
+    queryBuilder.setRetrievalPolicy(this.app.DataRetrievalPolicy.ONLINEONLY)
+
+    do {
+      queryBuilder.setPageSize(maxPageSize)
+      queryBuilder.setOffset(offset)
+
+      const items = await this.find(queryBuilder)
+
+      console.log('items: ', items)
+
+      lastPageSize = items.length
+
+      itemsCollection.push(...items)
+
+      offset += maxPageSize
+    } while (lastPageSize >= maxPageSize)
+
+    return itemsCollection
   }
 
   async getObjectCount(condition) {
@@ -227,6 +335,56 @@ export default class DataStore {
       url : this.app.urls.dataBulkTableDelete(this.className),
       data: queryData
     })
+  }
+
+  async clearLocalDatabase() {
+    checkIfOfflineEnabled()
+
+    await this.app.OfflineDBManager.connection.clear(this.className)
+  }
+
+  onSave(onSuccess, onError) {
+    callbackManager.register(ActionTypes.SAVE, this.className, [onSuccess, onError])
+  }
+
+  onRemove(onSuccess, onError) {
+    callbackManager.register(ActionTypes.DELETE, this.className, [onSuccess, onError])
+  }
+
+  enableAutoSync() {
+    checkIfOfflineEnabled()
+
+    this.app.OfflineDBManager.setTableSyncMode(this.className, SyncModes.AUTO)
+  }
+
+  disableAutoSync() {
+    checkIfOfflineEnabled()
+
+    this.app.OfflineDBManager.setTableSyncMode(this.className, null)
+  }
+
+  isAutoSyncEnabled() {
+    checkIfOfflineEnabled()
+
+    return this.app.OfflineDBManager.getTableSyncMode(this.className) === SyncModes.AUTO
+  }
+
+  startOfflineSync() {
+    checkIfOfflineEnabled()
+
+    return this.app.OfflineDBManager.startOfflineSync(this.className)
+  }
+
+  saveEventually(object, offlineAwareCallback) {
+    return saveEventually.call(this, object, offlineAwareCallback)
+  }
+
+  removeEventually(object, offlineAwareCallback) {
+    return removeEventually.call(this, object, offlineAwareCallback)
+  }
+
+  initLocalDatabase(whereClause, callback) {
+    return initLocalDatabase.call(this, whereClause, callback)
   }
 
   /**

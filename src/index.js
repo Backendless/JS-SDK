@@ -62,20 +62,22 @@ const parseInitConfig = (...args) => {
 }
 
 const SERVICES = {
-  'Logging'     : () => require('./logging').default,
-  'Counters'    : () => require('./counters').default,
-  'Cache'       : () => require('./cache').default,
-  'Commerce'    : () => require('./commerce').default,
-  'Users'       : () => require('./users').default,
-  'BL'          : () => require('./bl').default,
-  'Geo'         : () => require('./geo').default,
-  'Data'        : () => require('./data').default,
-  'Messaging'   : () => require('./messaging').default,
-  'Files'       : () => require('./files').default,
-  'RT'          : () => require('./rt').default,
-  'SharedObject': () => require('./rso').default,
-  'LocalCache'  : () => require('./local-cache').default,
-  'UnitOfWork'  : () => require('./unit-of-work').default,
+  'Logging'         : () => require('./logging').default,
+  'Counters'        : () => require('./counters').default,
+  'Cache'           : () => require('./cache').default,
+  'Commerce'        : () => require('./commerce').default,
+  'Users'           : () => require('./users').default,
+  'BL'              : () => require('./bl').default,
+  'Geo'             : () => require('./geo').default,
+  'Data'            : () => require('./data').default,
+  'Messaging'       : () => require('./messaging').default,
+  'Files'           : () => require('./files').default,
+  'RT'              : () => require('./rt').default,
+  'SharedObject'    : () => require('./rso').default,
+  'LocalCache'      : () => require('./local-cache').default,
+  'UnitOfWork'      : () => require('./unit-of-work').default,
+  'OfflineDBManager': () => require('./data/offline/database-manager').default,
+  'Config'          : () => require('./config').default,
 }
 
 class Backendless {
@@ -388,6 +390,22 @@ class Backendless {
 
   get UnitOfWork() {
     return this.__getService('UnitOfWork')
+  }
+
+  get OfflineDBManager() {
+    return this.__getService('OfflineDBManager')
+  }
+
+  get LocalStoragePolicy() {
+    return require('./data/offline/constants').LocalStoragePolicy
+  }
+
+  get DataRetrievalPolicy() {
+    return require('./data/offline/constants').DataRetrievalPolicy
+  }
+
+  get Config() {
+    return this.__getService('Config')
   }
 
   ///-------------- SERVICES -------------///

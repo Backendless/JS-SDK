@@ -15,6 +15,7 @@ import SpatialReferenceSystem from './geo/spatial-reference-system'
 import WKTParser from './geo/wkt-parser'
 import GeoJSONParser from './geo/geo-json-parser'
 import DataPermission from './persmission'
+import { SyncModes, DataRetrievalPolicy, LocalStoragePolicy } from './offline/constants'
 
 export default class Data {
   constructor(app) {
@@ -43,6 +44,9 @@ export default class Data {
     this.WKTParser = WKTParser
 
     this.SpatialReferenceSystem = SpatialReferenceSystem
+
+    this.RetrievalPolicy = DataRetrievalPolicy.ONLINEONLY
+    this.LocalStoragePolicy = LocalStoragePolicy.DONOTSTOREANY
   }
 
   of(model) {
@@ -74,5 +78,31 @@ export default class Data {
     }
 
     this.classToTableMap[tableName] = clientClass
+  }
+
+  async clearLocalDatabase() {
+    if (!Utils.isBrowser) {
+      throw new Error('Offline DB is not available outside of browser')
+    }
+
+    if (await this.app.OfflineDBManager.isDbExist()) {
+      await this.app.OfflineDBManager.connection.dropDb()
+    }
+  }
+
+  enableAutoSync() {
+    this.app.OfflineDBManager.setGlobalSyncMode(SyncModes.AUTO)
+  }
+
+  disableAutoSync() {
+    this.app.OfflineDBManager.setGlobalSyncMode(null)
+  }
+
+  startOfflineSync() {
+    return this.app.OfflineDBManager.startOfflineSync()
+  }
+
+  isAutoSyncEnabled() {
+    return this.app.OfflineDBManager.getGlobalSyncMode() === SyncModes.AUTO
   }
 }
