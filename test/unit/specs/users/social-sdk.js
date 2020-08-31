@@ -33,7 +33,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/facebook/sdk/login`,
+        path   : `${APP_PATH}/users/social/facebook/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
@@ -60,7 +60,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/facebook/sdk/login`,
+        path   : `${APP_PATH}/users/social/facebook/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
@@ -88,7 +88,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/facebook/sdk/login`,
+        path   : `${APP_PATH}/users/social/facebook/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
@@ -116,7 +116,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/facebook/sdk/login`,
+        path   : `${APP_PATH}/users/social/facebook/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
@@ -160,7 +160,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/googleplus/sdk/login`,
+        path   : `${APP_PATH}/users/social/googleplus/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
@@ -187,7 +187,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/googleplus/sdk/login`,
+        path   : `${APP_PATH}/users/social/googleplus/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
@@ -215,7 +215,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/googleplus/sdk/login`,
+        path   : `${APP_PATH}/users/social/googleplus/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,
@@ -243,7 +243,7 @@ describe('<Users> Social Login with SDK', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/social/googleplus/sdk/login`,
+        path   : `${APP_PATH}/users/social/googleplus/login`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
           accessToken,

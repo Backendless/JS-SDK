@@ -341,7 +341,7 @@ export default class Urls {
   }
 
   userSocialLogin(socialType) {
-    return `${this.userSocial()}/${socialType.toLowerCase()}/sdk/login`
+    return `${this.userSocial()}/${socialType.toLowerCase()}/login`
   }
 
   guestLogin() {
