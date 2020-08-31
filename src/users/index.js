@@ -68,7 +68,7 @@ export default class Users {
         url : this.app.urls.userLogin(),
         data: data,
       })
-      .then(data => this.setLocalCurrentUser(data, stayLoggedIn))
+      .then(data => this.setCurrentUser(data, stayLoggedIn))
   }
 
   async loginAsGuest(stayLoggedIn) {
@@ -78,7 +78,7 @@ export default class Users {
       .post({
         url: this.app.urls.guestLogin(),
       })
-      .then(data => this.setLocalCurrentUser(data, stayLoggedIn))
+      .then(data => this.setCurrentUser(data, stayLoggedIn))
   }
 
   async loginWithFacebook(fieldsMapping, permissions, stayLoggedIn) {
@@ -107,11 +107,11 @@ export default class Users {
         url: this.app.urls.userLogout(),
       })
       .then(() => {
-        this.setLocalCurrentUser(null)
+        this.setCurrentUser(null)
       })
       .catch(error => {
         if ([3023, 3064, 3090, 3091].includes(error.code)) {
-          this.setLocalCurrentUser(null)
+          this.setCurrentUser(null)
         }
 
         throw error
@@ -144,6 +144,32 @@ export default class Users {
     }
 
     return null
+  }
+
+  setCurrentUser(user, stayLoggedIn) {
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.USER_TOKEN)
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.CURRENT_USER_ID)
+    this.app.LocalCache.remove(this.app.LocalCache.Keys.STAY_LOGGED_IN)
+
+    this.currentUser = user || null
+
+    if (this.currentUser) {
+      if (!(this.currentUser instanceof User)) {
+        this.currentUser = this.dataStore.parseResponse(this.currentUser)
+      }
+
+      if (stayLoggedIn) {
+        this.app.LocalCache.set(this.app.LocalCache.Keys.STAY_LOGGED_IN, true)
+        this.app.LocalCache.set(this.app.LocalCache.Keys.USER_TOKEN, this.currentUser['user-token'])
+        this.app.LocalCache.set(this.app.LocalCache.Keys.CURRENT_USER_ID, this.currentUser.objectId)
+      }
+    }
+
+    if (this.app.__RT) {
+      this.app.RT.updateUserTokenIfNeeded()
+    }
+
+    return this.currentUser
   }
 
   async isValidLogin() {
@@ -264,33 +290,17 @@ export default class Users {
     return this.app.LocalCache.get(this.app.LocalCache.Keys.CURRENT_USER_ID) || null
   }
 
+  /**
+   * @deprecated
+   * */
   getLocalCurrentUser() {
     return this.currentUser
   }
 
+  /**
+   * @deprecated
+   * */
   setLocalCurrentUser(user, stayLoggedIn) {
-    this.app.LocalCache.remove(this.app.LocalCache.Keys.USER_TOKEN)
-    this.app.LocalCache.remove(this.app.LocalCache.Keys.CURRENT_USER_ID)
-    this.app.LocalCache.remove(this.app.LocalCache.Keys.STAY_LOGGED_IN)
-
-    this.currentUser = user || null
-
-    if (this.currentUser) {
-      if (!(this.currentUser instanceof User)) {
-        this.currentUser = this.dataStore.parseResponse(this.currentUser)
-      }
-
-      if (stayLoggedIn) {
-        this.app.LocalCache.set(this.app.LocalCache.Keys.STAY_LOGGED_IN, true)
-        this.app.LocalCache.set(this.app.LocalCache.Keys.USER_TOKEN, this.currentUser['user-token'])
-        this.app.LocalCache.set(this.app.LocalCache.Keys.CURRENT_USER_ID, this.currentUser.objectId)
-      }
-    }
-
-    if (this.app.__RT) {
-      this.app.RT.updateUserTokenIfNeeded()
-    }
-
-    return this.currentUser
+    return this.setCurrentUser(user, stayLoggedIn)
   }
 }

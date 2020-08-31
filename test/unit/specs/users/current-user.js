@@ -219,9 +219,9 @@ describe('<Users> Current User', function() {
   it('should not wrap new current user', async () => {
     const user = new Backendless.User()
 
-    Backendless.UserService.setLocalCurrentUser(user)
+    Backendless.UserService.setCurrentUser(user)
 
-    expect(Backendless.UserService.getLocalCurrentUser()).to.be.equal(user)
+    expect(Backendless.UserService.currentUser).to.be.equal(user)
   })
 
   describe('User Token', () => {
@@ -246,7 +246,7 @@ describe('<Users> Current User', function() {
         .to.be.equal(Backendless.getCurrentUserToken())
         .to.be.equal(Backendless.UserService.getCurrentUserToken())
 
-      Backendless.UserService.setLocalCurrentUser({ 'user-token': token3 })
+      Backendless.UserService.setCurrentUser({ 'user-token': token3 })
 
       expect(token3)
         .to.be.equal(Backendless.getCurrentUserToken())
@@ -274,7 +274,7 @@ describe('<Users> Current User', function() {
 
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
 
-      Backendless.UserService.setLocalCurrentUser({ 'user-token': token2 })
+      Backendless.UserService.setCurrentUser({ 'user-token': token2 })
 
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
 
@@ -305,7 +305,7 @@ describe('<Users> Current User', function() {
         .to.be.equal(Backendless.UserService.currentUser['user-token'])
         .to.be.equal(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN))
 
-      Backendless.UserService.setLocalCurrentUser({ 'user-token': token2 })
+      Backendless.UserService.setCurrentUser({ 'user-token': token2 })
 
       expect(token2)
         .to.be.equal(Backendless.getCurrentUserToken())
@@ -314,7 +314,7 @@ describe('<Users> Current User', function() {
 
       expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(undefined)
 
-      Backendless.UserService.setLocalCurrentUser({ 'user-token': token3 }, true)
+      Backendless.UserService.setCurrentUser({ 'user-token': token3 }, true)
 
       expect(token3)
         .to.be.equal(Backendless.getCurrentUserToken())
@@ -327,7 +327,7 @@ describe('<Users> Current User', function() {
       const testToken = 'test-token'
       const testUserId = 'test-id'
 
-      Backendless.UserService.setLocalCurrentUser({ 'user-token': testToken }, true)
+      Backendless.UserService.setCurrentUser({ 'user-token': testToken }, true)
 
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.USER_TOKEN, testToken)
       Backendless.LocalCache.set(Backendless.LocalCache.Keys.CURRENT_USER_ID, testUserId)

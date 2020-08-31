@@ -44,7 +44,7 @@ export default class UsersSocial {
           fieldsMapping
         }
       })
-      .then(data => this.users.setLocalCurrentUser(data, stayLoggedIn))
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
   }
 
   async loginWithContainer(socialType, fieldsMapping, permissions, container, stayLoggedIn) {
@@ -87,7 +87,7 @@ export default class UsersSocial {
         throw error
       })
       .then(resolveContainer)
-      .then(data => this.users.setLocalCurrentUser(data, stayLoggedIn))
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
   }
 }
 
