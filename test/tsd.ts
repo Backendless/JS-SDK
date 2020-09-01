@@ -600,6 +600,8 @@ function testUserService() {
     let newUser: Backendless.User = new Backendless.User();
     let resultObj: Object;
     let resultVoid: void;
+    let resultNull: null;
+    let resultUndefined: null;
     let resultListOfString: string[];
     let resultListOfObjects: object[];
     let promiseObject: Promise<Object>;
@@ -611,10 +613,14 @@ function testUserService() {
     class CustomUser {
     }
 
+    let customUser = new CustomUser()
     let promiseCustomUser: Promise<CustomUser>;
 
     const restUrl: string = Backendless.UserService.restUrl;
     const loggedInUser: boolean = Backendless.UserService.loggedInUser();
+
+    newUser = Backendless.UserService.currentUser
+    customUser = Backendless.UserService.currentUser
 
     promiseVoid = Backendless.UserService.restorePassword('email');
 
@@ -637,6 +643,17 @@ function testUserService() {
     promiseVoid = Backendless.UserService.logout();
 
     promiseObject = Backendless.UserService.getCurrentUser();
+    promiseCustomUser = Backendless.UserService.getCurrentUser<CustomUser>();
+
+    newUser = Backendless.UserService.setCurrentUser({});
+    newUser = Backendless.UserService.setCurrentUser(customUser);
+    newUser = Backendless.UserService.setCurrentUser(newUser);
+    newUser = Backendless.UserService.setCurrentUser(newUser, true);
+
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>({});
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>(customUser);
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>(newUser);
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>(newUser, true);
 
     promiseObject = Backendless.UserService.update(newUser);
 

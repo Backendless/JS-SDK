@@ -72,13 +72,11 @@ describe('<Users> Basic', function() {
   })
 
   it('gets local current user', async () => {
-    const currentUser = {}
+    const currentUser = { name: 'bob', age: 45 }
 
-    Backendless.UserService.currentUser = currentUser
-
-    expect(Backendless.UserService.getLocalCurrentUser())
+    expect(Backendless.UserService.setCurrentUser(currentUser))
       .to.equal(Backendless.UserService.currentUser)
-      .to.equal(currentUser)
+      .to.eql({ ___class: 'Users', name: 'bob', age: 45 })
   })
 
   describe('Status', function() {
@@ -148,7 +146,7 @@ describe('<Users> Basic', function() {
     it('should fail if userStatus is invalid', async () => {
       const errorMsg = 'User Status must be a valid string'
 
-      await expect(Backendless.UserService.updateUserStatus('user-id' )).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.updateUserStatus('user-id')).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.updateUserStatus('user-id', null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.updateUserStatus('user-id', true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.updateUserStatus('user-id', false)).to.eventually.be.rejectedWith(errorMsg)

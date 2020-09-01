@@ -268,6 +268,8 @@ declare module Backendless {
     namespace UserService {
         let restUrl: string;
 
+        let currentUser: Backendless.User;
+
         function register(user: Backendless.User): Promise<Backendless.User>;
         function register<T>(user: T): Promise<T>;
 
@@ -291,8 +293,9 @@ declare module Backendless {
 
         function logout(): Promise<void>;
 
-        function getCurrentUser(): Promise<Backendless.User>;
-        function getCurrentUser<T>(): Promise<T>;
+        function getCurrentUser<T = Backendless.User>(): Promise<T>;
+
+        function setCurrentUser<T = Backendless.User>(user?: Object, stayLoggedIn?: boolean): T;
 
         function update(user: Backendless.User): Promise<Backendless.User>;
         function update<T>(user: T): Promise<T>;
@@ -758,19 +761,19 @@ declare module Backendless {
      * @constructor
      */
     class JSONUpdateBuilder {
-        static SET() : Backendless.JSONUpdateBuilder;
+        static SET(): Backendless.JSONUpdateBuilder;
 
-        static INSERT() : Backendless.JSONUpdateBuilder;
+        static INSERT(): Backendless.JSONUpdateBuilder;
 
-        static REPLACE() : Backendless.JSONUpdateBuilder;
+        static REPLACE(): Backendless.JSONUpdateBuilder;
 
-        static REMOVE() : Backendless.JSONRemoveBuilder;
+        static REMOVE(): Backendless.JSONRemoveBuilder;
 
-        static ARRAY_APPEND() : Backendless.JSONUpdateBuilder;
+        static ARRAY_APPEND(): Backendless.JSONUpdateBuilder;
 
-        static ARRAY_INSERT() : Backendless.JSONUpdateBuilder;
+        static ARRAY_INSERT(): Backendless.JSONUpdateBuilder;
 
-        addArgument(arg: string, argValue: any) : Backendless.JSONUpdateBuilder;
+        addArgument(arg: string, argValue: any): Backendless.JSONUpdateBuilder;
 
         create(): Object;
 
@@ -783,7 +786,7 @@ declare module Backendless {
      * @constructor
      */
     class JSONRemoveBuilder extends JSONUpdateBuilder {
-        addArgument(arg: string) : Backendless.JSONRemoveBuilder;
+        addArgument(arg: string): Backendless.JSONRemoveBuilder;
     }
 
     /**
@@ -1081,7 +1084,7 @@ declare module Backendless {
 
         constructor(name: string | Object | Function, classToTableMap: Object);
 
-        save<T = object>(obj: T|object): Promise<T>;
+        save<T = object>(obj: T | object): Promise<T>;
 
         remove(id: object | string): Promise<object>;
 
