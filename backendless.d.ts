@@ -283,8 +283,8 @@ declare module Backendless {
 
         function unassignRole(identity: string, roleName: string): Promise<void>;
 
-        function login(identity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
-        function login<T>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T=Backendless.User>(userId: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T=Backendless.User>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
 
         function loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
         function loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;

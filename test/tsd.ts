@@ -595,8 +595,8 @@ function testUserService() {
     const roleName: string = 'rolename';
     const password: string = 'password';
     const userId: string = 'userId';
+    const stayLoggedIn: boolean = true;
     const div: HTMLElement = document.createElement('div');
-    let bol: boolean = true;
     let newUser: Backendless.User = new Backendless.User();
     let resultObj: Object;
     let resultVoid: void;
@@ -632,11 +632,14 @@ function testUserService() {
 
     promiseVoid = Backendless.UserService.unassignRole(identity, roleName);
 
+    promiseObject = Backendless.UserService.login(userId);
+    promiseObject = Backendless.UserService.login(userId, stayLoggedIn);
+
     promiseObject = Backendless.UserService.login(userName, password);
-    promiseObject = Backendless.UserService.login(userName, password, bol);
+    promiseObject = Backendless.UserService.login(userName, password, stayLoggedIn);
 
     promiseObject = Backendless.UserService.loginAsGuest();
-    promiseObject = Backendless.UserService.loginAsGuest(bol);
+    promiseObject = Backendless.UserService.loginAsGuest(stayLoggedIn);
 
     promiseListOfObject = Backendless.UserService.describeUserClass();
 
@@ -648,49 +651,49 @@ function testUserService() {
     newUser = Backendless.UserService.setCurrentUser({});
     newUser = Backendless.UserService.setCurrentUser(customUser);
     newUser = Backendless.UserService.setCurrentUser(newUser);
-    newUser = Backendless.UserService.setCurrentUser(newUser, true);
+    newUser = Backendless.UserService.setCurrentUser(newUser, stayLoggedIn);
 
     customUser = Backendless.UserService.setCurrentUser<CustomUser>({});
     customUser = Backendless.UserService.setCurrentUser<CustomUser>(customUser);
     customUser = Backendless.UserService.setCurrentUser<CustomUser>(newUser);
-    customUser = Backendless.UserService.setCurrentUser<CustomUser>(newUser, true);
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>(newUser, stayLoggedIn);
 
     promiseObject = Backendless.UserService.update(newUser);
 
     promiseVoid = Backendless.UserService.loginWithFacebook();
     promiseVoid = Backendless.UserService.loginWithFacebook({});
     promiseVoid = Backendless.UserService.loginWithFacebook({}, {});
-    promiseVoid = Backendless.UserService.loginWithFacebook({}, {}, true);
-    promiseVoid = Backendless.UserService.loginWithFacebook({}, null, true);
-    promiseVoid = Backendless.UserService.loginWithFacebook(null, null, true);
+    promiseVoid = Backendless.UserService.loginWithFacebook({}, {}, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithFacebook({}, null, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithFacebook(null, null, stayLoggedIn);
 
     promiseVoid = Backendless.UserService.loginWithGooglePlus();
     promiseVoid = Backendless.UserService.loginWithGooglePlus({});
     promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {});
     promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'));
-    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), true);
-    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, null, true);
-    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, null, null, true);
-    promiseVoid = Backendless.UserService.loginWithGooglePlus(null, null, null, true);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, null, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, null, null, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus(null, null, null, stayLoggedIn);
 
     promiseVoid = Backendless.UserService.loginWithTwitter();
     promiseVoid = Backendless.UserService.loginWithTwitter({});
-    promiseVoid = Backendless.UserService.loginWithTwitter({}, true);
-    promiseVoid = Backendless.UserService.loginWithTwitter(null, true);
+    promiseVoid = Backendless.UserService.loginWithTwitter({}, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithTwitter(null, stayLoggedIn);
 
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, stayLoggedIn);
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {}, stayLoggedIn);
     promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {});
-    promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {}, true);
+    promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {}, stayLoggedIn);
 
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, stayLoggedIn);
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {}, stayLoggedIn);
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {});
-    promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, true);
+    promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, stayLoggedIn);
 
     promiseObject = Backendless.UserService.isValidLogin();
 
