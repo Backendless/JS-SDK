@@ -1,3 +1,5 @@
+import BackendlessUser from '../user'
+import { UsersUtils } from '../utils'
 import { SocialContainer } from './container'
 
 export default class UsersSocial {
@@ -87,6 +89,79 @@ export default class UsersSocial {
         throw error
       })
       .then(resolveContainer)
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
+  }
+
+  async loginWithOauth2(providerName, accessToken, guestUser, fieldsMapping, stayLoggedIn) {
+    if (!providerName || typeof providerName !== 'string') {
+      throw new Error('"providerName" must be non empty string.')
+    }
+
+    if (!accessToken || typeof accessToken !== 'string') {
+      throw new Error('"accessToken" must be non empty string.')
+    }
+
+    if (guestUser && !(guestUser instanceof BackendlessUser)) {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = guestUser
+      guestUser = undefined
+    }
+
+    if (typeof fieldsMapping === 'boolean') {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = undefined
+    }
+
+    const providerCode = UsersUtils.getProviderCode(providerName)
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userOAuthLogin(providerCode),
+        data: {
+          accessToken,
+          fieldsMapping,
+          guestUser
+        }
+      })
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
+  }
+
+  async loginWithOauth1(providerName, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
+    if (!providerName || typeof providerName !== 'string') {
+      throw new Error('"providerName" must be non empty string.')
+    }
+
+    if (!accessToken || typeof accessToken !== 'string') {
+      throw new Error('"accessToken" must be non empty string.')
+    }
+
+    if (!accessTokenSecret || typeof accessTokenSecret !== 'string') {
+      throw new Error('"accessTokenSecret" must be non empty string.')
+    }
+
+    if (guestUser && !(guestUser instanceof BackendlessUser)) {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = guestUser
+      guestUser = undefined
+    }
+
+    if (typeof fieldsMapping === 'boolean') {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = undefined
+    }
+
+    const providerCode = UsersUtils.getProviderCode(providerName)
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userOAuthLogin(providerCode),
+        data: {
+          accessToken,
+          accessTokenSecret,
+          fieldsMapping,
+          guestUser
+        }
+      })
       .then(data => this.users.setCurrentUser(data, stayLoggedIn))
   }
 }
