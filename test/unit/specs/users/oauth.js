@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 import Backendless, { APP_PATH, forTest, prepareMockRequest, Utils } from '../../helpers/sandbox'
+import { UsersUtils } from '../../../../src/users/utils'
 
 function getTestUserObject() {
   return {
@@ -571,5 +572,18 @@ describe('<Users> OAuth Login', function() {
       await expect(Backendless.UserService.loginWithOauth1('twitter', accessToken, [])).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.loginWithOauth1('twitter', accessToken, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
+  })
+
+  it('utils.getProviderCode', () => {
+    const getProviderCode = UsersUtils.getProviderCode
+
+    expect(getProviderCode(undefined)).to.be.eql(undefined)
+    expect(getProviderCode('')).to.be.eql('')
+    expect(getProviderCode('facebook')).to.be.eql('facebook')
+    expect(getProviderCode('PascalCase')).to.be.eql('pascal_case')
+    expect(getProviderCode('camelCase')).to.be.eql('camel_case')
+    expect(getProviderCode('kebab-case')).to.be.eql('kebab_case')
+    expect(getProviderCode('my First provider')).to.be.eql('my_first_provider')
+    expect(getProviderCode('&-mixed111  ^@ string_123')).to.be.eql('mixed111_string_123')
   })
 })
