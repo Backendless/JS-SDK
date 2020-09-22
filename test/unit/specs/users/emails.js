@@ -51,8 +51,6 @@ describe('<Users> Emails', function() {
     })
   })
 
-
-
   it('fails when there is an incorrect email is passed in the request to resend email confirmation', async () => {
     const errorMsg = 'Email Address must be provided and must be a string.'
 
