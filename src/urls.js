@@ -332,6 +332,10 @@ export default class Urls {
     return `${this.users()}/resendconfirmation/${email}`
   }
 
+  userCreateConfirmation(email) {
+    return `${this.users()}/createEmailConfirmationURL/${email}`
+  }
+
   userSocial() {
     return `${this.users()}/social`
   }

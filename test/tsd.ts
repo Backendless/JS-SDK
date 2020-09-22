@@ -699,6 +699,8 @@ function testUserService() {
 
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
 
+    promiseVoid = Backendless.UserService.createEmailConfirmation('email');
+
     promiseVoid = Backendless.UserService.enableUser(userId);
 
     promiseVoid = Backendless.UserService.disableUser(userId);
