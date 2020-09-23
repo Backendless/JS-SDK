@@ -67,4 +67,32 @@ describe('<Users> Emails', function() {
     await expect(Backendless.UserService.resendEmailConfirmation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
   })
 
+  it('sends correct request to create email confirmation', async () => {
+    const req1 = prepareMockRequest()
+
+    await Backendless.UserService.createEmailConfirmation(validEmailAddress)
+
+    expect(req1).to.deep.include({
+      method : 'POST',
+      path   : `${APP_PATH}/users/createEmailConfirmationURL/foo@bar.com`,
+      headers: {},
+      body   : undefined
+    })
+  })
+
+  it('fails when there is an incorrect email is passed in the request to create email confirmation', async () => {
+    const errorMsg = 'Email Address must be provided and must be a string.'
+
+    await expect(Backendless.UserService.createEmailConfirmation()).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation(undefined)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation('')).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation(0)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation(123)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation(null)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation(true)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation(false)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation({})).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation([])).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+  })
 })

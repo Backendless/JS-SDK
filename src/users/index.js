@@ -204,6 +204,16 @@ export default class Users {
     })
   }
 
+  async createEmailConfirmation(emailAddress) {
+    if (!emailAddress || typeof emailAddress !== 'string') {
+      throw new Error('Email Address must be provided and must be a string.')
+    }
+
+    return this.app.request.post({
+      url: this.app.urls.userCreateConfirmation(emailAddress),
+    })
+  }
+
   async update(user) {
     return this.app.request
       .put({
