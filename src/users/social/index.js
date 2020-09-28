@@ -1,5 +1,4 @@
 import BackendlessUser from '../user'
-import { UsersUtils } from '../utils'
 import { SocialContainer } from './container'
 
 export default class UsersSocial {
@@ -92,9 +91,9 @@ export default class UsersSocial {
       .then(data => this.users.setCurrentUser(data, stayLoggedIn))
   }
 
-  async loginWithOauth2(providerName, accessToken, guestUser, fieldsMapping, stayLoggedIn) {
-    if (!providerName || typeof providerName !== 'string') {
-      throw new Error('"providerName" must be non empty string.')
+  async loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn) {
+    if (!providerCode || typeof providerCode !== 'string') {
+      throw new Error('"providerCode" must be non empty string.')
     }
 
     if (!accessToken || typeof accessToken !== 'string') {
@@ -112,8 +111,6 @@ export default class UsersSocial {
       fieldsMapping = undefined
     }
 
-    const providerCode = UsersUtils.getProviderCode(providerName)
-
     return this.app.request
       .post({
         url : this.app.urls.userOAuthLogin(providerCode),
@@ -126,9 +123,9 @@ export default class UsersSocial {
       .then(data => this.users.setCurrentUser(data, stayLoggedIn))
   }
 
-  async loginWithOauth1(providerName, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
-    if (!providerName || typeof providerName !== 'string') {
-      throw new Error('"providerName" must be non empty string.')
+  async loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
+    if (!providerCode || typeof providerCode !== 'string') {
+      throw new Error('"providerCode" must be non empty string.')
     }
 
     if (!accessToken || typeof accessToken !== 'string') {
@@ -149,8 +146,6 @@ export default class UsersSocial {
       stayLoggedIn = fieldsMapping
       fieldsMapping = undefined
     }
-
-    const providerCode = UsersUtils.getProviderCode(providerName)
 
     return this.app.request
       .post({

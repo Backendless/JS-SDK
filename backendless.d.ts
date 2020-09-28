@@ -317,26 +317,26 @@ declare module Backendless {
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
         function loginWithOauth2<T = Backendless.User>(
-            providerName: String, accessToken: String, guestUser?: Backendless.User,
+            providerCode: String, accessToken: String, guestUser?: Backendless.User,
             fieldsMapping?: object, stayLoggedIn?: boolean
         ): Promise<T>;
         function loginWithOauth2<T = Backendless.User>(
-            providerName: String, accessToken: String, fieldsMapping?: object, stayLoggedIn?: boolean
+            providerCode: String, accessToken: String, fieldsMapping?: object, stayLoggedIn?: boolean
         ): Promise<T>;
         function loginWithOauth2<T = Backendless.User>(
-            providerName: String, accessToken: String, stayLoggedIn?: boolean
+            providerCode: String, accessToken: String, stayLoggedIn?: boolean
         ): Promise<T>;
 
         function loginWithOauth1<T = Backendless.User>(
-            providerName: String, accessToken: String, accessTokenSecret: String, guestUser?: Backendless.User,
+            providerCode: String, accessToken: String, accessTokenSecret: String, guestUser?: Backendless.User,
             fieldsMapping?: object, stayLoggedIn?: boolean
         ): Promise<T>;
         function loginWithOauth1<T = Backendless.User>(
-            providerName: String, accessToken: String, accessTokenSecret: String,
+            providerCode: String, accessToken: String, accessTokenSecret: String,
             fieldsMapping?: object, stayLoggedIn?: boolean
         ): Promise<T>;
         function loginWithOauth1<T = Backendless.User>(
-            providerName: String, accessToken: String, accessTokenSecret: String, stayLoggedIn?: boolean
+            providerCode: String, accessToken: String, accessTokenSecret: String, stayLoggedIn?: boolean
         ): Promise<T>;
 
         function isValidLogin(): Promise<boolean>;
