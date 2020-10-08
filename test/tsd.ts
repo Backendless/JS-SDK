@@ -1430,7 +1430,6 @@ async function testBaseTransactions() {
     opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
     opResult = uow.bulkCreate([personInst, personInst, personInst]);
     ///
-    opResult = uow.bulkUpdate(whereClause, personInst);
     opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObj, personObj, personObj], changesObj);

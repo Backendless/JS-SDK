@@ -1286,6 +1286,9 @@ declare module Backendless {
     }
 
     class UnitOfWork {
+
+        static initFromJSON(data:object):UnitOfWork;
+
         constructor(isolation?: IsolationLevelEnum);
 
         find(tableName: string, dataQueryBuilder: DataQueryBuilder): OpResult;
@@ -1307,7 +1310,6 @@ declare module Backendless {
         bulkCreate(tableName: string, objects: object[]): OpResult;
         bulkCreate(objects: object[]): OpResult;
 
-        bulkUpdate(whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;
         bulkUpdate(tableName: string, objects: object[], changes: object): OpResult;
