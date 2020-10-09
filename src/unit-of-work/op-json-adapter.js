@@ -39,13 +39,11 @@ export const OperationJSONAdapter = {
       const opResult = uow.getOpResultById(payload.opResultId)
 
       if (payload.resultIndex !== undefined) {
-        let opRes = opResult.resolveTo(payload.resultIndex)
+        const opRes = opResult.resolveTo(payload.resultIndex)
         args.push(opRes)
       } else {
         args.push(opResult)
       }
-
-
     }
 
     return uow.delete.apply(uow, args)
