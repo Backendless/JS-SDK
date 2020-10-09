@@ -32,19 +32,6 @@ const showLegacyDataWarning = () => {
   }
 }
 
-const showLegacyGEOWarning = () => {
-  if (!showLegacyGEOWarning.isShown) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Legacy GEO API are deprecated and will be removed in the nearest release. ' +
-      'Please use Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
-      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
-    )
-
-    showLegacyGEOWarning.isShown = true
-  }
-}
-
 // Backendless supports two signatures for the initApp method
 // two args - applicationId {String} and secretKey {String}
 // or one argument - whole set of options {Object}
@@ -68,7 +55,6 @@ const SERVICES = {
   'Commerce'    : () => require('./commerce').default,
   'Users'       : () => require('./users').default,
   'BL'          : () => require('./bl').default,
-  'Geo'         : () => require('./geo').default,
   'Data'        : () => require('./data').default,
   'Messaging'   : () => require('./messaging').default,
   'Files'       : () => require('./files').default,
@@ -127,10 +113,6 @@ class Backendless {
 
     if (app.__hasService('Logging')) {
       app.Logging.reset()
-    }
-
-    if (app.__hasService('Geo')) {
-      app.Geo.resetGeofenceMonitoring()
     }
 
     if (app.__hasService('Users')) {
@@ -351,10 +333,6 @@ class Backendless {
     return this.BL.Events
   }
 
-  get Geo() {
-    return this.__getService('Geo')
-  }
-
   get Data() {
     return this.__getService('Data')
   }
@@ -397,27 +375,6 @@ class Backendless {
   ///--------BACKWARD COMPATIBILITY-------///
 
   //TODO: do we need to remove it?
-
-  /** @deprecated */
-  get GeoQuery() {
-    showLegacyGEOWarning()
-
-    return this.Geo.Query
-  }
-
-  /** @deprecated */
-  get GeoPoint() {
-    showLegacyGEOWarning()
-
-    return this.Geo.Point
-  }
-
-  /** @deprecated */
-  get GeoCluster() {
-    showLegacyGEOWarning()
-
-    return this.Geo.Cluster
-  }
 
   /** @deprecated */
   get Persistence() {
