@@ -283,8 +283,8 @@ declare module Backendless {
 
         function unassignRole(identity: string, roleName: string): Promise<void>;
 
-        function login<T=Backendless.User>(userId: string, stayLoggedIn?: boolean): Promise<T>;
-        function login<T=Backendless.User>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T = Backendless.User>(userId: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T = Backendless.User>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
 
         function loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
         function loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;
@@ -315,6 +315,29 @@ declare module Backendless {
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, fieldsMapping: object): Promise<T>;
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String): Promise<T>;
+
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, guestUser?: Backendless.User,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, stayLoggedIn?: boolean
+        ): Promise<T>;
+
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String, guestUser?: Backendless.User,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String, stayLoggedIn?: boolean
+        ): Promise<T>;
 
         function isValidLogin(): Promise<boolean>;
 

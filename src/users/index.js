@@ -101,6 +101,14 @@ export default class Users {
     return this.social.loginWithTwitter(fieldsMapping, stayLoggedIn)
   }
 
+  async loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn)
+  }
+
+  async loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn)
+  }
+
   async logout() {
     return this.app.request
       .get({
