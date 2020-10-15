@@ -84,6 +84,19 @@ describe('Namespace', function() {
 
       expect(Backendless.ServerCode.addService()).to.be.equal(true)
     })
+
+    it('should not reset ServerCode on initApp', () => {
+      const ServerCode = Backendless.ServerCode = {
+        addService() {
+          return true
+        }
+      }
+
+      Backendless.initApp(APP_ID, API_KEY)
+
+      expect(Backendless.ServerCode).to.be.equal(ServerCode)
+      expect(Backendless.ServerCode.addService()).to.be.equal(true)
+    })
   })
 
   describe('Device', () => {

@@ -598,6 +598,7 @@ function testUserService() {
     const stayLoggedIn: boolean = true;
     const div: HTMLElement = document.createElement('div');
     let newUser: Backendless.User = new Backendless.User();
+    let guestUser: Backendless.User = new Backendless.User();
     let resultObj: Object;
     let resultVoid: void;
     let resultNull: null;
@@ -621,6 +622,7 @@ function testUserService() {
 
     newUser = Backendless.UserService.currentUser
     customUser = Backendless.UserService.currentUser
+    guestUser = Backendless.UserService.currentUser
 
     promiseVoid = Backendless.UserService.restorePassword('email');
 
@@ -695,9 +697,37 @@ function testUserService() {
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {});
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, stayLoggedIn);
 
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken');
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2<Backendless.User>('facebook', 'accessToken', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2<Backendless.User>('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+    promiseCustomUser = Backendless.UserService.loginWithOauth2<CustomUser>('facebook', 'accessToken', guestUser, {});
+    promiseCustomUser = Backendless.UserService.loginWithOauth2<CustomUser>('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret');
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1<Backendless.User>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1<Backendless.User>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+    promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+
     promiseObject = Backendless.UserService.isValidLogin();
 
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
+
+    promiseObject = Backendless.UserService.createEmailConfirmation('email');
 
     promiseVoid = Backendless.UserService.enableUser(userId);
 

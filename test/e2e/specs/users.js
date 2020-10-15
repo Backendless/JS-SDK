@@ -564,4 +564,32 @@ describe('Backendless.Users', function() {
       .and.eventually.have.property('code', 3054)
       .and.eventually.have.property('message', 'Operation allowed only for BL logic.')
   })
+
+  it('resend email confirmation', async function() {
+    const user = randUser()
+
+    await this.consoleApi.users.updateUsersRegs(this.app.id, {
+      userRegistrationEnabled  : true,
+      emailConfirmationRequired: true
+    })
+
+    await Backendless.UserService.register(user)
+
+    const result = await Backendless.UserService.resendEmailConfirmation(user.email)
+
+    expect(result).to.be.empty
+  })
+
+  it('create email confirmation', async function() {
+    const user = randUser()
+
+    await Backendless.UserService.register(user)
+
+    const result = await Backendless.UserService.createEmailConfirmation(user.email)
+
+    expect(result.confirmationURL).to.be.a('string')
+    expect(!!result.confirmationURL.length).to.be.true
+
+    console.log(result.confirmationURL)
+  })
 })

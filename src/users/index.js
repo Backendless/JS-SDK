@@ -101,6 +101,14 @@ export default class Users {
     return this.social.loginWithTwitter(fieldsMapping, stayLoggedIn)
   }
 
+  async loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn)
+  }
+
+  async loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn)
+  }
+
   async logout() {
     return this.app.request
       .get({
@@ -201,6 +209,16 @@ export default class Users {
 
     return this.app.request.post({
       url: this.app.urls.userResendConfirmation(emailAddress),
+    })
+  }
+
+  async createEmailConfirmation(emailAddress) {
+    if (!emailAddress || typeof emailAddress !== 'string') {
+      throw new Error('Email Address must be provided and must be a string.')
+    }
+
+    return this.app.request.post({
+      url: this.app.urls.userCreateConfirmation(emailAddress),
     })
   }
 

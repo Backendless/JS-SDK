@@ -332,6 +332,10 @@ export default class Urls {
     return `${this.users()}/resendconfirmation/${email}`
   }
 
+  userCreateConfirmation(email) {
+    return `${this.users()}/createEmailConfirmationURL/${email}`
+  }
+
   userSocial() {
     return `${this.users()}/social`
   }
@@ -342,6 +346,10 @@ export default class Urls {
 
   userSocialLogin(socialType) {
     return `${this.userSocial()}/${socialType.toLowerCase()}/sdk/login`
+  }
+
+  userOAuthLogin(providerCode) {
+    return `${this.userSocial()}/${providerCode.toLowerCase()}/login`
   }
 
   guestLogin() {
