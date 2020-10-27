@@ -22,7 +22,7 @@
     "coverage": "nyc --reporter=html --reporter=text --cache=false npm run test:unit",
     "test": "npm run test:tsc && npm run coverage",
     "test:tsc": "tsc ./test/tsd.ts",
-    "test:unit": "cross-env NODE_ENV=test mocha test/unit/specs/*",
+    "test:unit": "cross-env NODE_ENV=test mocha --recursive test/unit/specs",
     "test:e2e": "cross-env NODE_ENV=test mocha --require @babel/register test/e2e/specs/*",
     "build": "npm run clean && npm run check && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",

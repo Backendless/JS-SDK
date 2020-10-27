@@ -1310,9 +1310,20 @@ declare module Backendless {
         SERIALIZABLE
     }
 
+    interface IsolationLevel {
+        READ_UNCOMMITTED: IsolationLevelEnum,
+        READ_COMMITTED: IsolationLevelEnum,
+        REPEATABLE_READ: IsolationLevelEnum,
+        SERIALIZABLE: IsolationLevelEnum
+    }
+
     class UnitOfWork {
 
-        static initFromJSON(data:object):UnitOfWork;
+        static IsolationLevelEnum: IsolationLevel
+        static OpResult:Function
+        static OpResultValueReference: Function
+
+        static initFromJSON(data: object): UnitOfWork;
 
         constructor(isolation?: IsolationLevelEnum);
 

@@ -2,8 +2,8 @@ import Utils from '../utils'
 import DataQueryBuilder from '../data/data-query-builder'
 
 import { OperationType, IsolationLevelEnum } from './constants'
+import { OperationJSONAdapter } from './json-adapter'
 import { OpResult } from './op-result'
-import { OperationJSONAdapter } from './op-json-adapter'
 import { OpResultValueReference } from './op-result-value-reference'
 
 class TransactionOperationError extends Error {
@@ -37,6 +37,10 @@ class UnitOfWorkResult {
 
 class UnitOfWork {
   static IsolationLevelEnum = IsolationLevelEnum
+
+  static OpResult = OpResult
+
+  static OpResultValueReference = OpResultValueReference
 
   constructor(isolationLevelEnum, app) {
     this.app = app
@@ -114,6 +118,10 @@ class UnitOfWork {
       data: this.composePayload(),
     })
 
+    return this.setResult(result)
+  }
+
+  setResult(result){
     if (result.results) {
       this.payload.operations.forEach(operation => {
         const opResultId = operation.meta.opResult.getOpResultId()
@@ -233,7 +241,6 @@ class UnitOfWork {
 
     return this.addOperations(OperationType.CREATE, tableName, changes)
   }
-
 
   /**
    * update(object: object): OpResult;
@@ -583,11 +590,11 @@ export default function UnitOfWorkService(app) {
       const uow = new this(data.transactionIsolation)
 
       data.operations.forEach(op => {
-       const opResult = OperationJSONAdapter[op.operationType](uow, op)
+        const opResult = OperationJSONAdapter[op.operationType](uow, op)
 
         opResult.setOpResultId(op.opResultId)
       })
-
+      
       return uow
     }
 
