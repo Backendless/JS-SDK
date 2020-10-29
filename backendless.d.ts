@@ -343,7 +343,7 @@ declare module Backendless {
 
         function resendEmailConfirmation(identity: string): Promise<void>;
 
-        function createEmailConfirmation(email: string): Promise<object>;
+        function createEmailConfirmation(identity: string): Promise<object>;
 
         function enableUser(userId: string): Promise<void>;
 

@@ -202,23 +202,23 @@ export default class Users {
     })
   }
 
-  async resendEmailConfirmation(emailAddress) {
-    if (!emailAddress || typeof emailAddress !== 'string') {
+  async resendEmailConfirmation(identity) {
+    if (!identity || typeof identity !== 'string') {
       throw new Error('Email Address must be provided and must be a string.')
     }
 
     return this.app.request.post({
-      url: this.app.urls.userResendConfirmation(emailAddress),
+      url: this.app.urls.userResendConfirmation(identity),
     })
   }
 
-  async createEmailConfirmation(emailAddress) {
-    if (!emailAddress || typeof emailAddress !== 'string') {
+  async createEmailConfirmation(identity) {
+    if (!identity || typeof identity !== 'string') {
       throw new Error('Email Address must be provided and must be a string.')
     }
 
     return this.app.request.post({
-      url: this.app.urls.userCreateConfirmation(emailAddress),
+      url: this.app.urls.userCreateConfirmation(identity),
     })
   }
 
