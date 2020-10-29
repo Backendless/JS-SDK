@@ -1415,7 +1415,11 @@ async function testBaseTransactions() {
     let tableName: string;
     let isSuccess: boolean;
     let results: object
+    let bool: boolean
     let transactionOperationError: Backendless.TransactionOperationError;
+
+    bool = changesObj instanceof Backendless.UnitOfWork.OpResult
+    bool = changesObj instanceof Backendless.UnitOfWork.OpResultValueReference
 
     opResultId = opResult.getOpResultId()
     opResult.setOpResultId(opResultId)
@@ -1433,10 +1437,10 @@ async function testBaseTransactions() {
     transactionOperationError = unitOfWorkResult.getError()
     results = unitOfWorkResult.getResults()
 
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_UNCOMMITTED)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_COMMITTED)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.REPEATABLE_READ)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.SERIALIZABLE)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.READ_UNCOMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.READ_COMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.REPEATABLE_READ)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.SERIALIZABLE)
 
     ///
     opResult = uow.create(personInst);
@@ -1460,7 +1464,6 @@ async function testBaseTransactions() {
     opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
     opResult = uow.bulkCreate([personInst, personInst, personInst]);
     ///
-    opResult = uow.bulkUpdate(whereClause, personInst);
     opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObj, personObj, personObj], changesObj);
