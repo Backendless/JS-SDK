@@ -726,8 +726,10 @@ function testUserService() {
     promiseObject = Backendless.UserService.isValidLogin();
 
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
+    promiseVoid = Backendless.UserService.resendEmailConfirmation(1234);
 
     promiseObject = Backendless.UserService.createEmailConfirmation('email');
+    promiseObject = Backendless.UserService.createEmailConfirmation(1234);
 
     promiseVoid = Backendless.UserService.enableUser(userId);
 

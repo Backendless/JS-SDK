@@ -341,9 +341,9 @@ declare module Backendless {
 
         function isValidLogin(): Promise<boolean>;
 
-        function resendEmailConfirmation(email: string): Promise<void>;
+        function resendEmailConfirmation(identity: string | number): Promise<void>;
 
-        function createEmailConfirmation(email: string): Promise<object>;
+        function createEmailConfirmation(identity: string | number): Promise<object>;
 
         function enableUser(userId: string): Promise<void>;
 
