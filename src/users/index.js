@@ -106,7 +106,7 @@ export default class Users {
   }
 
   async loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
-    return this.social.loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn)
+    return this.social.loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) // eslint-disable-line max-len
   }
 
   async logout() {
@@ -203,8 +203,12 @@ export default class Users {
   }
 
   async resendEmailConfirmation(identity) {
-    if (!identity || typeof identity !== 'string') {
-      throw new Error('Email Address must be provided and must be a string.')
+    if (typeof identity === 'string') {
+      if (!identity) {
+        throw new Error('Identity can not be an empty string.')
+      }
+    } else if (typeof identity !== 'number') {
+      throw new Error('Identity must be a string or number.')
     }
 
     return this.app.request.post({
@@ -213,8 +217,12 @@ export default class Users {
   }
 
   async createEmailConfirmation(identity) {
-    if (!identity || typeof identity !== 'string') {
-      throw new Error('Email Address must be provided and must be a string.')
+    if (typeof identity === 'string') {
+      if (!identity) {
+        throw new Error('Identity can not be an empty string.')
+      }
+    } else if (typeof identity !== 'number') {
+      throw new Error('Identity must be a string or number.')
     }
 
     return this.app.request.post({
