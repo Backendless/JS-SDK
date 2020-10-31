@@ -101,6 +101,14 @@ export default class Users {
     return this.social.loginWithTwitter(fieldsMapping, stayLoggedIn)
   }
 
+  async loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn)
+  }
+
+  async loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
+    return this.social.loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) // eslint-disable-line max-len
+  }
+
   async logout() {
     return this.app.request
       .get({
@@ -194,23 +202,31 @@ export default class Users {
     })
   }
 
-  async resendEmailConfirmation(emailAddress) {
-    if (!emailAddress || typeof emailAddress !== 'string') {
-      throw new Error('Email Address must be provided and must be a string.')
+  async resendEmailConfirmation(identity) {
+    if (typeof identity === 'string') {
+      if (!identity) {
+        throw new Error('Identity can not be an empty string.')
+      }
+    } else if (typeof identity !== 'number') {
+      throw new Error('Identity must be a string or number.')
     }
 
     return this.app.request.post({
-      url: this.app.urls.userResendConfirmation(emailAddress),
+      url: this.app.urls.userResendConfirmation(identity),
     })
   }
 
-  async createEmailConfirmation(emailAddress) {
-    if (!emailAddress || typeof emailAddress !== 'string') {
-      throw new Error('Email Address must be provided and must be a string.')
+  async createEmailConfirmation(identity) {
+    if (typeof identity === 'string') {
+      if (!identity) {
+        throw new Error('Identity can not be an empty string.')
+      }
+    } else if (typeof identity !== 'number') {
+      throw new Error('Identity must be a string or number.')
     }
 
     return this.app.request.post({
-      url: this.app.urls.userCreateConfirmation(emailAddress),
+      url: this.app.urls.userCreateConfirmation(identity),
     })
   }
 

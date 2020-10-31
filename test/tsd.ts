@@ -598,6 +598,7 @@ function testUserService() {
     const stayLoggedIn: boolean = true;
     const div: HTMLElement = document.createElement('div');
     let newUser: Backendless.User = new Backendless.User();
+    let guestUser: Backendless.User = new Backendless.User();
     let resultObj: Object;
     let resultVoid: void;
     let resultNull: null;
@@ -621,6 +622,7 @@ function testUserService() {
 
     newUser = Backendless.UserService.currentUser
     customUser = Backendless.UserService.currentUser
+    guestUser = Backendless.UserService.currentUser
 
     promiseVoid = Backendless.UserService.restorePassword('email');
 
@@ -695,11 +697,39 @@ function testUserService() {
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {});
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, stayLoggedIn);
 
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken');
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2<Backendless.User>('facebook', 'accessToken', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2<Backendless.User>('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+    promiseCustomUser = Backendless.UserService.loginWithOauth2<CustomUser>('facebook', 'accessToken', guestUser, {});
+    promiseCustomUser = Backendless.UserService.loginWithOauth2<CustomUser>('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret');
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1<Backendless.User>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1<Backendless.User>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+    promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+
     promiseObject = Backendless.UserService.isValidLogin();
 
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
+    promiseVoid = Backendless.UserService.resendEmailConfirmation(1234);
 
     promiseObject = Backendless.UserService.createEmailConfirmation('email');
+    promiseObject = Backendless.UserService.createEmailConfirmation(1234);
 
     promiseVoid = Backendless.UserService.enableUser(userId);
 
@@ -1284,7 +1314,11 @@ async function testBaseTransactions() {
     let tableName: string;
     let isSuccess: boolean;
     let results: object
+    let bool: boolean
     let transactionOperationError: Backendless.TransactionOperationError;
+
+    bool = changesObj instanceof Backendless.UnitOfWork.OpResult
+    bool = changesObj instanceof Backendless.UnitOfWork.OpResultValueReference
 
     opResultId = opResult.getOpResultId()
     opResult.setOpResultId(opResultId)
@@ -1302,10 +1336,10 @@ async function testBaseTransactions() {
     transactionOperationError = unitOfWorkResult.getError()
     results = unitOfWorkResult.getResults()
 
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_UNCOMMITTED)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_COMMITTED)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.REPEATABLE_READ)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.SERIALIZABLE)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.READ_UNCOMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.READ_COMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.REPEATABLE_READ)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.SERIALIZABLE)
 
     ///
     opResult = uow.create(personInst);
@@ -1329,7 +1363,6 @@ async function testBaseTransactions() {
     opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
     opResult = uow.bulkCreate([personInst, personInst, personInst]);
     ///
-    opResult = uow.bulkUpdate(whereClause, personInst);
     opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObj, personObj, personObj], changesObj);

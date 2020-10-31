@@ -283,8 +283,8 @@ declare module Backendless {
 
         function unassignRole(identity: string, roleName: string): Promise<void>;
 
-        function login<T=Backendless.User>(userId: string, stayLoggedIn?: boolean): Promise<T>;
-        function login<T=Backendless.User>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T = Backendless.User>(userId: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T = Backendless.User>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
 
         function loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
         function loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;
@@ -316,11 +316,34 @@ declare module Backendless {
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, guestUser?: Backendless.User,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, stayLoggedIn?: boolean
+        ): Promise<T>;
+
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String, guestUser?: Backendless.User,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String, stayLoggedIn?: boolean
+        ): Promise<T>;
+
         function isValidLogin(): Promise<boolean>;
 
-        function resendEmailConfirmation(email: string): Promise<void>;
+        function resendEmailConfirmation(identity: string | number): Promise<void>;
 
-        function createEmailConfirmation(email: string): Promise<object>;
+        function createEmailConfirmation(identity: string | number): Promise<object>;
 
         function enableUser(userId: string): Promise<void>;
 
@@ -903,8 +926,6 @@ declare module Backendless {
 
         removeBulkCreateListeners(): Backendless.EventHandler;
 
-        removeBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
-
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
         addBulkUpdateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
@@ -1128,7 +1149,21 @@ declare module Backendless {
         SERIALIZABLE
     }
 
+    interface IsolationLevel {
+        READ_UNCOMMITTED: IsolationLevelEnum,
+        READ_COMMITTED: IsolationLevelEnum,
+        REPEATABLE_READ: IsolationLevelEnum,
+        SERIALIZABLE: IsolationLevelEnum
+    }
+
     class UnitOfWork {
+
+        static IsolationLevelEnum: IsolationLevel
+        static OpResult:Function
+        static OpResultValueReference: Function
+
+        static initFromJSON(data: object): UnitOfWork;
+
         constructor(isolation?: IsolationLevelEnum);
 
         find(tableName: string, dataQueryBuilder: DataQueryBuilder): OpResult;
@@ -1150,7 +1185,6 @@ declare module Backendless {
         bulkCreate(tableName: string, objects: object[]): OpResult;
         bulkCreate(objects: object[]): OpResult;
 
-        bulkUpdate(whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;
         bulkUpdate(tableName: string, objects: object[], changes: object): OpResult;

@@ -298,6 +298,10 @@ export default class Urls {
     return `${this.userSocial()}/${socialType.toLowerCase()}/sdk/login`
   }
 
+  userOAuthLogin(providerCode) {
+    return `${this.userSocial()}/${providerCode.toLowerCase()}/login`
+  }
+
   guestLogin() {
     return `${this.users()}/register/guest`
   }
