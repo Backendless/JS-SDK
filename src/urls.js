@@ -328,12 +328,12 @@ export default class Urls {
     return `${this.users()}/isvalidusertoken/${token}`
   }
 
-  userResendConfirmation(email) {
-    return `${this.users()}/resendconfirmation/${email}`
+  userResendConfirmation(identity) {
+    return `${this.users()}/resendconfirmation/${identity}`
   }
 
-  userCreateConfirmation(email) {
-    return `${this.users()}/createEmailConfirmationURL/${email}`
+  userCreateConfirmationURL(identity) {
+    return `${this.users()}/createEmailConfirmationURL/${identity}`
   }
 
   userSocial() {

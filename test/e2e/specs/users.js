@@ -585,11 +585,9 @@ describe('Backendless.Users', function() {
 
     await Backendless.UserService.register(user)
 
-    const result = await Backendless.UserService.createEmailConfirmation(user.email)
+    const result = await Backendless.UserService.createEmailConfirmationURL(user.email)
 
     expect(result.confirmationURL).to.be.a('string')
-    expect(!!result.confirmationURL.length).to.be.true
-
-    console.log(result.confirmationURL)
+    expect(result.confirmationURL.length).to.not.be.empty
   })
 })

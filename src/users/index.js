@@ -216,7 +216,7 @@ export default class Users {
     })
   }
 
-  async createEmailConfirmation(identity) {
+  async createEmailConfirmationURL(identity) {
     if (typeof identity === 'string') {
       if (!identity) {
         throw new Error('Identity can not be an empty string.')
@@ -226,7 +226,7 @@ export default class Users {
     }
 
     return this.app.request.post({
-      url: this.app.urls.userCreateConfirmation(identity),
+      url: this.app.urls.userCreateConfirmationURL(identity),
     })
   }
 

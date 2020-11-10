@@ -103,10 +103,10 @@ describe('<Users> Emails', function() {
     const req3 = prepareMockRequest()
     const req4 = prepareMockRequest()
 
-    await Backendless.UserService.createEmailConfirmation(validEmailAddress)
-    await Backendless.UserService.createEmailConfirmation('username')
-    await Backendless.UserService.createEmailConfirmation(123456)
-    await Backendless.UserService.createEmailConfirmation(0)
+    await Backendless.UserService.createEmailConfirmationURL(validEmailAddress)
+    await Backendless.UserService.createEmailConfirmationURL('username')
+    await Backendless.UserService.createEmailConfirmationURL(123456)
+    await Backendless.UserService.createEmailConfirmationURL(0)
 
     expect(req1).to.deep.include({
       method : 'POST',
@@ -140,20 +140,20 @@ describe('<Users> Emails', function() {
   it('fails when there is an incorrect type is passed in the request to create email confirmation', async () => {
     const errorMsg = 'Identity must be a string or number.'
 
-    await expect(Backendless.UserService.createEmailConfirmation()).to.eventually.be.rejectedWith(errorMsg)
-    await expect(Backendless.UserService.createEmailConfirmation(undefined)).to.eventually.be.rejectedWith(errorMsg)
-    await expect(Backendless.UserService.createEmailConfirmation(null)).to.eventually.be.rejectedWith(errorMsg)
-    await expect(Backendless.UserService.createEmailConfirmation(true)).to.eventually.be.rejectedWith(errorMsg)
-    await expect(Backendless.UserService.createEmailConfirmation(false)).to.eventually.be.rejectedWith(errorMsg)
-    await expect(Backendless.UserService.createEmailConfirmation({})).to.eventually.be.rejectedWith(errorMsg)
-    await expect(Backendless.UserService.createEmailConfirmation([])).to.eventually.be.rejectedWith(errorMsg)
-    await expect(Backendless.UserService.createEmailConfirmation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL()).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL(undefined)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL(null)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL(true)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL(false)).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL({})).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL([])).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
   })
 
   it('fails when there is an empty string is passed in the request to create email confirmation', async () => {
     const errorMsg = 'Identity can not be an empty string.'
 
-    await expect(Backendless.UserService.createEmailConfirmation('')).to.eventually.be.rejectedWith(errorMsg)
+    await expect(Backendless.UserService.createEmailConfirmationURL('')).to.eventually.be.rejectedWith(errorMsg)
   })
 
 
