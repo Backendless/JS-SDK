@@ -218,7 +218,7 @@ export default class DataQueryBuilder {
   static toRequestBody(queryBuilder) {
     const query = (queryBuilder instanceof DataQueryBuilder)
       ? queryBuilder.toJSON()
-      : (queryBuilder || {})
+      : (queryBuilder ? { ...queryBuilder } : {})
 
     Object.keys(query).forEach(param => {
       if (Array.isArray(query[param])) {

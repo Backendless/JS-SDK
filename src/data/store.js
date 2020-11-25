@@ -10,14 +10,14 @@ import Geometry from './geo/geometry'
 function buildFindFirstLastQuery(queryBuilder, sortDir) {
   const query = (queryBuilder instanceof DataQueryBuilder)
     ? queryBuilder.toJSON()
-    : (queryBuilder || {})
+    : (queryBuilder ? { ...queryBuilder } : {})
 
   query.pageSize = 1
   query.offset = 0
 
   const { sortBy } = query
 
-  if (!sortBy || !sortBy.length) {
+  if (!sortBy) {
     query.sortBy = [`created ${sortDir}`]
   }
 
