@@ -28,19 +28,27 @@ describe('<Data> Parser', function() {
     })
 
     it('is called with response only', async () => {
-      const check = async (index, resultType, processor) => {
-        prepareMockRequest({ resultType })
+      const check = async (index, fakeResult, processor) => {
+        prepareMockRequest(fakeResult)
 
         await processor()
 
-        expect(spy_parseResponse).on.nth(index).be.called.with.exactly({ resultType })
+        expect(spy_parseResponse).on.nth(index).be.called.with.exactly(fakeResult)
       }
 
-      await check(1, 'save', () => dataStore.save({}))
-      await check(2, 'find', () => dataStore.find())
-      await check(3, 'findById', () => dataStore.findById('test'))
-      await check(4, 'findFirst', () => dataStore.findFirst())
-      await check(5, 'findLast', () => dataStore.findLast())
+      const checkFindFirstLast = async (index, fakeResult, processor) => {
+        prepareMockRequest([fakeResult])
+
+        await processor()
+
+        expect(spy_parseResponse).on.nth(index).be.called.with.exactly(fakeResult)
+      }
+
+      await check(1, { resultType: 'save' }, () => dataStore.save({}))
+      await check(2, { resultType: 'find' }, () => dataStore.find())
+      await check(3, { resultType: 'findById' }, () => dataStore.findById('test'))
+      await checkFindFirstLast(4, { resultType: 'findFirst' }, () => dataStore.findFirst())
+      await checkFindFirstLast(5, { resultType: 'findLast' }, () => dataStore.findLast())
 
       expect(spy_parseResponse).to.have.been.called.exactly(5)
     })

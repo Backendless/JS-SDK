@@ -51,7 +51,7 @@ describe('<Data> Users', function() {
 
   describe('FindFirst', () => {
     it('should return User instance', async () => {
-      prepareMockRequest(fakeResult)
+      prepareMockRequest([fakeResult])
 
       const result1 = await dataStore.findFirst()
 
@@ -65,7 +65,7 @@ describe('<Data> Users', function() {
 
   describe('FindLast', () => {
     it('should return User instance', async () => {
-      prepareMockRequest(fakeResult)
+      prepareMockRequest([fakeResult])
 
       const result1 = await dataStore.findLast()
 
