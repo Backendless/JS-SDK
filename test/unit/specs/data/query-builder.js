@@ -193,6 +193,7 @@ describe('<Data> Query Builder', function() {
     query.setRelated('r1')
     query.setRelationsDepth(123)
     query.setRelationsPageSize(123)
+    query.setDistinct(true)
 
     expect(query.toJSON()).to.be.eql({
       'excludeProps'     : ['e1', 'e2'],
@@ -206,6 +207,7 @@ describe('<Data> Query Builder', function() {
       'relationsPageSize': 123,
       'sortBy'           : ['s1'],
       'where'            : 'w1',
+      'distinct'         : true,
     })
   })
 
