@@ -12,8 +12,6 @@ export default class LoadRelationsQueryBuilder extends DataQueryBuilder {
     this.relationModel = RelationModel
 
     this.relationName = null
-
-    this.distinct = false
   }
 
   setRelationName(relationName) {
@@ -36,22 +34,11 @@ export default class LoadRelationsQueryBuilder extends DataQueryBuilder {
     return this.relationModel
   }
 
-  setDistinct(distinct) {
-    this.distinct = distinct
-
-    return this
-  }
-
-  getDistinct() {
-    return this.distinct
-  }
-
   toJSON() {
     const result = super.toJSON()
 
     result.relationName = this.getRelationName()
     result.relationModel = this.getRelationModel()
-    result.distinct = this.getDistinct()
 
     return result
   }

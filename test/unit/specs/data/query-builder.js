@@ -181,6 +181,16 @@ describe('<Data> Query Builder', function() {
     expect(query.getRelationsPageSize()).to.be.eql(555)
   })
 
+  it('should set distinct', async () => {
+    query.setDistinct(true)
+
+    expect(query.getDistinct()).to.eql(true)
+
+    query.setDistinct(false)
+
+    expect(query.getDistinct()).to.eql(false)
+  })
+
   it('should return query object', async () => {
     query.setPageSize(111)
     query.setOffset(222)
@@ -428,6 +438,5 @@ describe('<Data> Query Builder', function() {
       expect(queryString3).to.be.equal('')
       expect(queryString4).to.be.equal('pageSize=10&relationsPageSize=200')
     })
-
   })
 })
