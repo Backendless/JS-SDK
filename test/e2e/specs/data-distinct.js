@@ -9,7 +9,7 @@ describe('Data - Distinct', function() {
 
   sandbox.forSuite()
 
-  function sortArrayWithObjByPropsValue(a, b) {
+  function sortByName(a, b) {
     if (a.name > b.name) {
       return 1
     }
@@ -34,12 +34,12 @@ describe('Data - Distinct', function() {
     queryBuilder = Backendless.DataQueryBuilder.create()
   })
 
-  it('load', async () => {
-    let result = await personTableStore.find(queryBuilder.addProperty('name').setDistinct(true))
+  it('load distinct objects by single property', async () => {
+    const result = await personTableStore.find(queryBuilder.addProperty('name').setDistinct(true))
 
-    result = result.sort(sortArrayWithObjByPropsValue)
+    result.sort(sortByName)
 
-    expect(result.sort(sortArrayWithObjByPropsValue)).to.eql(
+    expect(result.sort(sortByName)).to.eql(
       [
         {
           "___class": "Person",
@@ -53,10 +53,10 @@ describe('Data - Distinct', function() {
     )
   })
 
-  it('load1', async () => {
-    let result = await personTableStore.find(queryBuilder.addProperty('name').setDistinct(false))
+  it('load not distinct objects by single property', async () => {
+    const result = await personTableStore.find(queryBuilder.addProperty('name').setDistinct(false))
 
-    result = result.sort(sortArrayWithObjByPropsValue)
+    result.sort(sortByName)
 
     expect(result).to.eql(
       [
@@ -76,10 +76,10 @@ describe('Data - Distinct', function() {
     )
   })
 
-  it('load2', async () => {
-    let result = await personTableStore.find(queryBuilder.addProperties('name', 'age').setDistinct(true))
+  it('load distinct objects by few properties', async () => {
+    const result = await personTableStore.find(queryBuilder.addProperties('name', 'age').setDistinct(true))
 
-    result = result.sort(sortArrayWithObjByPropsValue)
+    result.sort(sortByName)
 
     expect(result).to.eql(
       [
@@ -97,10 +97,10 @@ describe('Data - Distinct', function() {
     )
   })
 
-  it('load3', async () => {
-    let result = await personTableStore.find(queryBuilder.addProperty('name').setGroupBy('objectId').setDistinct(true))
+  it('load distinct objects by property with group by some property', async () => {
+    const result = await personTableStore.find(queryBuilder.addProperty('name').setGroupBy('objectId').setDistinct(true))
 
-    result = result.sort(sortArrayWithObjByPropsValue)
+    result.sort(sortByName)
 
     expect(result).to.eql(
       [
