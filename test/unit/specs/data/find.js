@@ -175,24 +175,24 @@ describe('<Data> Find', function() {
 
   describe('FindFirst', () => {
     it('without query', async () => {
-      const req1 = prepareMockRequest(fakeResult)
+      const req1 = prepareMockRequest([fakeResult])
 
       const result1 = await dataStore.findFirst()
 
       expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/first`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   :  { pageSize: 1, offset: 0, sortBy: 'created asc' }
       })
 
       expect(result1).to.be.eql(fakeResult)
     })
 
     it('with all query options', async () => {
-      const req1 = prepareMockRequest(fakeResult)
-      const req2 = prepareMockRequest(fakeResult)
-      const req3 = prepareMockRequest(fakeResult)
+      const req1 = prepareMockRequest([fakeResult])
+      const req2 = prepareMockRequest([fakeResult])
+      const req3 = prepareMockRequest([fakeResult])
 
       query
         .setPageSize(50)
@@ -251,24 +251,39 @@ describe('<Data> Find', function() {
       const result3 = await dataStore.findFirst(query3)
 
       expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/first?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...Backendless.DataQueryBuilder.toRequestBody(query),
+          pageSize: 1,
+          offset  : 0,
+          sortBy  : 'created'
+        }
       })
 
       expect(req2).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/first?pageSize=10`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...Backendless.DataQueryBuilder.toRequestBody(query2),
+          pageSize: 1,
+          offset  : 0,
+          sortBy  : 'created asc'
+        }
       })
 
       expect(req3).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/first?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...Backendless.DataQueryBuilder.toRequestBody(query3),
+          pageSize: 1,
+          offset  : 0,
+          sortBy  : 'test-sortby'
+        }
       })
 
       expect(result1).to.be.eql(fakeResult)
@@ -280,24 +295,24 @@ describe('<Data> Find', function() {
 
   describe('FindLast', () => {
     it('without query', async () => {
-      const req1 = prepareMockRequest(fakeResult)
+      const req1 = prepareMockRequest([fakeResult])
 
       const result1 = await dataStore.findLast()
 
       expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/last`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : { pageSize: 1, offset: 0, sortBy: 'created desc' }
       })
 
       expect(result1).to.be.eql(fakeResult)
     })
 
     it('with all query options', async () => {
-      const req1 = prepareMockRequest(fakeResult)
-      const req2 = prepareMockRequest(fakeResult)
-      const req3 = prepareMockRequest(fakeResult)
+      const req1 = prepareMockRequest([fakeResult])
+      const req2 = prepareMockRequest([fakeResult])
+      const req3 = prepareMockRequest([fakeResult])
 
       query
         .setPageSize(50)
@@ -356,24 +371,39 @@ describe('<Data> Find', function() {
       const result3 = await dataStore.findLast(query3)
 
       expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/last?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...Backendless.DataQueryBuilder.toRequestBody(query),
+          pageSize: 1,
+          offset  : 0,
+          sortBy  : 'created'
+        }
       })
 
       expect(req2).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/last?pageSize=10`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...Backendless.DataQueryBuilder.toRequestBody(query2),
+          pageSize: 1,
+          offset  : 0,
+          sortBy  : 'created desc'
+        }
       })
 
       expect(req3).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/last?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...Backendless.DataQueryBuilder.toRequestBody(query3),
+          pageSize: 1,
+          offset  : 0,
+          sortBy  : 'test-sortby'
+        }
       })
 
       expect(result1).to.be.eql(fakeResult)

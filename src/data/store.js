@@ -7,6 +7,23 @@ import JSONUpdateBuilder from './json-update-builder'
 import geoConstructor, { GEO_CLASSES } from './geo/geo-constructor'
 import Geometry from './geo/geometry'
 
+function buildFindFirstLastQuery(queryBuilder, sortDir) {
+  const query = (queryBuilder instanceof DataQueryBuilder)
+    ? queryBuilder.toJSON()
+    : (queryBuilder ? { ...queryBuilder } : {})
+
+  query.pageSize = 1
+  query.offset = 0
+
+  const { sortBy } = query
+
+  if (!sortBy) {
+    query.sortBy = [`created ${sortDir}`]
+  }
+
+  return DataQueryBuilder.toRequestBody(query)
+}
+
 export default class DataStore {
 
   constructor(model, dataService) {
@@ -93,20 +110,20 @@ export default class DataStore {
 
   async findFirst(query) {
     return this.app.request
-      .get({
-        url        : this.app.urls.dataTableObject(this.className, 'first'),
-        queryString: DataQueryBuilder.toQueryString(query),
+      .post({
+        url : this.app.urls.dataTableFind(this.className),
+        data: buildFindFirstLastQuery(query, 'asc'),
       })
-      .then(result => this.parseResponse(result))
+      .then(result => this.parseResponse(result[0]))
   }
 
   async findLast(query) {
     return this.app.request
-      .get({
-        url        : this.app.urls.dataTableObject(this.className, 'last'),
-        queryString: DataQueryBuilder.toQueryString(query),
+      .post({
+        url : this.app.urls.dataTableFind(this.className),
+        data: buildFindFirstLastQuery(query, 'desc'),
       })
-      .then(result => this.parseResponse(result))
+      .then(result => this.parseResponse(result[0]))
   }
 
   async getObjectCount(condition) {
