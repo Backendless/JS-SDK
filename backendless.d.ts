@@ -352,77 +352,6 @@ declare module Backendless {
 
     /**
      * @public
-     * @deprecated
-     * @namespace Backendless.Geo
-     **/
-    namespace Geo {
-
-        /** @deprecated */
-        let restUrl: string;
-
-        /** @deprecated */
-        let UNITS: Object;
-
-        /** @deprecated */
-        let EARTH_RADIUS: number;
-
-        /** @deprecated */
-        function savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
-
-        /** @deprecated */
-        function find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
-
-        /** @deprecated */
-        function getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
-
-        /** @deprecated */
-        function deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
-
-        /** @deprecated */
-        function loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
-
-        /** @deprecated */
-        function getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function addCategory(name: string): Promise<Backendless.GeoCategoryI>;
-
-        /** @deprecated */
-        function deleteCategory(name: string): Promise<boolean>;
-
-        /** @deprecated */
-        function getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
-
-        /** @deprecated */
-        function runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        /** @deprecated */
-        function runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        /** @deprecated */
-        function runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        /** @deprecated */
-        function startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
-
-        /** @deprecated */
-        function startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
-
-        /** @deprecated */
-        function stopGeofenceMonitoring(fenceName: string): void;
-    }
-
-    /**
-     * @public
      * @namespace Backendless.Messaging
      **/
     namespace Messaging {
@@ -838,50 +767,6 @@ declare module Backendless {
 
     /**
      * @public
-     * @deprecated
-     * @class Backendless.GeoPoint
-     * @constructor
-     */
-    class GeoPoint {
-        ___class: string;
-        objectId: string;
-        latitude: number;
-        longitude: number;
-        categories: string | string[];
-        metadata: Object;
-    }
-
-    /**
-     * @public
-     * @deprecated
-     * @class Backendless.GeoCluster
-     * @extends GeoPoint
-     * @constructor
-     */
-    class GeoCluster extends Backendless.GeoPoint {
-        totalPoints: number;
-        geoQuery: Backendless.GeoQuery | Backendless.RectangleGeoQueryI | Backendless.CircleGeoQueryI;
-    }
-
-    /**
-     * @public
-     * @deprecated
-     * @class Backendless.GeoQuery
-     * @constructor
-     */
-    class GeoQuery implements Backendless.GeoQueryI {
-        categories: string | string[];
-        includeMetadata: boolean;
-        metadata: Object;
-        condition: string;
-        relativeFindMetadata: Object;
-        relativeFindPercentThreshold: number;
-        pageSize: number;
-        offset: number;
-    }
-
-    /**
-     * @public
      * @class Backendless.PublishOptions
      * @constructor
      */
@@ -1176,25 +1061,6 @@ declare module Backendless {
         url?: string;
     }
 
-    /** @deprecated */
-    interface GeoCategoryI {
-        objectId: string;
-        size: number;
-        name: string;
-    }
-
-    /** @deprecated */
-    interface GeofenceMonitoringCallbackI {
-        (geoFenceName: string, geoFenceId: string, latitude: number, longitude: number): void;
-    }
-
-    /** @deprecated */
-    interface GeofenceMonitoringCallbacksI {
-        onenter?: Backendless.GeofenceMonitoringCallbackI;
-        onstay?: Backendless.GeofenceMonitoringCallbackI;
-        onexit?: Backendless.GeofenceMonitoringCallbackI;
-    }
-
     interface DataItemI {
         ___class: string;
         objectId?: string;
@@ -1243,31 +1109,6 @@ declare module Backendless {
         removeAllListeners(): ChannelClass;
 
         send(type: string, command: Object): Promise<void>;
-    }
-
-    /** @deprecated */
-    interface GeoQueryI {
-        categories?: string | string[];
-        includeMetadata?: boolean;
-        metadata?: Object;
-        condition?: string;
-        relativeFindMetadata?: Object;
-        relativeFindPercentThreshold?: number;
-        pageSize?: number;
-        offset?: number;
-    }
-
-    /** @deprecated */
-    interface RectangleGeoQueryI extends Backendless.GeoQueryI {
-        searchRectangle: number[];
-    }
-
-    /** @deprecated */
-    interface CircleGeoQueryI extends Backendless.GeoQueryI {
-        latitude: number;
-        longitude: number;
-        radius: number;
-        units: string;
     }
 
     class TransactionOperationError extends Error {
