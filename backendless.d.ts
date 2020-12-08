@@ -835,7 +835,7 @@ declare module Backendless {
 
         setRelationName(relationName: string): this;
 
-        getDistinct(): boolean;
+        getRelationName(): string;
 
         toJSON(): RelationsQueryI;
     }
