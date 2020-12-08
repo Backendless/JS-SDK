@@ -260,10 +260,6 @@ describe('Namespace', function() {
 
   describe('Helpers', () => {
     it('has links to service classes', () => {
-      expect(Backendless.GeoQuery).to.equal(Backendless.Geo.Query)
-      expect(Backendless.GeoPoint).to.equal(Backendless.Geo.Point)
-      expect(Backendless.GeoCluster).to.equal(Backendless.Geo.Cluster)
-
       expect(Backendless.Persistence).to.equal(Backendless.Data)
       expect(Backendless.DataQueryBuilder).to.equal(Backendless.Data.QueryBuilder)
       expect(Backendless.JSONUpdateBuilder).to.equal(Backendless.Data.JSONUpdateBuilder)

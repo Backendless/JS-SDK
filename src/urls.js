@@ -187,56 +187,6 @@ export default class Urls {
     return `${this.emailTemplate()}/send`
   }
 
-  //geo
-
-  geo() {
-    return `${this.root()}/geo`
-  }
-
-  geoRelative() {
-    return `${this.geo()}/relative`
-  }
-
-  geoPoints() {
-    return `${this.geo()}/points`
-  }
-
-  geoPoint(pointId) {
-    return `${this.geoPoints()}/${pointId}`
-  }
-
-  geoPointMetaData(pointId) {
-    return `${this.geoPoint(pointId)}/metadata`
-  }
-
-  geoCategories() {
-    return `${this.geo()}/categories`
-  }
-
-  geoCategory(name) {
-    return `${this.geoCategories()}/${name}`
-  }
-
-  geoClusters() {
-    return `${this.geo()}/clusters`
-  }
-
-  geoClusterPoints(clusterId) {
-    return `${this.geoClusters()}/${clusterId}/points`
-  }
-
-  geoCount() {
-    return `${this.geo()}/count`
-  }
-
-  geoFences(geoFence) {
-    return `${this.geo()}/fences${(geoFence) ? '?geoFence=' + geoFence : ''}`
-  }
-
-  geoFence(action, geoFenceName) {
-    return `${this.geo()}/fence/${action}?geoFence=${geoFenceName}`
-  }
-
   //commerce
   commerce() {
     return `${this.root()}/commerce/googleplay`

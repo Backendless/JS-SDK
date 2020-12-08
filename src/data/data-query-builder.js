@@ -229,6 +229,32 @@ export default class DataQueryBuilder {
     }
   }
 
+  static toRequestBody(queryBuilder) {
+    const query = (queryBuilder instanceof DataQueryBuilder)
+      ? queryBuilder.toJSON()
+      : (queryBuilder ? { ...queryBuilder } : {})
+
+    Object.keys(query).forEach(param => {
+      if (Array.isArray(query[param])) {
+        query[param] = query[param].join(',')
+      } else if (query[param] == null) {
+        delete query[param]
+      }
+    })
+
+    if (query.properties) {
+      query.props = query.properties
+      delete query.properties
+    }
+
+    if (query.relations) {
+      query.loadRelations = query.relations
+      delete query.relations
+    }
+
+    return query
+  }
+
   static toQueryString(query) {
     if (!query) {
       return

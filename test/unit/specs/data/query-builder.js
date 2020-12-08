@@ -221,6 +221,34 @@ describe('<Data> Query Builder', function() {
     })
   })
 
+  it('should return query object for find via post', async () => {
+    query.setPageSize(111)
+    query.setOffset(222)
+    query.setProperties(['p1', 'p2'])
+    query.excludeProperties(['e1', 'e2'])
+    query.setWhereClause('w1')
+    query.setHavingClause('h1')
+    query.setSortBy(['s1 asc', 's2 desc'])
+    query.setGroupBy('g1')
+    query.setRelated('r1')
+    query.setRelationsDepth(123)
+    query.setRelationsPageSize(123)
+
+    expect(Backendless.DataQueryBuilder.toRequestBody(query)).to.be.eql({
+      'excludeProps'     : 'e1,e2',
+      'groupBy'          : 'g1',
+      'having'           : 'h1',
+      'offset'           : 222,
+      'pageSize'         : 111,
+      'props'            : 'p1,p2',
+      'loadRelations'    : 'r1',
+      'relationsDepth'   : 123,
+      'relationsPageSize': 123,
+      'sortBy'           : 's1 asc,s2 desc',
+      'where'            : 'w1',
+    })
+  })
+
   it('fails when pageSize is invalid', function() {
     const errorMsg = 'Page size must be a positive value.'
 
