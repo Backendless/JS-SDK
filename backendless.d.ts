@@ -704,6 +704,10 @@ declare module Backendless {
 
         setRelationsPageSize(relationsPageSize: number): this;
 
+        setDistinct(distinct: boolean): this;
+
+        getDistinct(): boolean;
+
         build(): Backendless.DataQueryValueI;
 
         toJSON(): DataQueryI;

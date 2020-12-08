@@ -27,6 +27,8 @@ export default class DataQueryBuilder {
     this.loadRelations = null
     this.relationsDepth = null
     this.relationsPageSize = null
+
+    this.distinct = false
   }
 
   setPageSize(pageSize) {
@@ -195,6 +197,16 @@ export default class DataQueryBuilder {
     return this.relationsPageSize
   }
 
+  setDistinct(distinct) {
+    this.distinct = distinct
+
+    return this
+  }
+
+  getDistinct() {
+    return this.distinct
+  }
+
   toJSON() {
     return {
       pageSize: this.pageSize,
@@ -212,6 +224,8 @@ export default class DataQueryBuilder {
       relations        : this.relations,
       relationsDepth   : this.relationsDepth,
       relationsPageSize: this.relationsPageSize,
+
+      distinct: this.distinct
     }
   }
 
@@ -308,6 +322,10 @@ export default class DataQueryBuilder {
 
     if (query.relationsPageSize > 0) {
       queryTokens.push(`relationsPageSize=${query.relationsPageSize}`)
+    }
+
+    if (query.distinct) {
+      queryTokens.push(`distinct=${query.distinct}`)
     }
 
     return queryTokens.join('&')

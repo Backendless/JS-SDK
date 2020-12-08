@@ -181,6 +181,16 @@ describe('<Data> Query Builder', function() {
     expect(query.getRelationsPageSize()).to.be.eql(555)
   })
 
+  it('should set distinct', async () => {
+    query.setDistinct(true)
+
+    expect(query.getDistinct()).to.eql(true)
+
+    query.setDistinct(false)
+
+    expect(query.getDistinct()).to.eql(false)
+  })
+
   it('should return query object', async () => {
     query.setPageSize(111)
     query.setOffset(222)
@@ -193,6 +203,7 @@ describe('<Data> Query Builder', function() {
     query.setRelated('r1')
     query.setRelationsDepth(123)
     query.setRelationsPageSize(123)
+    query.setDistinct(true)
 
     expect(query.toJSON()).to.be.eql({
       'excludeProps'     : ['e1', 'e2'],
@@ -206,6 +217,7 @@ describe('<Data> Query Builder', function() {
       'relationsPageSize': 123,
       'sortBy'           : ['s1'],
       'where'            : 'w1',
+      'distinct'         : true,
     })
   })
 
@@ -221,6 +233,7 @@ describe('<Data> Query Builder', function() {
     query.setRelated('r1')
     query.setRelationsDepth(123)
     query.setRelationsPageSize(123)
+    query.setDistinct(true)
 
     expect(Backendless.DataQueryBuilder.toRequestBody(query)).to.be.eql({
       'excludeProps'     : 'e1,e2',
@@ -234,6 +247,7 @@ describe('<Data> Query Builder', function() {
       'relationsPageSize': 123,
       'sortBy'           : 's1 asc,s2 desc',
       'where'            : 'w1',
+      'distinct'         : true,
     })
   })
 
@@ -454,6 +468,5 @@ describe('<Data> Query Builder', function() {
       expect(queryString3).to.be.equal('')
       expect(queryString4).to.be.equal('pageSize=10&relationsPageSize=200')
     })
-
   })
 })
