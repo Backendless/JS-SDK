@@ -183,7 +183,7 @@ describe('Data - Relations', function() {
 
     it('Find the first object with relations size', function() {
       const query = Backendless.DataQueryBuilder.create()
-        .setSortBy('create desc')
+        .setSortBy('created desc')
         .setRelationsDepth(1)
         .setRelationsPageSize(20)
 
@@ -197,7 +197,7 @@ describe('Data - Relations', function() {
 
     it('Find the last object with relations size', function() {
       const query = Backendless.DataQueryBuilder.create()
-        .setSortBy('create desc')
+        .setSortBy('created desc')
         .setRelationsDepth(1)
         .setRelationsPageSize(20)
 
