@@ -1044,6 +1044,13 @@ function testCustomServices() {
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
+
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.SYNC);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
 }
 
 function testLogging() {

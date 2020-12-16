@@ -561,6 +561,7 @@ declare module Backendless {
      * @namespace Backendless.CustomServices
      **/
     let CustomServices: Backendless.BL.CustomServicesI;
+    let APIServices: Backendless.BL.CustomServicesI;
 
     /**
      * @public
