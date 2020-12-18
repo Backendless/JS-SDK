@@ -324,6 +324,9 @@ function testDataStoreClass() {
     promiseObject = dataStore.save(item);
     promisePerson = dataStore.save<Person>(person);
 
+    promiseObject = dataStore.deepSave(item);
+    promisePerson = dataStore.deepSave<Person>(person);
+
     promiseObject = dataStore.remove('str');
     promiseObject = dataStore.remove(item);
 
@@ -387,6 +390,9 @@ function testPersistence() {
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
+
+    promiseObject = Backendless.Data.deepSave('model', {});
+    promiseObject = Backendless.Data.deepSave(dataStore, {});
 
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
@@ -492,6 +498,9 @@ function testData() {
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
+
+    promiseObject = Backendless.Data.deepSave('model', {});
+    promiseObject = Backendless.Data.deepSave(dataStore, {});
 
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);

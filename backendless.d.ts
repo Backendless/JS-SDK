@@ -253,6 +253,8 @@ declare module Backendless {
 
         function save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
 
+        function deepSave(model: Backendless.DataStore | string, data: Object): Promise<Object>;
+
         function getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
 
         function describe(model: string | Object | Function): Promise<Object>;
@@ -998,6 +1000,8 @@ declare module Backendless {
         constructor(name: string | Object | Function, classToTableMap: Object);
 
         save<T = object>(obj: T | object): Promise<T>;
+
+        deepSave<T = object>(obj: T | object): Promise<T>;
 
         remove(id: object | string): Promise<object>;
 

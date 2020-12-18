@@ -101,6 +101,10 @@ export default class Urls {
     return `${this.data()}/${tableName}`
   }
 
+  dataTableDeepSave(tableName) {
+    return `${this.data()}/${tableName}/deep-save`
+  }
+
   dataTableFind(tableName) {
     return `${this.dataTable(tableName)}/find`
   }

@@ -57,6 +57,15 @@ export default class DataStore {
       .then(result => this.parseResponse(result))
   }
 
+  async deepSave(object) {
+    return this.app.request
+      .put({
+        url: this.app.urls.dataTableDeepSave(this.className),
+        data: convertToServerRecord(object),
+      })
+      .then(result => this.parseResponse(result))
+  }
+
   async remove(object) {
     const objectId = object && object.objectId || object
 
