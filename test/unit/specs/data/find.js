@@ -28,10 +28,10 @@ describe('<Data> Find', function() {
       const result1 = await dataStore.find()
 
       expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/find`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {}
       })
 
       expect(result1).to.be.eql(fakeResult)

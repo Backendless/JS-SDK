@@ -24,6 +24,20 @@ function buildFindFirstLastQuery(queryBuilder, sortDir) {
   return DataQueryBuilder.toRequestBody(query)
 }
 
+function buildFindQuery(queryBuilder) {
+  let query = {}
+
+  if (queryBuilder instanceof DataQueryBuilder) {
+    query = queryBuilder.toJSON()
+  } else {
+    if (queryBuilder) {
+      query = { ...queryBuilder }
+    }
+  }
+
+  return DataQueryBuilder.toRequestBody(query)
+}
+
 export default class DataStore {
 
   constructor(model, dataService) {
@@ -80,9 +94,9 @@ export default class DataStore {
 
   async find(query) {
     return this.app.request
-      .get({
-        url        : this.app.urls.dataTable(this.className),
-        queryString: DataQueryBuilder.toQueryString(query),
+      .post({
+        url : this.app.urls.dataTableFind(this.className),
+        data: buildFindQuery(query),
       })
       .then(result => this.parseResponse(result))
   }
