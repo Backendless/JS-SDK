@@ -24,7 +24,6 @@ describe('Data - Where Clause', function() {
     queryBuilder = Backendless.DataQueryBuilder.create().addProperties('age', 'name')
   })
 
-
   it('load all objects by default', async () => {
     queryBuilder
       .addProperties('age', 'name')
@@ -34,18 +33,18 @@ describe('Data - Where Clause', function() {
     const expected = [
       {
         "___class": "Person",
-        "age": 10,
-        "name": "name1",
+        "age"     : 10,
+        "name"    : "name1",
       },
       {
         "___class": "Person",
-        "age": 20,
-        "name": "name2",
+        "age"     : 20,
+        "name"    : "name2",
       },
       {
         "___class": "Person",
-        "age": 30,
-        "name": "name3",
+        "age"     : 30,
+        "name"    : "name3",
       }
     ]
 
@@ -66,18 +65,18 @@ describe('Data - Where Clause', function() {
     const expected = [
       {
         "___class": "Person",
-        "age": 10,
-        "name": "name1",
+        "age"     : 10,
+        "name"    : "name1",
       },
       {
         "___class": "Person",
-        "age": 20,
-        "name": "name2",
+        "age"     : 20,
+        "name"    : "name2",
       },
       {
         "___class": "Person",
-        "age": 30,
-        "name": "name3",
+        "age"     : 30,
+        "name"    : "name3",
       }
     ]
 
@@ -98,8 +97,8 @@ describe('Data - Where Clause', function() {
     const expected = [
       {
         "___class": "Person",
-        "age": 10,
-        "name": "name1",
+        "age"     : 10,
+        "name"    : "name1",
       },
     ]
 
@@ -122,8 +121,8 @@ describe('Data - Where Clause', function() {
     const expected = [
       {
         "___class": "Person",
-        "age": 30,
-        "name": "name3",
+        "age"     : 30,
+        "name"    : "name3",
       },
     ]
 

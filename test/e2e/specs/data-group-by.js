@@ -27,7 +27,7 @@ describe('Data - GroupBy', function() {
 
   it('with valid args', async () => {
     queryBuilder
-      .setProperties( 'Avg(age) as avgAge')
+      .setProperties('Avg(age) as avgAge')
       .setGroupBy('name')
 
     const result = await personTableStore.find(queryBuilder)
@@ -37,11 +37,11 @@ describe('Data - GroupBy', function() {
     const expected = [
       {
         "___class": "Person",
-        "avgAge": 10
+        "avgAge"  : 10
       },
       {
         "___class": "Person",
-        "avgAge": 25
+        "avgAge"  : 25
       }
     ]
 
@@ -50,7 +50,7 @@ describe('Data - GroupBy', function() {
 
   it('without args', async () => {
     queryBuilder
-      .setProperties( 'Avg(age) as avgAge')
+      .setProperties('Avg(age) as avgAge')
       .setGroupBy()
 
     const result = await personTableStore.find(queryBuilder)
@@ -60,7 +60,7 @@ describe('Data - GroupBy', function() {
     const expected = [
       {
         "___class": "Person",
-        "avgAge": 20
+        "avgAge"  : 20
       }
     ]
 
