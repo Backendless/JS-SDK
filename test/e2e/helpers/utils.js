@@ -15,7 +15,7 @@ export function getHugeMySQL(minCharts, columnName) {
 }
 
 export function sortByProperty(property) {
-  return function (a, b) {
+  return function(a, b) {
     if (a[property] > b[property]) {
       return 1
     }
