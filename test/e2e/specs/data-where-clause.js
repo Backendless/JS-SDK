@@ -8,6 +8,10 @@ describe('Data - Where Clause', function() {
 
   let queryBuilder
 
+  function generateLongString(length = 1000){
+    return new Array(length).fill('a').join('')
+  }
+
   sandbox.forSuite()
 
   const PERSON_TABLE_NAME = 'Person'
