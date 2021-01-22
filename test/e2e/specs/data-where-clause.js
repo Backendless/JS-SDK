@@ -1,5 +1,5 @@
 import sandbox from '../helpers/sandbox'
-import { getHugeMySQL, sortByProperty } from '../helpers/utils'
+import { generateLongString, createComparator } from '../helpers/utils'
 
 const Backendless = sandbox.Backendless
 
@@ -49,7 +49,7 @@ describe('Data - Where Clause', function() {
     ]
 
     if (Array.isArray(result)) {
-      result.sort(sortByProperty('name'))
+      result.sort(createComparator('name'))
     }
 
     expect(result).to.eql(expected)
@@ -81,7 +81,7 @@ describe('Data - Where Clause', function() {
     ]
 
     if (Array.isArray(result)) {
-      result.sort(sortByProperty('name'))
+      result.sort(createComparator('name'))
     }
 
     expect(result).to.eql(expected)
@@ -103,34 +103,25 @@ describe('Data - Where Clause', function() {
     ]
 
     if (Array.isArray(result)) {
-      result.sort(sortByProperty('name'))
+      result.sort(createComparator('name'))
     }
 
     expect(result).to.eql(expected)
   })
 
   it('should work with huge query', async () => {
-    let hugeFakeMySQL = getHugeMySQL(2048, 'name')
-
-    hugeFakeMySQL = `${hugeFakeMySQL} AND name != 'name1' AND name != 'name2'`
+    const where = `name = '${generateLongString(3000)}'`
 
     queryBuilder
-      .setWhereClause(hugeFakeMySQL)
+      .setWhereClause(where)
 
     const result = await personTableStore.find(queryBuilder)
-    const expected = [
-      {
-        "___class": "Person",
-        "age"     : 30,
-        "name"    : "name3",
-      },
-    ]
 
     if (Array.isArray(result)) {
-      result.sort(sortByProperty('name'))
+      result.sort(createComparator('name'))
     }
 
-    expect(result).to.eql(expected)
+    expect(result).to.eql([])
   })
 
 })
