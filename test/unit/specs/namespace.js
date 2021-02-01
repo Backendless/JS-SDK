@@ -8,6 +8,13 @@ describe('Namespace', function() {
 
   describe('Basic init', () => {
 
+    it('should default export for ES6', () => {
+      const Backendless_ES5 = require('../../../src')
+
+      expect(Backendless_ES5).to.be.equal(Backendless)
+      expect(Backendless_ES5.default).to.be.equal(Backendless)
+    })
+
     it('should change public app relevant variables in Backendless scope', () => {
       Backendless.initApp(APP_ID, API_KEY)
 

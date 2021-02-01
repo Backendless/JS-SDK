@@ -425,6 +425,7 @@ if (root) {
   root.Backendless = backendless
 }
 
+exports = module.exports = backendless
+
 export default backendless
 
-module.exports = backendless
