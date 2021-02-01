@@ -1,6 +1,6 @@
 # Welcome to Backendless!
 
-[![Build Status](https://travis-ci.org/Backendless/JS-SDK.svg?branch=master)](https://travis-ci.org/Backendless/JS-SDK)
+[![Build Status](https://travis-ci.com/Backendless/JS-SDK.svg?branch=master)](https://travis-ci.com/Backendless/JS-SDK)
 [![npm version](https://img.shields.io/npm/v/backendless.svg?style=flat)](https://www.npmjs.com/package/backendless)
 [![dependencies Status](https://david-dm.org/backendless/JS-SDK/status.svg)](https://david-dm.org/backendless/JS-SDK)
 
