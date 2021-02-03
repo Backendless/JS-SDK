@@ -136,8 +136,11 @@ export default class DataStore {
   }
 
   async getObjectCount(condition) {
+    let distinct = undefined
+
     if (condition) {
       if (condition instanceof DataQueryBuilder) {
+        distinct = condition.getDistinct() || undefined
         condition = condition.getWhereClause() || undefined
       } else if (typeof condition !== 'string') {
         throw new Error('Condition must be a string or an instance of DataQueryBuilder.')
@@ -146,7 +149,7 @@ export default class DataStore {
 
     return this.app.request.get({
       url  : this.app.urls.dataTableCount(this.className),
-      query: { where: condition },
+      query: { where: condition, distinct },
     })
   }
 

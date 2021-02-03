@@ -449,8 +449,8 @@ describe('<Data> Find', function() {
       const req2 = prepareMockRequest(222)
 
       const query1 = Backendless.Data.QueryBuilder.create()
-
       const query2 = Backendless.Data.QueryBuilder.create()
+
       query2.setPageSize(30)
       query2.setOffset(60)
       query2.setWhereClause('foo>123')
@@ -474,6 +474,53 @@ describe('<Data> Find', function() {
 
       expect(result1).to.be.equal(111)
       expect(result2).to.be.equal(222)
+    })
+
+    it('with distinct ', async () => {
+      const req1 = prepareMockRequest(2)
+      const req2 = prepareMockRequest(3)
+      const req3 = prepareMockRequest(4)
+
+      const query1 = Backendless.Data.QueryBuilder.create()
+      const query2 = Backendless.Data.QueryBuilder.create()
+      const query3 = Backendless.Data.QueryBuilder.create()
+
+      query1.setDistinct(true)
+      query1.setWhereClause('foo>123')
+
+      query2.setDistinct(false)
+      query2.setWhereClause('bar>123')
+
+      query3.setWhereClause('buz>123')
+
+      const result1 = await dataStore.getObjectCount(query1)
+      const result2 = await dataStore.getObjectCount(query2)
+      const result3 = await dataStore.getObjectCount(query3)
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/count?where=foo%3E123&distinct=true`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req2).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/count?where=bar%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req3).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/count?where=buz%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.equal(2)
+      expect(result2).to.be.equal(3)
+      expect(result3).to.be.equal(4)
     })
 
     it('fails when at least one item is invalid', async () => {
