@@ -434,7 +434,7 @@ declare module Backendless {
 
         function saveFile(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): Promise<boolean>;
 
-        function upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
+        function upload(file: File, path: string, overwrite?: boolean): Promise<Object>;
 
         function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 
