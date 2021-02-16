@@ -832,7 +832,6 @@ function testFilesService() {
     const offset: number = 123;
     const overwrite: boolean = true;
     let file: File;
-    const files: File[] = [file];
     const oldPathName: string = 'str';
     const newName: string = 'str';
     const sourcePath: string = 'str';
@@ -849,7 +848,6 @@ function testFilesService() {
     let resultObj: Object;
     let resultNumber: number;
     let promiseObject: Promise<Object>;
-    let promiseVoid: Promise<void>;
     let promiseNumber: Promise<number>;
 
     resultStr = Backendless.Files.restUrl;
@@ -857,10 +855,8 @@ function testFilesService() {
     promiseObject = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
     promiseObject = Backendless.Files.saveFile(path, fileName, fileContent);
 
-    promiseVoid = Backendless.Files.upload(file, path, overwrite);
-    promiseVoid = Backendless.Files.upload(files, path, overwrite);
-    promiseVoid = Backendless.Files.upload(file, path, null);
-    promiseVoid = Backendless.Files.upload(files, path, null);
+    promiseObject = Backendless.Files.upload(file, path, overwrite);
+    promiseObject = Backendless.Files.upload(file, path, null);
 
     promiseObject = Backendless.Files.listing(path);
     promiseObject = Backendless.Files.listing(path, pattern);
