@@ -770,18 +770,12 @@ function testEmailEnvelope() {
 }
 
 function testMessaging() {
-    const restUrl: string = Backendless.Messaging.restUrl;
-    const channelProperties: Object = Backendless.Messaging.channelProperties;
     const channelName: string = 'str';
     const deviceToken: string = 'str';
     const subject: string = 'str';
     const messageId: string = 'str';
     const message: string | Object = 'str';
-    let resultObj: Object;
-    let resultString: String;
-    let resultBool: boolean = true;
     let promiseObject: Promise<Object>;
-    let PromiseString: Promise<String>;
     const bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
     const envelopeObject: Backendless.EmailEnvelope = new Backendless.EmailEnvelope();
     const templateValues: Object | Backendless.EmailEnvelope = {};
@@ -802,7 +796,7 @@ function testMessaging() {
 
     promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
 
-    PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
+    promiseObject = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
 
