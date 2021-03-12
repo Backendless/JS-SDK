@@ -103,7 +103,6 @@ export default class Messaging {
         url: this.app.urls.messagingEmail(),
         data
       })
-      .then(data => data.status)
   }
 
   async sendEmailFromTemplate(templateName, envelopeObject, templateValues) {

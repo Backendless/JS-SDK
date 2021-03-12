@@ -33,8 +33,8 @@ declare module Backendless {
      * @public
      * @type: Function
      **/
-    function initApp(appId: string, apiKey: string): void;
-    function initApp(config: InitAppConfig): void;
+    function initApp(appId: string, apiKey: string): Object;
+    function initApp(config: InitAppConfig): Object;
 
     /**
      * @public
@@ -364,7 +364,7 @@ declare module Backendless {
 
         function publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
+        function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<object>;
 
         function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): Promise<object>;
 
