@@ -291,7 +291,7 @@ describe('Data - Bulk Operations', function() {
 
     describe('should throw an error when', function() {
       const invalidWhereClauseArgumentError = 'Condition must be provided and must be a string.'
-      const invalidChangesArgumentError = 'Changes must be provided and must be a object.'
+      const invalidChangesArgumentError = 'Changes must be provided and must be an object.'
 
       it('not passed any arguments', function() {
         return TestTable.bulkUpdate()

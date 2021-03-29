@@ -215,7 +215,7 @@ export default class DataStore {
     }
 
     if (!changes || typeof changes !== 'object' || Array.isArray(changes)) {
-      throw new Error('Changes must be provided and must be a object.')
+      throw new Error('Changes must be provided and must be an object.')
     }
 
     return this.app.request.put({

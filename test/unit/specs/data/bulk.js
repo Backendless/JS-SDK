@@ -102,7 +102,7 @@ describe('<Data> Bulk Operations', function() {
     })
 
     it('fails when changes object is invalid', async () => {
-      const errorMsg = 'Changes must be provided and must be a object.'
+      const errorMsg = 'Changes must be provided and must be an object.'
 
       await expect(dataStore.bulkUpdate('foo=1')).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkUpdate('foo=1', '')).to.eventually.be.rejectedWith(errorMsg)
