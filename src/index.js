@@ -11,11 +11,12 @@ const DEFAULT_PROPS = {
   domain        : null,
   debugMode     : false,
   standalone    : false,
-  ServerCode    : null,
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
     ? XMLHttpRequest
     : undefined,
 }
+
+const STATELESS_PROPS = ['appId', 'apiKey', 'domain']
 
 const root = (
   (typeof self === 'object' && self.self === self && self) ||
@@ -87,6 +88,10 @@ class Backendless {
     for (const key in DEFAULT_PROPS) {
       if (DEFAULT_PROPS.hasOwnProperty(key)) {
         const privateKey = `__${key}`
+
+        if (STATELESS_PROPS.includes(key)) {
+          delete this[privateKey]
+        }
 
         const defaultValue = this[privateKey] === undefined
           ? DEFAULT_PROPS[key]
@@ -246,15 +251,6 @@ class Backendless {
 
   set XMLHttpRequest(XMLHttpRequest) {
     this.__XMLHttpRequest = XMLHttpRequest
-  }
-
-  ///--------ServerCode-------///
-  get ServerCode() {
-    return this.__ServerCode
-  }
-
-  set ServerCode(ServerCode) {
-    this.__ServerCode = ServerCode
   }
 
   ///--------device-------///
