@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { APP_ID, API_KEY } from '../helpers/sandbox'
+import Backendless, { APP_ID, API_KEY, CUSTOM_DOMAIN } from '../helpers/sandbox'
 
 describe('Namespace', function() {
   this.timeout(2000)
@@ -56,6 +56,27 @@ describe('Namespace', function() {
 
       expect(app3.applicationId).to.be.equal('appId-3')
       expect(app3.secretKey).to.be.equal('apiKey-3')
+    })
+  })
+
+  describe('Custom Domain', () => {
+
+    it('should init with custom domain', () => {
+      Backendless.initApp(CUSTOM_DOMAIN)
+
+      expect(Backendless.applicationId).to.be.equal(null)
+      expect(Backendless.secretKey).to.be.equal(null)
+      expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(CUSTOM_DOMAIN)
+    })
+
+    it('should init with custom domain via config object', () => {
+      Backendless.initApp({ domain: CUSTOM_DOMAIN })
+
+      expect(Backendless.applicationId).to.be.equal(null)
+      expect(Backendless.secretKey).to.be.equal(null)
+      expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(CUSTOM_DOMAIN)
     })
   })
 
