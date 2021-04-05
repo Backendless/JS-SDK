@@ -1,5 +1,7 @@
 import sandbox from '../helpers/sandbox'
 
+import { createComparator } from '../helpers/utils'
+
 const Backendless = sandbox.Backendless
 
 describe('Data - Distinct', function() {
@@ -8,17 +10,6 @@ describe('Data - Distinct', function() {
   let queryBuilder
 
   sandbox.forSuite()
-
-  function sortByName(a, b) {
-    if (a.name > b.name) {
-      return 1
-    }
-    if (a.name < b.name) {
-      return -1
-    }
-
-    return 0
-  }
 
   const PERSON_TABLE_NAME = 'Person'
 
@@ -37,9 +28,9 @@ describe('Data - Distinct', function() {
   it('load distinct objects by single property', async () => {
     const result = await personTableStore.find(queryBuilder.addProperty('name').setDistinct(true))
 
-    result.sort(sortByName)
+    result.sort(createComparator('name'))
 
-    expect(result.sort(sortByName)).to.eql(
+    expect(result).to.eql(
       [
         {
           "___class": "Person",
@@ -56,7 +47,7 @@ describe('Data - Distinct', function() {
   it('load not distinct objects by single property', async () => {
     const result = await personTableStore.find(queryBuilder.addProperty('name').setDistinct(false))
 
-    result.sort(sortByName)
+    result.sort(createComparator('name'))
 
     expect(result).to.eql(
       [
@@ -79,7 +70,7 @@ describe('Data - Distinct', function() {
   it('load distinct objects by few properties', async () => {
     const result = await personTableStore.find(queryBuilder.addProperties('name', 'age').setDistinct(true))
 
-    result.sort(sortByName)
+    result.sort(createComparator('name'))
 
     expect(result).to.eql(
       [
@@ -100,7 +91,7 @@ describe('Data - Distinct', function() {
   it('load distinct objects by property with group by some property', async () => {
     const result = await personTableStore.find(queryBuilder.addProperty('name').setGroupBy('objectId').setDistinct(true))
 
-    result.sort(sortByName)
+    result.sort(createComparator('name'))
 
     expect(result).to.eql(
       [

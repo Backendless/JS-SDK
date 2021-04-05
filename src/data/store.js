@@ -60,7 +60,7 @@ export default class DataStore {
   async deepSave(object) {
     return this.app.request
       .put({
-        url: this.app.urls.dataTableDeepSave(this.className),
+        url : this.app.urls.dataTableDeepSave(this.className),
         data: convertToServerRecord(object),
       })
       .then(result => this.parseResponse(result))
@@ -80,9 +80,9 @@ export default class DataStore {
 
   async find(query) {
     return this.app.request
-      .get({
-        url        : this.app.urls.dataTable(this.className),
-        queryString: DataQueryBuilder.toQueryString(query),
+      .post({
+        url : this.app.urls.dataTableFind(this.className),
+        data: DataQueryBuilder.toRequestBody(query),
       })
       .then(result => this.parseResponse(result))
   }
