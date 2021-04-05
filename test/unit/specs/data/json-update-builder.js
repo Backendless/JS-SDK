@@ -196,6 +196,15 @@ describe('<Data> JSON Update Builder', function() {
       ])
 
       expect(updateBuilder.operationName).to.be.equal('JSON_REMOVE')
+
+      expect(updateBuilder.toJSON()).to.be.eql({
+        ___operation: 'JSON_REMOVE',
+        args        : [
+          '$.letter',
+          '$.number',
+          '$.state',
+        ]
+      })
     })
   })
 
