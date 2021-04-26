@@ -11,6 +11,16 @@ function testMain() {
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
     Backendless.initApp({appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
+    Backendless.initApp({
+        appId: 'APPLICATION_ID',
+        apiKey: 'JS_SECRET_KEY',
+        standalone: true,
+        debugMode: true,
+        serverURL: 'serverURL'
+    });
+
+    Backendless.initApp('https://my-custom-domain.com')
+    Backendless.initApp({ domain: 'https://my-custom-domain.com', standalone: true })
 }
 
 function testLocalCache() {

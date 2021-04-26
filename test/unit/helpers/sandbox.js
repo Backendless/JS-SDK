@@ -8,7 +8,7 @@ import spies from 'chai-spies'
 import '../../helpers/global'
 import Utils from '../../helpers/utils'
 
-import { SERVER_URL, APP_ID, API_KEY, APP_PATH } from './contants'
+import { SERVER_URL, APP_ID, API_KEY, APP_PATH, CUSTOM_DOMAIN } from './contants'
 import { createMockRTServer } from './rt'
 
 import Backendless from '../../../src'
@@ -74,6 +74,7 @@ export {
   APP_ID,
   API_KEY,
   APP_PATH,
+  CUSTOM_DOMAIN,
   createMockRTServer,
 }
 
