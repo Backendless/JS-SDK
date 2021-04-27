@@ -1,6 +1,6 @@
 import Utils from '../utils'
 
-const PAGING_DEFAULTS = {
+export const PAGING_DEFAULTS = {
   pageSize: 10,
   offset  : 0
 }

@@ -1,9 +1,6 @@
 import Utils from '../utils'
 
-const PAGING_DEFAULTS = {
-  pageSize: 1,
-  offset  : 0
-}
+import { PAGING_DEFAULTS } from './data-query-builder'
 
 export default class GroupQueryBuilder {
 
@@ -12,38 +9,30 @@ export default class GroupQueryBuilder {
   }
 
   constructor() {
-    this.pageSize = 3
-    this.groupPageSize = 4
     this.offset = PAGING_DEFAULTS.offset
-    this.recordsPageSize = 2
+    this.pageSize = PAGING_DEFAULTS.pageSize
+
+    this.groupPageSize = PAGING_DEFAULTS.pageSize
+    this.recordsPageSize = PAGING_DEFAULTS.pageSize
+
     this.groupDepth = null
-    this.sortBy = null
-    this.where = null
+    this.groupPath = null
+
     this.groupBy = null
-    this.distinct = null
+    this.sortBy = null
+
     this.excludeProps = null
-    this.properties = null
+    this.property = null
+
+    this.where = null
+
     this.loadRelations = null
     this.relationsDepth = null
     this.relationsPageSize = null
-    this.groupPath = null
 
+    this.distinct = null
   }
 
-  //   {
-  //     "groupPath": [ // Identifies "root" group for which pagination of children is performed.
-  //     {
-  //       "column": String
-  //       "value": mixed
-  //     }
-  //     ...
-  //   ]
-  //   }
-  // }
-
-  //=======================================
-
-  //=======================================
   setPageSize(pageSize) {
     if (pageSize <= 0) {
       throw new Error('Page size must be a positive value.')
@@ -127,7 +116,8 @@ export default class GroupQueryBuilder {
   }
 
   setProperties(properties) {
-    this.properties = Utils.castArray(properties)
+    this.property = Utils.castArray(properties)
+    this.property = properties
 
     return this
   }
@@ -137,9 +127,9 @@ export default class GroupQueryBuilder {
   }
 
   addProperty(prop) {
-    // this.properties = this.properties || []
-    // this.properties.push(prop)
-    this.properties = prop
+    this.property = this.property || []
+    this.property.push(prop)
+
     return this
   }
 
@@ -221,15 +211,13 @@ export default class GroupQueryBuilder {
   }
 
   setRelated(relations) {
-    // this.relations = Utils.castArray(relations)
-    this.loadRelations = relations
+    this.loadRelations = Utils.castArray(relations)
 
     return this
   }
 
-  //refactor me HERE WROND TODO
   addRelated(relations) {
-    this.loadRelations = (this.loadRelations || '') + relations
+    this.relations = (this.relations || []).concat(relations)
 
     return this
   }
@@ -267,105 +255,6 @@ export default class GroupQueryBuilder {
   getDistinct() {
     return this.distinct
   }
-
-  //mb no needed
-
-  // toJSON() {
-  //   console.log(' Called ')
-  //   return {
-  //     pageSize: this.pageSize,
-  //     offset  : this.offset,
-  //
-  //     properties  : this.properties,
-  //     excludeProps: this.excludeProps,
-  //
-  //     where: this.where,
-  //
-  //     sortBy : this.sortBy,
-  //     groupBy: this.groupBy,
-  //
-  //     relations        : this.relations,
-  //     relationsDepth   : this.relationsDepth,
-  //     relationsPageSize: this.relationsPageSize,
-  //   }
-  // }
-
-  //mb no needed
-  // static toQueryString(query) {
-  //   if (!query) {
-  //     return
-  //   }
-  //
-  //   if (query instanceof GroupQueryBuilder) {
-  //     query = query.toJSON()
-  //   }
-  //
-  //   const queryTokens = []
-  //
-  //   if (query.pageSize > 0) {
-  //     queryTokens.push(`pageSize=${query.pageSize}`)
-  //   }
-  //
-  //   if (query.offset > 0) {
-  //     queryTokens.push(`offset=${query.offset}`)
-  //   }
-  //
-  //   if (Array.isArray(query.properties) && query.properties.length) {
-  //     query.properties.map(property => {
-  //       queryTokens.push(`property=${encodeURIComponent(property)}`)
-  //     })
-  //   }
-  //
-  //   if (Array.isArray(query.excludeProps) && query.excludeProps.length) {
-  //     queryTokens.push(`excludeProps=${encodeArrayToUriComponent(query.excludeProps)}`)
-  //   }
-  //
-  //   if (query.where) {
-  //     queryTokens.push(`where=${encodeURIComponent(query.where)}`)
-  //   }
-  //
-  //   if (query.having) {
-  //     queryTokens.push(`having=${encodeURIComponent(query.having)}`)
-  //   }
-  //
-  //   if (query.sortBy) {
-  //     queryTokens.push(
-  //       Array.isArray(query.sortBy)
-  //         ? `sortBy=${encodeArrayToUriComponent(query.sortBy)}`
-  //         : `sortBy=${encodeURIComponent(query.sortBy)}`
-  //     )
-  //   }
-  //
-  //   if (query.groupBy) {
-  //     queryTokens.push(
-  //       Array.isArray(query.groupBy)
-  //         ? `groupBy=${encodeArrayToUriComponent(query.groupBy)}`
-  //         : `groupBy=${encodeURIComponent(query.groupBy)}`
-  //     )
-  //   }
-  //
-  //   if (Array.isArray(query.relations)) {
-  //     queryTokens.push(
-  //       query.relations.length
-  //         ? `loadRelations=${encodeArrayToUriComponent(query.relations)}`
-  //         : 'loadRelations=*'
-  //     )
-  //   }
-  //
-  //   if (query.relationsDepth > 0) {
-  //     queryTokens.push(`relationsDepth=${query.relationsDepth}`)
-  //   }
-  //
-  //   if (query.relationsPageSize > 0) {
-  //     queryTokens.push(`relationsPageSize=${query.relationsPageSize}`)
-  //   }
-  //
-  //   return queryTokens.join('&')
-  // }
-}
-
-function encodeArrayToUriComponent(items) {
-  return items.map(item => encodeURIComponent(item)).join(',')
 }
 
 
