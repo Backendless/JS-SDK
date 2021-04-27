@@ -97,6 +97,10 @@ export default class Urls {
     return `${this.root()}/data`
   }
 
+  group(sourceName) {
+    return `${this.data()}/data-grouping/${sourceName}`
+  }
+
   dataTable(tableName) {
     return `${this.data()}/${tableName}`
   }

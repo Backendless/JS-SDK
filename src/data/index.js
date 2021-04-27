@@ -4,6 +4,7 @@ import User from '../users/user'
 
 import Store from './store'
 import DataQueryBuilder from './data-query-builder'
+import GroupQueryBuilder from './group-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
 import JSONUpdateBuilder from './json-update-builder'
 
@@ -31,6 +32,7 @@ export default class Data {
     }
 
     this.QueryBuilder = DataQueryBuilder
+    this.GroupQueryBuilder = GroupQueryBuilder
     this.LoadRelationsQueryBuilder = LoadRelationsQueryBuilder
     this.JSONUpdateBuilder = JSONUpdateBuilder
 

@@ -87,6 +87,22 @@ export default class DataStore {
       .then(result => this.parseResponse(result))
   }
 
+  async group(data) {
+
+    console.log(this.app.request
+      .post({
+        url : this.app.urls.group(this.className),
+        data: data
+      }))
+
+    return this.app.request
+      .post({
+        url : this.app.urls.group(this.className),
+        data: data
+      })
+      .then(result => this.parseResponse(result))
+  }
+
   async findById(objectId, query) {
     let result
 
