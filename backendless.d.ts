@@ -21,10 +21,11 @@ declare module Backendless {
     let PublishOptionsHeaders: { [key: string]: string; };
 
     interface InitAppConfig {
-        appId: string;
-        apiKey: string;
+        appId?: string;
+        apiKey?: string;
         standalone?: boolean;
         serverURL?: string;
+        domain?: string;
         debugMode?: boolean;
         XMLHttpRequest?: XMLHttpRequest,
     }
@@ -35,6 +36,7 @@ declare module Backendless {
      **/
     function initApp(appId: string, apiKey: string): Object;
     function initApp(config: InitAppConfig): Object;
+    function initApp(domain: string): Object;
 
     /**
      * @public

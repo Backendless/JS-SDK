@@ -8,13 +8,15 @@ const DEFAULT_PROPS = {
   appId         : null,
   apiKey        : null,
   serverURL     : 'https://api.backendless.com',
+  domain        : null,
   debugMode     : false,
   standalone    : false,
-  ServerCode    : null,
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
     ? XMLHttpRequest
     : undefined,
 }
+
+const STATELESS_PROPS = ['appId', 'apiKey', 'domain']
 
 const root = (
   (typeof self === 'object' && self.self === self && self) ||
@@ -32,14 +34,19 @@ const showLegacyDataWarning = () => {
   }
 }
 
-// Backendless supports two signatures for the initApp method
+// Backendless supports three signatures for the initApp method
 // two args - applicationId {String} and secretKey {String}
-// or one argument - whole set of options {Object}
+// one argument - domain {String}
+// one argument - whole set of options {Object}
 const parseInitConfig = (...args) => {
   const [appId, apiKey] = args
 
   if (appId && typeof appId === 'object') {
     return appId
+  }
+
+  if (typeof appId === 'string' && !apiKey) {
+    return { domain: appId }
   }
 
   return {
@@ -82,6 +89,10 @@ class Backendless {
       if (DEFAULT_PROPS.hasOwnProperty(key)) {
         const privateKey = `__${key}`
 
+        if (STATELESS_PROPS.includes(key)) {
+          delete this[privateKey]
+        }
+
         const defaultValue = this[privateKey] === undefined
           ? DEFAULT_PROPS[key]
           : this[privateKey]
@@ -94,7 +105,7 @@ class Backendless {
   }
 
   /**
-   * @param {string|Object} appId|config
+   * @param {string|Object} appId|domain|config
    * @param {string} [secretKey]
    * @returns {Backendless}
    */
@@ -191,8 +202,21 @@ class Backendless {
     this.__serverURL = serverURL
   }
 
+  ///--------domain-------///
+  get domain() {
+    return this.__domain
+  }
+
+  set domain(domain) {
+    this.__domain = domain
+  }
+
   ///--------appPath-------///
   get appPath() {
+    if (this.domain) {
+      return this.domain
+    }
+
     return [this.serverURL, this.applicationId, this.secretKey].join('/')
   }
 
@@ -227,15 +251,6 @@ class Backendless {
 
   set XMLHttpRequest(XMLHttpRequest) {
     this.__XMLHttpRequest = XMLHttpRequest
-  }
-
-  ///--------ServerCode-------///
-  get ServerCode() {
-    return this.__ServerCode
-  }
-
-  set ServerCode(ServerCode) {
-    this.__ServerCode = ServerCode
   }
 
   ///--------device-------///
