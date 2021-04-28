@@ -88,19 +88,20 @@ export default class DataStore {
   }
 
   async group(data) {
-
-    console.log(this.app.request
-      .post({
-        url : this.app.urls.group(this.className),
-        data: data
-      }))
-
     return this.app.request
       .post({
         url : this.app.urls.group(this.className),
         data: data
       })
       .then(result => this.parseResponse(result))
+  }
+
+  async countInGroup(data) {
+    return this.app.request
+      .post({
+        url : `${this.app.urls.group(this.className)}/count`,
+        data: data
+      })
   }
 
   async findById(objectId, query) {

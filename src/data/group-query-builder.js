@@ -117,13 +117,12 @@ export default class GroupQueryBuilder {
 
   setProperties(properties) {
     this.property = Utils.castArray(properties)
-    this.property = properties
 
     return this
   }
 
   getProperties() {
-    return this.properties
+    return this.property
   }
 
   addProperty(prop) {
@@ -190,8 +189,8 @@ export default class GroupQueryBuilder {
     return this.groupBy
   }
 
-  setGroupPath(groupPath) {
-    this.groupPath = Utils.castArray(groupPath)
+  setGroupBy(groupBy) {
+    this.groupBy = Utils.castArray(groupBy)
 
     return this
   }
@@ -200,8 +199,8 @@ export default class GroupQueryBuilder {
     return this.groupPath
   }
 
-  setGroupBy(groupBy) {
-    this.groupBy = Utils.castArray(groupBy)
+  setGroupPath(groupPath) {
+    this.groupPath = Utils.castArray(groupPath)
 
     return this
   }
@@ -217,7 +216,7 @@ export default class GroupQueryBuilder {
   }
 
   addRelated(relations) {
-    this.relations = (this.relations || []).concat(relations)
+    this.loadRelations = (this.loadRelations || []).concat(relations)
 
     return this
   }
