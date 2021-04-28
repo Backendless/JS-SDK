@@ -3,26 +3,6 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-const createRequestBody = (body) => {
-  return {
-    'distinct'         : body.distinct || false,
-    'excludeProps'     : body.excludeProps || null,
-    'groupBy'          : body.groupBy || null,
-    'groupDepth'       : body.groupDepth || null,
-    'groupPageSize'    : body.groupPageSize || 10,
-    'groupPath'        : body.groupPath || null,
-    'offset'           : body.offset || 0,
-    'pageSize'         : body.pageSize || 10,
-    'property'         : body.property || null,
-    'recordsPageSize'  : body.recordsPageSize || 10,
-    'loadRelations'    : body.loadRelations || null,
-    'relationsDepth'   : body.relationsDepth || null,
-    'relationsPageSize': body.relationsPageSize || null,
-    'sortBy'           : body.sortBy || null,
-    'where'            : body.where || null
-  }
-}
-
 describe('<Data> Grouping', function() {
 
   forTest(this)
