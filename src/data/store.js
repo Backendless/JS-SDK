@@ -93,10 +93,13 @@ export default class DataStore {
         url : this.app.urls.group(this.className),
         data: data
       })
-      .then(result => this.parseResponse(result))
   }
 
   async countInGroup(data) {
+    if (!data.groupPath || typeof data.groupPath !== 'object') {
+      throw new Error('Group Path must be provided and must be an object.')
+    }
+
     return this.app.request
       .post({
         url : `${this.app.urls.group(this.className)}/count`,

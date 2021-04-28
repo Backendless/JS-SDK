@@ -264,6 +264,12 @@ describe('<Data> Query Builder', function() {
     expect(() => query.setOffset(-1)).to.throw(errorMsg)
   })
 
+  it('fails when distinct is invalid', function() {
+    const errorMsg = 'Distinct must be a boolean value.'
+
+    expect(() => query.setDistinct('foobar')).to.throw(errorMsg)
+  })
+
   describe('Query String', () => {
     it('should return undefined', () => {
       expect(Backendless.Data.QueryBuilder.toQueryString()).to.be.equal(undefined)
