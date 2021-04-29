@@ -87,6 +87,26 @@ export default class DataStore {
       .then(result => this.parseResponse(result))
   }
 
+  async group(data) {
+    return this.app.request
+      .post({
+        url : this.app.urls.dataGrouping(this.className),
+        data: data
+      })
+  }
+
+  async countInGroup(data) {
+    if (!data.groupPath || typeof data.groupPath !== 'object') {
+      throw new Error('Group Path must be provided and must be an object.')
+    }
+
+    return this.app.request
+      .post({
+        url : `${this.app.urls.dataGrouping(this.className)}/count`,
+        data: data
+      })
+  }
+
   async findById(objectId, query) {
     let result
 

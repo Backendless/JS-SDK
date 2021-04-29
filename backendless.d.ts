@@ -645,6 +645,13 @@ declare module Backendless {
         relationModel?: Function;
     }
 
+    interface GroupQueryI extends DataQueryI {
+        groupPageSize?: number;
+        recordsPageSize?: number;
+        groupDepth?: number;
+        groupPath?: Array<object>;
+    }
+
     /**
      * @public
      * @class Backendless.DataQueryBuilder
@@ -772,6 +779,36 @@ declare module Backendless {
         getRelationName(): string;
 
         toJSON(): RelationsQueryI;
+    }
+
+    /**
+     * @public
+     * @class Backendless.GroupQueryBuilder
+     * @constructor
+     */
+
+    class GroupQueryBuilder extends DataQueryBuilder {
+        static create(): Backendless.GroupQueryBuilder;
+
+        setGroupPageSize(groupPageSize: number): this;
+
+        getGroupPageSize(): number;
+
+        setRecordsPageSize(recordsPageSize: number): this;
+
+        getRecordsPageSize(): number;
+
+        setGroupDepth(groupDepth: number): this;
+
+        getGroupDepth(): number;
+
+        addGroupPath(groupPath: object): this;
+
+        setGroupPath(groupPath: object | Array<object>): this;
+
+        getGroupPath(): Array<object>;
+
+        toJSON(): GroupQueryI;
     }
 
     /**
@@ -1008,6 +1045,10 @@ declare module Backendless {
         remove(id: object | string): Promise<object>;
 
         find<T = object>(obj?: Backendless.DataQueryBuilder | DataQueryI): Promise<Array<T>>;
+
+        group<T = object>(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<Array<T>>;
+
+        countInGroup(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<number>;
 
         findById<T = object>(objectId: string, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
         findById<T = object>(primaryKeys: object, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;

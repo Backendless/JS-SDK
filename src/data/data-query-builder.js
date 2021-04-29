@@ -1,6 +1,6 @@
 import Utils from '../utils'
 
-const PAGING_DEFAULTS = {
+export const PAGING_DEFAULTS = {
   pageSize: 10,
   offset  : 0
 }
@@ -24,7 +24,7 @@ export default class DataQueryBuilder {
     this.whereClause = null
     this.havingClause = null
 
-    this.loadRelations = null
+    this.relations = null
     this.relationsDepth = null
     this.relationsPageSize = null
 
@@ -198,6 +198,10 @@ export default class DataQueryBuilder {
   }
 
   setDistinct(distinct) {
+    if (typeof distinct !== 'boolean') {
+      throw new Error('Distinct must be a boolean value.')
+    }
+
     this.distinct = distinct
 
     return this

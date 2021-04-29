@@ -116,6 +116,7 @@ function testDataQueryBuilderClass() {
     const query: Backendless.DataQueryValueI = dataQuery.build();
 }
 
+
 function testDataJSONUpdateBuilder() {
     const JSONUpdateBuilder = Backendless.JSONUpdateBuilder
 
@@ -297,6 +298,99 @@ function testLoadRelationsQueryBuilder() {
 
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.preparePreviousPage();
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
+}
+
+function testGroupQueryBuilder() {
+    let str: string = 'str';
+    let num: number = 123;
+    let strs: string[] = ['abc', 'foo', 'bar']
+    let obj: object = {}
+    let objs: object[] = [{}, {}, {}]
+
+    let groupQueryBuilder: Backendless.GroupQueryBuilder;
+    groupQueryBuilder = Backendless.GroupQueryBuilder.create();
+
+    groupQueryBuilder = groupQueryBuilder.setPageSize(num);
+    num = groupQueryBuilder.getPageSize();
+
+    groupQueryBuilder = groupQueryBuilder.setOffset(num);
+    num = groupQueryBuilder.getOffset();
+
+    groupQueryBuilder = groupQueryBuilder.prepareNextPage();
+    groupQueryBuilder = groupQueryBuilder.preparePreviousPage();
+
+    groupQueryBuilder = groupQueryBuilder.setWhereClause(str);
+    str = groupQueryBuilder.getWhereClause();
+
+    groupQueryBuilder = groupQueryBuilder.setProperties('abc');
+    groupQueryBuilder = groupQueryBuilder.setProperties(['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.addProperty(str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(str, str, str, str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.addProperties(['abc', 'abc', 'abc'], str, str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(['abc', 'abc', 'abc']);
+
+    strs = groupQueryBuilder.getProperties();
+
+    groupQueryBuilder = groupQueryBuilder.addAllProperties();
+
+    groupQueryBuilder = groupQueryBuilder.excludeProperty(str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties('abc');
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(str, str, str, str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc'], str, str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc']);
+
+    groupQueryBuilder = groupQueryBuilder.setSortBy(str);
+    groupQueryBuilder = groupQueryBuilder.setSortBy(strs);
+    strs = groupQueryBuilder.getSortBy();
+
+    groupQueryBuilder = groupQueryBuilder.setGroupBy(str);
+    groupQueryBuilder = groupQueryBuilder.setGroupBy(strs);
+    strs = groupQueryBuilder.getGroupBy();
+
+    groupQueryBuilder = groupQueryBuilder.setRelated(str);
+    groupQueryBuilder = groupQueryBuilder.setRelated(strs);
+    groupQueryBuilder = groupQueryBuilder.addRelated(str);
+    groupQueryBuilder = groupQueryBuilder.addRelated(strs);
+    strs = groupQueryBuilder.getRelated();
+
+    groupQueryBuilder = groupQueryBuilder.setRelationsDepth(num);
+    num = groupQueryBuilder.getRelationsDepth();
+
+    groupQueryBuilder = groupQueryBuilder.setRelationsPageSize(num);
+    num = groupQueryBuilder.getRelationsPageSize();
+
+    groupQueryBuilder = groupQueryBuilder.setGroupPageSize(num)
+    num = groupQueryBuilder.getGroupPageSize()
+
+    groupQueryBuilder = groupQueryBuilder.setRecordsPageSize(num)
+    num = groupQueryBuilder.getRecordsPageSize()
+
+    groupQueryBuilder = groupQueryBuilder.setGroupDepth(num)
+    num = groupQueryBuilder.getGroupDepth()
+
+    groupQueryBuilder = groupQueryBuilder.setGroupPath(obj)
+    groupQueryBuilder = groupQueryBuilder.setGroupPath(objs)
+    objs = groupQueryBuilder.getGroupPath()
+
+    groupQueryBuilder.setRelated('relationColumn');
+    groupQueryBuilder.setOffset(50);
+    groupQueryBuilder.setPageSize(50);
+    groupQueryBuilder.setSortBy('columnName');
+    groupQueryBuilder.setSortBy(['columnName']);
+    groupQueryBuilder.setProperties('columnName');
+    groupQueryBuilder.setProperties(['columnName']);
+
+    const properties: Array<string> = groupQueryBuilder.getProperties();
+    const sortBy: Array<string> = groupQueryBuilder.getSortBy();
+    const whereClause: string = groupQueryBuilder.getWhereClause();
+
+    groupQueryBuilder = groupQueryBuilder.preparePreviousPage();
+    groupQueryBuilder = groupQueryBuilder.prepareNextPage();
 }
 
 function testDataStoreClass() {

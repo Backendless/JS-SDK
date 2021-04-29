@@ -402,6 +402,10 @@ class Backendless {
     return this.Data.QueryBuilder
   }
 
+  get GroupQueryBuilder() {
+    return this.Data.GroupQueryBuilder
+  }
+
   get JSONUpdateBuilder() {
     return this.Data.JSONUpdateBuilder
   }
