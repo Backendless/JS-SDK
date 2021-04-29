@@ -802,9 +802,9 @@ declare module Backendless {
 
         getGroupDepth(): number;
 
-        addGroupPath(groupPath: Object): this;
+        addGroupPath(groupPath: object): this;
 
-        setGroupPath(groupPath: Object | Array<object>): this;
+        setGroupPath(groupPath: object | Array<object>): this;
 
         getGroupPath(): Array<object>;
 
@@ -1048,7 +1048,7 @@ declare module Backendless {
 
         group<T = object>(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<Array<T>>;
 
-        countInGroup<T = object>(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<number>;
+        countInGroup(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<number>;
 
         findById<T = object>(objectId: string, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
         findById<T = object>(primaryKeys: object, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;

@@ -268,6 +268,9 @@ describe('<Data> Query Builder', function() {
     const errorMsg = 'Distinct must be a boolean value.'
 
     expect(() => query.setDistinct('foobar')).to.throw(errorMsg)
+    expect(() => query.setDistinct(123)).to.throw(errorMsg)
+    expect(() => query.setDistinct([])).to.throw(errorMsg)
+    expect(() => query.setDistinct({})).to.throw(errorMsg)
   })
 
   describe('Query String', () => {

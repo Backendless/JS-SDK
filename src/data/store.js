@@ -90,7 +90,7 @@ export default class DataStore {
   async group(data) {
     return this.app.request
       .post({
-        url : this.app.urls.group(this.className),
+        url : this.app.urls.dataGrouping(this.className),
         data: data
       })
   }
@@ -102,7 +102,7 @@ export default class DataStore {
 
     return this.app.request
       .post({
-        url : `${this.app.urls.group(this.className)}/count`,
+        url : `${this.app.urls.dataGrouping(this.className)}/count`,
         data: data
       })
   }
