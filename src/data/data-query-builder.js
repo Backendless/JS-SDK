@@ -198,11 +198,7 @@ export default class DataQueryBuilder {
   }
 
   setDistinct(distinct) {
-    if (typeof distinct !== 'boolean') {
-      throw new Error('Distinct must be a boolean value.')
-    }
-
-    this.distinct = distinct
+    this.distinct = !!distinct
 
     return this
   }
