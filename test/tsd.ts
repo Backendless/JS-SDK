@@ -709,6 +709,7 @@ function testUserService() {
     const password: string = 'password';
     const userId: string = 'userId';
     const stayLoggedIn: boolean = true;
+    const reload: boolean = true;
     const div: HTMLElement = document.createElement('div');
     let newUser: Backendless.User = new Backendless.User();
     let guestUser: Backendless.User = new Backendless.User();
@@ -761,7 +762,9 @@ function testUserService() {
     promiseVoid = Backendless.UserService.logout();
 
     promiseObject = Backendless.UserService.getCurrentUser();
+    promiseObject = Backendless.UserService.getCurrentUser(reload);
     promiseCustomUser = Backendless.UserService.getCurrentUser<CustomUser>();
+    promiseCustomUser = Backendless.UserService.getCurrentUser<CustomUser>(reload);
 
     newUser = Backendless.UserService.setCurrentUser({});
     newUser = Backendless.UserService.setCurrentUser(customUser);
