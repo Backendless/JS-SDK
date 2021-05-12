@@ -126,8 +126,8 @@ export default class Users {
       })
   }
 
-  async getCurrentUser() {
-    if (this.currentUser) {
+  async getCurrentUser(reload) {
+    if (this.currentUser && !reload) {
       return this.currentUser
     }
 

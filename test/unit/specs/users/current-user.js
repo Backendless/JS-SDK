@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { API_KEY, APP_ID, Utils, APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
+import Backendless, { API_KEY, APP_ID, APP_PATH, forTest, prepareMockRequest, Utils } from '../../helpers/sandbox'
 
 function getTestUserObject() {
   return {
@@ -75,15 +75,30 @@ describe('<Users> Current User', function() {
     expect(currentUser['user-token']).to.be.equal(userToken)
   })
 
-  it('returns current user after login', async () => {
+  it('reload current user', async () => {
     await login()
 
-    currentUser = await Backendless.UserService.getCurrentUser()
+    prepareMockRequest({ objectId: '111', name: 'foo' })
+    prepareMockRequest({ objectId: '111', name: 'bar' })
 
-    expect(currentUser).to.be.an.instanceof(Backendless.User)
-    expect(currentUser.___class).to.be.equal('Users')
-    expect(currentUser.objectId).to.be.equal(objectId)
-    expect(currentUser['user-token']).to.be.equal(userToken)
+    currentUser = await Backendless.UserService.getCurrentUser(true)
+    expect(currentUser.name).to.be.equal('foo')
+
+    currentUser = await Backendless.UserService.getCurrentUser(true)
+    expect(currentUser.name).to.be.equal('bar')
+  })
+
+  it('return saved current user', async () => {
+    await login()
+
+    prepareMockRequest({ objectId: '111', name: 'foo' })
+    prepareMockRequest({ objectId: '111', name: 'bar' })
+
+    currentUser = await Backendless.UserService.getCurrentUser()
+    expect(currentUser.name).to.be.equal('Bob Miller')
+
+    currentUser = await Backendless.UserService.getCurrentUser()
+    expect(currentUser.name).to.be.equal('Bob Miller')
   })
 
   it('gets the current user from the server by id', async () => {

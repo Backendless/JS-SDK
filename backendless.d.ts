@@ -297,7 +297,7 @@ declare module Backendless {
 
         function logout(): Promise<void>;
 
-        function getCurrentUser<T = Backendless.User>(): Promise<T>;
+        function getCurrentUser<T = Backendless.User>(reload?: boolean): Promise<T>;
 
         function setCurrentUser<T = Backendless.User>(user?: Object, stayLoggedIn?: boolean): T;
 
