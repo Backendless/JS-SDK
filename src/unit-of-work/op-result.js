@@ -52,6 +52,8 @@ export class OpResult {
 
   setOpResultId(opResultId) {
     this.opResultId = opResultId
+
+    return this
   }
 
   getOpResultId() {
