@@ -1434,7 +1434,7 @@ async function testBaseTransactions() {
     bool = changesObj instanceof Backendless.UnitOfWork.OpResultValueReference
 
     opResultId = opResult.getOpResultId()
-    opResult.setOpResultId(opResultId)
+    opResult = opResult.setOpResultId(opResultId)
 
     tableName = opResult.getTableName()
 

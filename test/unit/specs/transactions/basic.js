@@ -30,12 +30,6 @@ describe('<Transactions> Basic', function() {
     })
   })
 
-  it('has operation type', async () => {
-    const opResult = uow.create(PERSONS_TABLE_NAME, {})
-
-    expect(opResult.getType()).to.equal(opResult.operationType).to.equal('CREATE')
-  })
-
   it('returns UnitOfWorkResult', async () => {
     const results = {
       createPerson1: {
@@ -86,7 +80,7 @@ describe('<Transactions> Basic', function() {
     expect(uowResult.error.operation).to.equal(createOpResult)
   })
 
-  it('sets OpResultId', async () => {
+  it('runs with OpResultId', async () => {
     const req1 = prepareSuccessResponse()
 
     const createOpResult = uow.create(PERSONS_TABLE_NAME, { name: 'p-name' })

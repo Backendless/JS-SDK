@@ -1188,7 +1188,7 @@ declare module Backendless {
 
         getOpResultId(): string;
 
-        setOpResultId(opResultId: string): void;
+        setOpResultId(opResultId: string): this;
 
         resolveTo(index: number, property?: string): OpResultValueReference
         resolveTo(property: string): OpResultValueReference
