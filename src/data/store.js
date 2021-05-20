@@ -167,9 +167,9 @@ export default class DataStore {
       }
     }
 
-    return this.app.request.get({
-      url  : this.app.urls.dataTableCount(this.className),
-      query: { where: condition, distinct },
+    return this.app.request.post({
+      url : this.app.urls.dataTableCount(this.className),
+      data: { where: condition, distinct },
     })
   }
 
