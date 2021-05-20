@@ -525,10 +525,12 @@ describe('<Data> Find', function() {
       const result1 = await dataStore.getObjectCount()
 
       expect(req1).to.deep.include({
-        method : 'GET',
+        method : 'POST',
         path   : `${APP_PATH}/data/${tableName}/count`,
-        headers: {},
-        body   : undefined
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {}
       })
 
       expect(result1).to.be.equal(123)
@@ -540,10 +542,14 @@ describe('<Data> Find', function() {
       const result1 = await dataStore.getObjectCount('foo>123')
 
       expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/count?where=foo%3E123`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/count`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {
+          where: 'foo>123'
+        }
       })
 
       expect(result1).to.be.equal(123)
@@ -564,17 +570,23 @@ describe('<Data> Find', function() {
       const result2 = await dataStore.getObjectCount(query2)
 
       expect(req1).to.deep.include({
-        method : 'GET',
+        method : 'POST',
         path   : `${APP_PATH}/data/${tableName}/count`,
-        headers: {},
-        body   : undefined
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {}
       })
 
       expect(req2).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/count?where=foo%3E123`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/count`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {
+          where: 'foo>123'
+        }
       })
 
       expect(result1).to.be.equal(111)
@@ -603,24 +615,37 @@ describe('<Data> Find', function() {
       const result3 = await dataStore.getObjectCount(query3)
 
       expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/count?where=foo%3E123&distinct=true`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/count`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {
+          where   : 'foo>123',
+          distinct: true
+        }
       })
 
       expect(req2).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/count?where=bar%3E123`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/count`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {
+          where   : 'bar>123'
+        }
       })
 
       expect(req3).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/count?where=buz%3E123`,
-        headers: {},
-        body   : undefined
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/count`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {
+          where: 'buz>123'
+        }
       })
 
       expect(result1).to.be.equal(2)
