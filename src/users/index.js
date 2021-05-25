@@ -192,6 +192,25 @@ export default class Users {
     return false
   }
 
+  async verifyPassword(currentPassword) {
+    if (!currentPassword || typeof currentPassword !== 'string') {
+      throw new Error('Password has to be a non empty string')
+    }
+
+    if (!this.getCurrentUserToken()) {
+      throw new Error('In order to check password you have to be logged in')
+    }
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userVerifyPassowrd(),
+        data: {
+          password: currentPassword,
+        }
+      })
+      .then(result => !!(result && result.valid))
+  }
+
   async restorePassword(emailAddress) {
     if (!emailAddress || typeof emailAddress !== 'string') {
       throw new Error('Email Address must be provided and must be a string.')

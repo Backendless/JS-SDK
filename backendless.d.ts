@@ -345,6 +345,8 @@ declare module Backendless {
 
         function isValidLogin(): Promise<boolean>;
 
+        function verifyPassword(currentPassword: string): Promise<boolean>;
+
         function resendEmailConfirmation(identity: string | number): Promise<void>;
 
         function createEmailConfirmationURL(identity: string | number): Promise<object>;
@@ -1211,7 +1213,7 @@ declare module Backendless {
     class UnitOfWork {
 
         static IsolationLevelEnum: IsolationLevel
-        static OpResult:Function
+        static OpResult: Function
         static OpResultValueReference: Function
 
         static initFromJSON(data: object): UnitOfWork;

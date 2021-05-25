@@ -719,9 +719,10 @@ function testUserService() {
     let resultUndefined: null;
     let resultListOfString: string[];
     let resultListOfObjects: object[];
-    let promiseObject: Promise<Object>;
-    let promiseListOfString: Promise<Object>;
-    let promiseListOfObject: Promise<Object>;
+    let promiseObject: Promise<object>;
+    let promiseBool: Promise<boolean>;
+    let promiseListOfString: Promise<string[]>;
+    let promiseListOfObject: Promise<object[]>;
     let promiseVoid: Promise<void>;
     let promiseBLUser: Promise<Backendless.User>;
 
@@ -839,7 +840,9 @@ function testUserService() {
     promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
     promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
 
-    promiseObject = Backendless.UserService.isValidLogin();
+    promiseBool = Backendless.UserService.isValidLogin();
+
+    promiseBool = Backendless.UserService.verifyPassword('valid-password');
 
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
     promiseVoid = Backendless.UserService.resendEmailConfirmation(1234);
