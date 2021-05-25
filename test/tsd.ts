@@ -924,6 +924,8 @@ function testMessaging() {
 }
 
 function testFilesService() {
+    const fs = require('fs')
+
     const path: string = 'str';
     const fileName: string = 'str';
     const fileContent: Blob = new Blob();
@@ -943,6 +945,7 @@ function testFilesService() {
     const permissionType: string = 'str';
     const roleName: string = 'str';
     const countDirectories: boolean = true;
+    const readStream = fs.createReadStream('./test');
 
     let resultStr: string;
     let resultBool: boolean;
@@ -958,6 +961,8 @@ function testFilesService() {
 
     promiseObject = Backendless.Files.upload(file, path, overwrite);
     promiseObject = Backendless.Files.upload(file, path, null);
+
+    promiseObject = Backendless.Files.upload(readStream, path, null);
 
     promiseObject = Backendless.Files.listing(path);
     promiseObject = Backendless.Files.listing(path, pattern);
