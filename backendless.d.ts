@@ -436,8 +436,10 @@ declare module Backendless {
 
         function saveFile(path: string, fileName: string, fileContent: Blob | string, overwrite?: boolean): Promise<boolean>;
 
+        function upload(file: File, path: string, overwrite?: boolean): Promise<Object>;
+        function upload(fileURL: string, path: string, overwrite?: boolean): Promise<Object>;
         // @ts-ignore - file has to be an instance of File in browser env and an instance of ReadStream in nodejs env
-        function upload(file: File | ReadStream, path: string, overwrite?: boolean): Promise<Object>;
+        function upload(readStream: ReadStream, path: string, overwrite?: boolean): Promise<Object>;
 
         function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 

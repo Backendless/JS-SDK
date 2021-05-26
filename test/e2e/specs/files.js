@@ -314,6 +314,17 @@ describe('Backendless.Files', function() {
         //TODO: check file existence, try to re-upload
       }
     })
+
+    it('Uploads a file from URL', async () => {
+      const sourceURL = 'https://filesamples.com/samples/document/txt/sample2.txt'
+
+      const { fileURL } = await Files.upload(sourceURL, 'test-upload/test.txt', true)
+
+      const fileContent  = await Backendless.Request.get(sourceURL)
+
+      expect(fileURL).to.match(/\/files\/test-upload\/test.txt$/)
+      expect(fileContent).to.be.match(/^Aeque enim contingit omnibus fidibus, ut incontentae sint./)
+    })
   })
 
 })

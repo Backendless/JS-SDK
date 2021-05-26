@@ -41,12 +41,6 @@ export default class Files {
   }
 
   async upload(file, filePath, overwrite) {
-    let fileName = FilesUtils.getFileName(file)
-
-    if (!fileName) {
-      throw new Error('Wrong type of the file source object. Can not get file name')
-    }
-
     const query = {}
 
     if (typeof overwrite === 'boolean') {
@@ -54,6 +48,23 @@ export default class Files {
     }
 
     filePath = FilesUtils.preventSlashInPath(filePath)
+
+    if (typeof file === 'string') {
+      return this.app.request.post({
+        url  : `${this.app.urls.filePath(filePath)}`,
+        query: query,
+        data : {
+          url: file
+        },
+      })
+    }
+
+    let fileName = FilesUtils.getFileName(file)
+
+    if (!fileName) {
+      throw new Error('Wrong type of the file source object. Can not get file name')
+    }
+
     fileName = FilesUtils.sanitizeFileName(fileName)
 
     return this.app.request.post({
