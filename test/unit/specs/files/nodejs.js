@@ -17,7 +17,7 @@ describe('<Files> Nodejs', function() {
 
   describe('Upload', () => {
 
-    it('uploads a file', async () => {
+    it('uploads a file instance of ReadStream with name', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
 
       const fileStream = fs.createReadStream(sourceFilePath)
@@ -27,6 +27,23 @@ describe('<Files> Nodejs', function() {
       expect(req1).to.deep.include({
         method : 'POST',
         path   : `${APP_PATH}/files/test/path/${currentFileName}`,
+        headers: {},
+      })
+
+      // getBoundary is a method of FormData (nodejs) instance
+      expect(req1.body.getBoundary()).to.be.a('string')
+    })
+
+    it('uploads a file instance of ReadStream with name in path', async () => {
+      const req1 = prepareMockRequest({ resultFileURL })
+
+      const fileStream = fs.createReadStream(sourceFilePath)
+
+      await Backendless.Files.upload(fileStream, `${targetDirPath}/foo.png`)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/foo.png`,
         headers: {},
       })
 

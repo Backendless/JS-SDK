@@ -49,9 +49,18 @@ export default class Files {
 
     filePath = FilesUtils.preventSlashInPath(filePath)
 
+    const pathTokens = FilesUtils.parseFilePath(filePath)
+
+    let fileName
+
+    if (pathTokens.fileName) {
+      filePath = pathTokens.filePath
+      fileName = pathTokens.fileName
+    }
+
     if (typeof file === 'string') {
       return this.app.request.post({
-        url  : `${this.app.urls.filePath(filePath)}`,
+        url  : `${this.app.urls.filePath(filePath)}/${fileName}`,
         query: query,
         data : {
           url: file
@@ -59,7 +68,9 @@ export default class Files {
       })
     }
 
-    let fileName = FilesUtils.getFileName(file)
+    if (!fileName) {
+      fileName = FilesUtils.getFileName(file)
+    }
 
     if (!fileName) {
       throw new Error('Wrong type of the file source object. Can not get file name')
