@@ -2,6 +2,7 @@ import { performance } from 'perf_hooks'
 import Request from 'backendless-request'
 import RTClient from 'backendless-rt-client'
 
+import { it } from 'mocha'
 import chai from 'chai'
 import spies from 'chai-spies'
 
