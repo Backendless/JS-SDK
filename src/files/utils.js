@@ -4,7 +4,25 @@ const FilesUtils = {
   },
 
   preventSlashInPath(path) {
-    return (path && path.startsWith('/')) ? path.replace('/', '') : path
+    return (path && path.startsWith('/')) ? path.slice(1) : path
+  },
+
+  parseFilePath(path) {
+    const result = {
+      filePath: path,
+      fileName: null,
+    }
+
+    if (path) {
+      const tokens = path.split('/')
+
+      if (tokens[tokens.length - 1].includes('.')) {
+        result.fileName = tokens.pop()
+        result.filePath = tokens.join('/')
+      }
+    }
+
+    return result
   },
 
   sanitizeFileName(fileName) {
