@@ -67,16 +67,27 @@ describe('Namespace', function() {
       expect(Backendless.applicationId).to.be.equal(null)
       expect(Backendless.secretKey).to.be.equal(null)
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
-      expect(Backendless.appPath).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
+      expect(Backendless.apiURI).to.be.equal('/api')
     })
 
     it('should init with custom domain via config object', () => {
-      Backendless.initApp({ domain: CUSTOM_DOMAIN })
+      Backendless.initApp({ domain: CUSTOM_DOMAIN, secretKey:'XXX' })
 
       expect(Backendless.applicationId).to.be.equal(null)
       expect(Backendless.secretKey).to.be.equal(null)
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
-      expect(Backendless.appPath).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
+      expect(Backendless.apiURI).to.be.equal('/api')
+    })
+
+    it('should init with custom domain and apiURI', () => {
+      Backendless.apiURI = '/my-api-uri'
+      Backendless.initApp(CUSTOM_DOMAIN)
+
+      expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/my-api-uri`)
+      expect(Backendless.apiURI).to.be.equal('/my-api-uri')
     })
   })
 

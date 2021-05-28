@@ -7,7 +7,12 @@ function testMain() {
     const secretKey: string = Backendless.secretKey;
     const serverURL: string = Backendless.serverURL;
     const appPath: string = Backendless.appPath;
+    const domain: string = Backendless.domain;
+    const apiURI: string = Backendless.apiURI;
     const browser: { browser: string, version: string } = Backendless.browser;
+
+    Backendless.domain = domain;
+    Backendless.apiURI = apiURI;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
     Backendless.initApp({appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});

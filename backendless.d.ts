@@ -8,6 +8,8 @@ declare module Backendless {
     let applicationId: string;
     let secretKey: string;
     let appPath: string;
+    let domain: string;
+    let apiURI: string;
     let XMLHttpRequest: any;
 
     let browser: {

@@ -9,6 +9,7 @@ const DEFAULT_PROPS = {
   apiKey        : null,
   serverURL     : 'https://api.backendless.com',
   domain        : null,
+  apiURI        : '/api',
   debugMode     : false,
   standalone    : false,
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
@@ -211,10 +212,19 @@ class Backendless {
     this.__domain = domain
   }
 
+  ///--------apiURI-------///
+  get apiURI() {
+    return this.__apiURI
+  }
+
+  set apiURI(apiURI) {
+    this.__apiURI = apiURI
+  }
+
   ///--------appPath-------///
   get appPath() {
     if (this.domain) {
-      return this.domain
+      return this.domain + this.apiURI
     }
 
     return [this.serverURL, this.applicationId, this.secretKey].join('/')
