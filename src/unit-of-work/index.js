@@ -12,6 +12,12 @@ class TransactionOperationError extends Error {
     this.operation = operation
   }
 
+  toJSON() {
+    return {
+      message  : this.message,
+      operation: this.operation,
+    }
+  }
 }
 
 class UnitOfWorkResult {
