@@ -97,8 +97,16 @@ export default class Urls {
     return `${this.root()}/data`
   }
 
+  dataGrouping(className) {
+    return `${this.data()}/data-grouping/${className}`
+  }
+
   dataTable(tableName) {
     return `${this.data()}/${tableName}`
+  }
+
+  dataTableDeepSave(tableName) {
+    return `${this.data()}/${tableName}/deep-save`
   }
 
   dataTableFind(tableName) {
@@ -185,56 +193,6 @@ export default class Urls {
 
   emailTemplateSend() {
     return `${this.emailTemplate()}/send`
-  }
-
-  //geo
-
-  geo() {
-    return `${this.root()}/geo`
-  }
-
-  geoRelative() {
-    return `${this.geo()}/relative`
-  }
-
-  geoPoints() {
-    return `${this.geo()}/points`
-  }
-
-  geoPoint(pointId) {
-    return `${this.geoPoints()}/${pointId}`
-  }
-
-  geoPointMetaData(pointId) {
-    return `${this.geoPoint(pointId)}/metadata`
-  }
-
-  geoCategories() {
-    return `${this.geo()}/categories`
-  }
-
-  geoCategory(name) {
-    return `${this.geoCategories()}/${name}`
-  }
-
-  geoClusters() {
-    return `${this.geo()}/clusters`
-  }
-
-  geoClusterPoints(clusterId) {
-    return `${this.geoClusters()}/${clusterId}/points`
-  }
-
-  geoCount() {
-    return `${this.geo()}/count`
-  }
-
-  geoFences(geoFence) {
-    return `${this.geo()}/fences${(geoFence) ? '?geoFence=' + geoFence : ''}`
-  }
-
-  geoFence(action, geoFenceName) {
-    return `${this.geo()}/fence/${action}?geoFence=${geoFenceName}`
   }
 
   //commerce
@@ -328,8 +286,16 @@ export default class Urls {
     return `${this.users()}/isvalidusertoken/${token}`
   }
 
-  userResendConfirmation(email) {
-    return `${this.users()}/resendconfirmation/${email}`
+  userVerifyPassowrd() {
+    return `${this.users()}/verifypassowrd`
+  }
+
+  userResendConfirmation(identity) {
+    return `${this.users()}/resendconfirmation/${identity}`
+  }
+
+  userCreateConfirmationURL(identity) {
+    return `${this.users()}/createEmailConfirmationURL/${identity}`
   }
 
   userSocial() {
@@ -342,6 +308,10 @@ export default class Urls {
 
   userSocialLogin(socialType) {
     return `${this.userSocial()}/${socialType.toLowerCase()}/sdk/login`
+  }
+
+  userOAuthLogin(providerCode) {
+    return `${this.userSocial()}/${providerCode.toLowerCase()}/login`
   }
 
   guestLogin() {

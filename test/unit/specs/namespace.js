@@ -1,12 +1,19 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { APP_ID, API_KEY } from '../helpers/sandbox'
+import Backendless, { APP_ID, API_KEY, CUSTOM_DOMAIN } from '../helpers/sandbox'
 
 describe('Namespace', function() {
   this.timeout(2000)
 
   describe('Basic init', () => {
+
+    it('should default export for ES6', () => {
+      const Backendless_ES5 = require('../../../src')
+
+      expect(Backendless_ES5).to.be.equal(Backendless)
+      expect(Backendless_ES5.default).to.be.equal(Backendless)
+    })
 
     it('should change public app relevant variables in Backendless scope', () => {
       Backendless.initApp(APP_ID, API_KEY)
@@ -52,6 +59,38 @@ describe('Namespace', function() {
     })
   })
 
+  describe('Custom Domain', () => {
+
+    it('should init with custom domain', () => {
+      Backendless.initApp(CUSTOM_DOMAIN)
+
+      expect(Backendless.applicationId).to.be.equal(null)
+      expect(Backendless.secretKey).to.be.equal(null)
+      expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
+      expect(Backendless.apiURI).to.be.equal('/api')
+    })
+
+    it('should init with custom domain via config object', () => {
+      Backendless.initApp({ domain: CUSTOM_DOMAIN, secretKey:'XXX' })
+
+      expect(Backendless.applicationId).to.be.equal(null)
+      expect(Backendless.secretKey).to.be.equal(null)
+      expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
+      expect(Backendless.apiURI).to.be.equal('/api')
+    })
+
+    it('should init with custom domain and apiURI', () => {
+      Backendless.apiURI = '/my-api-uri'
+      Backendless.initApp(CUSTOM_DOMAIN)
+
+      expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
+      expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/my-api-uri`)
+      expect(Backendless.apiURI).to.be.equal('/my-api-uri')
+    })
+  })
+
   describe('Debug Mode', () => {
 
     it('should set debug mode', () => {
@@ -82,6 +121,19 @@ describe('Namespace', function() {
         }
       }
 
+      expect(Backendless.ServerCode.addService()).to.be.equal(true)
+    })
+
+    it('should not reset ServerCode on initApp', () => {
+      const ServerCode = Backendless.ServerCode = {
+        addService() {
+          return true
+        }
+      }
+
+      Backendless.initApp(APP_ID, API_KEY)
+
+      expect(Backendless.ServerCode).to.be.equal(ServerCode)
       expect(Backendless.ServerCode.addService()).to.be.equal(true)
     })
   })
@@ -247,12 +299,9 @@ describe('Namespace', function() {
 
   describe('Helpers', () => {
     it('has links to service classes', () => {
-      expect(Backendless.GeoQuery).to.equal(Backendless.Geo.Query)
-      expect(Backendless.GeoPoint).to.equal(Backendless.Geo.Point)
-      expect(Backendless.GeoCluster).to.equal(Backendless.Geo.Cluster)
-
       expect(Backendless.Persistence).to.equal(Backendless.Data)
       expect(Backendless.DataQueryBuilder).to.equal(Backendless.Data.QueryBuilder)
+      expect(Backendless.JSONUpdateBuilder).to.equal(Backendless.Data.JSONUpdateBuilder)
       expect(Backendless.LoadRelationsQueryBuilder).to.equal(Backendless.Data.LoadRelationsQueryBuilder)
 
       expect(Backendless.EmailEnvelope).to.equal(Backendless.Messaging.EmailEnvelope)
@@ -262,6 +311,7 @@ describe('Namespace', function() {
       expect(Backendless.PublishOptionsHeaders).to.equal(Backendless.Messaging.PublishOptionsHeaders)
 
       expect(Backendless.CustomServices).to.equal(Backendless.BL.CustomServices)
+      expect(Backendless.APIServices).to.equal(Backendless.CustomServices)
       expect(Backendless.Events).to.equal(Backendless.BL.Events)
     })
 

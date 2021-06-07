@@ -311,10 +311,10 @@ describe('Backendless.Users', function() {
       expect(testObj.ownerId).to.equal(user.objectId)
     })
 
-    it('login by user\'s objectId with BL API_KEY', async function() {
+    it('login by user\'s objectId with CloudCode API_KEY', async function() {
       const blBackendless = Backendless.initApp({
         appId     : app.id,
-        apiKey    : app.apiKeysMap.BL,
+        apiKey    : app.apiKeysMap.CloudCode,
         standalone: true
       })
 
@@ -327,7 +327,7 @@ describe('Backendless.Users', function() {
       expect(loggedUser.email).to.equal(savedUser.email)
     })
 
-    it('login by user\'s objectId with non BL API_KEY', async function() {
+    it('login by user\'s objectId with non CloudCode API_KEY', async function() {
       const savedUser = await Backendless.Data.of(Backendless.User).save(randUser())
 
       expect(savedUser.objectId).to.be.a('string')
@@ -480,7 +480,7 @@ describe('Backendless.Users', function() {
 
     describe('using servercode api key', function() {
       before(function() {
-        Backendless.initApp(this.app.id, this.app.apiKeysMap.BL)
+        Backendless.initApp(this.app.id, this.app.apiKeysMap.CloudCode)
       })
 
       it('assign/unassign custom role to a user', function() {
@@ -528,11 +528,11 @@ describe('Backendless.Users', function() {
     })
   })
 
-  it('toggle userStatus with BL API_KEY', async function() {
+  it('toggle userStatus with CloudCode API_KEY', async function() {
     let user
     const blBackendless = Backendless.initApp({
       appId     : app.id,
-      apiKey    : app.apiKeysMap.BL,
+      apiKey    : app.apiKeysMap.CloudCode,
       standalone: true
     })
 
@@ -551,7 +551,7 @@ describe('Backendless.Users', function() {
     expect(user.userStatus).to.equal('ENABLED')
   })
 
-  it('toggle userStatus with non BL API_KEY', async function() {
+  it('toggle userStatus with non CloudCode API_KEY', async function() {
     const user = await loginRandomUser()
 
     expect(Backendless.UserService.disableUser(user.objectId))
@@ -563,5 +563,103 @@ describe('Backendless.Users', function() {
       .to.eventually.be.rejected
       .and.eventually.have.property('code', 3054)
       .and.eventually.have.property('message', 'Operation allowed only for BL logic.')
+  })
+
+  it('resend email confirmation', async function() {
+    const user = randUser()
+
+    await this.consoleApi.users.updateUsersRegs(this.app.id, {
+      userRegistrationEnabled  : true,
+      emailConfirmationRequired: true
+    })
+
+    await Backendless.UserService.register(user)
+
+    const result = await Backendless.UserService.resendEmailConfirmation(user.email)
+
+    expect(result).to.be.empty
+  })
+
+  it('create email confirmation', async function() {
+    const user = randUser()
+
+    await Backendless.UserService.register(user)
+
+    const result = await Backendless.UserService.createEmailConfirmationURL(user.email)
+
+    expect(result.confirmationURL).to.be.a('string')
+    expect(result.confirmationURL.length).to.not.be.empty
+  })
+
+  describe('verify password of the current user', function() {
+    let user
+
+    beforeEach(async () => {
+      user = randUser()
+
+      await Backendless.UserService.logout()
+
+      Object.assign(user, await Backendless.UserService.register(randUser()))
+    })
+
+    it('works with CloudCode API_KEY only', async function() {
+      const blBackendless = Backendless.initApp({
+        appId     : app.id,
+        apiKey    : app.apiKeysMap.CloudCode,
+        standalone: true
+      })
+
+      await blBackendless.UserService.login(user.email, user.password)
+
+      const result1 = await blBackendless.UserService.verifyPassword(user.password)
+      const result2 = await blBackendless.UserService.verifyPassword('invalid password')
+
+      expect(result1).to.equal(true)
+      expect(result2).to.equal(false)
+    })
+
+    it('fails because is used non CloudCode API_KEY', async function() {
+      await Backendless.UserService.login(user.email, user.password)
+
+      let error
+
+      try {
+        await Backendless.UserService.verifyPassword(user.password)
+
+      } catch (e) {
+        error = e
+      }
+
+      expect(error).to.include({
+        code   : 3122,
+        message: 'Password verification allowed only from CloudCode',
+      })
+    })
+
+    it('fails when the current user has invalid token', async function() {
+      const blBackendless = Backendless.initApp({
+        appId     : app.id,
+        apiKey    : app.apiKeysMap.CloudCode,
+        standalone: true
+      })
+
+      await blBackendless.UserService.login(user.email, user.password)
+
+      await blBackendless.UserService.setCurrentUser({ ...user, 'user-token': 'invalid-token' }, true)
+
+      let error
+
+      try {
+        await blBackendless.UserService.verifyPassword(user.password)
+
+      } catch (e) {
+        error = e
+      }
+
+      expect(error).to.include({
+        code   : 3064,
+        message: 'Not existing user token - invalid-token. Relogin user to update your user token',
+      })
+    })
   })
 })

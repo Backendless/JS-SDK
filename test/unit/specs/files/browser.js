@@ -95,7 +95,7 @@ describe('<Files> Browser', function() {
 
   describe('Upload', () => {
 
-    it('uploads a file', async () => {
+    it('uploads a file instance of File with name', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
       const req2 = prepareMockRequest({ resultFileURL })
 
@@ -121,6 +121,90 @@ describe('<Files> Browser', function() {
 
       expect(req2.body).to.be.instanceof(FormData)
       expect(req2.body.get('file')).to.be.equal(file)
+    })
+
+    it('uploads a file instance of File without name', async () => {
+      const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
+
+      const file = new File(Buffer.from('test-content'), null)
+
+      await Backendless.Files.upload(file, `${filePath}/test-name.txt`)
+      await Backendless.Files.upload(file, `${filePathWithSlash}/test-name.txt`)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
+        headers: {},
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
+        headers: {},
+      })
+
+      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body.get('file')).to.be.equal(file)
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file')).to.be.equal(file)
+    })
+
+    it('uploads a file instance of File and name in path', async () => {
+      const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
+
+      const file = new File(Buffer.from('test-content'), 'file.jpg')
+
+      await Backendless.Files.upload(file, `${filePath}/test-name.txt`)
+      await Backendless.Files.upload(file, `${filePathWithSlash}/test-name.txt`)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
+        headers: {},
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
+        headers: {},
+      })
+
+      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body.get('file')).to.be.equal(file)
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file')).to.be.equal(file)
+    })
+
+    it('uploads a file instance of Blob without name', async () => {
+      const req1 = prepareMockRequest({ resultFileURL })
+      const req2 = prepareMockRequest({ resultFileURL })
+
+      const file = new Blob(Buffer.from('test-content'), { type: 'test-type' })
+
+      await Backendless.Files.upload(file, `${filePath}/test-name.txt`)
+      await Backendless.Files.upload(file, `${filePathWithSlash}/test-name.txt`)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
+        headers: {},
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/test-name.txt`,
+        headers: {},
+      })
+
+      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body.get('file').type).to.be.equal('test-type')
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file').type).to.be.equal('test-type')
     })
 
     it('uploads a file with path', async () => {
@@ -192,6 +276,36 @@ describe('<Files> Browser', function() {
 
       await expect(Backendless.Files.upload(file1)).to.eventually.be.rejectedWith(errorMsg)
     })
+
+    it('uploads a file from URL', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+      const req2 = prepareMockRequest({ fileURL: 'target-file-url-2' })
+
+      const result1 = await Backendless.Files.upload('source-file-url-1', '/folder1/file1.jpg')
+      const result2 = await Backendless.Files.upload('source-file-url-2', '/folder2/sub/file2.txt', true)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/folder1/file1.jpg`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-1',
+        }
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/folder2/sub/file2.txt?overwrite=true`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-2',
+        }
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+      expect(result2).to.be.eql({ fileURL: 'target-file-url-2' })
+    })
+
   })
 
 })

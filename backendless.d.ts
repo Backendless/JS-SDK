@@ -8,6 +8,8 @@ declare module Backendless {
     let applicationId: string;
     let secretKey: string;
     let appPath: string;
+    let domain: string;
+    let apiURI: string;
     let XMLHttpRequest: any;
 
     let browser: {
@@ -21,10 +23,11 @@ declare module Backendless {
     let PublishOptionsHeaders: { [key: string]: string; };
 
     interface InitAppConfig {
-        appId: string;
-        apiKey: string;
+        appId?: string;
+        apiKey?: string;
         standalone?: boolean;
         serverURL?: string;
+        domain?: string;
         debugMode?: boolean;
         XMLHttpRequest?: XMLHttpRequest,
     }
@@ -33,8 +36,9 @@ declare module Backendless {
      * @public
      * @type: Function
      **/
-    function initApp(appId: string, apiKey: string): void;
-    function initApp(config: InitAppConfig): void;
+    function initApp(appId: string, apiKey: string): Object;
+    function initApp(config: InitAppConfig): Object;
+    function initApp(domain: string): Object;
 
     /**
      * @public
@@ -253,6 +257,8 @@ declare module Backendless {
 
         function save(model: Backendless.DataStore | string, data: Object): Promise<Object>;
 
+        function deepSave(model: Backendless.DataStore | string, data: Object): Promise<Object>;
+
         function getView(viewName: string, whereClause?: string, pageSize?: number, offset?: number): Promise<Object>;
 
         function describe(model: string | Object | Function): Promise<Object>;
@@ -268,6 +274,8 @@ declare module Backendless {
     namespace UserService {
         let restUrl: string;
 
+        let currentUser: Backendless.User;
+
         function register(user: Backendless.User): Promise<Backendless.User>;
         function register<T>(user: T): Promise<T>;
 
@@ -281,8 +289,8 @@ declare module Backendless {
 
         function unassignRole(identity: string, roleName: string): Promise<void>;
 
-        function login(identity: string, password: string, stayLoggedIn?: boolean): Promise<Backendless.User>;
-        function login<T>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T = Backendless.User>(userId: string, stayLoggedIn?: boolean): Promise<T>;
+        function login<T = Backendless.User>(identity: string, password: string, stayLoggedIn?: boolean): Promise<T>;
 
         function loginAsGuest(stayLoggedIn?: boolean): Promise<Backendless.User>;
         function loginAsGuest<T>(stayLoggedIn?: boolean): Promise<T>;
@@ -291,8 +299,9 @@ declare module Backendless {
 
         function logout(): Promise<void>;
 
-        function getCurrentUser(): Promise<Backendless.User>;
-        function getCurrentUser<T>(): Promise<T>;
+        function getCurrentUser<T = Backendless.User>(reload?: boolean): Promise<T>;
+
+        function setCurrentUser<T = Backendless.User>(user?: Object, stayLoggedIn?: boolean): T;
 
         function update(user: Backendless.User): Promise<Backendless.User>;
         function update<T>(user: T): Promise<T>;
@@ -313,84 +322,40 @@ declare module Backendless {
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String, stayLoggedIn: boolean): Promise<T>;
         function loginWithGooglePlusSdk<T = Backendless.User>(accessToken: String): Promise<T>;
 
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, guestUser?: Backendless.User,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth2<T = Backendless.User>(
+            providerCode: String, accessToken: String, stayLoggedIn?: boolean
+        ): Promise<T>;
+
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String, guestUser?: Backendless.User,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String,
+            fieldsMapping?: object, stayLoggedIn?: boolean
+        ): Promise<T>;
+        function loginWithOauth1<T = Backendless.User>(
+            providerCode: String, accessToken: String, accessTokenSecret: String, stayLoggedIn?: boolean
+        ): Promise<T>;
+
         function isValidLogin(): Promise<boolean>;
 
-        function resendEmailConfirmation(email: string): Promise<void>;
+        function verifyPassword(currentPassword: string): Promise<boolean>;
+
+        function resendEmailConfirmation(identity: string | number): Promise<void>;
+
+        function createEmailConfirmationURL(identity: string | number): Promise<object>;
 
         function enableUser(userId: string): Promise<void>;
 
         function disableUser(userId: string): Promise<void>;
-    }
-
-    /**
-     * @public
-     * @deprecated
-     * @namespace Backendless.Geo
-     **/
-    namespace Geo {
-
-        /** @deprecated */
-        let restUrl: string;
-
-        /** @deprecated */
-        let UNITS: Object;
-
-        /** @deprecated */
-        let EARTH_RADIUS: number;
-
-        /** @deprecated */
-        function savePoint(point: Backendless.GeoPoint): Promise<Backendless.GeoPoint>;
-
-        /** @deprecated */
-        function find(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function getGeopointCount(fenceName: string, query: Backendless.GeoQueryI): Promise<number>
-
-        /** @deprecated */
-        function getGeopointCount(query: Backendless.GeoQueryI): Promise<number>
-
-        /** @deprecated */
-        function deletePoint(point: string | Backendless.GeoPoint): Promise<string>;
-
-        /** @deprecated */
-        function loadMetadata(point: Backendless.GeoPoint | Backendless.GeoCluster): Promise<Object>;
-
-        /** @deprecated */
-        function getClusterPoints(cluster: Backendless.GeoCluster): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function getFencePoints(fenceName: string, query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function relativeFind(query: Backendless.GeoQueryI): Promise<Array<Backendless.GeoPoint | Backendless.GeoCluster>>;
-
-        /** @deprecated */
-        function addCategory(name: string): Promise<Backendless.GeoCategoryI>;
-
-        /** @deprecated */
-        function deleteCategory(name: string): Promise<boolean>;
-
-        /** @deprecated */
-        function getCategories(): Promise<Array<Backendless.GeoCategoryI>>;
-
-        /** @deprecated */
-        function runOnStayAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        /** @deprecated */
-        function runOnExitAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        /** @deprecated */
-        function runOnEnterAction(fenceName: string, point: Backendless.GeoPoint): Promise<Object>;
-
-        /** @deprecated */
-        function startGeofenceMonitoringWithInAppCallback(fenceName: string, inAppCallback: Backendless.GeofenceMonitoringCallbacksI): Promise<void>;
-
-        /** @deprecated */
-        function startGeofenceMonitoringWithRemoteCallback(fenceName: string, point: Backendless.GeoPoint): Promise<void>;
-
-        /** @deprecated */
-        function stopGeofenceMonitoring(fenceName: string): void;
     }
 
     /**
@@ -405,7 +370,7 @@ declare module Backendless {
 
         function publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
-        function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<String>;
+        function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<object>;
 
         function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): Promise<object>;
 
@@ -473,9 +438,12 @@ declare module Backendless {
 
         let restUrl: string;
 
-        function saveFile(path: string, fileName: string, fileContent: Blob, overwrite?: boolean): Promise<boolean>;
+        function saveFile(path: string, fileName: string, fileContent: Blob | string, overwrite?: boolean): Promise<boolean>;
 
-        function upload(files: File | File[], path: string, overwrite?: boolean): Promise<void>;
+        function upload(file: File, path: string, overwrite?: boolean): Promise<Object>;
+        function upload(fileURL: string, path: string, overwrite?: boolean): Promise<Object>;
+        // @ts-ignore - file has to be an instance of File in browser env and an instance of ReadStream in nodejs env
+        function upload(readStream: ReadStream, path: string, overwrite?: boolean): Promise<Object>;
 
         function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 
@@ -604,6 +572,7 @@ declare module Backendless {
      * @namespace Backendless.CustomServices
      **/
     let CustomServices: Backendless.BL.CustomServicesI;
+    let APIServices: Backendless.BL.CustomServicesI;
 
     /**
      * @public
@@ -660,26 +629,34 @@ declare module Backendless {
         blUserLocale?: string;
     }
 
-    /**
-     * @private
-     * @class DataQuery
-     * @constructor
-     */
-    class DataQuery implements Backendless.DataQueryValueI {
-        properties: string[];
-        condition: string;
-        options: Object;
-        url: string;
+    interface DataQueryI {
+        pageSize?: number;
+        offset?: number;
 
-        addProperty(prop: string): void;
+        properties?: Array<string>;
+        excludeProps?: Array<string>;
 
-        setOption(name: string, value: string | Array<string> | number): void;
+        where?: string;
+        having?: string;
 
-        setOptions(options: Object): void;
+        sortBy?: Array<string>;
+        groupBy?: Array<string>;
 
-        getOption(name: string): string | Array<string> | number;
+        relations?: Array<string>;
+        relationsDepth?: number;
+        relationsPageSize?: number;
+    }
 
-        toJSON(): Object;
+    interface RelationsQueryI extends DataQueryI {
+        relationName: string;
+        relationModel?: Function;
+    }
+
+    interface GroupQueryI extends DataQueryI {
+        groupPageSize?: number;
+        recordsPageSize?: number;
+        groupDepth?: number;
+        groupPath?: Array<object>;
     }
 
     /**
@@ -746,7 +723,47 @@ declare module Backendless {
 
         setRelationsPageSize(relationsPageSize: number): this;
 
+        setDistinct(distinct: boolean): this;
+
+        getDistinct(): boolean;
+
         build(): Backendless.DataQueryValueI;
+
+        toJSON(): DataQueryI;
+    }
+
+    /**
+     * @public
+     * @class Backendless.JSONUpdateBuilder
+     * @constructor
+     */
+    class JSONUpdateBuilder {
+        static SET(): Backendless.JSONUpdateBuilder;
+
+        static INSERT(): Backendless.JSONUpdateBuilder;
+
+        static REPLACE(): Backendless.JSONUpdateBuilder;
+
+        static REMOVE(): Backendless.JSONRemoveBuilder;
+
+        static ARRAY_APPEND(): Backendless.JSONUpdateBuilder;
+
+        static ARRAY_INSERT(): Backendless.JSONUpdateBuilder;
+
+        addArgument(arg: string, argValue: any): Backendless.JSONUpdateBuilder;
+
+        create(): Object;
+
+        toJSON(): Object;
+    }
+
+    /**
+     * @private
+     * @class Backendless.JSONRemoveBuilder
+     * @constructor
+     */
+    class JSONRemoveBuilder extends JSONUpdateBuilder {
+        addArgument(arg: string): Backendless.JSONRemoveBuilder;
     }
 
     /**
@@ -761,54 +778,44 @@ declare module Backendless {
         static of(RelationModel: Object): Backendless.LoadRelationsQueryBuilder;
 
         setRelationModel(RelationModel: Object): this;
+
         getRelationModel(): Object;
 
         setRelationName(relationName: string): this;
+
         getRelationName(): string;
+
+        toJSON(): RelationsQueryI;
     }
 
     /**
      * @public
-     * @deprecated
-     * @class Backendless.GeoPoint
+     * @class Backendless.GroupQueryBuilder
      * @constructor
      */
-    class GeoPoint {
-        ___class: string;
-        objectId: string;
-        latitude: number;
-        longitude: number;
-        categories: string | string[];
-        metadata: Object;
-    }
 
-    /**
-     * @public
-     * @deprecated
-     * @class Backendless.GeoCluster
-     * @extends GeoPoint
-     * @constructor
-     */
-    class GeoCluster extends Backendless.GeoPoint {
-        totalPoints: number;
-        geoQuery: Backendless.GeoQuery | Backendless.RectangleGeoQueryI | Backendless.CircleGeoQueryI;
-    }
+    class GroupQueryBuilder extends DataQueryBuilder {
+        static create(): Backendless.GroupQueryBuilder;
 
-    /**
-     * @public
-     * @deprecated
-     * @class Backendless.GeoQuery
-     * @constructor
-     */
-    class GeoQuery implements Backendless.GeoQueryI {
-        categories: string | string[];
-        includeMetadata: boolean;
-        metadata: Object;
-        condition: string;
-        relativeFindMetadata: Object;
-        relativeFindPercentThreshold: number;
-        pageSize: number;
-        offset: number;
+        setGroupPageSize(groupPageSize: number): this;
+
+        getGroupPageSize(): number;
+
+        setRecordsPageSize(recordsPageSize: number): this;
+
+        getRecordsPageSize(): number;
+
+        setGroupDepth(groupDepth: number): this;
+
+        getGroupDepth(): number;
+
+        addGroupPath(groupPath: object): this;
+
+        setGroupPath(groupPath: object | Array<object>): this;
+
+        getGroupPath(): Array<object>;
+
+        toJSON(): GroupQueryI;
     }
 
     /**
@@ -923,6 +930,13 @@ declare module Backendless {
         count?: number;
     }
 
+    interface RTChangeRelationStatus {
+        parentObjectId: string;
+        isConditional: boolean;
+        whereClause?: string;
+        children?: string[];
+    }
+
     /**
      * @private
      * @class EventHandler
@@ -965,8 +979,6 @@ declare module Backendless {
 
         removeBulkCreateListeners(): Backendless.EventHandler;
 
-        removeBulkCreateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
-
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
         addBulkUpdateListener(callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
@@ -987,6 +999,37 @@ declare module Backendless {
 
         removeBulkDeleteListener(callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
 
+        addSetRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        addAddRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addAddRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        addDeleteRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, parents: Array<string> | Array<{ objectId: string, [key: string]: any }>, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addDeleteRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeSetRelationListener(relationColumnName: string, callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+        removeSetRelationListener(callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeSetRelationListeners(relationColumnName: string): Backendless.EventHandler;
+        removeSetRelationListeners(): Backendless.EventHandler;
+
+        removeAddRelationListener(callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeAddRelationListeners(relationColumnName: string): Backendless.EventHandler;
+        removeAddRelationListeners(): Backendless.EventHandler;
+
+        removeDeleteRelationListener(callback: (data: RTChangeRelationStatus) => void): Backendless.EventHandler;
+
+        removeDeleteRelationListeners(relationColumnName: string): Backendless.EventHandler;
+        removeDeleteRelationListeners(): Backendless.EventHandler;
+
         removeAllListeners(): Backendless.EventHandler;
     }
 
@@ -1002,43 +1045,41 @@ declare module Backendless {
 
         constructor(name: string | Object | Function, classToTableMap: Object);
 
-        save(obj: Object): Promise<Object>;
-        save<T>(obj: T): Promise<T>;
+        save<T = object>(obj: T | object): Promise<T>;
 
-        remove(id: Object | string): Promise<Object>;
+        deepSave<T = object>(obj: T | object): Promise<T>;
 
-        find(obj?: Backendless.DataQueryBuilder): Promise<Object[]>;
-        find<T>(obj?: Backendless.DataQueryBuilder): Promise<T[]>;
+        remove(id: object | string): Promise<object>;
 
-        findById(query: Object | string): Promise<Object>;
-        findById<T>(query: Object | string): Promise<T>;
+        find<T = object>(obj?: Backendless.DataQueryBuilder | DataQueryI): Promise<Array<T>>;
 
-        findFirst(query?: Object): Promise<Object>;
-        findFirst<T>(query?: Object): Promise<T>;
+        group<T = object>(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<Array<T>>;
 
-        findLast(query?: Object): Promise<Object>;
-        findLast<T>(query?: Object): Promise<T>;
+        countInGroup(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<number>;
 
-        loadRelations(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<Array<Object>>;
-        loadRelations<T>(parentObjectId: string, query: Backendless.LoadRelationsQueryBuilder): Promise<T[]>;
+        findById<T = object>(objectId: string, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
+        findById<T = object>(primaryKeys: object, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
+
+        findFirst<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
+
+        findLast<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
+
+        loadRelations<T = object>(parent: string | object, query: Backendless.LoadRelationsQueryBuilder | RelationsQueryI): Promise<Array<T>>;
 
         getObjectCount(query?: Backendless.DataQueryBuilder | string): Promise<number>
 
-        setRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        setRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        setRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        setRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        setRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        addRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        addRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        addRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        addRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        addRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        deleteRelation(parentObject: Object, columnName: string, childObjectsArray: Array<Object>): Promise<string>;
-        deleteRelation(parentObject: Object, columnName: string, childObjectIdArray: Array<string>): Promise<string>;
-        deleteRelation(parentObject: Object, columnName: string, whereClause: string): Promise<string>;
+        deleteRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
+        deleteRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
-        bulkCreate(objects: Array<Object>): Promise<Array<string>>;
+        bulkCreate(objects: Array<object>): Promise<Array<string>>;
 
-        bulkUpdate(whereClause: string, changes: Object): Promise<string>;
+        bulkUpdate(whereClause: string, changes: object): Promise<string>;
 
         bulkDelete(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): Promise<string>;
 
@@ -1077,25 +1118,6 @@ declare module Backendless {
         condition?: string;
         options?: Object;
         url?: string;
-    }
-
-    /** @deprecated */
-    interface GeoCategoryI {
-        objectId: string;
-        size: number;
-        name: string;
-    }
-
-    /** @deprecated */
-    interface GeofenceMonitoringCallbackI {
-        (geoFenceName: string, geoFenceId: string, latitude: number, longitude: number): void;
-    }
-
-    /** @deprecated */
-    interface GeofenceMonitoringCallbacksI {
-        onenter?: Backendless.GeofenceMonitoringCallbackI;
-        onstay?: Backendless.GeofenceMonitoringCallbackI;
-        onexit?: Backendless.GeofenceMonitoringCallbackI;
     }
 
     interface DataItemI {
@@ -1148,31 +1170,6 @@ declare module Backendless {
         send(type: string, command: Object): Promise<void>;
     }
 
-    /** @deprecated */
-    interface GeoQueryI {
-        categories?: string | string[];
-        includeMetadata?: boolean;
-        metadata?: Object;
-        condition?: string;
-        relativeFindMetadata?: Object;
-        relativeFindPercentThreshold?: number;
-        pageSize?: number;
-        offset?: number;
-    }
-
-    /** @deprecated */
-    interface RectangleGeoQueryI extends Backendless.GeoQueryI {
-        searchRectangle: number[];
-    }
-
-    /** @deprecated */
-    interface CircleGeoQueryI extends Backendless.GeoQueryI {
-        latitude: number;
-        longitude: number;
-        radius: number;
-        units: string;
-    }
-
     class TransactionOperationError extends Error {
         operation: OpResult;
     }
@@ -1198,7 +1195,7 @@ declare module Backendless {
 
         getOpResultId(): string;
 
-        setOpResultId(opResultId: string): void;
+        setOpResultId(opResultId: string): this;
 
         resolveTo(index: number, property?: string): OpResultValueReference
         resolveTo(property: string): OpResultValueReference
@@ -1211,7 +1208,21 @@ declare module Backendless {
         SERIALIZABLE
     }
 
+    interface IsolationLevel {
+        READ_UNCOMMITTED: IsolationLevelEnum,
+        READ_COMMITTED: IsolationLevelEnum,
+        REPEATABLE_READ: IsolationLevelEnum,
+        SERIALIZABLE: IsolationLevelEnum
+    }
+
     class UnitOfWork {
+
+        static IsolationLevelEnum: IsolationLevel
+        static OpResult: Function
+        static OpResultValueReference: Function
+
+        static initFromJSON(data: object): UnitOfWork;
+
         constructor(isolation?: IsolationLevelEnum);
 
         find(tableName: string, dataQueryBuilder: DataQueryBuilder): OpResult;
@@ -1233,7 +1244,6 @@ declare module Backendless {
         bulkCreate(tableName: string, objects: object[]): OpResult;
         bulkCreate(objects: object[]): OpResult;
 
-        bulkUpdate(whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;
         bulkUpdate(tableName: string, objects: object[], changes: object): OpResult;

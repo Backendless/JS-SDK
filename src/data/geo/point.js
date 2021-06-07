@@ -10,6 +10,22 @@ export default class Point extends Geometry {
     super(srs)
   }
 
+  set lng(x){
+    this.setLongitude(x)
+  }
+
+  set lat(y){
+    this.setLatitude(y)
+  }
+
+  get lng(){
+    return this.getLongitude()
+  }
+
+  get lat(){
+    return this.getLatitude()
+  }
+
   getX() {
     return this.x
   }

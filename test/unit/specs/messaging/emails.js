@@ -17,7 +17,7 @@ describe('<Messaging> Emails', function() {
   const fakeResult = { foo: 123 }
 
   it('sends an email with "textmessage"', async () => {
-    const req1 = prepareMockRequest({ status: fakeResult })
+    const req1 = prepareMockRequest({ fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { textmessage }, recipients)
 
@@ -32,11 +32,11 @@ describe('<Messaging> Emails', function() {
       }
     })
 
-    expect(result1).to.be.eql(fakeResult)
+    expect(result1).to.be.eql({ fakeResult })
   })
 
   it('sends an email with "htmlmessage"', async () => {
-    const req1 = prepareMockRequest({ status: fakeResult })
+    const req1 = prepareMockRequest({ fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { htmlmessage }, recipients)
 
@@ -51,12 +51,12 @@ describe('<Messaging> Emails', function() {
       }
     })
 
-    expect(result1).to.be.eql(fakeResult)
+    expect(result1).to.be.eql({ fakeResult })
   })
 
   it('sends an email with "bodyParts" instance', async () => {
-    const req1 = prepareMockRequest({ status: fakeResult })
-    const req2 = prepareMockRequest({ status: fakeResult })
+    const req1 = prepareMockRequest({ fakeResult })
+    const req2 = prepareMockRequest({ fakeResult })
 
     const bodyPartsInstance1 = new Backendless.Bodyparts({ textmessage, htmlmessage })
 
@@ -89,12 +89,12 @@ describe('<Messaging> Emails', function() {
       }
     })
 
-    expect(result1).to.be.eql(fakeResult)
-    expect(result2).to.be.eql(fakeResult)
+    expect(result1).to.be.eql({ fakeResult })
+    expect(result2).to.be.eql({ fakeResult })
   })
 
   it('sends an email with any "bodyParts"', async () => {
-    const req1 = prepareMockRequest({ status: fakeResult })
+    const req1 = prepareMockRequest({ fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { textmessage, htmlmessage, foo: 123 }, recipients)
 
@@ -109,11 +109,11 @@ describe('<Messaging> Emails', function() {
       }
     })
 
-    expect(result1).to.be.eql(fakeResult)
+    expect(result1).to.be.eql({ fakeResult })
   })
 
   it('sends an email with "attachments"', async () => {
-    const req1 = prepareMockRequest({ status: fakeResult })
+    const req1 = prepareMockRequest({ fakeResult })
 
     const result1 = await Backendless.Messaging.sendEmail(subject, { textmessage }, recipients, attachment)
 
@@ -129,12 +129,12 @@ describe('<Messaging> Emails', function() {
       }
     })
 
-    expect(result1).to.be.eql(fakeResult)
+    expect(result1).to.be.eql({ fakeResult })
   })
 
   it('sends an email without "attachments"', async () => {
     const check = async attachments => {
-      const req1 = prepareMockRequest({ status: fakeResult })
+      const req1 = prepareMockRequest({ fakeResult })
 
       await Backendless.Messaging.sendEmail(subject, { textmessage }, recipients, attachments)
 
@@ -300,6 +300,23 @@ describe('<Messaging> Emails', function() {
         addresses   : ['test-address'],
         ccAddresses : ['test-ccAddress'],
         bccAddresses: ['test-bccAddress'],
+        query       : 'foo>123',
+        foo         : 123
+      })
+
+      expect(emailEnvelope.toJSON()).to.be.eql({
+        'addresses'    : ['test-address'],
+        'bcc-addresses': ['test-bccAddress'],
+        'cc-addresses' : ['test-ccAddress'],
+        criteria       : 'foo>123',
+      })
+    })
+
+    it('initial create with options without an array', async () => {
+      emailEnvelope = Backendless.EmailEnvelope.create({
+        addresses   : 'test-address',
+        ccAddresses : 'test-ccAddress',
+        bccAddresses: 'test-bccAddress',
         query       : 'foo>123',
         foo         : 123
       })

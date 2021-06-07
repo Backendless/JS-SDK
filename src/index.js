@@ -8,13 +8,16 @@ const DEFAULT_PROPS = {
   appId         : null,
   apiKey        : null,
   serverURL     : 'https://api.backendless.com',
+  domain        : null,
+  apiURI        : '/api',
   debugMode     : false,
   standalone    : false,
-  ServerCode    : null,
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
     ? XMLHttpRequest
     : undefined,
 }
+
+const STATELESS_PROPS = ['appId', 'apiKey', 'domain']
 
 const root = (
   (typeof self === 'object' && self.self === self && self) ||
@@ -32,27 +35,19 @@ const showLegacyDataWarning = () => {
   }
 }
 
-const showLegacyGEOWarning = () => {
-  if (!showLegacyGEOWarning.isShown) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Legacy GEO API are deprecated and will be removed in the nearest release. ' +
-      'Please use Spatial Data Types [POINT,LINESTRING,POLYGON]. ' +
-      'See more details here: https://backendless.com/docs/js/data_spatial_overview.html '
-    )
-
-    showLegacyGEOWarning.isShown = true
-  }
-}
-
-// Backendless supports two signatures for the initApp method
+// Backendless supports three signatures for the initApp method
 // two args - applicationId {String} and secretKey {String}
-// or one argument - whole set of options {Object}
+// one argument - domain {String}
+// one argument - whole set of options {Object}
 const parseInitConfig = (...args) => {
   const [appId, apiKey] = args
 
   if (appId && typeof appId === 'object') {
     return appId
+  }
+
+  if (typeof appId === 'string' && !apiKey) {
+    return { domain: appId }
   }
 
   return {
@@ -68,7 +63,6 @@ const SERVICES = {
   'Commerce'    : () => require('./commerce').default,
   'Users'       : () => require('./users').default,
   'BL'          : () => require('./bl').default,
-  'Geo'         : () => require('./geo').default,
   'Data'        : () => require('./data').default,
   'Messaging'   : () => require('./messaging').default,
   'Files'       : () => require('./files').default,
@@ -96,6 +90,10 @@ class Backendless {
       if (DEFAULT_PROPS.hasOwnProperty(key)) {
         const privateKey = `__${key}`
 
+        if (STATELESS_PROPS.includes(key)) {
+          delete this[privateKey]
+        }
+
         const defaultValue = this[privateKey] === undefined
           ? DEFAULT_PROPS[key]
           : this[privateKey]
@@ -108,7 +106,7 @@ class Backendless {
   }
 
   /**
-   * @param {string|Object} appId|config
+   * @param {string|Object} appId|domain|config
    * @param {string} [secretKey]
    * @returns {Backendless}
    */
@@ -127,10 +125,6 @@ class Backendless {
 
     if (app.__hasService('Logging')) {
       app.Logging.reset()
-    }
-
-    if (app.__hasService('Geo')) {
-      app.Geo.resetGeofenceMonitoring()
     }
 
     if (app.__hasService('Users')) {
@@ -209,8 +203,30 @@ class Backendless {
     this.__serverURL = serverURL
   }
 
+  ///--------domain-------///
+  get domain() {
+    return this.__domain
+  }
+
+  set domain(domain) {
+    this.__domain = domain
+  }
+
+  ///--------apiURI-------///
+  get apiURI() {
+    return this.__apiURI
+  }
+
+  set apiURI(apiURI) {
+    this.__apiURI = apiURI
+  }
+
   ///--------appPath-------///
   get appPath() {
+    if (this.domain) {
+      return this.domain + this.apiURI
+    }
+
     return [this.serverURL, this.applicationId, this.secretKey].join('/')
   }
 
@@ -245,15 +261,6 @@ class Backendless {
 
   set XMLHttpRequest(XMLHttpRequest) {
     this.__XMLHttpRequest = XMLHttpRequest
-  }
-
-  ///--------ServerCode-------///
-  get ServerCode() {
-    return this.__ServerCode
-  }
-
-  set ServerCode(ServerCode) {
-    this.__ServerCode = ServerCode
   }
 
   ///--------device-------///
@@ -343,12 +350,12 @@ class Backendless {
     return this.BL.CustomServices
   }
 
-  get Events() {
-    return this.BL.Events
+  get APIServices() {
+    return this.BL.CustomServices
   }
 
-  get Geo() {
-    return this.__getService('Geo')
+  get Events() {
+    return this.BL.Events
   }
 
   get Data() {
@@ -395,27 +402,6 @@ class Backendless {
   //TODO: do we need to remove it?
 
   /** @deprecated */
-  get GeoQuery() {
-    showLegacyGEOWarning()
-
-    return this.Geo.Query
-  }
-
-  /** @deprecated */
-  get GeoPoint() {
-    showLegacyGEOWarning()
-
-    return this.Geo.Point
-  }
-
-  /** @deprecated */
-  get GeoCluster() {
-    showLegacyGEOWarning()
-
-    return this.Geo.Cluster
-  }
-
-  /** @deprecated */
   get Persistence() {
     showLegacyDataWarning()
 
@@ -424,6 +410,14 @@ class Backendless {
 
   get DataQueryBuilder() {
     return this.Data.QueryBuilder
+  }
+
+  get GroupQueryBuilder() {
+    return this.Data.GroupQueryBuilder
+  }
+
+  get JSONUpdateBuilder() {
+    return this.Data.JSONUpdateBuilder
   }
 
   get LoadRelationsQueryBuilder() {
@@ -460,6 +454,7 @@ if (root) {
   root.Backendless = backendless
 }
 
+exports = module.exports = backendless
+
 export default backendless
 
-module.exports = backendless

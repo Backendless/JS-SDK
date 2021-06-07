@@ -7,10 +7,25 @@ function testMain() {
     const secretKey: string = Backendless.secretKey;
     const serverURL: string = Backendless.serverURL;
     const appPath: string = Backendless.appPath;
+    const domain: string = Backendless.domain;
+    const apiURI: string = Backendless.apiURI;
     const browser: { browser: string, version: string } = Backendless.browser;
+
+    Backendless.domain = domain;
+    Backendless.apiURI = apiURI;
 
     Backendless.initApp('APPLICATION_ID', 'JS_SECRET_KEY');
     Backendless.initApp({appId: 'APPLICATION_ID', apiKey: 'JS_SECRET_KEY'});
+    Backendless.initApp({
+        appId: 'APPLICATION_ID',
+        apiKey: 'JS_SECRET_KEY',
+        standalone: true,
+        debugMode: true,
+        serverURL: 'serverURL'
+    });
+
+    Backendless.initApp('https://my-custom-domain.com')
+    Backendless.initApp({ domain: 'https://my-custom-domain.com', standalone: true })
 }
 
 function testLocalCache() {
@@ -36,17 +51,6 @@ function testLocalCache() {
     const result13: number = Backendless.LocalCache.get<number>(key);
     const result14: object = Backendless.LocalCache.get<object>(key);
     const result15: string[] = Backendless.LocalCache.get<string[]>(key);
-}
-
-function testDataQueryClass() {
-    const dataQuery: Backendless.DataQuery = new Backendless.DataQuery();
-    const properties: string[] = dataQuery.properties;
-    const condition: string = dataQuery.condition;
-    const options: Object = dataQuery.options;
-    const url: string = dataQuery.url;
-    const str: string = 'str';
-
-    dataQuery.addProperty(str);
 }
 
 function testDataQueryBuilderClass() {
@@ -115,6 +119,109 @@ function testDataQueryBuilderClass() {
     num = dataQuery.getRelationsPageSize();
 
     const query: Backendless.DataQueryValueI = dataQuery.build();
+}
+
+
+function testDataJSONUpdateBuilder() {
+    const JSONUpdateBuilder = Backendless.JSONUpdateBuilder
+
+    let baseBuilder: Backendless.JSONUpdateBuilder
+    let removeBuilder: Backendless.JSONRemoveBuilder
+
+    class Person {
+    }
+
+    const prop: string = 'prop'
+    const person: Person = new Person()
+    const date: Date = new Date()
+
+    let obj: object
+
+    baseBuilder = JSONUpdateBuilder.SET()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = JSONUpdateBuilder.INSERT()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = JSONUpdateBuilder.REPLACE()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    removeBuilder = JSONUpdateBuilder.REMOVE()
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+        .addArgument(prop)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = removeBuilder
+
+    baseBuilder = JSONUpdateBuilder.ARRAY_APPEND()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
+
+    baseBuilder = JSONUpdateBuilder.ARRAY_INSERT()
+        .addArgument(prop, 'str')
+        .addArgument(prop, 123)
+        .addArgument(prop, null)
+        .addArgument(prop, true)
+        .addArgument(prop, false)
+        .addArgument(prop, {})
+        .addArgument(prop, [])
+        .addArgument(prop, person)
+        .addArgument(prop, date)
+
+    obj = baseBuilder.toJSON()
+    obj = baseBuilder.create()
 }
 
 function testLoadRelationsQueryBuilder() {
@@ -198,6 +305,99 @@ function testLoadRelationsQueryBuilder() {
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.prepareNextPage();
 }
 
+function testGroupQueryBuilder() {
+    let str: string = 'str';
+    let num: number = 123;
+    let strs: string[] = ['abc', 'foo', 'bar']
+    let obj: object = {}
+    let objs: object[] = [{}, {}, {}]
+
+    let groupQueryBuilder: Backendless.GroupQueryBuilder;
+    groupQueryBuilder = Backendless.GroupQueryBuilder.create();
+
+    groupQueryBuilder = groupQueryBuilder.setPageSize(num);
+    num = groupQueryBuilder.getPageSize();
+
+    groupQueryBuilder = groupQueryBuilder.setOffset(num);
+    num = groupQueryBuilder.getOffset();
+
+    groupQueryBuilder = groupQueryBuilder.prepareNextPage();
+    groupQueryBuilder = groupQueryBuilder.preparePreviousPage();
+
+    groupQueryBuilder = groupQueryBuilder.setWhereClause(str);
+    str = groupQueryBuilder.getWhereClause();
+
+    groupQueryBuilder = groupQueryBuilder.setProperties('abc');
+    groupQueryBuilder = groupQueryBuilder.setProperties(['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.addProperty(str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(str, str, str, str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.addProperties(['abc', 'abc', 'abc'], str, str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(str);
+    groupQueryBuilder = groupQueryBuilder.addProperties(['abc', 'abc', 'abc']);
+
+    strs = groupQueryBuilder.getProperties();
+
+    groupQueryBuilder = groupQueryBuilder.addAllProperties();
+
+    groupQueryBuilder = groupQueryBuilder.excludeProperty(str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties('abc');
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(str, str, str, str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc'], ['abc', 'abc', 'abc'], ['abc', 'abc', 'abc']);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc'], str, str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(str);
+    groupQueryBuilder = groupQueryBuilder.excludeProperties(['abc', 'abc', 'abc']);
+
+    groupQueryBuilder = groupQueryBuilder.setSortBy(str);
+    groupQueryBuilder = groupQueryBuilder.setSortBy(strs);
+    strs = groupQueryBuilder.getSortBy();
+
+    groupQueryBuilder = groupQueryBuilder.setGroupBy(str);
+    groupQueryBuilder = groupQueryBuilder.setGroupBy(strs);
+    strs = groupQueryBuilder.getGroupBy();
+
+    groupQueryBuilder = groupQueryBuilder.setRelated(str);
+    groupQueryBuilder = groupQueryBuilder.setRelated(strs);
+    groupQueryBuilder = groupQueryBuilder.addRelated(str);
+    groupQueryBuilder = groupQueryBuilder.addRelated(strs);
+    strs = groupQueryBuilder.getRelated();
+
+    groupQueryBuilder = groupQueryBuilder.setRelationsDepth(num);
+    num = groupQueryBuilder.getRelationsDepth();
+
+    groupQueryBuilder = groupQueryBuilder.setRelationsPageSize(num);
+    num = groupQueryBuilder.getRelationsPageSize();
+
+    groupQueryBuilder = groupQueryBuilder.setGroupPageSize(num)
+    num = groupQueryBuilder.getGroupPageSize()
+
+    groupQueryBuilder = groupQueryBuilder.setRecordsPageSize(num)
+    num = groupQueryBuilder.getRecordsPageSize()
+
+    groupQueryBuilder = groupQueryBuilder.setGroupDepth(num)
+    num = groupQueryBuilder.getGroupDepth()
+
+    groupQueryBuilder = groupQueryBuilder.setGroupPath(obj)
+    groupQueryBuilder = groupQueryBuilder.setGroupPath(objs)
+    objs = groupQueryBuilder.getGroupPath()
+
+    groupQueryBuilder.setRelated('relationColumn');
+    groupQueryBuilder.setOffset(50);
+    groupQueryBuilder.setPageSize(50);
+    groupQueryBuilder.setSortBy('columnName');
+    groupQueryBuilder.setSortBy(['columnName']);
+    groupQueryBuilder.setProperties('columnName');
+    groupQueryBuilder.setProperties(['columnName']);
+
+    const properties: Array<string> = groupQueryBuilder.getProperties();
+    const sortBy: Array<string> = groupQueryBuilder.getSortBy();
+    const whereClause: string = groupQueryBuilder.getWhereClause();
+
+    groupQueryBuilder = groupQueryBuilder.preparePreviousPage();
+    groupQueryBuilder = groupQueryBuilder.prepareNextPage();
+}
+
 function testDataStoreClass() {
     const item: Object = {};
     const dataStore: Backendless.DataStore = Backendless.Data.of('str');
@@ -233,25 +433,60 @@ function testDataStoreClass() {
     promiseObject = dataStore.save(item);
     promisePerson = dataStore.save<Person>(person);
 
+    promiseObject = dataStore.deepSave(item);
+    promisePerson = dataStore.deepSave<Person>(person);
+
     promiseObject = dataStore.remove('str');
     promiseObject = dataStore.remove(item);
 
-    promiseObject = dataStore.find(dataQueryBuilder);
     promiseObject = dataStore.find();
+    promiseObject = dataStore.find(dataQueryBuilder);
+    promiseObject = dataStore.find({pageSize: 123, offset: 0});
+
     promisePersons = dataStore.find<Person>();
+    promisePersons = dataStore.find<Person>(dataQueryBuilder);
+    promisePersons = dataStore.find<Person>({pageSize: 123, offset: 0});
 
     promiseObject = dataStore.findById('myId');
+    promiseObject = dataStore.findById('myId', dataQueryBuilder);
+    promiseObject = dataStore.findById('myId', {pageSize: 123});
+    promiseObject = dataStore.findById({foo: 'myId'});
+    promiseObject = dataStore.findById({foo: 'myId'}, dataQueryBuilder);
+    promiseObject = dataStore.findById({foo: 'myId'}, {pageSize: 123});
+
     promisePerson = dataStore.findById<Person>('myId');
+    promisePerson = dataStore.findById<Person>('myId', dataQueryBuilder);
+    promisePerson = dataStore.findById<Person>('myId', {pageSize: 123});
+    promisePerson = dataStore.findById<Person>({foo: 'myId'});
+    promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
+    promisePerson = dataStore.findById<Person>({foo: 'myId'}, {pageSize: 123});
 
     promiseObject = dataStore.findFirst();
+    promiseObject = dataStore.findFirst(dataQueryBuilder);
+    promiseObject = dataStore.findFirst({pageSize: 123});
+
     promisePerson = dataStore.findFirst<Person>();
+    promisePerson = dataStore.findFirst<Person>(dataQueryBuilder);
+    promisePerson = dataStore.findFirst<Person>({pageSize: 123});
 
     promiseObject = dataStore.findLast();
+    promiseObject = dataStore.findLast(dataQueryBuilder);
+    promiseObject = dataStore.findLast({pageSize: 123});
+
     promisePerson = dataStore.findLast<Person>();
+    promisePerson = dataStore.findLast<Person>(dataQueryBuilder);
+    promisePerson = dataStore.findLast<Person>({pageSize: 123});
 
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
+    promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1'});
+    promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1', relationModel: Person});
+
+    promisePersons = dataStore.loadRelations<Person>(parentTableName, loadRelationsQueryBuilder);
+    promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1'});
+    promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1', relationModel: Person});
 
     promiseNum = dataStore.getObjectCount();
+    promiseNum = dataStore.getObjectCount('foo=123');
     promiseNum = dataStore.getObjectCount(dataQueryBuilder);
 
 }
@@ -264,6 +499,9 @@ function testPersistence() {
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
+
+    promiseObject = Backendless.Data.deepSave('model', {});
+    promiseObject = Backendless.Data.deepSave(dataStore, {});
 
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
@@ -370,6 +608,9 @@ function testData() {
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
 
+    promiseObject = Backendless.Data.deepSave('model', {});
+    promiseObject = Backendless.Data.deepSave(dataStore, {});
+
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123, 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause', 123);
     promiseObject = Backendless.Data.getView('viewName', 'whereClause');
@@ -472,26 +713,36 @@ function testUserService() {
     const roleName: string = 'rolename';
     const password: string = 'password';
     const userId: string = 'userId';
+    const stayLoggedIn: boolean = true;
+    const reload: boolean = true;
     const div: HTMLElement = document.createElement('div');
-    let bol: boolean = true;
     let newUser: Backendless.User = new Backendless.User();
+    let guestUser: Backendless.User = new Backendless.User();
     let resultObj: Object;
     let resultVoid: void;
+    let resultNull: null;
+    let resultUndefined: null;
     let resultListOfString: string[];
     let resultListOfObjects: object[];
-    let promiseObject: Promise<Object>;
-    let promiseListOfString: Promise<Object>;
-    let promiseListOfObject: Promise<Object>;
+    let promiseObject: Promise<object>;
+    let promiseBool: Promise<boolean>;
+    let promiseListOfString: Promise<string[]>;
+    let promiseListOfObject: Promise<object[]>;
     let promiseVoid: Promise<void>;
     let promiseBLUser: Promise<Backendless.User>;
 
     class CustomUser {
     }
 
+    let customUser = new CustomUser()
     let promiseCustomUser: Promise<CustomUser>;
 
     const restUrl: string = Backendless.UserService.restUrl;
     const loggedInUser: boolean = Backendless.UserService.loggedInUser();
+
+    newUser = Backendless.UserService.currentUser
+    customUser = Backendless.UserService.currentUser
+    guestUser = Backendless.UserService.currentUser
 
     promiseVoid = Backendless.UserService.restorePassword('email');
 
@@ -503,165 +754,110 @@ function testUserService() {
 
     promiseVoid = Backendless.UserService.unassignRole(identity, roleName);
 
+    promiseObject = Backendless.UserService.login(userId);
+    promiseObject = Backendless.UserService.login(userId, stayLoggedIn);
+
     promiseObject = Backendless.UserService.login(userName, password);
-    promiseObject = Backendless.UserService.login(userName, password, bol);
+    promiseObject = Backendless.UserService.login(userName, password, stayLoggedIn);
 
     promiseObject = Backendless.UserService.loginAsGuest();
-    promiseObject = Backendless.UserService.loginAsGuest(bol);
+    promiseObject = Backendless.UserService.loginAsGuest(stayLoggedIn);
 
     promiseListOfObject = Backendless.UserService.describeUserClass();
 
     promiseVoid = Backendless.UserService.logout();
 
     promiseObject = Backendless.UserService.getCurrentUser();
+    promiseObject = Backendless.UserService.getCurrentUser(reload);
+    promiseCustomUser = Backendless.UserService.getCurrentUser<CustomUser>();
+    promiseCustomUser = Backendless.UserService.getCurrentUser<CustomUser>(reload);
+
+    newUser = Backendless.UserService.setCurrentUser({});
+    newUser = Backendless.UserService.setCurrentUser(customUser);
+    newUser = Backendless.UserService.setCurrentUser(newUser);
+    newUser = Backendless.UserService.setCurrentUser(newUser, stayLoggedIn);
+
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>({});
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>(customUser);
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>(newUser);
+    customUser = Backendless.UserService.setCurrentUser<CustomUser>(newUser, stayLoggedIn);
 
     promiseObject = Backendless.UserService.update(newUser);
 
     promiseVoid = Backendless.UserService.loginWithFacebook();
     promiseVoid = Backendless.UserService.loginWithFacebook({});
     promiseVoid = Backendless.UserService.loginWithFacebook({}, {});
-    promiseVoid = Backendless.UserService.loginWithFacebook({}, {}, true);
-    promiseVoid = Backendless.UserService.loginWithFacebook({}, null, true);
-    promiseVoid = Backendless.UserService.loginWithFacebook(null, null, true);
+    promiseVoid = Backendless.UserService.loginWithFacebook({}, {}, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithFacebook({}, null, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithFacebook(null, null, stayLoggedIn);
 
     promiseVoid = Backendless.UserService.loginWithGooglePlus();
     promiseVoid = Backendless.UserService.loginWithGooglePlus({});
     promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {});
     promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'));
-    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), true);
-    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, null, true);
-    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, null, null, true);
-    promiseVoid = Backendless.UserService.loginWithGooglePlus(null, null, null, true);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, document.createElement('div'), stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, {}, null, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus({}, null, null, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithGooglePlus(null, null, null, stayLoggedIn);
 
     promiseVoid = Backendless.UserService.loginWithTwitter();
     promiseVoid = Backendless.UserService.loginWithTwitter({});
-    promiseVoid = Backendless.UserService.loginWithTwitter({}, true);
-    promiseVoid = Backendless.UserService.loginWithTwitter(null, true);
+    promiseVoid = Backendless.UserService.loginWithTwitter({}, stayLoggedIn);
+    promiseVoid = Backendless.UserService.loginWithTwitter(null, stayLoggedIn);
 
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk('accessToken', {}, stayLoggedIn);
     promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithFacebookSdk<Backendless.User>('accessToken', {}, stayLoggedIn);
     promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {});
-    promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {}, true);
+    promiseCustomUser = Backendless.UserService.loginWithFacebookSdk<CustomUser>('accessToken', {}, stayLoggedIn);
 
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk('accessToken', {}, stayLoggedIn);
     promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {});
-    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {}, true);
+    promiseBLUser = Backendless.UserService.loginWithGooglePlusSdk<Backendless.User>('accessToken', {}, stayLoggedIn);
     promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {});
-    promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, true);
+    promiseCustomUser = Backendless.UserService.loginWithGooglePlusSdk<CustomUser>('accessToken', {}, stayLoggedIn);
 
-    promiseObject = Backendless.UserService.isValidLogin();
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken');
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth2<Backendless.User>('facebook', 'accessToken', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth2<Backendless.User>('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+    promiseCustomUser = Backendless.UserService.loginWithOauth2<CustomUser>('facebook', 'accessToken', guestUser, {});
+    promiseCustomUser = Backendless.UserService.loginWithOauth2<CustomUser>('facebook', 'accessToken', guestUser, {}, stayLoggedIn);
+
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret');
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+    promiseBLUser = Backendless.UserService.loginWithOauth1<Backendless.User>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseBLUser = Backendless.UserService.loginWithOauth1<Backendless.User>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+    promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {});
+    promiseCustomUser = Backendless.UserService.loginWithOauth1<CustomUser>('twitter', 'accessToken', 'accessTokenSecret', guestUser, {}, stayLoggedIn);
+
+    promiseBool = Backendless.UserService.isValidLogin();
+
+    promiseBool = Backendless.UserService.verifyPassword('valid-password');
 
     promiseVoid = Backendless.UserService.resendEmailConfirmation('email');
+    promiseVoid = Backendless.UserService.resendEmailConfirmation(1234);
+
+    promiseObject = Backendless.UserService.createEmailConfirmationURL('email');
+    promiseObject = Backendless.UserService.createEmailConfirmationURL(1234);
 
     promiseVoid = Backendless.UserService.enableUser(userId);
 
     promiseVoid = Backendless.UserService.disableUser(userId);
-}
-
-function testGoeService() {
-    const newGeoPoint: Backendless.GeoPoint = new Backendless.GeoPoint();
-    newGeoPoint.latitude = 20;
-    newGeoPoint.longitude = 30;
-    newGeoPoint.categories = ["c"];
-    newGeoPoint.metadata = {"owner": "XXX"};
-
-    let existPoint: Backendless.GeoPoint = new Backendless.GeoPoint();
-    newGeoPoint.___class = 'c';
-    newGeoPoint.objectId = 'id';
-    newGeoPoint.latitude = 20;
-    newGeoPoint.longitude = 30;
-
-    const geoClaster: Backendless.GeoCluster = new Backendless.GeoCluster();
-
-    geoClaster.___class = 'geo';
-    geoClaster.objectId = 'id';
-    geoClaster.latitude = 20;
-    geoClaster.longitude = 30;
-    geoClaster.totalPoints = 10;
-    geoClaster.geoQuery = new Backendless.GeoQuery();
-
-    let bool: boolean = true;
-    let errorStr: string = 'str';
-    const fenceName: string = 'str';
-    const categoryName: string = 'str';
-    const restUrl: string = Backendless.Geo.restUrl;
-    const EARTH_RADIUS: number = Backendless.Geo.EARTH_RADIUS;
-    let geoCollectionResult: Array<Object>;
-    let geoCategory: Backendless.GeoCategoryI;
-    let geoCategories: Backendless.GeoCategoryI[];
-    let resultObj: Object;
-
-    const baseGeoQuery: Backendless.GeoQueryI = new Backendless.GeoQuery();
-    const rectangleGeoQuery: Backendless.RectangleGeoQueryI = {searchRectangle: [1, 2, 3, 4]};
-    const circleGeoQuery: Backendless.CircleGeoQueryI = {latitude: 1, longitude: 1, radius: 1, units: 'm'};
-    const categories: string | string[] = baseGeoQuery.categories;
-    const includeMetadata: boolean = baseGeoQuery.includeMetadata;
-    const metadata: Object = baseGeoQuery.metadata;
-    const condition: string = baseGeoQuery.condition;
-    const relativeFindMetadata: Object = baseGeoQuery.relativeFindMetadata;
-    const relativeFindPercentThreshold: number = baseGeoQuery.relativeFindPercentThreshold;
-    const pageSize: number = baseGeoQuery.pageSize;
-
-    const searchRectangle: number[] = rectangleGeoQuery.searchRectangle;
-
-    const latitude: number = circleGeoQuery.latitude;
-    const longitude: number = circleGeoQuery.longitude;
-    const radius: number = circleGeoQuery.radius;
-    const units: string = circleGeoQuery.units;
-    let promiseObject: Promise<Object>;
-    let promiseVoid: Promise<void>;
-    let promiseNum: Promise<number>;
-    let resultNum: number;
-
-    const inAppCallback: Backendless.GeofenceMonitoringCallbacksI = {
-        onenter: function () {
-        }
-    };
-
-    promiseObject = Backendless.Geo.savePoint(newGeoPoint);
-
-    promiseObject = Backendless.Geo.find(baseGeoQuery);
-
-    promiseObject = Backendless.Geo.find(rectangleGeoQuery);
-
-    promiseObject = Backendless.Geo.find(circleGeoQuery);
-
-    promiseNum = Backendless.Geo.getGeopointCount(baseGeoQuery);
-    promiseNum = Backendless.Geo.getGeopointCount(fenceName, baseGeoQuery);
-
-    promiseObject = Backendless.Geo.deletePoint(categoryName);
-    promiseObject = Backendless.Geo.deletePoint(existPoint);
-
-    promiseObject = Backendless.Geo.loadMetadata(existPoint);
-    promiseObject = Backendless.Geo.loadMetadata(geoClaster);
-
-    promiseObject = Backendless.Geo.getClusterPoints(geoClaster);
-
-    promiseObject = Backendless.Geo.getFencePoints(fenceName, baseGeoQuery);
-
-    promiseObject = Backendless.Geo.relativeFind(baseGeoQuery);
-
-    promiseObject = Backendless.Geo.addCategory(categoryName);
-
-    promiseObject = Backendless.Geo.deleteCategory(categoryName);
-
-    promiseObject = Backendless.Geo.getCategories();
-
-    promiseObject = Backendless.Geo.runOnStayAction(fenceName, existPoint);
-
-    promiseObject = Backendless.Geo.runOnExitAction(fenceName, existPoint);
-
-    promiseObject = Backendless.Geo.runOnEnterAction(fenceName, existPoint);
-
-    promiseVoid = Backendless.Geo.startGeofenceMonitoringWithInAppCallback(fenceName, inAppCallback);
-
-    promiseVoid = Backendless.Geo.startGeofenceMonitoringWithRemoteCallback(fenceName, existPoint);
-
-    Backendless.Geo.stopGeofenceMonitoring(fenceName);
-
 }
 
 function testEmailEnvelope() {
@@ -689,18 +885,12 @@ function testEmailEnvelope() {
 }
 
 function testMessaging() {
-    const restUrl: string = Backendless.Messaging.restUrl;
-    const channelProperties: Object = Backendless.Messaging.channelProperties;
     const channelName: string = 'str';
     const deviceToken: string = 'str';
     const subject: string = 'str';
     const messageId: string = 'str';
     const message: string | Object = 'str';
-    let resultObj: Object;
-    let resultString: String;
-    let resultBool: boolean = true;
     let promiseObject: Promise<Object>;
-    let PromiseString: Promise<String>;
     const bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
     const envelopeObject: Backendless.EmailEnvelope = new Backendless.EmailEnvelope();
     const templateValues: Object | Backendless.EmailEnvelope = {};
@@ -721,7 +911,7 @@ function testMessaging() {
 
     promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
 
-    PromiseString = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
+    promiseObject = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
 
@@ -742,6 +932,8 @@ function testMessaging() {
 }
 
 function testFilesService() {
+    const fs = require('fs')
+
     const path: string = 'str';
     const fileName: string = 'str';
     const fileContent: Blob = new Blob();
@@ -751,7 +943,6 @@ function testFilesService() {
     const offset: number = 123;
     const overwrite: boolean = true;
     let file: File;
-    const files: File[] = [file];
     const oldPathName: string = 'str';
     const newName: string = 'str';
     const sourcePath: string = 'str';
@@ -762,13 +953,13 @@ function testFilesService() {
     const permissionType: string = 'str';
     const roleName: string = 'str';
     const countDirectories: boolean = true;
+    const readStream = fs.createReadStream('./test');
 
     let resultStr: string;
     let resultBool: boolean;
     let resultObj: Object;
     let resultNumber: number;
     let promiseObject: Promise<Object>;
-    let promiseVoid: Promise<void>;
     let promiseNumber: Promise<number>;
 
     resultStr = Backendless.Files.restUrl;
@@ -776,10 +967,17 @@ function testFilesService() {
     promiseObject = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
     promiseObject = Backendless.Files.saveFile(path, fileName, fileContent);
 
-    promiseVoid = Backendless.Files.upload(file, path, overwrite);
-    promiseVoid = Backendless.Files.upload(files, path, overwrite);
-    promiseVoid = Backendless.Files.upload(file, path, null);
-    promiseVoid = Backendless.Files.upload(files, path, null);
+    promiseObject = Backendless.Files.upload(file, path);
+    promiseObject = Backendless.Files.upload(file, path, overwrite);
+    promiseObject = Backendless.Files.upload(file, path, null);
+
+    promiseObject = Backendless.Files.upload(readStream, path);
+    promiseObject = Backendless.Files.upload(readStream, path, overwrite);
+    promiseObject = Backendless.Files.upload(readStream, path, null);
+
+    promiseObject = Backendless.Files.upload('path-source-file', path);
+    promiseObject = Backendless.Files.upload('path-source-file', path, overwrite);
+    promiseObject = Backendless.Files.upload('path-source-file', path, null);
 
     promiseObject = Backendless.Files.listing(path);
     promiseObject = Backendless.Files.listing(path, pattern);
@@ -972,6 +1170,13 @@ function testCustomServices() {
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
+
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.SYNC);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
 }
 
 function testLogging() {
@@ -1135,6 +1340,63 @@ function RTData() {
         .removeBulkDeleteListener((obj: Backendless.RTBulkChangesSubscriptionResult) => undefined)
 
     eventHandler
+        .addSetRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addSetRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {
+            objectId: '3',
+            foo: 123
+        }], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addSetRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {
+            objectId: '3',
+            foo: 123
+        }], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addSetRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .addAddRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addAddRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {
+            objectId: '3',
+            foo: 123
+        }], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addAddRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {
+            objectId: '3',
+            foo: 123
+        }], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addAddRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .addDeleteRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addDeleteRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {
+            objectId: '3',
+            foo: 123
+        }], (data: Backendless.RTChangeRelationStatus) => undefined)
+        .addDeleteRelationListener('relationColumnName', ['parentObjectIds', 'parentObjectIds', 'parentObjectIds'], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteRelationListener('relationColumnName', [{objectId: '1'}, {objectId: '2'}, {
+            objectId: '3',
+            foo: 123
+        }], (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteRelationListener('relationColumnName', (data: Backendless.RTChangeRelationStatus) => undefined)
+
+    eventHandler
+        .removeSetRelationListener((data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeSetRelationListeners('relationColumnName')
+        .removeSetRelationListeners()
+
+    eventHandler
+        .removeAddRelationListener((data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeAddRelationListeners('relationColumnName')
+        .removeAddRelationListeners()
+
+    eventHandler
+        .removeDeleteRelationListener((data: Backendless.RTChangeRelationStatus) => undefined)
+        .removeDeleteRelationListeners('relationColumnName')
+        .removeDeleteRelationListeners()
+
+    eventHandler
         .removeAllListeners()
         .addDeleteListener('whereClause', (obj: Object) => undefined)
 }
@@ -1203,10 +1465,14 @@ async function testBaseTransactions() {
     let tableName: string;
     let isSuccess: boolean;
     let results: object
+    let bool: boolean
     let transactionOperationError: Backendless.TransactionOperationError;
 
+    bool = changesObj instanceof Backendless.UnitOfWork.OpResult
+    bool = changesObj instanceof Backendless.UnitOfWork.OpResultValueReference
+
     opResultId = opResult.getOpResultId()
-    opResult.setOpResultId(opResultId)
+    opResult = opResult.setOpResultId(opResultId)
 
     tableName = opResult.getTableName()
 
@@ -1221,10 +1487,10 @@ async function testBaseTransactions() {
     transactionOperationError = unitOfWorkResult.getError()
     results = unitOfWorkResult.getResults()
 
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_UNCOMMITTED)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.READ_COMMITTED)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.REPEATABLE_READ)
-    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.IsolationLevelEnum.SERIALIZABLE)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.READ_UNCOMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.READ_COMMITTED)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.REPEATABLE_READ)
+    unitOfWorkResult = unitOfWorkResult.setIsolationLevel(Backendless.UnitOfWork.IsolationLevelEnum.SERIALIZABLE)
 
     ///
     opResult = uow.create(personInst);
@@ -1248,7 +1514,6 @@ async function testBaseTransactions() {
     opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
     opResult = uow.bulkCreate([personInst, personInst, personInst]);
     ///
-    opResult = uow.bulkUpdate(whereClause, personInst);
     opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObj, personObj, personObj], changesObj);

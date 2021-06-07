@@ -2,9 +2,27 @@ import Utils from '../utils'
 import RTHandlers from './rt-handlers'
 import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
+import JSONUpdateBuilder from './json-update-builder'
 
 import geoConstructor, { GEO_CLASSES } from './geo/geo-constructor'
 import Geometry from './geo/geometry'
+
+function buildFindFirstLastQuery(queryBuilder, sortDir) {
+  const query = (queryBuilder instanceof DataQueryBuilder)
+    ? queryBuilder.toJSON()
+    : (queryBuilder ? { ...queryBuilder } : {})
+
+  query.pageSize = 1
+  query.offset = 0
+
+  const { sortBy } = query
+
+  if (!sortBy) {
+    query.sortBy = [`created ${sortDir}`]
+  }
+
+  return DataQueryBuilder.toRequestBody(query)
+}
 
 export default class DataStore {
 
@@ -33,7 +51,16 @@ export default class DataStore {
   async save(object) {
     return this.app.request
       .put({
-        url: this.app.urls.dataTable(this.className),
+        url : this.app.urls.dataTable(this.className),
+        data: convertToServerRecord(object),
+      })
+      .then(result => this.parseResponse(result))
+  }
+
+  async deepSave(object) {
+    return this.app.request
+      .put({
+        url : this.app.urls.dataTableDeepSave(this.className),
         data: convertToServerRecord(object),
       })
       .then(result => this.parseResponse(result))
@@ -53,11 +80,31 @@ export default class DataStore {
 
   async find(query) {
     return this.app.request
-      .get({
-        url        : this.app.urls.dataTable(this.className),
-        queryString: DataQueryBuilder.toQueryString(query),
+      .post({
+        url : this.app.urls.dataTableFind(this.className),
+        data: DataQueryBuilder.toRequestBody(query),
       })
       .then(result => this.parseResponse(result))
+  }
+
+  async group(data) {
+    return this.app.request
+      .post({
+        url : this.app.urls.dataGrouping(this.className),
+        data: data
+      })
+  }
+
+  async countInGroup(data) {
+    if (!data.groupPath || typeof data.groupPath !== 'object') {
+      throw new Error('Group Path must be provided and must be an object.')
+    }
+
+    return this.app.request
+      .post({
+        url : `${this.app.urls.dataGrouping(this.className)}/count`,
+        data: data
+      })
   }
 
   async findById(objectId, query) {
@@ -92,34 +139,37 @@ export default class DataStore {
 
   async findFirst(query) {
     return this.app.request
-      .get({
-        url        : this.app.urls.dataTableObject(this.className, 'first'),
-        queryString: DataQueryBuilder.toQueryString(query),
+      .post({
+        url : this.app.urls.dataTableFind(this.className),
+        data: buildFindFirstLastQuery(query, 'asc'),
       })
-      .then(result => this.parseResponse(result))
+      .then(result => this.parseResponse(result[0]))
   }
 
   async findLast(query) {
     return this.app.request
-      .get({
-        url        : this.app.urls.dataTableObject(this.className, 'last'),
-        queryString: DataQueryBuilder.toQueryString(query),
+      .post({
+        url : this.app.urls.dataTableFind(this.className),
+        data: buildFindFirstLastQuery(query, 'desc'),
       })
-      .then(result => this.parseResponse(result))
+      .then(result => this.parseResponse(result[0]))
   }
 
   async getObjectCount(condition) {
+    let distinct = undefined
+
     if (condition) {
       if (condition instanceof DataQueryBuilder) {
+        distinct = condition.getDistinct() || undefined
         condition = condition.getWhereClause() || undefined
       } else if (typeof condition !== 'string') {
         throw new Error('Condition must be a string or an instance of DataQueryBuilder.')
       }
     }
 
-    return this.app.request.get({
-      url  : this.app.urls.dataTableCount(this.className),
-      query: { where: condition },
+    return this.app.request.post({
+      url : this.app.urls.dataTableCount(this.className),
+      data: { where: condition, distinct },
     })
   }
 
@@ -185,7 +235,7 @@ export default class DataStore {
     }
 
     if (!changes || typeof changes !== 'object' || Array.isArray(changes)) {
-      throw new Error('Changes must be provided and must be a object.')
+      throw new Error('Changes must be provided and must be an object.')
     }
 
     return this.app.request.put({
@@ -306,7 +356,11 @@ const convertToServerRecord = (() => {
       if (Array.isArray(source[prop])) {
         processTargetProps(context, source[prop], target[prop] = [])
 
-      } else if (source[prop] && typeof source[prop] === 'object' && !(source[prop] instanceof Geometry)) {
+      } else if (
+        source[prop] && typeof source[prop] === 'object'
+        && !(source[prop] instanceof Geometry)
+        && !(source[prop] instanceof JSONUpdateBuilder)) {
+
         if (source[prop] instanceof Date) {
           target[prop] = source[prop].getTime()
 

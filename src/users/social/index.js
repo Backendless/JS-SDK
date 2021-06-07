@@ -1,3 +1,4 @@
+import BackendlessUser from '../user'
 import { SocialContainer } from './container'
 
 export default class UsersSocial {
@@ -44,7 +45,7 @@ export default class UsersSocial {
           fieldsMapping
         }
       })
-      .then(data => this.users.setLocalCurrentUser(data, stayLoggedIn))
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
   }
 
   async loginWithContainer(socialType, fieldsMapping, permissions, container, stayLoggedIn) {
@@ -87,7 +88,76 @@ export default class UsersSocial {
         throw error
       })
       .then(resolveContainer)
-      .then(data => this.users.setLocalCurrentUser(data, stayLoggedIn))
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
+  }
+
+  async loginWithOauth2(providerCode, accessToken, guestUser, fieldsMapping, stayLoggedIn) {
+    if (!providerCode || typeof providerCode !== 'string') {
+      throw new Error('"providerCode" must be non empty string.')
+    }
+
+    if (!accessToken || typeof accessToken !== 'string') {
+      throw new Error('"accessToken" must be non empty string.')
+    }
+
+    if (guestUser && !(guestUser instanceof BackendlessUser)) {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = guestUser
+      guestUser = undefined
+    }
+
+    if (typeof fieldsMapping === 'boolean') {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = undefined
+    }
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userOAuthLogin(providerCode),
+        data: {
+          accessToken,
+          fieldsMapping,
+          guestUser
+        }
+      })
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
+  }
+
+  async loginWithOauth1(providerCode, accessToken, accessTokenSecret, guestUser, fieldsMapping, stayLoggedIn) {
+    if (!providerCode || typeof providerCode !== 'string') {
+      throw new Error('"providerCode" must be non empty string.')
+    }
+
+    if (!accessToken || typeof accessToken !== 'string') {
+      throw new Error('"accessToken" must be non empty string.')
+    }
+
+    if (!accessTokenSecret || typeof accessTokenSecret !== 'string') {
+      throw new Error('"accessTokenSecret" must be non empty string.')
+    }
+
+    if (guestUser && !(guestUser instanceof BackendlessUser)) {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = guestUser
+      guestUser = undefined
+    }
+
+    if (typeof fieldsMapping === 'boolean') {
+      stayLoggedIn = fieldsMapping
+      fieldsMapping = undefined
+    }
+
+    return this.app.request
+      .post({
+        url : this.app.urls.userOAuthLogin(providerCode),
+        data: {
+          accessToken,
+          accessTokenSecret,
+          fieldsMapping,
+          guestUser
+        }
+      })
+      .then(data => this.users.setCurrentUser(data, stayLoggedIn))
   }
 }
 

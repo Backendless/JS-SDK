@@ -10,6 +10,12 @@ const ChangesTypes = {
   BULK_DELETED: 'bulk-deleted',
 }
 
+const RelationsChangesTypes = {
+  ADD   : 'add',
+  SET   : 'set',
+  DELETE: 'delete',
+}
+
 const SingleChangesTypes = [
   ChangesTypes.CREATED,
   ChangesTypes.UPDATED,
@@ -127,6 +133,54 @@ export default class RTHandlers extends RTListeners {
     this.removeBulkDeleteListeners(undefined, callback)
   }
 
+  addSetRelationListener(relationColumnName, parentObjects, callback, onError) {
+    this.addRelationsChangesListener(RelationsChangesTypes.SET, relationColumnName, parentObjects, callback, onError)
+  }
+
+  removeSetRelationListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeRelationsChangesListeners(RelationsChangesTypes.SET, undefined, callback)
+  }
+
+  removeSetRelationListeners(relationColumnName, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.SET, relationColumnName, callback)
+  }
+
+  addAddRelationListener(relationColumnName, parentObjects, callback, onError) {
+    this.addRelationsChangesListener(RelationsChangesTypes.ADD, relationColumnName, parentObjects, callback, onError)
+  }
+
+  removeAddRelationListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeRelationsChangesListeners(RelationsChangesTypes.ADD, undefined, callback)
+  }
+
+  removeAddRelationListeners(relationColumnName, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.ADD, relationColumnName, callback)
+  }
+
+  addDeleteRelationListener(relationColumnName, parentObjects, callback, onError) {
+    this.addRelationsChangesListener(RelationsChangesTypes.DELETE, relationColumnName, parentObjects, callback, onError)
+  }
+
+  removeDeleteRelationListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeRelationsChangesListeners(RelationsChangesTypes.DELETE, undefined, callback)
+  }
+
+  removeDeleteRelationListeners(relationColumnName, callback) {
+    this.removeRelationsChangesListeners(RelationsChangesTypes.DELETE, relationColumnName, callback)
+  }
+
   addChangesListener(event, whereClause, callback, onError) {
     if (typeof whereClause === 'function') {
       onError = callback
@@ -160,6 +214,63 @@ export default class RTHandlers extends RTListeners {
 
       if (whereClause) {
         return params.whereClause === whereClause
+      }
+
+      if (callback) {
+        return subscription.callback === callback
+      }
+
+      return true
+    }
+
+    this.stopSubscription(event, { matcher })
+  }
+
+  addRelationsChangesListener(event, relationColumnName, parentObjects, callback, onError) {
+    if (!relationColumnName || typeof relationColumnName !== 'string') {
+      throw new Error('Relation Column Name must be a string.')
+    }
+
+    if (typeof parentObjects === 'function') {
+      onError = callback
+      callback = parentObjects
+      parentObjects = undefined
+    }
+
+    if (typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    if (parentObjects) {
+      if (!Array.isArray(parentObjects)) {
+        throw new Error('Parent Objects must be an array')
+      }
+
+      parentObjects = parentObjects.map(o => o.objectId || o)
+    }
+
+    this.addSubscription(event, this.app.RT.subscriptions.onRelationsChanges, {
+      callback,
+      onError,
+      params: {
+        event,
+        relationColumnName,
+        parentObjects
+      }
+    })
+  }
+
+  removeRelationsChangesListeners(event, relationColumnName, callback) {
+    if (typeof relationColumnName === 'function') {
+      callback = relationColumnName
+      relationColumnName = undefined
+    }
+
+    const matcher = subscription => {
+      const params = subscription.params
+
+      if (relationColumnName) {
+        return params.relationColumnName === relationColumnName
       }
 
       if (callback) {

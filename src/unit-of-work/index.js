@@ -2,6 +2,7 @@ import Utils from '../utils'
 import DataQueryBuilder from '../data/data-query-builder'
 
 import { OperationType, IsolationLevelEnum } from './constants'
+import { OperationJSONAdapter } from './json-adapter'
 import { OpResult } from './op-result'
 import { OpResultValueReference } from './op-result-value-reference'
 
@@ -43,6 +44,10 @@ class UnitOfWorkResult {
 class UnitOfWork {
   static IsolationLevelEnum = IsolationLevelEnum
 
+  static OpResult = OpResult
+
+  static OpResultValueReference = OpResultValueReference
+
   constructor(isolationLevelEnum, app) {
     this.app = app
 
@@ -52,6 +57,12 @@ class UnitOfWork {
     }
 
     this.usedOpIds = {}
+  }
+
+  getOpResultById(opResultId) {
+    const operation = this.payload.operations.find(opResult => opResult.meta.opResult.getOpResultId() === opResultId)
+
+    return operation.meta.opResult
   }
 
   setIsolationLevel(isolationLevelEnum) {
@@ -71,6 +82,16 @@ class UnitOfWork {
   }
 
   addOperations(operationType, table, payload) {
+    if (Array.isArray(payload)) {
+      payload = payload.map(item => {
+        delete item.___jsonclass
+
+        return item
+      })
+    } else {
+      delete payload.___jsonclass
+    }
+
     const opResult = new OpResult(this, { operationType, table, payload })
 
     this.payload.operations.push({
@@ -103,6 +124,10 @@ class UnitOfWork {
       data: this.composePayload(),
     })
 
+    return this.setResult(result)
+  }
+
+  setResult(result){
     if (result.results) {
       this.payload.operations.forEach(operation => {
         const opResultId = operation.meta.opResult.getOpResultId()
@@ -223,7 +248,6 @@ class UnitOfWork {
     return this.addOperations(OperationType.CREATE, tableName, changes)
   }
 
-
   /**
    * update(object: object): OpResult;
    * update(tableName: string, object: object): OpResult;
@@ -340,7 +364,6 @@ class UnitOfWork {
   }
 
   /**
-   * bulkUpdate(whereClause: string, changes: object): OpResult;
    * bulkUpdate(opResult: OpResult, changes: object): OpResult;
    *
    * bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
@@ -569,6 +592,18 @@ class UnitOfWork {
 
 export default function UnitOfWorkService(app) {
   return class extends UnitOfWork {
+    static initFromJSON(data) {
+      const uow = new this(data.transactionIsolation)
+
+      data.operations.forEach(op => {
+        const opResult = OperationJSONAdapter[op.operationType](uow, op)
+
+        opResult.setOpResultId(op.opResultId)
+      })
+      
+      return uow
+    }
+
     constructor(isolationLevelEnum) {
       super(isolationLevelEnum, app)
     }

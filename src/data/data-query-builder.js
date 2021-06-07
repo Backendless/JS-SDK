@@ -1,6 +1,6 @@
 import Utils from '../utils'
 
-const PAGING_DEFAULTS = {
+export const PAGING_DEFAULTS = {
   pageSize: 10,
   offset  : 0
 }
@@ -24,9 +24,11 @@ export default class DataQueryBuilder {
     this.whereClause = null
     this.havingClause = null
 
-    this.loadRelations = null
+    this.relations = null
     this.relationsDepth = null
     this.relationsPageSize = null
+
+    this.distinct = false
   }
 
   setPageSize(pageSize) {
@@ -195,6 +197,16 @@ export default class DataQueryBuilder {
     return this.relationsPageSize
   }
 
+  setDistinct(distinct) {
+    this.distinct = !!distinct
+
+    return this
+  }
+
+  getDistinct() {
+    return this.distinct
+  }
+
   toJSON() {
     return {
       pageSize: this.pageSize,
@@ -212,7 +224,35 @@ export default class DataQueryBuilder {
       relations        : this.relations,
       relationsDepth   : this.relationsDepth,
       relationsPageSize: this.relationsPageSize,
+
+      distinct: this.distinct
     }
+  }
+
+  static toRequestBody(queryBuilder) {
+    const query = (queryBuilder instanceof DataQueryBuilder)
+      ? queryBuilder.toJSON()
+      : (queryBuilder ? { ...queryBuilder } : {})
+
+    Object.keys(query).forEach(param => {
+      if (Array.isArray(query[param])) {
+        query[param] = query[param].join(',')
+      } else if (query[param] == null) {
+        delete query[param]
+      }
+    })
+
+    if (query.properties) {
+      query.props = query.properties
+      delete query.properties
+    }
+
+    if (query.relations) {
+      query.loadRelations = query.relations
+      delete query.relations
+    }
+
+    return query
   }
 
   static toQueryString(query) {
@@ -282,6 +322,10 @@ export default class DataQueryBuilder {
 
     if (query.relationsPageSize > 0) {
       queryTokens.push(`relationsPageSize=${query.relationsPageSize}`)
+    }
+
+    if (query.distinct) {
+      queryTokens.push(`distinct=${query.distinct}`)
     }
 
     return queryTokens.join('&')
