@@ -80,7 +80,7 @@ describe('<Transactions> Basic', function() {
     expect(uowResult.error.operation).to.equal(createOpResult)
   })
 
-  it('converts to json a TransactionOperationError', async () => {
+  it('converts a TransactionOperationError to JSON', async () => {
     const obj = { name: 'p-name' }
 
     prepareErrorResponse('Error message', {
