@@ -80,6 +80,30 @@ describe('<Transactions> Basic', function() {
     expect(uowResult.error.operation).to.equal(createOpResult)
   })
 
+  it('convert to json a TransactionOperationError', async () => {
+    const obj = { name: 'p-name' }
+
+    prepareErrorResponse('Error message', {
+      table        : PERSONS_TABLE_NAME,
+      opResultId   : 'createPerson1',
+      operationType: 'CREATE',
+      payload      : obj,
+    })
+
+    uow.create(PERSONS_TABLE_NAME, obj)
+
+    const uowResult = await uow.execute()
+
+    expect(JSON.parse(JSON.stringify(uowResult.error))).to.eql({
+      message: 'Error message',
+      operation: {
+        ___ref    : true,
+        opResultId: 'createPerson1',
+        propName  : 'objectId'
+      }
+    })
+  })
+
   it('runs with OpResultId', async () => {
     const req1 = prepareSuccessResponse()
 
