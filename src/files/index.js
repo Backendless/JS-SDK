@@ -59,8 +59,14 @@ export default class Files {
     }
 
     if (typeof file === 'string') {
+      if (!fileName) {
+        const sourcePathTokens = FilesUtils.parseFilePath(file)
+
+        fileName = sourcePathTokens.fileName
+      }
+
       return this.app.request.post({
-        url  : `${this.app.urls.filePath(filePath)}/${fileName}`,
+        url  : `${this.app.urls.filePath(filePath)}/${fileName || ''}`,
         query: query,
         data : {
           url: file

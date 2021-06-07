@@ -306,6 +306,47 @@ describe('<Files> Browser', function() {
       expect(result2).to.be.eql({ fileURL: 'target-file-url-2' })
     })
 
+    it('uploads a file from URL without target fileName', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+      const req2 = prepareMockRequest({ fileURL: 'target-file-url-2' })
+      const req3 = prepareMockRequest({ fileURL: 'target-file-url-3' })
+
+      const result1 = await Backendless.Files.upload('source-file-url-1/img.jpg', '/folder1/dir1')
+      const result2 = await Backendless.Files.upload('source-file-url-2/img.jpg', 'folder1/dir2')
+      const result3 = await Backendless.Files.upload('source-file-url-3/img.jpg', 'folder2', true)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/folder1/dir1/img.jpg`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-1/img.jpg',
+        }
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/folder1/dir2/img.jpg`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-2/img.jpg',
+        }
+      })
+
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/folder2/img.jpg?overwrite=true`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-3/img.jpg',
+        }
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+      expect(result2).to.be.eql({ fileURL: 'target-file-url-2' })
+      expect(result3).to.be.eql({ fileURL: 'target-file-url-3' })
+    })
+
   })
 
 })
