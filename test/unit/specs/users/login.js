@@ -44,7 +44,7 @@ describe('<Users> Login', function() {
   })
 
   it('fails when login has incorrect type', async () => {
-    const errorMsg = 'Login must a string or number.'
+    const errorMsg = 'the first argument must be either a string or a number'
 
     await expect(Backendless.UserService.login(undefined, '123')).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.UserService.login(null, '123')).to.eventually.be.rejectedWith(errorMsg)
@@ -56,14 +56,14 @@ describe('<Users> Login', function() {
   })
 
   it('fails when login is missed', async () => {
-    const errorMsg = 'Login can not be empty value.'
+    const errorMsg = 'the first argument cannot be an empty value'
 
     await expect(Backendless.UserService.login(0)).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.UserService.login('')).to.eventually.be.rejectedWith(errorMsg)
   })
 
   it('fails when password is missed', async () => {
-    const errorMsg = 'Password can not be empty'
+    const errorMsg = 'the "password" value cannot be an empty value'
 
     await expect(Backendless.UserService.login('foo@bar.com', null)).to.eventually.be.rejectedWith(errorMsg)
     await expect(Backendless.UserService.login('foo@bar.com', '')).to.eventually.be.rejectedWith(errorMsg)

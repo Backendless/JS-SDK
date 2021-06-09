@@ -37,11 +37,11 @@ export default class Users {
     const data = {}
 
     if (typeof login !== 'string' && typeof login !== 'number') {
-      throw new Error('Login must a string or number.')
+      throw new Error('the first argument must be either a string or a number')
     }
 
     if (!login) {
-      throw new Error('Login can not be empty value.')
+      throw new Error('the first argument cannot be an empty value')
     }
 
     if (typeof password === 'boolean') {
@@ -54,7 +54,7 @@ export default class Users {
 
     } else {
       if (!password) {
-        throw new Error('Password can not be empty')
+        throw new Error('the "password" value cannot be an empty value')
       }
 
       data.login = login
