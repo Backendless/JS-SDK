@@ -718,6 +718,7 @@ function testUserService() {
     const div: HTMLElement = document.createElement('div');
     let newUser: Backendless.User = new Backendless.User();
     let guestUser: Backendless.User = new Backendless.User();
+    let resultStr: string;
     let resultObj: Object;
     let resultVoid: void;
     let resultNull: null;
@@ -745,6 +746,8 @@ function testUserService() {
     guestUser = Backendless.UserService.currentUser
 
     promiseVoid = Backendless.UserService.restorePassword('email');
+
+    resultStr = Backendless.UserService.Utils.getClientUserLocale();
 
     promiseObject = Backendless.UserService.register(newUser);
 

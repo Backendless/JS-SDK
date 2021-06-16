@@ -14,7 +14,7 @@ export default class Users {
     this.dataStore = this.app.Data.of(User)
   }
 
-  Utils() {
+  get Utils() {
     return UsersUtils
   }
 
