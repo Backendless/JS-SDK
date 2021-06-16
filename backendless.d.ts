@@ -276,6 +276,14 @@ declare module Backendless {
 
         let currentUser: Backendless.User;
 
+        /**
+         * @public
+         * @namespace Backendless.UserService.Utils
+         */
+        namespace Utils {
+            function getClientUserLocale(): string;
+        }
+
         function register(user: Backendless.User): Promise<Backendless.User>;
         function register<T>(user: T): Promise<T>;
 

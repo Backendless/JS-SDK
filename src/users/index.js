@@ -14,11 +14,15 @@ export default class Users {
     this.dataStore = this.app.Data.of(User)
   }
 
+  Utils() {
+    return UsersUtils
+  }
+
   async register(user) {
     user = { ...user }
 
     if (!user.blUserLocale) {
-      const clientUserLocale = UsersUtils.getClientUserLocale()
+      const clientUserLocale = this.Utils.getClientUserLocale()
 
       if (clientUserLocale) {
         user.blUserLocale = clientUserLocale
