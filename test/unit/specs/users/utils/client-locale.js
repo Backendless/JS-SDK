@@ -14,7 +14,7 @@ describe('<Users> <Utils>', function() {
       expect(locale).to.be.eql(undefined)
     })
 
-    it('return language code when navigator languages is not empty', async () => {
+    it('return language code when navigator languages is not empty', () => {
       global.navigator = {
         languages      : ['en-EN','ek-EK'],
         userLanguage   : 'ds-DS',
@@ -28,7 +28,7 @@ describe('<Users> <Utils>', function() {
       expect(locale).to.be.eql('en')
     })
 
-    it('return language code when navigator languages is undefined', async () => {
+    it('return language code when navigator languages is undefined', () => {
       global.navigator = {
         languages      : [],
         userLanguage   : 'ds-DS',
@@ -49,7 +49,7 @@ describe('<Users> <Utils>', function() {
       expect(locale2).to.be.eql('ds')
     })
 
-    it('return language code when navigator userLanguage is undefined', async () => {
+    it('return language code when navigator userLanguage is undefined', () => {
       global.navigator = {
         language       : 'ms-MS',
         browserLanguage: 'es-ES',
@@ -61,7 +61,7 @@ describe('<Users> <Utils>', function() {
       expect(locale).to.be.eql('ms')
     })
 
-    it('return language code when navigator userLanguage is undefined', async () => {
+    it('return language code when navigator userLanguage is undefined', () => {
       global.navigator = {
         browserLanguage: 'es-ES',
         systemLanguage : 'ru-RU',
@@ -72,7 +72,7 @@ describe('<Users> <Utils>', function() {
       expect(locale).to.be.eql('es')
     })
 
-    it('return language code when navigator browserLanguage is undefined', async () => {
+    it('return language code when navigator browserLanguage is undefined', () => {
       global.navigator = {
         systemLanguage : 'ru-RU',
       }
@@ -82,7 +82,7 @@ describe('<Users> <Utils>', function() {
       expect(locale).to.be.eql('ru')
     })
 
-    it('return empty string when navigator systemLanguage is undefined', async () => {
+    it('return empty string when navigator systemLanguage is undefined', () => {
       global.navigator = {}
 
       const locale = Backendless.UserService.Utils.getClientUserLocale()
