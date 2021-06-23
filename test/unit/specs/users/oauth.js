@@ -265,7 +265,7 @@ describe('<Users> OAuth Login', function() {
           path   : `${APP_PATH}/users/oauth/${provideCode}/request_url`,
           headers: { 'Content-Type': 'application/json' },
           body   : {
-            fieldMappings: fieldsMapping,
+            fieldsMapping,
             permissions: scope,
             redirect,
           }
