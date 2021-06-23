@@ -863,7 +863,7 @@ function testUserService() {
 
     promiseVoid = Backendless.UserService.disableUser(userId);
 
-    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', { email: 'userEmail' }, ['photo', 'bio', 'email'], false);
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', { email: 'userEmail' }, 'email;photo', false);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, true);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google');
 }

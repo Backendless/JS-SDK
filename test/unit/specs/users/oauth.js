@@ -253,7 +253,7 @@ describe('<Users> OAuth Login', function() {
       it('retrieves authorization url', async () => {
         const url = 'https://authorization-url-example.com'
         const provideCode = 'google'
-        const scope = ['photo', 'bio', 'email']
+        const scope = 'email;photo'
         const redirect = false
 
         const req = prepareMockRequest(url)
