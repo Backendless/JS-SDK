@@ -249,6 +249,30 @@ describe('<Users> OAuth Login', function() {
         expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.USER_TOKEN)).to.be.equal(userToken)
         expect(Backendless.LocalCache.get(Backendless.LocalCache.Keys.STAY_LOGGED_IN)).to.be.equal(true)
       })
+
+      it('retrieves authorization url', async () => {
+        const url = 'https://authorization-url-example.com'
+        const provideCode = 'google'
+        const scope = 'email;photo'
+        const redirect = false
+
+        const req = prepareMockRequest(url)
+
+        const authorizationURL = await Backendless.UserService.getAuthorizationUrlLink(provideCode, fieldsMapping, scope, redirect)
+
+        expect(req).to.deep.include({
+          method : 'POST',
+          path   : `${APP_PATH}/users/oauth/${provideCode}/request_url`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            fieldsMapping,
+            permissions: scope,
+            redirect,
+          }
+        })
+
+        expect(authorizationURL).to.be.equal(url)
+      })
     })
 
     it('fails when providerCode is invalid', async () => {

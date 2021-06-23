@@ -314,6 +314,10 @@ export default class Urls {
     return `${this.userSocial()}/${providerCode.toLowerCase()}/login`
   }
 
+  userAuthorizationURL(providerCode) {
+    return `${this.users()}/oauth/${providerCode.toLowerCase()}/request_url`
+  }
+
   guestLogin() {
     return `${this.users()}/register/guest`
   }
