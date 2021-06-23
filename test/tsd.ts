@@ -730,6 +730,7 @@ function testUserService() {
     let promiseListOfString: Promise<string[]>;
     let promiseListOfObject: Promise<object[]>;
     let promiseVoid: Promise<void>;
+    let promiseString: Promise<string>
     let promiseBLUser: Promise<Backendless.User>;
 
     class CustomUser {
@@ -861,6 +862,10 @@ function testUserService() {
     promiseVoid = Backendless.UserService.enableUser(userId);
 
     promiseVoid = Backendless.UserService.disableUser(userId);
+
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', { email: 'userEmail' }, ['photo', 'bio', 'email'], false);
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, true);
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google');
 }
 
 function testEmailEnvelope() {
