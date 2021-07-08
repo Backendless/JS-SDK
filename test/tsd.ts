@@ -736,6 +736,11 @@ function testUserService() {
     class CustomUser {
     }
 
+    let promiseUsersList: Promise<Backendless.User[]>
+    let promiseCustomUsersList: Promise<CustomUser[]>
+
+    const dataQueryBuilder: Backendless.DataQueryBuilder = Backendless.DataQueryBuilder.create();
+
     let customUser = new CustomUser()
     let promiseCustomUser: Promise<CustomUser>;
 
@@ -863,9 +868,36 @@ function testUserService() {
 
     promiseVoid = Backendless.UserService.disableUser(userId);
 
-    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', { email: 'userEmail' }, 'email;photo', false);
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', {email: 'userEmail'}, 'email;photo', false);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, true);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google');
+
+    promiseUsersList = Backendless.UserService.findByRole(roleName);
+    promiseUsersList = Backendless.UserService.findByRole(roleName, true);
+    promiseUsersList = Backendless.UserService.findByRole(roleName, true, {});
+    promiseUsersList = Backendless.UserService.findByRole(roleName, true, dataQueryBuilder);
+    promiseUsersList = Backendless.UserService.findByRole(roleName, true, {pageSize: 123, offset: 0});
+    promiseUsersList = Backendless.UserService.findByRole(roleName, null, {});
+    promiseUsersList = Backendless.UserService.findByRole(roleName, null, dataQueryBuilder);
+    promiseUsersList = Backendless.UserService.findByRole(roleName, null, {pageSize: 123, offset: 0});
+
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName);
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName, true);
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName, true, {});
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName, true, dataQueryBuilder);
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName, true, {pageSize: 123, offset: 0});
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName, null, {});
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName, null, dataQueryBuilder);
+    promiseUsersList = Backendless.UserService.findByRole<Backendless.User>(roleName, null, {pageSize: 123, offset: 0});
+
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName);
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName, true);
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName, true, {});
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName, true, dataQueryBuilder);
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName, true, {pageSize: 123, offset: 0});
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName, null, {});
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName, null, dataQueryBuilder);
+    promiseCustomUsersList = Backendless.UserService.findByRole<CustomUser>(roleName, null, {pageSize: 123, offset: 0});
 }
 
 function testEmailEnvelope() {

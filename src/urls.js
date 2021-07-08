@@ -270,6 +270,10 @@ export default class Urls {
     return `${this.users()}/userroles`
   }
 
+  usersRole(roleName) {
+    return `${this.users()}/role/${roleName}`
+  }
+
   userRoleOperation(operation) {
     return `${this.users()}/${operation}`
   }

@@ -57,6 +57,19 @@ describe('Namespace', function() {
       expect(app3.applicationId).to.be.equal('appId-3')
       expect(app3.secretKey).to.be.equal('apiKey-3')
     })
+
+    it('has custom serverURL', () => {
+      const app1 = Backendless.initApp({
+        serverURL : 'http://my-server-url.com',
+        appId     : 'appId-1',
+        apiKey    : 'apiKey-1',
+        standalone: true
+      })
+
+      expect(app1.applicationId).to.be.equal('appId-1')
+      expect(app1.secretKey).to.be.equal('apiKey-1')
+      expect(app1.appPath).to.be.equal('http://my-server-url.com/appId-1/apiKey-1')
+    })
   })
 
   describe('Custom Domain', () => {
@@ -72,7 +85,7 @@ describe('Namespace', function() {
     })
 
     it('should init with custom domain via config object', () => {
-      Backendless.initApp({ domain: CUSTOM_DOMAIN, secretKey:'XXX' })
+      Backendless.initApp({ domain: CUSTOM_DOMAIN, secretKey: 'XXX' })
 
       expect(Backendless.applicationId).to.be.equal(null)
       expect(Backendless.secretKey).to.be.equal(null)

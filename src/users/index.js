@@ -262,6 +262,10 @@ export default class Users {
       .then(data => this.dataStore.parseResponse(data))
   }
 
+  async findByRole(roleName, loadRoles, query) {
+    return this.roles.findByRole(roleName, loadRoles, query)
+  }
+
   async getUserRoles() {
     return this.roles.getUserRoles()
   }

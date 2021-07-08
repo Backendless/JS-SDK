@@ -287,6 +287,8 @@ declare module Backendless {
         function register(user: Backendless.User): Promise<Backendless.User>;
         function register<T>(user: T): Promise<T>;
 
+        function findByRole<T = Backendless.User>(roleName: string, loadRoles?: boolean, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T[]>;
+
         function getUserRoles(): Promise<string[]>;
 
         function describeUserClass(): Promise<Object[]>;
