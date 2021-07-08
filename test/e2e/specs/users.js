@@ -525,6 +525,25 @@ describe('Backendless.Users', function() {
             .and.eventually.have.property('code', 2005)
           )
       })
+
+      it('finds users by roleName', async () => {
+        const user1 = await Backendless.UserService.register(randUser())
+        const user2 = await Backendless.UserService.register(randUser())
+
+        await Backendless.UserService.assignRole(user1.email, 'CustomRole2')
+        await Backendless.UserService.assignRole(user2.email, 'CustomRole2')
+
+        const result = await Backendless.UserService.findByRole('CustomRole2', true)
+
+        const resultUser1 = result.find(u => u.email === user1.email)
+        const resultUser2 = result.find(u => u.email === user1.email)
+
+        expect(resultUser1).to.have.property('objectId')
+        expect(resultUser1.roles).to.include.members(['CustomRole2'])
+
+        expect(resultUser2).to.have.property('objectId')
+        expect(resultUser2.roles).to.include.members(['CustomRole2'])
+      })
     })
   })
 

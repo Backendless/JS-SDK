@@ -185,6 +185,8 @@ const createSandboxFor = each => () => {
         this.dev = sandbox.dev
         this.app = sandbox.app
 
+        this.app.apiKeysMap.CloudCode = this.app.apiKeysMap.BL || this.app.apiKeysMap.CloudCode
+
         Backendless.debugMode = TEST_VERBOSE
         Backendless.serverURL = API_SERVER
         Backendless.initApp(this.app.id, this.app.apiKeysMap.JS)
