@@ -253,11 +253,11 @@ describe('<Users> Roles', function() {
 
       await expect(Backendless.UserService.findByRole(roleName, true, false)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.findByRole(roleName, true, true)).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(Backendless.UserService.findByRole(roleName, true, '')).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(Backendless.UserService.findByRole(roleName, true, 0)).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(Backendless.UserService.findByRole(roleName, true, 123)).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(Backendless.UserService.findByRole(roleName, true, [])).to.eventually.be.rejectedWith(errorMsg)
-      // await expect(Backendless.UserService.findByRole(roleName, true, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.findByRole(roleName, true, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.findByRole(roleName, true, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.findByRole(roleName, true, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.findByRole(roleName, true, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.UserService.findByRole(roleName, true, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 
