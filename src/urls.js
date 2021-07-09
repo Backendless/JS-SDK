@@ -55,6 +55,10 @@ export default class Urls {
     return `${this.root()}/counters`
   }
 
+  countersList(pattern) {
+    return `${this.counters()}/${pattern || '*'}/list`
+  }
+
   counter(name) {
     return `${this.counters()}/${name}`
   }

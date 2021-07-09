@@ -265,6 +265,51 @@ describe('<Counters>', function() {
     })
   })
 
+  describe('list', () => {
+
+    it('gets a list without pattern', async () => {
+      const req1 = prepareMockRequest(['foo', 'bar', 'test1'])
+
+      const result = await Backendless.Counters.list()
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/counters/*/list`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result).to.be.eql(['foo', 'bar', 'test1'])
+    })
+
+    it('gets a list with pattern', async () => {
+      const req1 = prepareMockRequest(['test1', 'test2', 'test3'])
+
+      const result = await Backendless.Counters.list('test*')
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/counters/test*/list`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result).to.be.eql(['test1', 'test2', 'test3'])
+    })
+
+    it('fails when passed expected/updated to compareAndSet are not numbers', async () => {
+      const expectedValueErrorMsg = 'Counters Pattern can be a string only'
+
+      await expect(Backendless.Counters.list(true)).to.eventually.be.rejectedWith(expectedValueErrorMsg)
+      await expect(Backendless.Counters.list(false)).to.eventually.be.rejectedWith(expectedValueErrorMsg)
+      await expect(Backendless.Counters.list(0)).to.eventually.be.rejectedWith(expectedValueErrorMsg)
+      await expect(Backendless.Counters.list(123)).to.eventually.be.rejectedWith(expectedValueErrorMsg)
+      await expect(Backendless.Counters.list({})).to.eventually.be.rejectedWith(expectedValueErrorMsg)
+      await expect(Backendless.Counters.list([])).to.eventually.be.rejectedWith(expectedValueErrorMsg)
+      await expect(Backendless.Counters.list(() => ({}))).to.eventually.be.rejectedWith(expectedValueErrorMsg)
+    })
+  })
+
   describe('instance', () => {
 
     const counter = Backendless.Counters.of(counterName)

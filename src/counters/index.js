@@ -9,6 +9,16 @@ export default class Counters {
     return new Counter(name, this)
   }
 
+  async list(pattern) {
+    if (pattern !== null && pattern !== undefined && typeof pattern !== 'string') {
+      throw new Error('Counters Pattern can be a string only')
+    }
+
+    return this.app.request.get({
+      url: this.app.urls.countersList(pattern),
+    })
+  }
+
   async incrementAndGet(counterName) {
     if (!counterName || typeof counterName !== 'string') {
       throw new Error('Counter Name must be provided and must be a string.')

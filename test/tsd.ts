@@ -1154,9 +1154,13 @@ function testCounters() {
     const expected: number = 123;
     const updated: number = 123;
     let promiseObject: Promise<Object>;
+    let promiseStrings: Promise<string[]>;
 
     //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
     let resultNum: number = 123;
+
+    promiseStrings = Backendless.Counters.list();
+    promiseStrings = Backendless.Counters.list('*');
 
     promiseObject = Backendless.Counters.get(counterName);
 
