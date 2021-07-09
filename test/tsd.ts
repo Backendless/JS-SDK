@@ -118,6 +118,9 @@ function testDataQueryBuilderClass() {
     dataQuery = dataQuery.setRelationsPageSize(num);
     num = dataQuery.getRelationsPageSize();
 
+    dataQuery = dataQuery.setFileReferencePrefix(str);
+    str = dataQuery.getFileReferencePrefix();
+
     const query: Backendless.DataQueryValueI = dataQuery.build();
 }
 
@@ -289,6 +292,9 @@ function testLoadRelationsQueryBuilder() {
     loadRelationsQueryBuilder = loadRelationsQueryBuilder.setRelationsPageSize(num);
     num = loadRelationsQueryBuilder.getRelationsPageSize();
 
+    loadRelationsQueryBuilder = loadRelationsQueryBuilder.setFileReferencePrefix(str);
+    str = loadRelationsQueryBuilder.getFileReferencePrefix();
+
     loadRelationsQueryBuilder.setRelationName('relationColumn');
     loadRelationsQueryBuilder.setOffset(50);
     loadRelationsQueryBuilder.setPageSize(50);
@@ -381,6 +387,9 @@ function testGroupQueryBuilder() {
     groupQueryBuilder = groupQueryBuilder.setGroupPath(obj)
     groupQueryBuilder = groupQueryBuilder.setGroupPath(objs)
     objs = groupQueryBuilder.getGroupPath()
+
+    groupQueryBuilder = groupQueryBuilder.setFileReferencePrefix(str);
+    str = groupQueryBuilder.getFileReferencePrefix();
 
     groupQueryBuilder.setRelated('relationColumn');
     groupQueryBuilder.setOffset(50);

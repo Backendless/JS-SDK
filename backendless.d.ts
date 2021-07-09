@@ -724,6 +724,10 @@ declare module Backendless {
 
         setRelationsPageSize(relationsPageSize: number): this;
 
+        setFileReferencePrefix(fileReferencePrefix: string): this;
+
+        getFileReferencePrefix(): string;
+
         setDistinct(distinct: boolean): this;
 
         getDistinct(): boolean;
