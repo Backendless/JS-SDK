@@ -81,11 +81,21 @@ describe('<Data> Group Query Builder', function() {
 
     query.addGroupPath(group2)
 
-    expect(query.getGroupPath()).to.be.eql([group1,group2])
+    expect(query.getGroupPath()).to.be.eql([group1, group2])
 
     query.addGroupPath(group3)
 
     expect(query.getGroupPath()).to.be.eql([group1, group2, group3])
+  })
+
+  it('should set fileReferencePrefix', async () => {
+    query.setFileReferencePrefix('/')
+
+    expect(query.getFileReferencePrefix()).to.eql('/')
+
+    query.setFileReferencePrefix('http://foo.com')
+
+    expect(query.getFileReferencePrefix()).to.eql('http://foo.com')
   })
 
   it('should return query object', async () => {
@@ -104,23 +114,25 @@ describe('<Data> Group Query Builder', function() {
     query.setProperties(['p1', 'p2'])
     query.excludeProperties(['e1', 'e2'])
     query.setGroupPath([{ column: 'age', value: 99 }])
+    query.setFileReferencePrefix('http://foo.com')
 
     expect(query.toJSON()).to.be.eql({
-      'distinct'         : true,
-      'offset'           : 111,
-      'pageSize'         : 222,
-      'groupDepth'       : 333,
-      'groupPageSize'    : 444,
-      'relationsDepth'   : 555,
-      'recordsPageSize'  : 666,
-      'relationsPageSize': 777,
-      'where'            : 'w1',
-      'sortBy'           : ['s1'],
-      'groupBy'          : ['g1'],
-      'loadRelations'    : ['r1'],
-      'property'         : ['p1', 'p2'],
-      'excludeProps'     : ['e1', 'e2'],
-      'groupPath'        : [{ 'column': 'age', 'value': 99 }]
+      'distinct'           : true,
+      'offset'             : 111,
+      'pageSize'           : 222,
+      'groupDepth'         : 333,
+      'groupPageSize'      : 444,
+      'relationsDepth'     : 555,
+      'recordsPageSize'    : 666,
+      'relationsPageSize'  : 777,
+      'where'              : 'w1',
+      'sortBy'             : ['s1'],
+      'groupBy'            : ['g1'],
+      'loadRelations'      : ['r1'],
+      'property'           : ['p1', 'p2'],
+      'excludeProps'       : ['e1', 'e2'],
+      'groupPath'          : [{ 'column': 'age', 'value': 99 }],
+      'fileReferencePrefix': 'http://foo.com',
     })
   })
 

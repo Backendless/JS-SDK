@@ -191,6 +191,16 @@ describe('<Data> Query Builder', function() {
     expect(query.getDistinct()).to.eql(false)
   })
 
+  it('should set fileReferencePrefix', async () => {
+    query.setFileReferencePrefix('/')
+
+    expect(query.getFileReferencePrefix()).to.eql('/')
+
+    query.setFileReferencePrefix('http://foo.com')
+
+    expect(query.getFileReferencePrefix()).to.eql('http://foo.com')
+  })
+
   it('should return query object', async () => {
     query.setPageSize(111)
     query.setOffset(222)
@@ -204,20 +214,22 @@ describe('<Data> Query Builder', function() {
     query.setRelationsDepth(123)
     query.setRelationsPageSize(123)
     query.setDistinct(true)
+    query.setFileReferencePrefix('http://foo.com')
 
     expect(query.toJSON()).to.be.eql({
-      'excludeProps'     : ['e1', 'e2'],
-      'groupBy'          : ['g1'],
-      'having'           : 'h1',
-      'offset'           : 222,
-      'pageSize'         : 111,
-      'properties'       : ['p1', 'p2'],
-      'relations'        : ['r1'],
-      'relationsDepth'   : 123,
-      'relationsPageSize': 123,
-      'sortBy'           : ['s1'],
-      'where'            : 'w1',
-      'distinct'         : true,
+      'excludeProps'       : ['e1', 'e2'],
+      'groupBy'            : ['g1'],
+      'having'             : 'h1',
+      'offset'             : 222,
+      'pageSize'           : 111,
+      'properties'         : ['p1', 'p2'],
+      'relations'          : ['r1'],
+      'relationsDepth'     : 123,
+      'relationsPageSize'  : 123,
+      'sortBy'             : ['s1'],
+      'where'              : 'w1',
+      'distinct'           : true,
+      'fileReferencePrefix': 'http://foo.com',
     })
   })
 
@@ -234,20 +246,22 @@ describe('<Data> Query Builder', function() {
     query.setRelationsDepth(123)
     query.setRelationsPageSize(123)
     query.setDistinct(true)
+    query.setFileReferencePrefix('http://foo.com')
 
     expect(Backendless.DataQueryBuilder.toRequestBody(query)).to.be.eql({
-      'excludeProps'     : 'e1,e2',
-      'groupBy'          : 'g1',
-      'having'           : 'h1',
-      'offset'           : 222,
-      'pageSize'         : 111,
-      'props'            : 'p1,p2',
-      'loadRelations'    : 'r1',
-      'relationsDepth'   : 123,
-      'relationsPageSize': 123,
-      'sortBy'           : 's1 asc,s2 desc',
-      'where'            : 'w1',
-      'distinct'         : true,
+      'excludeProps'       : 'e1,e2',
+      'groupBy'            : 'g1',
+      'having'             : 'h1',
+      'offset'             : 222,
+      'pageSize'           : 111,
+      'props'              : 'p1,p2',
+      'loadRelations'      : 'r1',
+      'relationsDepth'     : 123,
+      'relationsPageSize'  : 123,
+      'sortBy'             : 's1 asc,s2 desc',
+      'where'              : 'w1',
+      'distinct'           : true,
+      'fileReferencePrefix': 'http://foo.com',
     })
   })
 
@@ -302,7 +316,7 @@ describe('<Data> Query Builder', function() {
 
     it('properties', () => {
       const queryString1 = Backendless.Data.QueryBuilder.toQueryString({ properties: 'p1' })
-      const queryString2 = Backendless.Data.QueryBuilder.toQueryString({ properties: {p2:'p2'} })
+      const queryString2 = Backendless.Data.QueryBuilder.toQueryString({ properties: { p2: 'p2' } })
       const queryString3 = Backendless.Data.QueryBuilder.toQueryString({ properties: true })
       const queryString4 = Backendless.Data.QueryBuilder.toQueryString({ properties: [] })
       const queryString5 = Backendless.Data.QueryBuilder.toQueryString({ properties: ['p3', 'sum(col) as foo'] })
@@ -323,7 +337,7 @@ describe('<Data> Query Builder', function() {
 
     it('excludeProps', () => {
       const queryString1 = Backendless.Data.QueryBuilder.toQueryString({ excludeProps: 'p1' })
-      const queryString2 = Backendless.Data.QueryBuilder.toQueryString({ excludeProps: {p2:'p2'} })
+      const queryString2 = Backendless.Data.QueryBuilder.toQueryString({ excludeProps: { p2: 'p2' } })
       const queryString3 = Backendless.Data.QueryBuilder.toQueryString({ excludeProps: true })
       const queryString4 = Backendless.Data.QueryBuilder.toQueryString({ excludeProps: [] })
       const queryString5 = Backendless.Data.QueryBuilder.toQueryString({ excludeProps: ['p3', 'sum(col) as foo'] })
@@ -467,6 +481,23 @@ describe('<Data> Query Builder', function() {
       expect(queryString2).to.be.equal('')
       expect(queryString3).to.be.equal('')
       expect(queryString4).to.be.equal('pageSize=10&relationsPageSize=200')
+    })
+
+    it('fileReferencePrefix', () => {
+      const queryString1 = Backendless.Data.QueryBuilder.toQueryString({ fileReferencePrefix: null })
+      const queryString2 = Backendless.Data.QueryBuilder.toQueryString({ fileReferencePrefix: '/' })
+      const queryString3 = Backendless.Data.QueryBuilder.toQueryString({ fileReferencePrefix: 'https://foo-bar.com' })
+      const queryString4 = Backendless.Data.QueryBuilder.toQueryString({ fileReferencePrefix: '/with spaces' })
+
+      query.setFileReferencePrefix('/my-path')
+
+      const queryString5 = Backendless.Data.QueryBuilder.toQueryString(query)
+
+      expect(queryString1).to.be.equal('')
+      expect(queryString2).to.be.equal('fileReferencePrefix=%2F')
+      expect(queryString3).to.be.equal('fileReferencePrefix=https%3A%2F%2Ffoo-bar.com')
+      expect(queryString4).to.be.equal('fileReferencePrefix=%2Fwith%20spaces')
+      expect(queryString5).to.be.equal('pageSize=10&fileReferencePrefix=%2Fmy-path')
     })
   })
 })
