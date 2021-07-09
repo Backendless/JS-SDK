@@ -88,6 +88,29 @@ describe('Backendless.Counters', function() {
     })
   })
 
+  describe('list', function() {
+
+    beforeEach(async () => {
+      await Backendless.Counters.incrementAndGet('testPattern1')
+      await Backendless.Counters.incrementAndGet('testPattern2bar')
+      await Backendless.Counters.incrementAndGet('testPattern3bar')
+    })
+
+    it('gets a list without pattern', async () => {
+      const list = await Backendless.Counters.list()
+
+      expect(list).to.include.members(['testPattern1', 'testPattern2bar', 'testPattern3bar'])
+    })
+
+    it('gets a list with pattern', async () => {
+      const list = await Backendless.Counters.list('testPattern*bar')
+
+      expect(list).to.not.include.members(['testPattern1'])
+      expect(list).to.include.members(['testPattern2bar', 'testPattern3bar'])
+    })
+
+  })
+
   describe('instance', function() {
 
     it('feature accessible', function() {

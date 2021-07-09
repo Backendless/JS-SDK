@@ -543,6 +543,8 @@ declare module Backendless {
      * @namespace Backendless.Counters
      **/
     namespace Counters {
+        function list(pattern?: string): Promise<string[]>;
+
         function of(counterName: string): Counter;
 
         function get(counterName: string): Promise<number>;
