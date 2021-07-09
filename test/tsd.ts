@@ -25,7 +25,7 @@ function testMain() {
     });
 
     Backendless.initApp('https://my-custom-domain.com')
-    Backendless.initApp({ domain: 'https://my-custom-domain.com', standalone: true })
+    Backendless.initApp({domain: 'https://my-custom-domain.com', standalone: true})
 }
 
 function testLocalCache() {
@@ -429,6 +429,26 @@ function testDataStoreClass() {
     let promiseObject: Promise<Object>;
     let promiseNum: Promise<number>;
 
+    const dataQueryObject = {
+        pageSize: 123,
+        offset: 123,
+        properties: ['p1', 'p2'],
+        excludeProps: ['p1', 'p2'],
+        where: 'foo=1',
+        having: 'foo=1',
+        sortBy: ['s1'],
+        groupBy: ['s1'],
+        relations: ['r1'],
+        relationsDepth: 123,
+        relationsPageSize: 123,
+        fileReferencePrefix: '/',
+    }
+
+    const relationsDataQueryObject = {
+        ...dataQueryObject,
+        relationName: 'rel-name',
+        relationModel: Person,
+    }
 
     promiseObject = dataStore.save(item);
     promisePerson = dataStore.save<Person>(person);
@@ -441,14 +461,17 @@ function testDataStoreClass() {
 
     promiseObject = dataStore.find();
     promiseObject = dataStore.find(dataQueryBuilder);
+    promiseObject = dataStore.find(dataQueryObject);
     promiseObject = dataStore.find({pageSize: 123, offset: 0});
 
     promisePersons = dataStore.find<Person>();
     promisePersons = dataStore.find<Person>(dataQueryBuilder);
+    promisePersons = dataStore.find<Person>(dataQueryObject);
     promisePersons = dataStore.find<Person>({pageSize: 123, offset: 0});
 
     promiseObject = dataStore.findById('myId');
     promiseObject = dataStore.findById('myId', dataQueryBuilder);
+    promiseObject = dataStore.findById('myId', dataQueryObject);
     promiseObject = dataStore.findById('myId', {pageSize: 123});
     promiseObject = dataStore.findById({foo: 'myId'});
     promiseObject = dataStore.findById({foo: 'myId'}, dataQueryBuilder);
@@ -456,32 +479,40 @@ function testDataStoreClass() {
 
     promisePerson = dataStore.findById<Person>('myId');
     promisePerson = dataStore.findById<Person>('myId', dataQueryBuilder);
+    promisePerson = dataStore.findById<Person>('myId', dataQueryObject);
     promisePerson = dataStore.findById<Person>('myId', {pageSize: 123});
     promisePerson = dataStore.findById<Person>({foo: 'myId'});
+    promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
     promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
     promisePerson = dataStore.findById<Person>({foo: 'myId'}, {pageSize: 123});
 
     promiseObject = dataStore.findFirst();
     promiseObject = dataStore.findFirst(dataQueryBuilder);
+    promiseObject = dataStore.findFirst(dataQueryObject);
     promiseObject = dataStore.findFirst({pageSize: 123});
 
     promisePerson = dataStore.findFirst<Person>();
     promisePerson = dataStore.findFirst<Person>(dataQueryBuilder);
+    promisePerson = dataStore.findFirst<Person>(dataQueryObject);
     promisePerson = dataStore.findFirst<Person>({pageSize: 123});
 
     promiseObject = dataStore.findLast();
     promiseObject = dataStore.findLast(dataQueryBuilder);
+    promiseObject = dataStore.findLast(dataQueryObject);
     promiseObject = dataStore.findLast({pageSize: 123});
 
     promisePerson = dataStore.findLast<Person>();
     promisePerson = dataStore.findLast<Person>(dataQueryBuilder);
+    promisePerson = dataStore.findLast<Person>(dataQueryObject);
     promisePerson = dataStore.findLast<Person>({pageSize: 123});
 
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
+    promiseObject = dataStore.loadRelations(parentTableName, relationsDataQueryObject);
     promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1'});
     promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1', relationModel: Person});
 
     promisePersons = dataStore.loadRelations<Person>(parentTableName, loadRelationsQueryBuilder);
+    promisePersons = dataStore.loadRelations<Person>(parentTableName, relationsDataQueryObject);
     promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1'});
     promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1', relationModel: Person});
 

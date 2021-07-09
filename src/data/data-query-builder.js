@@ -207,6 +207,16 @@ export default class DataQueryBuilder {
     return this.distinct
   }
 
+  setFileReferencePrefix(fileReferencePrefix) {
+    this.fileReferencePrefix = fileReferencePrefix
+
+    return this
+  }
+
+  getFileReferencePrefix() {
+    return this.fileReferencePrefix
+  }
+
   toJSON() {
     return {
       pageSize: this.pageSize,
@@ -225,7 +235,9 @@ export default class DataQueryBuilder {
       relationsDepth   : this.relationsDepth,
       relationsPageSize: this.relationsPageSize,
 
-      distinct: this.distinct
+      distinct: this.distinct,
+
+      fileReferencePrefix: this.fileReferencePrefix,
     }
   }
 
@@ -326,6 +338,10 @@ export default class DataQueryBuilder {
 
     if (query.distinct) {
       queryTokens.push(`distinct=${query.distinct}`)
+    }
+
+    if (query.fileReferencePrefix) {
+      queryTokens.push(`fileReferencePrefix=${encodeURIComponent(query.fileReferencePrefix)}`)
     }
 
     return queryTokens.join('&')

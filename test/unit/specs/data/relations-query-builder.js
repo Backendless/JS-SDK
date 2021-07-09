@@ -185,6 +185,16 @@ describe('<Data> Relations Query Builder', function() {
     expect(query.getRelationsPageSize()).to.be.eql(555)
   })
 
+  it('should set fileReferencePrefix', async () => {
+    query.setFileReferencePrefix('/')
+
+    expect(query.getFileReferencePrefix()).to.eql('/')
+
+    query.setFileReferencePrefix('http://foo.com')
+
+    expect(query.getFileReferencePrefix()).to.eql('http://foo.com')
+  })
+
   it('should return query object', async () => {
     class TestModel {
     }
@@ -203,22 +213,24 @@ describe('<Data> Relations Query Builder', function() {
     query.setRelationsDepth(123)
     query.setRelationsPageSize(123)
     query.setDistinct(true)
+    query.setFileReferencePrefix('http://foo.com')
 
     expect(query.toJSON()).to.be.eql({
-      'relationModel'    : TestModel,
-      'relationName'     : 'test-rel-name',
-      'excludeProps'     : ['e1', 'e2'],
-      'groupBy'          : ['g1'],
-      'having'           : 'h1',
-      'offset'           : 222,
-      'pageSize'         : 111,
-      'properties'       : ['p1', 'p2'],
-      'relations'        : ['r1'],
-      'relationsDepth'   : 123,
-      'relationsPageSize': 123,
-      'sortBy'           : ['s1'],
-      'where'            : 'w1',
-      'distinct'         : true,
+      'relationModel'      : TestModel,
+      'relationName'       : 'test-rel-name',
+      'excludeProps'       : ['e1', 'e2'],
+      'groupBy'            : ['g1'],
+      'having'             : 'h1',
+      'offset'             : 222,
+      'pageSize'           : 111,
+      'properties'         : ['p1', 'p2'],
+      'relations'          : ['r1'],
+      'relationsDepth'     : 123,
+      'relationsPageSize'  : 123,
+      'sortBy'             : ['s1'],
+      'where'              : 'w1',
+      'distinct'           : true,
+      'fileReferencePrefix': 'http://foo.com',
     })
   })
 

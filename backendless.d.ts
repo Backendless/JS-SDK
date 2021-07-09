@@ -644,6 +644,8 @@ declare module Backendless {
         relations?: Array<string>;
         relationsDepth?: number;
         relationsPageSize?: number;
+
+        fileReferencePrefix?: string;
     }
 
     interface RelationsQueryI extends DataQueryI {
