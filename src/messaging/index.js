@@ -105,7 +105,7 @@ export default class Messaging {
       })
   }
 
-  async sendEmailFromTemplate(templateName, envelopeObject, templateValues) {
+  async sendEmailFromTemplate(templateName, envelopeObject, templateValues, attachments) {
     if (!templateName || typeof templateName !== 'string') {
       throw new Error('Email Template Name must be provided and must be a string.')
     }
@@ -120,6 +120,10 @@ export default class Messaging {
 
     if (templateValues) {
       data['template-values'] = templateValues
+    }
+
+    if (attachments) {
+      data.attachment = attachments
     }
 
     return this.app.request.post({

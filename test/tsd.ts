@@ -993,6 +993,8 @@ function testMessaging() {
 
     promiseObject = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues, attachments);
+
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);

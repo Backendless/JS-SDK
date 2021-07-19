@@ -212,6 +212,7 @@ describe('<Messaging> Emails', function() {
 
     const templateName = 'MY_TEMPLATE_NAME'
     const templateValues = { foo: 'bar' }
+    const attachments = ['path/to/file']
 
     beforeEach(() => {
       emailEnvelope = new Backendless.EmailEnvelope({ addresses: ['foo@bar.com'] })
@@ -248,6 +249,26 @@ describe('<Messaging> Emails', function() {
           addresses        : ['foo@bar.com'],
           'template-name'  : templateName,
           'template-values': templateValues,
+        }
+      })
+
+      expect(result1).to.be.eql({ fakeResult })
+    })
+
+    it('sends an email with attachments', async () => {
+      const req1 = prepareMockRequest({ fakeResult })
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, templateValues, attachments)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/emailtemplate/send`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          addresses        : ['foo@bar.com'],
+          'template-name'  : templateName,
+          'template-values': templateValues,
+          attachment: attachments
         }
       })
 
