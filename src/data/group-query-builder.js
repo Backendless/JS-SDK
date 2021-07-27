@@ -74,14 +74,6 @@ export default class GroupQueryBuilder extends DataQueryBuilder {
   toJSON() {
     const result = super.toJSON()
 
-    delete result.having
-
-    delete result.properties
-    result.property = this.getProperties()
-
-    delete result.relations
-    result.loadRelations = this.getRelated()
-
     result.groupDepth = this.getGroupDepth()
     result.groupPath = this.getGroupPath()
     result.groupPageSize = this.getGroupPageSize()

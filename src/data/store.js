@@ -87,23 +87,23 @@ export default class DataStore {
       .then(result => this.parseResponse(result))
   }
 
-  async group(data) {
+  async group(query) {
     return this.app.request
       .post({
         url : this.app.urls.dataGrouping(this.className),
-        data: data
+        data: DataQueryBuilder.toRequestBody(query)
       })
   }
 
-  async countInGroup(data) {
-    if (!data.groupPath || typeof data.groupPath !== 'object') {
+  async countInGroup(query) {
+    if (!query.groupPath || typeof query.groupPath !== 'object') {
       throw new Error('Group Path must be provided and must be an object.')
     }
 
     return this.app.request
       .post({
         url : `${this.app.urls.dataGrouping(this.className)}/count`,
-        data: data
+        data: DataQueryBuilder.toRequestBody(query)
       })
   }
 
