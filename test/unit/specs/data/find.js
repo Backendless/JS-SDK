@@ -106,7 +106,18 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query),
+          pageSize         : 50,
+          offset           : 15,
+          excludeProps     : 'foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8',
+          where            : 'age >= 100',
+          having           : 'age >= 200',
+          sortBy           : 'created',
+          groupBy          : 'objectId',
+          relationsDepth   : 3,
+          relationsPageSize: 25,
+          distinct         : true,
+          props            : 'foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8,prop9,*',
+          loadRelations    : 'rel1,rel2,rel3'
         }
       })
 
@@ -115,7 +126,9 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query2),
+          pageSize: 10,
+          offset  : 0,
+          distinct: false
         }
       })
 
@@ -124,7 +137,17 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query3),
+          pageSize         : 30,
+          offset           : 40,
+          excludeProps     : 'prop-3,prop-3',
+          where            : 'test-where',
+          having           : 'test-having',
+          sortBy           : 'test-sortby',
+          groupBy          : 'test-groupby',
+          relationsDepth   : 4,
+          relationsPageSize: 70,
+          props            : 'prop-1,prop-2',
+          loadRelations    : 'rel-1,rel-2'
         }
       })
 
@@ -357,10 +380,18 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query),
-          pageSize: 1,
-          offset  : 0,
-          sortBy  : 'created'
+          pageSize         : 1,
+          offset           : 0,
+          excludeProps     : 'foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8',
+          where            : 'age >= 100',
+          having           : 'age >= 200',
+          sortBy           : 'created',
+          groupBy          : 'objectId',
+          relationsDepth   : 3,
+          relationsPageSize: 25,
+          distinct         : true,
+          props            : 'foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8,prop9,*',
+          loadRelations    : 'rel1,rel2,rel3'
         }
       })
 
@@ -369,9 +400,9 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query2),
           pageSize: 1,
           offset  : 0,
+          distinct: false,
           sortBy  : 'created asc'
         }
       })
@@ -381,10 +412,17 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query3),
-          pageSize: 1,
-          offset  : 0,
-          sortBy  : 'test-sortby'
+          pageSize         : 1,
+          offset           : 0,
+          excludeProps     : 'prop-3,prop-3',
+          where            : 'test-where',
+          having           : 'test-having',
+          sortBy           : 'test-sortby',
+          groupBy          : 'test-groupby',
+          relationsDepth   : 4,
+          relationsPageSize: 70,
+          props            : 'prop-1,prop-2',
+          loadRelations    : 'rel-1,rel-2'
         }
       })
 
@@ -480,10 +518,18 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query),
-          pageSize: 1,
-          offset  : 0,
-          sortBy  : 'created'
+          pageSize         : 1,
+          offset           : 0,
+          excludeProps     : 'foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8',
+          where            : 'age >= 100',
+          having           : 'age >= 200',
+          sortBy           : 'created',
+          groupBy          : 'objectId',
+          relationsDepth   : 3,
+          relationsPageSize: 25,
+          distinct         : true,
+          props            : 'foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8,prop9,*',
+          loadRelations    : 'rel1,rel2,rel3'
         }
       })
 
@@ -492,9 +538,9 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query2),
           pageSize: 1,
           offset  : 0,
+          distinct: false,
           sortBy  : 'created desc'
         }
       })
@@ -504,10 +550,17 @@ describe('<Data> Find', function() {
         path   : `${APP_PATH}/data/${tableName}/find`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          ...Backendless.DataQueryBuilder.toRequestBody(query3),
-          pageSize: 1,
-          offset  : 0,
-          sortBy  : 'test-sortby'
+          pageSize         : 1,
+          offset           : 0,
+          excludeProps     : 'prop-3,prop-3',
+          where            : 'test-where',
+          having           : 'test-having',
+          sortBy           : 'test-sortby',
+          groupBy          : 'test-groupby',
+          relationsDepth   : 4,
+          relationsPageSize: 70,
+          props            : 'prop-1,prop-2',
+          loadRelations    : 'rel-1,rel-2'
         }
       })
 
@@ -633,7 +686,7 @@ describe('<Data> Find', function() {
           'Content-Type': 'application/json'
         },
         body   : {
-          where   : 'bar>123'
+          where: 'bar>123'
         }
       })
 

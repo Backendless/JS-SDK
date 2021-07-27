@@ -31,21 +31,11 @@ describe('<Data> Grouping', function() {
         path   : `${APP_PATH}/data/data-grouping/${tableName}`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          'distinct'         : false,
-          'excludeProps'     : null,
-          'groupBy'          : null,
-          'groupDepth'       : null,
-          'groupPageSize'    : 10,
-          'groupPath'        : null,
-          'offset'           : 0,
-          'pageSize'         : 10,
-          'property'         : null,
-          'recordsPageSize'  : 10,
-          'loadRelations'    : null,
-          'relationsDepth'   : null,
-          'relationsPageSize': null,
-          'sortBy'           : null,
-          'where'            : null
+          distinct       : false,
+          groupPageSize  : 10,
+          offset         : 0,
+          pageSize       : 10,
+          recordsPageSize: 10,
         }
       })
 
@@ -78,21 +68,21 @@ describe('<Data> Grouping', function() {
         path   : `${APP_PATH}/data/data-grouping/${tableName}`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          'pageSize'         : 11,
-          'groupDepth'       : 22,
-          'groupPageSize'    : 33,
-          'offset'           : 44,
-          'recordsPageSize'  : 55,
-          'relationsDepth'   : 66,
-          'relationsPageSize': 77,
-          'distinct'         : true,
-          'where'            : 'age = 10',
-          'loadRelations'    : ['baz'],
-          'excludeProps'     : ['name'],
-          'sortBy'           : ['city'],
-          'property'         : ['foobar'],
-          'groupBy'          : ['country'],
-          'groupPath'        : [{ 'column': 'id', 'value': 123 }],
+          pageSize         : 11,
+          groupDepth       : 22,
+          groupPageSize    : 33,
+          offset           : 44,
+          recordsPageSize  : 55,
+          relationsDepth   : 66,
+          relationsPageSize: 77,
+          distinct         : true,
+          where            : 'age = 10',
+          loadRelations    : 'baz',
+          excludeProps     : 'name',
+          sortBy           : 'city',
+          props            : 'foobar',
+          groupBy          : 'country',
+          groupPath        : [{ 'column': 'id', 'value': 123 }],
         }
       })
     })
@@ -110,21 +100,7 @@ describe('<Data> Grouping', function() {
 
       const req1 = prepareMockRequest(responseData)
 
-      query.setPageSize(11)
-      query.setGroupDepth(22)
-      query.setGroupPageSize(33)
-      query.setOffset(44)
-      query.setRelationsDepth(66)
-      query.setRecordsPageSize(55)
-      query.setRelationsPageSize(77)
-      query.setDistinct(true)
-      query.setSortBy('city')
-      query.setRelated('baz')
-      query.setGroupBy('country')
-      query.addProperty('foobar')
-      query.excludeProperty('name')
-      query.setWhereClause('age = 10')
-      query.setGroupPath({ column: 'id', value: 123 })
+      query.setGroupPath({ column: 'foo', value: 'bar' })
 
       const result = await Backendless.Data.of(tableName).countInGroup(query)
 
@@ -133,21 +109,12 @@ describe('<Data> Grouping', function() {
         path   : `${APP_PATH}/data/data-grouping/${tableName}/count`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          'pageSize'         : 11,
-          'groupDepth'       : 22,
-          'groupPageSize'    : 33,
-          'offset'           : 44,
-          'recordsPageSize'  : 55,
-          'relationsDepth'   : 66,
-          'relationsPageSize': 77,
-          'distinct'         : true,
-          'where'            : 'age = 10',
-          'loadRelations'    : ['baz'],
-          'excludeProps'     : ['name'],
-          'sortBy'           : ['city'],
-          'property'         : ['foobar'],
-          'groupBy'          : ['country'],
-          'groupPath'        : [{ 'column': 'id', 'value': 123 }],
+          distinct       : false,
+          groupPageSize  : 10,
+          groupPath      : [{ 'column': 'foo', 'value': 'bar' }],
+          offset         : 0,
+          pageSize       : 10,
+          recordsPageSize: 10,
         }
       })
 
@@ -159,7 +126,23 @@ describe('<Data> Grouping', function() {
 
       const req1 = prepareMockRequest(responseData)
 
-      query.setGroupPath({ column: 'foo', value: 'bar' })
+      query.setPageSize(11)
+      query.setGroupDepth(22)
+      query.setGroupPageSize(33)
+      query.setOffset(44)
+      query.setRelationsDepth(66)
+      query.setRecordsPageSize(55)
+      query.setRelationsPageSize(77)
+      query.setDistinct(true)
+      query.setSortBy(['city', 's1', 's2'])
+      query.setRelated('baz')
+      query.setGroupBy('country')
+      query.addProperty('foobar')
+      query.addProperties('name', 'age')
+      query.excludeProperties('foo', 'bar')
+      query.excludeProperty('name')
+      query.setWhereClause('age = 10')
+      query.setGroupPath({ column: 'id', value: 123 })
 
       const result = await Backendless.Data.of(tableName).countInGroup(query)
 
@@ -168,25 +151,26 @@ describe('<Data> Grouping', function() {
         path   : `${APP_PATH}/data/data-grouping/${tableName}/count`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          'distinct'         : false,
-          'excludeProps'     : null,
-          'groupBy'          : null,
-          'groupDepth'       : null,
-          'groupPageSize'    : 10,
-          'groupPath'        : [{ 'column': 'foo', 'value': 'bar' }],
-          'offset'           : 0,
-          'pageSize'         : 10,
-          'property'         : null,
-          'recordsPageSize'  : 10,
-          'loadRelations'    : null,
-          'relationsDepth'   : null,
-          'relationsPageSize': null,
-          'sortBy'           : null,
-          'where'            : null
+          pageSize         : 11,
+          groupDepth       : 22,
+          groupPageSize    : 33,
+          offset           : 44,
+          recordsPageSize  : 55,
+          relationsDepth   : 66,
+          relationsPageSize: 77,
+          distinct         : true,
+          where            : 'age = 10',
+          loadRelations    : 'baz',
+          excludeProps     : 'foo,bar,name',
+          sortBy           : 'city,s1,s2',
+          props            : 'foobar,name,age',
+          groupBy          : 'country',
+          groupPath        : [{ 'column': 'id', 'value': 123 }],
         }
       })
 
       expect(result).to.be.equal(responseData)
     })
+
   })
 })

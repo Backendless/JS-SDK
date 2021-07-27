@@ -248,7 +248,9 @@ export default class DataQueryBuilder {
 
     Object.keys(query).forEach(param => {
       if (Array.isArray(query[param])) {
-        query[param] = query[param].join(',')
+        if (param !== 'groupPath') {
+          query[param] = query[param].join(',')
+        }
       } else if (query[param] == null) {
         delete query[param]
       }
