@@ -207,7 +207,7 @@ export default class Users {
 
     return this.app.request
       .post({
-        url : this.app.urls.userVerifyPassowrd(),
+        url : this.app.urls.userVerifyPassword(),
         data: {
           password: currentPassword,
         }

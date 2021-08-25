@@ -294,8 +294,8 @@ export default class Urls {
     return `${this.users()}/isvalidusertoken/${token}`
   }
 
-  userVerifyPassowrd() {
-    return `${this.users()}/verifypassowrd`
+  userVerifyPassword() {
+    return `${this.users()}/verifypassword`
   }
 
   userResendConfirmation(identity) {

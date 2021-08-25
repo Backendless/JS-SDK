@@ -37,7 +37,7 @@ describe('<Users> Password', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/verifypassowrd`,
+        path   : `${APP_PATH}/users/verifypassword`,
         headers: { 'Content-Type': 'application/json', 'user-token': 'mock-user-token' },
         body   : {
           password: 'valid-password-123456'
@@ -46,7 +46,7 @@ describe('<Users> Password', function() {
 
       expect(req2).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/users/verifypassowrd`,
+        path   : `${APP_PATH}/users/verifypassword`,
         headers: { 'Content-Type': 'application/json', 'user-token': 'mock-user-token' },
         body   : {
           password: 'invalid-password'
