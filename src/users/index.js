@@ -307,10 +307,10 @@ export default class Users {
     })
   }
 
-  getAuthorizationUrlLink(providerCode, fieldsMapping, scope, redirect) {
+  getAuthorizationUrlLink(providerCode, fieldsMapping, scope, redirect, redirectAfterLoginUrl) {
     return this.app.request.post({
       url : this.app.urls.userAuthorizationURL(providerCode),
-      data: { fieldsMapping, permissions: scope, redirect }
+      data: { fieldsMapping, permissions: scope, redirect, redirectAfterLoginUrl }
     })
   }
 
