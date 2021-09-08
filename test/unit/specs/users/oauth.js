@@ -255,10 +255,11 @@ describe('<Users> OAuth Login', function() {
         const provideCode = 'google'
         const scope = 'email;photo'
         const redirect = false
+        const redirectAfterLoginUrl = 'https://authorization-redirect-url-example.com'
 
         const req = prepareMockRequest(url)
 
-        const authorizationURL = await Backendless.UserService.getAuthorizationUrlLink(provideCode, fieldsMapping, scope, redirect)
+        const authorizationURL = await Backendless.UserService.getAuthorizationUrlLink(provideCode, fieldsMapping, scope, redirect, redirectAfterLoginUrl)
 
         expect(req).to.deep.include({
           method : 'POST',
@@ -268,6 +269,7 @@ describe('<Users> OAuth Login', function() {
             fieldsMapping,
             permissions: scope,
             redirect,
+            redirectAfterLoginUrl,
           }
         })
 
