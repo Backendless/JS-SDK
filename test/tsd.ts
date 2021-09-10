@@ -911,6 +911,7 @@ function testUserService() {
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', {email: 'userEmail'}, 'email;photo', false);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, true);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google');
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, false, 'url');
 
     promiseUsersList = Backendless.UserService.findByRole(roleName);
     promiseUsersList = Backendless.UserService.findByRole(roleName, true);
