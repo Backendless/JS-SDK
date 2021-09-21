@@ -155,5 +155,66 @@ describe('<BusinessLogic> API Services', function() {
       })
 
     })
+
+    it('should run with options', async () => {
+      const req1 = prepareMockRequest()
+      const req2 = prepareMockRequest()
+      const req3 = prepareMockRequest()
+      const req4 = prepareMockRequest()
+
+      const httpRequestHeaders = { 'custom-header': 'headerValue' }
+      const options1 = { executionType: Backendless.BL.ExecutionTypes.ASYNC, httpRequestHeaders }
+      const options2 = { executionType: Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY, httpRequestHeaders }
+      const options3 = { executionType: Backendless.BL.ExecutionTypes.SYNC, httpRequestHeaders }
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, args, options1)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : args,
+        headers: {
+          ...httpRequestHeaders,
+          'Content-Type'     : 'application/json',
+          'bl-execution-type': 'async'
+        },
+      })
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, Backendless.BL.ExecutionTypes.SYNC, options2)
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : undefined,
+        headers: {
+          'bl-execution-type': 'sync'
+        },
+      })
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, null, options2)
+
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : null,
+        headers: {
+          ...httpRequestHeaders,
+          'bl-execution-type': 'async-low-priority'
+        },
+      })
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, null, options3)
+
+      expect(req4).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : null,
+        headers: {
+          ...httpRequestHeaders,
+          'bl-execution-type': 'sync'
+        },
+      })
+
+    })
   })
 })

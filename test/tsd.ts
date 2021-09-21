@@ -1250,6 +1250,12 @@ function testCustomServices() {
     const parameters: Object = {};
     let resultObj: any
     let promiseAny: Promise<any>
+    let executionType: string = Backendless.BL.ExecutionTypes.SYNC
+    let httpRequestHeaders: Object = { 'custom-header': 'value'  }
+    let options1: Object = {}
+    let options2: Object = { httpRequestHeaders }
+    let options3: Object = { executionType }
+    let options4: Object = { executionType, httpRequestHeaders }
 
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
@@ -1264,6 +1270,15 @@ function testCustomServices() {
     promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC);
     promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
     promiseAny = Backendless.APIServices.invoke(serviceName, method, Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY);
+
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, options1);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, options2);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, options3);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, parameters, options4);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, null, options1);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, null, options2);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, null, options3);
+    promiseAny = Backendless.APIServices.invoke(serviceName, method, null, options4);
 }
 
 function testLogging() {

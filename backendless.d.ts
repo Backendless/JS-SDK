@@ -485,11 +485,15 @@ declare module Backendless {
         }
 
         export interface CustomServicesI {
-            invoke(serviceName: string, method: string, parameters: Object): Promise<any>;
+            invoke(serviceName: string, method: string, parameters?: Object): Promise<any>;
 
-            invoke(serviceName: string, method: string, parameters: Object, executionType: string): Promise<any>;
+            invoke(serviceName: string, method: string, parameters: Object|null, executionType?: string): Promise<any>;
 
-            invoke(serviceName: string, method: string, executionType: string): Promise<any>;
+            invoke(serviceName: string, method: string, executionType?: string): Promise<any>;
+
+            invoke(serviceName: string, method: string, parameters: Object|null, executionType?: string): Promise<any>;
+
+            invoke(serviceName: string, method: string, parameters: Object|null, options?: { executionType?: string, httpRequestHeaders?: Object }): Promise<any>;
         }
 
         /**
