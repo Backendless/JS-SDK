@@ -30,7 +30,7 @@ export default class CustomServices {
 
     options = options || {}
 
-    const headers = options.httpRequestHeaders || {}
+    const headers = { ...options.httpRequestHeaders }
 
     if (options.executionType) {
       headers[EXECUTION_TYPE_HEADER] = options.executionType

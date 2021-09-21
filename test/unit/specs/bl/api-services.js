@@ -162,10 +162,20 @@ describe('<BusinessLogic> API Services', function() {
       const req3 = prepareMockRequest()
       const req4 = prepareMockRequest()
 
-      const httpRequestHeaders = { 'custom-header': 'headerValue' }
-      const options1 = { executionType: Backendless.BL.ExecutionTypes.ASYNC, httpRequestHeaders }
-      const options2 = { executionType: Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY, httpRequestHeaders }
-      const options3 = { executionType: Backendless.BL.ExecutionTypes.SYNC, httpRequestHeaders }
+      const options1 = {
+        executionType     : Backendless.BL.ExecutionTypes.ASYNC,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
+
+      const options2 = {
+        executionType     : Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
+
+      const options3 = {
+        executionType     : Backendless.BL.ExecutionTypes.SYNC,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
 
       await Backendless.BL.CustomServices.invoke(serviceName, methodName, args, options1)
 
@@ -174,9 +184,9 @@ describe('<BusinessLogic> API Services', function() {
         path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
         body   : args,
         headers: {
-          ...httpRequestHeaders,
           'Content-Type'     : 'application/json',
-          'bl-execution-type': 'async'
+          'bl-execution-type': 'async',
+          'custom-header'    : 'headerValue',
         },
       })
 
@@ -198,7 +208,7 @@ describe('<BusinessLogic> API Services', function() {
         path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
         body   : null,
         headers: {
-          ...httpRequestHeaders,
+          'custom-header'    : 'headerValue',
           'bl-execution-type': 'async-low-priority'
         },
       })
@@ -210,7 +220,7 @@ describe('<BusinessLogic> API Services', function() {
         path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
         body   : null,
         headers: {
-          ...httpRequestHeaders,
+          'custom-header'    : 'headerValue',
           'bl-execution-type': 'sync'
         },
       })

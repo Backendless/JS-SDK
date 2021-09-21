@@ -1247,15 +1247,15 @@ function testCounters() {
 function testCustomServices() {
     const serviceName: string = 'str';
     const method: string = 'str';
-    const parameters: Object = {};
+    const parameters: object = {};
     let resultObj: any
     let promiseAny: Promise<any>
     let executionType: string = Backendless.BL.ExecutionTypes.SYNC
-    let httpRequestHeaders: Object = { 'custom-header': 'value'  }
-    let options1: Object = {}
-    let options2: Object = { httpRequestHeaders }
-    let options3: Object = { executionType }
-    let options4: Object = { executionType, httpRequestHeaders }
+    let httpRequestHeaders: object = { 'custom-header': 'value'  }
+    let options1: object = {}
+    let options2: object = { httpRequestHeaders }
+    let options3: object = { executionType }
+    let options4: object = { executionType, httpRequestHeaders }
 
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
