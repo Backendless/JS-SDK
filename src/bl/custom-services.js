@@ -5,7 +5,7 @@ export default class CustomServices {
     this.app = app
   }
 
-  async invoke(serviceName, methodName, parameters, executionType) {
+  async invoke(serviceName, methodName, parameters, options) {
     if (!serviceName || typeof serviceName !== 'string') {
       throw new Error('Service Name must be provided and must be a string.')
     }
@@ -14,15 +14,26 @@ export default class CustomServices {
       throw new Error('Method Name must be provided and must be a string.')
     }
 
+    if (typeof options === 'string') {
+      options = {
+        executionType: options
+      }
+    }
+
     if (typeof parameters === 'string' && isExecutionType(parameters)) {
-      executionType = parameters
+      options = {
+        executionType: parameters
+      }
+
       parameters = undefined
     }
 
-    const headers = {}
+    options = options || {}
 
-    if (executionType) {
-      headers[EXECUTION_TYPE_HEADER] = executionType
+    const headers = { ...options.httpRequestHeaders }
+
+    if (options.executionType) {
+      headers[EXECUTION_TYPE_HEADER] = options.executionType
     }
 
     return this.app.request.post({

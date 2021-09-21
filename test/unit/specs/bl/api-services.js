@@ -156,4 +156,110 @@ describe('<BusinessLogic> API Services', function() {
 
     })
   })
+
+  describe('Options and Custom Headers', function() {
+    it('should run with options', async () => {
+      const req1 = prepareMockRequest()
+      const req2 = prepareMockRequest()
+      const req3 = prepareMockRequest()
+
+      const options1 = {
+        executionType     : Backendless.BL.ExecutionTypes.ASYNC,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
+
+      const options2 = {
+        executionType     : Backendless.BL.ExecutionTypes.ASYNC_LOW_PRIORITY,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
+
+      const options3 = {
+        executionType     : Backendless.BL.ExecutionTypes.SYNC,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, args, options1)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : args,
+        headers: {
+          'Content-Type'     : 'application/json',
+          'bl-execution-type': 'async',
+          'custom-header'    : 'headerValue',
+        },
+      })
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, null, options2)
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : null,
+        headers: {
+          'custom-header'    : 'headerValue',
+          'bl-execution-type': 'async-low-priority'
+        },
+      })
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, null, options3)
+
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : null,
+        headers: {
+          'custom-header'    : 'headerValue',
+          'bl-execution-type': 'sync'
+        },
+      })
+    })
+
+    it('should ignore options if parameters specified as string (execution type)', async function() {
+      const req = prepareMockRequest()
+
+      const options = {
+        executionType     : Backendless.BL.ExecutionTypes.ASYNC,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, Backendless.BL.ExecutionTypes.SYNC, options)
+
+      expect(req).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : undefined,
+        headers: {
+          'bl-execution-type': 'sync'
+        },
+      })
+    })
+
+    it('should not override httpRequestHeaders if executionType is specified', async function() {
+      const req = prepareMockRequest()
+
+      const options = {
+        executionType     : Backendless.BL.ExecutionTypes.ASYNC,
+        httpRequestHeaders: { 'custom-header': 'headerValue' }
+      }
+
+      await Backendless.BL.CustomServices.invoke(serviceName, methodName, args, options)
+
+      expect(req).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/services/${serviceName}/${methodName}`,
+        body   : args,
+        headers: {
+          'Content-Type'     : 'application/json',
+          'bl-execution-type': 'async',
+          'custom-header'    : 'headerValue',
+        },
+      })
+
+      expect(options.httpRequestHeaders).to.deep.equal({
+        'custom-header': 'headerValue'
+      })
+    })
+  })
 })
