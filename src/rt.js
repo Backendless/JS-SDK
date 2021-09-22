@@ -1,9 +1,14 @@
+import Request from 'backendless-request'
 import BackendlessRTClient from 'backendless-rt-client'
 
 import Utils from './utils'
 
 export const RTListeners = BackendlessRTClient.Listeners
 export const RTScopeConnector = BackendlessRTClient.ScopeConnector
+
+function loadAppInfo(appPath) {
+  return Request.get(`${appPath}/info`)
+}
 
 export default class RT extends BackendlessRTClient {
   constructor(app) {
@@ -24,6 +29,17 @@ export default class RT extends BackendlessRTClient {
           clientId,
           userToken,
         }
+      },
+
+      socketConfigTransform: async socketConfig => {
+        if (!appId) {
+          const appInfo = await loadAppInfo(appPath)
+
+          socketConfig.url = `${socketConfig.host}/${appInfo.appId}`
+          socketConfig.options.query.apiKey = appInfo.apiKey
+        }
+
+        return socketConfig
       }
     })
 
