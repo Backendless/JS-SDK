@@ -9,7 +9,7 @@ export default class LocalCache {
   constructor(app) {
     this.app = app
 
-    this.storageName = `${STORAGE_KEY_NAMESPACE}_${this.app.applicationId}`
+    this.storageName = `${STORAGE_KEY_NAMESPACE}_${this.app.appId}`
 
     const Storage = Utils.isLocalStorageSupported
       ? LocalStorage
