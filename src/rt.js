@@ -18,14 +18,14 @@ export default class RT extends BackendlessRTClient {
     const lookupPath = `${appPath}/rt/lookup`
 
     super({
-      appId,
+      appId: appId || undefined,
       lookupPath,
       debugMode,
       connectQuery() {
         const userToken = app.getCurrentUserToken()
 
         return {
-          apiKey,
+          apiKey: apiKey || undefined,
           clientId,
           userToken,
         }
@@ -36,6 +36,7 @@ export default class RT extends BackendlessRTClient {
           const appInfo = await loadAppInfo(appPath)
 
           socketConfig.url = `${socketConfig.host}/${appInfo.appId}`
+          socketConfig.options.path = `/${appInfo.appId}`
           socketConfig.options.query.apiKey = appInfo.apiKey
         }
 

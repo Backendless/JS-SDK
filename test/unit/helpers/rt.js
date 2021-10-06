@@ -43,10 +43,10 @@ export const RTMethodTypes = {
   PUB_SUB_COMMAND: 'PUB_SUB_COMMAND',
 }
 
-export function createMockRTServer() {
+export function createMockRTServer(appId = APP_ID) {
   const server = require('http').createServer()
 
-  const io = require('socket.io')({ path: `/${APP_ID}` })
+  const io = require('socket.io')({ path: `/${appId}` })
 
   io.attach(server, {
     pingInterval: 10000,
@@ -86,7 +86,7 @@ export function createMockRTServer() {
 
   let socket
 
-  io.of(`/${APP_ID}`).on('connection', (s) => {
+  io.of(`/${appId}`).on('connection', (s) => {
     socket = s
 
     const { apiKey, clientId, userToken } = socket.handshake.query
