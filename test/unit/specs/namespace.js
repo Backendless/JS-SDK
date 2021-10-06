@@ -18,29 +18,29 @@ describe('Namespace', function() {
     it('should change public app relevant variables in Backendless scope', () => {
       Backendless.initApp(APP_ID, API_KEY)
 
-      expect(Backendless.applicationId).to.be.equal(APP_ID)
-      expect(Backendless.secretKey).to.be.equal(API_KEY)
+      expect(Backendless.appId).to.be.equal(APP_ID)
+      expect(Backendless.apiKey).to.be.equal(API_KEY)
     })
 
     it('should change public app relevant variables in Backendless scope using object config', () => {
       Backendless.initApp({ appId: APP_ID, apiKey: API_KEY })
 
-      expect(Backendless.applicationId).to.be.equal(APP_ID)
-      expect(Backendless.secretKey).to.be.equal(API_KEY)
+      expect(Backendless.appId).to.be.equal(APP_ID)
+      expect(Backendless.apiKey).to.be.equal(API_KEY)
     })
 
     it('should not change public variables in Backendless scope', () => {
       Backendless.serverURL = 'http://foo.bar'
       Backendless.initApp(APP_ID, API_KEY)
 
-      expect(() => Backendless.applicationId = 'applicationId').to.throw()
-      expect(() => Backendless.secretKey = 'secretKey').to.throw()
+      expect(() => Backendless.appId = 'appId').to.throw()
+      expect(() => Backendless.apiKey = 'apiKey').to.throw()
       expect(() => Backendless.appPath = 'appPath').to.throw()
       expect(() => Backendless.standalone = 'standalone').to.throw()
       expect(() => Backendless.device = 'device').to.throw()
 
-      expect(Backendless.applicationId).to.be.equal(APP_ID)
-      expect(Backendless.secretKey).to.be.equal(API_KEY)
+      expect(Backendless.appId).to.be.equal(APP_ID)
+      expect(Backendless.apiKey).to.be.equal(API_KEY)
       expect(Backendless.appPath).to.be.equal(`http://foo.bar/${APP_ID}/${API_KEY}`)
     })
   })
@@ -51,11 +51,11 @@ describe('Namespace', function() {
       const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
       const app3 = Backendless.initApp({ appId: 'appId-3', apiKey: 'apiKey-3', standalone: true })
 
-      expect(app2.applicationId).to.be.equal('appId-2')
-      expect(app2.secretKey).to.be.equal('apiKey-2')
+      expect(app2.appId).to.be.equal('appId-2')
+      expect(app2.apiKey).to.be.equal('apiKey-2')
 
-      expect(app3.applicationId).to.be.equal('appId-3')
-      expect(app3.secretKey).to.be.equal('apiKey-3')
+      expect(app3.appId).to.be.equal('appId-3')
+      expect(app3.apiKey).to.be.equal('apiKey-3')
     })
 
     it('has custom serverURL', () => {
@@ -66,8 +66,8 @@ describe('Namespace', function() {
         standalone: true
       })
 
-      expect(app1.applicationId).to.be.equal('appId-1')
-      expect(app1.secretKey).to.be.equal('apiKey-1')
+      expect(app1.appId).to.be.equal('appId-1')
+      expect(app1.apiKey).to.be.equal('apiKey-1')
       expect(app1.appPath).to.be.equal('http://my-server-url.com/appId-1/apiKey-1')
     })
   })
@@ -77,18 +77,18 @@ describe('Namespace', function() {
     it('should init with custom domain', () => {
       Backendless.initApp(CUSTOM_DOMAIN)
 
-      expect(Backendless.applicationId).to.be.equal(null)
-      expect(Backendless.secretKey).to.be.equal(null)
+      expect(Backendless.appId).to.be.equal(null)
+      expect(Backendless.apiKey).to.be.equal(null)
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
       expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
       expect(Backendless.apiURI).to.be.equal('/api')
     })
 
     it('should init with custom domain via config object', () => {
-      Backendless.initApp({ domain: CUSTOM_DOMAIN, secretKey: 'XXX' })
+      Backendless.initApp({ domain: CUSTOM_DOMAIN, apiKey: 'XXX' })
 
-      expect(Backendless.applicationId).to.be.equal(null)
-      expect(Backendless.secretKey).to.be.equal(null)
+      expect(Backendless.appId).to.be.equal(null)
+      expect(Backendless.apiKey).to.be.equal(null)
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
       expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
       expect(Backendless.apiURI).to.be.equal('/api')
@@ -101,6 +101,8 @@ describe('Namespace', function() {
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
       expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/my-api-uri`)
       expect(Backendless.apiURI).to.be.equal('/my-api-uri')
+
+      Backendless.apiURI = undefined
     })
 
     it('should fails with custom domain which does not start on https or http', () => {
@@ -349,6 +351,42 @@ describe('Namespace', function() {
 
       expect(B).to.equal(Backendless)
       expect(global.Backendless).to.equal(undefined)
+    })
+
+    it('should support deprecated applicationId and secretKey', function() {
+      Backendless.initApp(APP_ID, API_KEY)
+
+      // eslint-disable-next-line no-console
+      const _nativeConsoleWarn = console.warn
+
+      // eslint-disable-next-line no-console
+      const spyConsoleWarn = console.warn = chai.spy()
+
+      expect(Backendless.applicationId).to.be.equal(APP_ID)
+      expect(Backendless.secretKey).to.be.equal(API_KEY)
+      expect(() => Backendless.applicationId = 'applicationId').to.throw('') // eslint-disable-line
+      expect(() => Backendless.secretKey = 'secretKey').to.throw('') // eslint-disable-line
+
+      Backendless.initApp({ domain: 'https://foo.com', apiKey: 'XXX' })
+
+      expect(Backendless.appId).to.be.equal(null)
+      expect(Backendless.apiKey).to.be.equal(null)
+      expect(Backendless.domain).to.be.equal('https://foo.com')
+      expect(Backendless.appPath).to.be.equal('https://foo.com/api')
+      expect(Backendless.apiURI).to.be.equal('/api')
+
+      const appIdWarnMsg = 'getter/setter for Backendless.applicationId is deprecated, instead use Backendless.appId'
+      const apiKeyWarnMsg = 'getter/setter for Backendless.secretKey is deprecated, instead use Backendless.apiKey'
+
+      expect(spyConsoleWarn).to.have.been.called.exactly(4)
+
+      expect(spyConsoleWarn).on.nth(1).be.called.with(appIdWarnMsg)
+      expect(spyConsoleWarn).on.nth(2).be.called.with(apiKeyWarnMsg)
+      expect(spyConsoleWarn).on.nth(3).be.called.with(appIdWarnMsg)
+      expect(spyConsoleWarn).on.nth(4).be.called.with(apiKeyWarnMsg)
+
+      // eslint-disable-next-line no-console
+      console.warn = _nativeConsoleWarn
     })
 
   })

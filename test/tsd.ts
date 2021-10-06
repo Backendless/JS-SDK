@@ -3,6 +3,8 @@
 import Counter = Backendless.Counter;
 
 function testMain() {
+    const appId: string = Backendless.appId;
+    const apiKey: string = Backendless.apiKey;
     const applicationId: string = Backendless.applicationId;
     const secretKey: string = Backendless.secretKey;
     const serverURL: string = Backendless.serverURL;

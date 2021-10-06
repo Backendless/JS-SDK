@@ -12,15 +12,15 @@ describe('initApp', function() {
   it('should change public app relevant variables in Backendless scope', function() {
     Backendless.initApp(APP_ID, API_KEY)
 
-    expect(Backendless.applicationId).to.be.equal(APP_ID)
-    expect(Backendless.secretKey).to.be.equal(API_KEY)
+    expect(Backendless.appId).to.be.equal(APP_ID)
+    expect(Backendless.apiKey).to.be.equal(API_KEY)
   })
 
   it('should change public app relevant variables in Backendless scope using object config', function() {
     Backendless.initApp({ appId: APP_ID, apiKey: API_KEY })
 
-    expect(Backendless.applicationId).to.be.equal(APP_ID)
-    expect(Backendless.secretKey).to.be.equal(API_KEY)
+    expect(Backendless.appId).to.be.equal(APP_ID)
+    expect(Backendless.apiKey).to.be.equal(API_KEY)
   })
 
   it('should not public variables in Backendless scope', function() {
@@ -28,12 +28,12 @@ describe('initApp', function() {
 
     const appPath = Backendless.appPath
 
-    expect(() => Backendless.applicationId = 'applicationId').to.throw() // eslint-disable-line
-    expect(() => Backendless.secretKey = 'secretKey').to.throw() // eslint-disable-line
+    expect(() => Backendless.appId = 'appId').to.throw() // eslint-disable-line
+    expect(() => Backendless.apiKey = 'apiKey').to.throw() // eslint-disable-line
     expect(() => Backendless.appPath = 'appPath').to.throw() // eslint-disable-line
 
-    expect(Backendless.applicationId).to.be.equal(APP_ID)
-    expect(Backendless.secretKey).to.be.equal(API_KEY)
+    expect(Backendless.appId).to.be.equal(APP_ID)
+    expect(Backendless.apiKey).to.be.equal(API_KEY)
     expect(Backendless.appPath).to.be.equal(appPath)
   })
 
@@ -43,11 +43,11 @@ describe('initApp', function() {
       const app2 = Backendless.initApp({ appId: 'appId-2', apiKey: 'apiKey-2', standalone: true })
       const app3 = Backendless.initApp({ appId: 'appId-3', apiKey: 'apiKey-3', standalone: true })
 
-      expect(app2.applicationId).to.be.equal('appId-2')
-      expect(app2.secretKey).to.be.equal('apiKey-2')
+      expect(app2.appId).to.be.equal('appId-2')
+      expect(app2.apiKey).to.be.equal('apiKey-2')
 
-      expect(app3.applicationId).to.be.equal('appId-3')
-      expect(app3.secretKey).to.be.equal('apiKey-3')
+      expect(app3.appId).to.be.equal('appId-3')
+      expect(app3.apiKey).to.be.equal('apiKey-3')
     })
   })
 })

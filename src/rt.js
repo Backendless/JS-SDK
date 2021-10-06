@@ -12,7 +12,7 @@ function loadAppInfo(appPath) {
 
 export default class RT extends BackendlessRTClient {
   constructor(app) {
-    const { applicationId: appId, secretKey: apiKey, appPath, debugMode } = app
+    const { appId, apiKey, appPath, debugMode } = app
 
     const clientId = Utils.uuid()
     const lookupPath = `${appPath}/rt/lookup`

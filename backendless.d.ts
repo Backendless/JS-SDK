@@ -5,8 +5,8 @@
 declare module Backendless {
     let debugMode: boolean;
     let serverURL: string;
-    let applicationId: string;
-    let secretKey: string;
+    let appId: string;
+    let apiKey: string;
     let appPath: string;
     let domain: string;
     let apiURI: string;
@@ -16,6 +16,12 @@ declare module Backendless {
         browser: string;
         version: string;
     };
+
+    /** @deprecated **/
+    let applicationId: string;
+
+    /** @deprecated **/
+    let secretKey: string;
 
     /**
      * @dictionary

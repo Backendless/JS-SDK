@@ -50,7 +50,7 @@ describe('Backendless.Users', function() {
 
       const result = require('../../../lib').noConflict()
       result.serverURL = Backendless.serverURL
-      result.initApp(Backendless.applicationId, Backendless.secretKey)
+      result.initApp(Backendless.appId, Backendless.apiKey)
 
       return result
     }

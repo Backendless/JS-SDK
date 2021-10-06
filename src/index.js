@@ -97,6 +97,13 @@ class Backendless {
    * @param {Object} config
    */
   initConfig(config) {
+    config = { ...config }
+
+    if (config.domain) {
+      delete config.appId
+      delete config.apiKey
+    }
+
     for (const key in DEFAULT_PROPS) {
       if (DEFAULT_PROPS.hasOwnProperty(key)) {
         const privateKey = `__${key}`
@@ -118,7 +125,7 @@ class Backendless {
 
   /**
    * @param {string|Object} appId|domain|config
-   * @param {string} [secretKey]
+   * @param {string} [apiKey]
    * @returns {Backendless}
    */
   initApp() {
@@ -183,26 +190,24 @@ class Backendless {
     )
   }
 
-  ///--------applicationId-------///
-  get applicationId() {
+  get appId() {
     return this.__appId
   }
 
-  set applicationId(appId) {
+  set appId(appId) {
     throw new Error(
-      `Setting '${appId}' value to Backendless.applicationId directly is not possible, ` +
+      `Setting '${appId}' value to Backendless.appId directly is not possible, ` +
       `instead you must use Backendless.initApp('${appId}', API_KEY)`
     )
   }
 
-  ///--------secretKey-------///
-  get secretKey() {
+  get apiKey() {
     return this.__apiKey
   }
 
-  set secretKey(apiKey) {
+  set apiKey(apiKey) {
     throw new Error(
-      `Setting '${apiKey}' value to Backendless.secretKey directly is not possible, ` +
+      `Setting '${apiKey}' value to Backendless.apiKey directly is not possible, ` +
       `instead you must use Backendless.initApp(APP_ID, '${apiKey}')`
     )
   }
@@ -240,7 +245,7 @@ class Backendless {
       return this.domain + this.apiURI
     }
 
-    return [this.serverURL, this.applicationId, this.secretKey].join('/')
+    return [this.serverURL, this.appId, this.apiKey].join('/')
   }
 
   set appPath(appPath) {
@@ -412,7 +417,37 @@ class Backendless {
   ///-------------------------------------///
   ///--------BACKWARD COMPATIBILITY-------///
 
-  //TODO: do we need to remove it?
+  /** @deprecated */
+  get applicationId() {
+    // eslint-disable-next-line no-console
+    console.warn('getter/setter for Backendless.applicationId is deprecated, instead use Backendless.appId')
+
+    return this.appId
+  }
+
+  /** @deprecated */
+  set applicationId(appId) {
+    // eslint-disable-next-line no-console
+    console.warn('getter/setter for Backendless.applicationId is deprecated, instead use Backendless.appId')
+
+    this.appId = appId
+  }
+
+  /** @deprecated */
+  get secretKey() {
+    // eslint-disable-next-line no-console
+    console.warn('getter/setter for Backendless.secretKey is deprecated, instead use Backendless.apiKey')
+
+    return this.apiKey
+  }
+
+  /** @deprecated */
+  set secretKey(apiKey) {
+    // eslint-disable-next-line no-console
+    console.warn('getter/setter for Backendless.secretKey is deprecated, instead use Backendless.apiKey')
+
+    this.apiKey = apiKey
+  }
 
   /** @deprecated */
   get Persistence() {
