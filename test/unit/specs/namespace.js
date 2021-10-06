@@ -102,6 +102,22 @@ describe('Namespace', function() {
       expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/my-api-uri`)
       expect(Backendless.apiURI).to.be.equal('/my-api-uri')
     })
+
+    it('should fails with custom domain which does not start on https or http', () => {
+      const errorMsg = (
+        'When initialize the SDK with a custom domain it should start with http:// or https://, ' +
+        'for example: Backendless.initApp(\'https://foobar.com\')'
+      )
+
+      expect(() => Backendless.initApp('foobar.com')).to.throw(errorMsg)
+      expect(() => Backendless.initApp('httpsfoobar.com')).to.throw(errorMsg)
+      expect(() => Backendless.initApp('https:foobar.com')).to.throw(errorMsg)
+      expect(() => Backendless.initApp('https:/foobar.com')).to.throw(errorMsg)
+      expect(() => Backendless.initApp('httpfoobar.com')).to.throw(errorMsg)
+      expect(() => Backendless.initApp('http:foobar.com')).to.throw(errorMsg)
+      expect(() => Backendless.initApp('http:/foobar.com')).to.throw(errorMsg)
+      expect(() => Backendless.initApp('file://foobar.com')).to.throw(errorMsg)
+    })
   })
 
   describe('Debug Mode', () => {

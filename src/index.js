@@ -56,6 +56,17 @@ const parseInitConfig = (...args) => {
   }
 }
 
+const validateConfig = config => {
+  if (config.domain) {
+    if (!config.domain.startsWith('https://') && !config.domain.startsWith('http://')) {
+      throw new Error(
+        'When initialize the SDK with a custom domain it should start with http:// or https://, ' +
+        'for example: Backendless.initApp(\'https://foobar.com\')'
+      )
+    }
+  }
+}
+
 const SERVICES = {
   'Logging'     : () => require('./logging').default,
   'Counters'    : () => require('./counters').default,
@@ -112,6 +123,8 @@ class Backendless {
    */
   initApp() {
     const config = parseInitConfig(...arguments)
+
+    validateConfig(config)
 
     const app = config.standalone
       ? new Backendless(this)
