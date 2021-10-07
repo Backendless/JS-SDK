@@ -420,7 +420,8 @@ class Backendless {
   /** @deprecated */
   get applicationId() {
     // eslint-disable-next-line no-console
-    console.warn('getter/setter for Backendless.applicationId is deprecated, instead use Backendless.appId')
+    // temporary comment it because it breaks JS-CodeRunner version less than 6.3.0
+    // console.warn('getter/setter for Backendless.applicationId is deprecated, instead use Backendless.appId')
 
     return this.appId
   }

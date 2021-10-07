@@ -378,12 +378,11 @@ describe('Namespace', function() {
       const appIdWarnMsg = 'getter/setter for Backendless.applicationId is deprecated, instead use Backendless.appId'
       const apiKeyWarnMsg = 'getter/setter for Backendless.secretKey is deprecated, instead use Backendless.apiKey'
 
-      expect(spyConsoleWarn).to.have.been.called.exactly(4)
+      expect(spyConsoleWarn).to.have.been.called.exactly(3)
 
-      expect(spyConsoleWarn).on.nth(1).be.called.with(appIdWarnMsg)
-      expect(spyConsoleWarn).on.nth(2).be.called.with(apiKeyWarnMsg)
-      expect(spyConsoleWarn).on.nth(3).be.called.with(appIdWarnMsg)
-      expect(spyConsoleWarn).on.nth(4).be.called.with(apiKeyWarnMsg)
+      expect(spyConsoleWarn).on.nth(1).be.called.with(apiKeyWarnMsg)
+      expect(spyConsoleWarn).on.nth(2).be.called.with(appIdWarnMsg)
+      expect(spyConsoleWarn).on.nth(3).be.called.with(apiKeyWarnMsg)
 
       // eslint-disable-next-line no-console
       console.warn = _nativeConsoleWarn
