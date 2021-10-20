@@ -8,6 +8,42 @@ import {
   EmailEnvelope
 } from './helpers'
 
+function resolveSendEmailFromTemplateArgs(templateName, envelopeObject, templateValues, attachments, uniqueEmails) {
+  if (!templateName || typeof templateName !== 'string') {
+    throw new Error('Email Template Name must be provided and must be a string.')
+  }
+
+  if (!(envelopeObject instanceof EmailEnvelope)) {
+    throw new Error('EmailEnvelope is required and should be instance of Backendless.Messaging.EmailEnvelope')
+  }
+
+  const result = {
+    templateName,
+    envelopeObject,
+    uniqueEmails: uniqueEmails || false
+  }
+
+  if (typeof uniqueEmails === 'boolean') {
+    result.uniqueEmails = uniqueEmails
+  } else if (typeof attachments === 'boolean') {
+    result.uniqueEmails = attachments
+  } else if (typeof templateValues === 'boolean') {
+    result.uniqueEmails = templateValues
+  }
+
+  if (Array.isArray(attachments)) {
+    result.attachments = attachments
+  } else if (Array.isArray(templateValues)) {
+    result.attachments = templateValues
+  }
+
+  if (templateValues && !Array.isArray(templateValues)) {
+    result.templateValues = templateValues
+  }
+
+  return result
+}
+
 export default class Messaging {
   constructor(app) {
     this.app = app
@@ -105,30 +141,28 @@ export default class Messaging {
       })
   }
 
-  async sendEmailFromTemplate(templateName, envelopeObject, templateValues, attachments) {
-    if (!templateName || typeof templateName !== 'string') {
-      throw new Error('Email Template Name must be provided and must be a string.')
-    }
-
-    if (!(envelopeObject instanceof EmailEnvelope)) {
-      throw new Error('EmailEnvelope is required and should be instance of Backendless.Messaging.EmailEnvelope')
-    }
+  async sendEmailFromTemplate() {
+    const {
+      templateName,
+      envelopeObject,
+      templateValues,
+      attachments,
+      uniqueEmails
+    } = resolveSendEmailFromTemplateArgs.apply(null, arguments)
 
     const data = envelopeObject.toJSON()
 
     data['template-name'] = templateName
 
-    if (templateValues && !Array.isArray(templateValues)) {
+    if (templateValues) {
       data['template-values'] = templateValues
-    }
-
-    if (Array.isArray(templateValues) && !attachments) {
-      attachments = templateValues
     }
 
     if (attachments) {
       data.attachment = attachments
     }
+
+    data.uniqueEmails = uniqueEmails
 
     return this.app.request.post({
       url : this.app.urls.emailTemplateSend(),

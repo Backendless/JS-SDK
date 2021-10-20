@@ -213,6 +213,7 @@ describe('<Messaging> Emails', function() {
     const templateName = 'MY_TEMPLATE_NAME'
     const templateValues = { foo: 'bar' }
     const attachments = ['path/to/file']
+    const uniqueEmails = true
 
     beforeEach(() => {
       emailEnvelope = new Backendless.EmailEnvelope({ addresses: ['foo@bar.com'] })
@@ -229,7 +230,8 @@ describe('<Messaging> Emails', function() {
         headers: { 'Content-Type': 'application/json' },
         body   : {
           addresses      : ['foo@bar.com'],
-          'template-name': templateName
+          'template-name': templateName,
+          uniqueEmails   : false,
         }
       })
 
@@ -249,6 +251,7 @@ describe('<Messaging> Emails', function() {
           addresses        : ['foo@bar.com'],
           'template-name'  : templateName,
           'template-values': templateValues,
+          uniqueEmails     : false,
         }
       })
 
@@ -268,7 +271,8 @@ describe('<Messaging> Emails', function() {
           addresses        : ['foo@bar.com'],
           'template-name'  : templateName,
           'template-values': templateValues,
-          attachment: attachments
+          attachment       : attachments,
+          uniqueEmails     : false,
         }
       })
 
@@ -285,9 +289,10 @@ describe('<Messaging> Emails', function() {
         path   : `${APP_PATH}/emailtemplate/send`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          addresses        : ['foo@bar.com'],
-          'template-name'  : templateName,
-          attachment: attachments
+          addresses      : ['foo@bar.com'],
+          'template-name': templateName,
+          attachment     : attachments,
+          uniqueEmails   : false,
         }
       })
 
@@ -304,9 +309,90 @@ describe('<Messaging> Emails', function() {
         path   : `${APP_PATH}/emailtemplate/send`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
+          addresses      : ['foo@bar.com'],
+          'template-name': templateName,
+          attachment     : ['path/to/file'],
+          uniqueEmails   : false,
+        }
+      })
+
+      expect(result1).to.be.eql({ fakeResult })
+    })
+
+    it('sends an email with templateValues, attachments and uniqueEmails', async () => {
+      const req1 = prepareMockRequest({ fakeResult })
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, templateValues, attachments, uniqueEmails)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/emailtemplate/send`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
           addresses        : ['foo@bar.com'],
           'template-name'  : templateName,
-          attachment: attachments
+          'template-values': { foo: 'bar' },
+          attachment       : attachments,
+          uniqueEmails     : true,
+        }
+      })
+
+      expect(result1).to.be.eql({ fakeResult })
+    })
+
+    it('sends an email with attachments and uniqueEmails', async () => {
+      const req1 = prepareMockRequest({ fakeResult })
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, attachments, uniqueEmails)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/emailtemplate/send`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          addresses      : ['foo@bar.com'],
+          'template-name': templateName,
+          attachment     : attachments,
+          uniqueEmails   : true,
+        }
+      })
+
+      expect(result1).to.be.eql({ fakeResult })
+    })
+
+    it('sends an email with templateValues and uniqueEmails', async () => {
+      const req1 = prepareMockRequest({ fakeResult })
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, templateValues, uniqueEmails)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/emailtemplate/send`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          addresses        : ['foo@bar.com'],
+          'template-name'  : templateName,
+          'template-values': { foo: 'bar' },
+          uniqueEmails     : true,
+        }
+      })
+
+      expect(result1).to.be.eql({ fakeResult })
+    })
+
+    it('sends an email without templateValues, attachments and uniqueEmails', async () => {
+      const req1 = prepareMockRequest({ fakeResult })
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/emailtemplate/send`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          addresses      : ['foo@bar.com'],
+          'template-name': templateName,
+          uniqueEmails   : false,
         }
       })
 
