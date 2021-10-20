@@ -377,6 +377,8 @@ declare module Backendless {
 
         function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object, attachments?: string[]): Promise<object>;
 
+        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, attachments?: string[]): Promise<object>;
+
         function cancel(messageId: string): Promise<boolean>;
 
         function registerDevice(deviceToken: string, channels?: string[], expiration?: number | Date): Promise<Object>;

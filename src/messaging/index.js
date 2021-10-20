@@ -118,8 +118,12 @@ export default class Messaging {
 
     data['template-name'] = templateName
 
-    if (templateValues) {
+    if (templateValues && !Array.isArray(templateValues)) {
       data['template-values'] = templateValues
+    }
+
+    if (Array.isArray(templateValues) && !attachments) {
+      attachments = templateValues
     }
 
     if (attachments) {
