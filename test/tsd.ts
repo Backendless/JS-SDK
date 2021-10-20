@@ -1000,6 +1000,8 @@ function testMessaging() {
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
 
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, attachments);
+
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
 
     promiseObject = Backendless.Messaging.cancel(messageId);

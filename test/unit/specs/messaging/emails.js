@@ -275,6 +275,44 @@ describe('<Messaging> Emails', function() {
       expect(result1).to.be.eql({ fakeResult })
     })
 
+    it('sends an email with attachments without templateValues', async () => {
+      const req1 = prepareMockRequest({ fakeResult })
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, null, attachments)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/emailtemplate/send`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          addresses        : ['foo@bar.com'],
+          'template-name'  : templateName,
+          attachment: attachments
+        }
+      })
+
+      expect(result1).to.be.eql({ fakeResult })
+    })
+
+    it('sends an email with attachments on templateValues argument place', async () => {
+      const req1 = prepareMockRequest({ fakeResult })
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, attachments)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/emailtemplate/send`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          addresses        : ['foo@bar.com'],
+          'template-name'  : templateName,
+          attachment: attachments
+        }
+      })
+
+      expect(result1).to.be.eql({ fakeResult })
+    })
+
     it('fails when subject is invalid', async () => {
       const errorMsg = 'Email Template Name must be provided and must be a string.'
 
