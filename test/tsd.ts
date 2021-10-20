@@ -980,6 +980,7 @@ function testMessaging() {
     const templateName: string = 'str';
     const recipients: string[] = ['str'];
     const attachments: string[] = ['str'];
+    const uniqueEmails: boolean = true;
     const channels: string[] = ['str'];
     const expiration: number | Date = 123;
     const publishOptions: Backendless.PublishOptions = new Backendless.PublishOptions();
@@ -996,11 +997,19 @@ function testMessaging() {
 
     promiseObject = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);
 
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues, attachments, uniqueEmails);
+
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues, attachments);
+
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues, uniqueEmails);
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, templateValues);
 
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, attachments, uniqueEmails);
+
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, attachments);
+
+    promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject, uniqueEmails);
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
 
