@@ -8,7 +8,7 @@ import {
   EmailEnvelope
 } from './helpers'
 
-function resolveSendEmailFromTemplateArgs(templateName, envelopeObject, templateValues, attachments, uniqueEmails) {
+function resolveSendEmailFromTemplateArgs(templateName, envelopeObject, templateValues, attachments) {
   if (!templateName || typeof templateName !== 'string') {
     throw new Error('Email Template Name must be provided and must be a string.')
   }
@@ -20,15 +20,6 @@ function resolveSendEmailFromTemplateArgs(templateName, envelopeObject, template
   const result = {
     templateName,
     envelopeObject,
-    uniqueEmails: uniqueEmails || false
-  }
-
-  if (typeof uniqueEmails === 'boolean') {
-    result.uniqueEmails = uniqueEmails
-  } else if (typeof attachments === 'boolean') {
-    result.uniqueEmails = attachments
-  } else if (typeof templateValues === 'boolean') {
-    result.uniqueEmails = templateValues
   }
 
   if (Array.isArray(attachments)) {
@@ -147,7 +138,6 @@ export default class Messaging {
       envelopeObject,
       templateValues,
       attachments,
-      uniqueEmails
     } = resolveSendEmailFromTemplateArgs.apply(null, arguments)
 
     const data = envelopeObject.toJSON()
@@ -161,8 +151,6 @@ export default class Messaging {
     if (attachments) {
       data.attachment = attachments
     }
-
-    data.uniqueEmails = uniqueEmails
 
     return this.app.request.post({
       url : this.app.urls.emailTemplateSend(),

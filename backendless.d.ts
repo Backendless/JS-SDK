@@ -499,13 +499,13 @@ declare module Backendless {
         export interface CustomServicesI {
             invoke(serviceName: string, method: string, parameters?: object): Promise<any>;
 
-            invoke(serviceName: string, method: string, parameters: object|null, executionType?: string): Promise<any>;
+            invoke(serviceName: string, method: string, parameters: object | null, executionType?: string): Promise<any>;
 
             invoke(serviceName: string, method: string, executionType?: string): Promise<any>;
 
-            invoke(serviceName: string, method: string, parameters: object|null, executionType?: string): Promise<any>;
+            invoke(serviceName: string, method: string, parameters: object | null, executionType?: string): Promise<any>;
 
-            invoke(serviceName: string, method: string, parameters: object|null, options?: { executionType?: string, httpRequestHeaders?: object }): Promise<any>;
+            invoke(serviceName: string, method: string, parameters: object | null, options?: { executionType?: string, httpRequestHeaders?: object }): Promise<any>;
         }
 
         /**
@@ -866,6 +866,7 @@ declare module Backendless {
         ccAddresses: string[];
         bccAddresses: string[];
         query: string | null;
+        uniqueEmails: boolean;
 
         constructor(data?: Object);
 
@@ -892,6 +893,10 @@ declare module Backendless {
         setQuery(query: string): Backendless.EmailEnvelope;
 
         getQuery(): string;
+
+        setUniqueEmails(uniqueEmails: boolean): Backendless.EmailEnvelope;
+
+        getUniqueEmails(): boolean;
     }
 
     /**

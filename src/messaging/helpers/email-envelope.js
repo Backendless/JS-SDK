@@ -18,6 +18,7 @@ export default class EmailEnvelope {
     this.ccAddresses = Utils.castArray(data.ccAddresses)
     this.bccAddresses = Utils.castArray(data.bccAddresses)
     this.query = data.query || null
+    this.uniqueEmails = data.uniqueEmails || false
   }
 
   /**
@@ -129,6 +130,23 @@ export default class EmailEnvelope {
     return this.query
   }
 
+  /**
+   * @param {boolean} uniqueEmails
+   * @returns {EmailEnvelope}
+   */
+  setUniqueEmails(uniqueEmails) {
+    this.uniqueEmails = uniqueEmails
+
+    return this
+  }
+
+  /**
+   * @returns {uniqueEmails|boolean}
+   */
+  getUniqueEmails() {
+    return this.uniqueEmails
+  }
+
   toJSON() {
     const data = {}
 
@@ -147,6 +165,8 @@ export default class EmailEnvelope {
     if (this.query) {
       data.criteria = this.query
     }
+
+    data.uniqueEmails = this.uniqueEmails
 
     return data
   }

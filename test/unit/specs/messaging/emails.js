@@ -322,7 +322,9 @@ describe('<Messaging> Emails', function() {
     it('sends an email with templateValues, attachments and uniqueEmails', async () => {
       const req1 = prepareMockRequest({ fakeResult })
 
-      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, templateValues, attachments, uniqueEmails)
+      emailEnvelope.setUniqueEmails(true)
+
+      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, templateValues, attachments)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -334,65 +336,6 @@ describe('<Messaging> Emails', function() {
           'template-values': { foo: 'bar' },
           attachment       : attachments,
           uniqueEmails     : true,
-        }
-      })
-
-      expect(result1).to.be.eql({ fakeResult })
-    })
-
-    it('sends an email with attachments and uniqueEmails', async () => {
-      const req1 = prepareMockRequest({ fakeResult })
-
-      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, attachments, uniqueEmails)
-
-      expect(req1).to.deep.include({
-        method : 'POST',
-        path   : `${APP_PATH}/emailtemplate/send`,
-        headers: { 'Content-Type': 'application/json' },
-        body   : {
-          addresses      : ['foo@bar.com'],
-          'template-name': templateName,
-          attachment     : attachments,
-          uniqueEmails   : true,
-        }
-      })
-
-      expect(result1).to.be.eql({ fakeResult })
-    })
-
-    it('sends an email with templateValues and uniqueEmails', async () => {
-      const req1 = prepareMockRequest({ fakeResult })
-
-      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope, templateValues, uniqueEmails)
-
-      expect(req1).to.deep.include({
-        method : 'POST',
-        path   : `${APP_PATH}/emailtemplate/send`,
-        headers: { 'Content-Type': 'application/json' },
-        body   : {
-          addresses        : ['foo@bar.com'],
-          'template-name'  : templateName,
-          'template-values': { foo: 'bar' },
-          uniqueEmails     : true,
-        }
-      })
-
-      expect(result1).to.be.eql({ fakeResult })
-    })
-
-    it('sends an email without templateValues, attachments and uniqueEmails', async () => {
-      const req1 = prepareMockRequest({ fakeResult })
-
-      const result1 = await Backendless.Messaging.sendEmailFromTemplate(templateName, emailEnvelope)
-
-      expect(req1).to.deep.include({
-        method : 'POST',
-        path   : `${APP_PATH}/emailtemplate/send`,
-        headers: { 'Content-Type': 'application/json' },
-        body   : {
-          addresses      : ['foo@bar.com'],
-          'template-name': templateName,
-          uniqueEmails   : false,
         }
       })
 
@@ -446,7 +389,8 @@ describe('<Messaging> Emails', function() {
         ccAddresses : ['test-ccAddress'],
         bccAddresses: ['test-bccAddress'],
         query       : 'foo>123',
-        foo         : 123
+        foo         : 123,
+        uniqueEmails: true,
       })
 
       expect(emailEnvelope.toJSON()).to.be.eql({
@@ -454,6 +398,7 @@ describe('<Messaging> Emails', function() {
         'bcc-addresses': ['test-bccAddress'],
         'cc-addresses' : ['test-ccAddress'],
         criteria       : 'foo>123',
+        uniqueEmails   : true,
       })
     })
 
@@ -463,7 +408,8 @@ describe('<Messaging> Emails', function() {
         ccAddresses : 'test-ccAddress',
         bccAddresses: 'test-bccAddress',
         query       : 'foo>123',
-        foo         : 123
+        foo         : 123,
+        uniqueEmails: true
       })
 
       expect(emailEnvelope.toJSON()).to.be.eql({
@@ -471,13 +417,14 @@ describe('<Messaging> Emails', function() {
         'bcc-addresses': ['test-bccAddress'],
         'cc-addresses' : ['test-ccAddress'],
         criteria       : 'foo>123',
+        uniqueEmails   : true,
       })
     })
 
     it('initial create without any options', async () => {
       emailEnvelope = Backendless.EmailEnvelope.create()
 
-      expect(emailEnvelope.toJSON()).to.be.eql({})
+      expect(emailEnvelope.toJSON()).to.be.eql({ uniqueEmails: false })
     })
 
     it('checks getters and setters of addresses', async () => {
@@ -498,7 +445,8 @@ describe('<Messaging> Emails', function() {
       expect(emailEnvelope.getTo()).to.be.eql(['address-2', 'address-3', 'address-4', 'address-5', 'address-6'])
 
       expect(emailEnvelope.toJSON()).to.be.eql({
-        addresses: ['address-2', 'address-3', 'address-4', 'address-5', 'address-6']
+        addresses   : ['address-2', 'address-3', 'address-4', 'address-5', 'address-6'],
+        uniqueEmails: false,
       })
     })
 
@@ -520,7 +468,8 @@ describe('<Messaging> Emails', function() {
       expect(emailEnvelope.getCc()).to.be.eql(['address-2', 'address-3', 'address-4', 'address-5', 'address-6'])
 
       expect(emailEnvelope.toJSON()).to.be.eql({
-        'cc-addresses': ['address-2', 'address-3', 'address-4', 'address-5', 'address-6']
+        'cc-addresses': ['address-2', 'address-3', 'address-4', 'address-5', 'address-6'],
+        uniqueEmails  : false,
       })
     })
 
@@ -542,7 +491,8 @@ describe('<Messaging> Emails', function() {
       expect(emailEnvelope.getBcc()).to.be.eql(['address-2', 'address-3', 'address-4', 'address-5', 'address-6'])
 
       expect(emailEnvelope.toJSON()).to.be.eql({
-        'bcc-addresses': ['address-2', 'address-3', 'address-4', 'address-5', 'address-6']
+        'bcc-addresses': ['address-2', 'address-3', 'address-4', 'address-5', 'address-6'],
+        uniqueEmails   : false
       })
     })
 
@@ -556,7 +506,26 @@ describe('<Messaging> Emails', function() {
       expect(emailEnvelope.getQuery()).to.be.eql('query-2')
 
       expect(emailEnvelope.toJSON()).to.be.eql({
-        criteria: 'query-2'
+        criteria    : 'query-2',
+        uniqueEmails: false,
+      })
+    })
+
+    it('checks getters and setters of uniqueEmails', async () => {
+      emailEnvelope.setUniqueEmails(true)
+
+      expect(emailEnvelope.getUniqueEmails()).to.be.eql(true)
+
+      expect(emailEnvelope.toJSON()).to.be.eql({
+        uniqueEmails: true,
+      })
+
+      emailEnvelope.setUniqueEmails(false)
+
+      expect(emailEnvelope.getUniqueEmails()).to.be.eql(false)
+
+      expect(emailEnvelope.toJSON()).to.be.eql({
+        uniqueEmails: false,
       })
     })
 
@@ -580,11 +549,15 @@ describe('<Messaging> Emails', function() {
         .setQuery('query-1')
         .setQuery('query-2')
 
+        .setUniqueEmails(false)
+        .setUniqueEmails(true)
+
       expect(emailEnvelope.toJSON()).to.be.eql({
         'addresses'    : ['address-2', 'address-3', 'address-3', 'address-4', 'address-5',],
         'bcc-addresses': ['address-2', 'address-3', 'address-4', 'address-5', 'address-6',],
         'cc-addresses' : ['address-2', 'address-3', 'address-4', 'address-5', 'address-6',],
         'criteria'     : 'query-2',
+        'uniqueEmails' : true,
       })
     })
 
