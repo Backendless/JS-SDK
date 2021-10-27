@@ -946,6 +946,7 @@ function testUserService() {
 function testEmailEnvelope() {
     let addresses: string[];
     let query: string;
+    let uniqueEmails: boolean;
     let address: string = 'foo@foo.com';
     const data: object = {};
     let envelopeObject = new Backendless.EmailEnvelope();
@@ -965,6 +966,8 @@ function testEmailEnvelope() {
     addresses = envelopeObject.getBcc();
     envelopeObject = envelopeObject.setQuery('query');
     query = envelopeObject.getQuery();
+    envelopeObject = envelopeObject.setUniqueEmails(true);
+    uniqueEmails = envelopeObject.getUniqueEmails();
 }
 
 function testMessaging() {

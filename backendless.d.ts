@@ -375,13 +375,13 @@ declare module Backendless {
 
         function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<object>;
 
-        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object, attachments?: string[], uniqueEmails?: boolean): Promise<object>;
+        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object, attachments?: string[]): Promise<object>;
 
-        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object, uniqueEmails?: boolean): Promise<object>;
+        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, templateValues?: object): Promise<object>;
 
-        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, attachments?: string[], uniqueEmails?: boolean): Promise<object>;
+        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, attachments?: string[]): Promise<object>;
 
-        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope, uniqueEmails?: boolean): Promise<object>;
+        function sendEmailFromTemplate(templateName: string, emailEnvelope: Backendless.EmailEnvelope): Promise<object>;
 
         function cancel(messageId: string): Promise<boolean>;
 
