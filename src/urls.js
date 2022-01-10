@@ -145,6 +145,10 @@ export default class Urls {
     return `${this.data()}/bulk/${tableName}`
   }
 
+  dataBulkTableUpsert(tableName) {
+    return `${this.data()}/bulkupsert/${tableName}`
+  }
+
   dataBulkTableDelete(tableName) {
     return `${this.dataBulkTable(tableName)}/delete`
   }

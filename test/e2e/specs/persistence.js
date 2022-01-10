@@ -83,6 +83,19 @@ describe('Data', function() {
       expect(result.lastName).to.be.equal(entity.lastName)
     })
 
+    it('Upsert record', async () => {
+      const createdRecord = await fooDataStore.save({
+        firstName: 'Bill',
+        lastName : 'Gates',
+        objectId : 'non-existed'
+      }, true)
+
+      const updatedRecord = await fooDataStore.save({ ...createdRecord, lastName: 'Foobar' }, true)
+
+      expect(updatedRecord.firstName).to.be.equal(createdRecord.firstName)
+      expect(updatedRecord.lastName).to.be.equal('Foobar')
+    })
+
     it('Update record', async () => {
       const entity = new Foo({
         firstName: 'Bill',

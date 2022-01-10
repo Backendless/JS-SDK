@@ -233,6 +233,27 @@ export default class DataStore {
     })
   }
 
+  async bulkUpsert(objects) {
+    const errorMessage = 'Objects must be provided and must be an array of objects.'
+
+    if (!objects || !Array.isArray(objects) || !objects.length) {
+      throw new Error(errorMessage)
+    }
+
+    objects = objects.map(object => {
+      if (!object || typeof object !== 'object' || Array.isArray(object)) {
+        throw new Error(errorMessage)
+      }
+
+      return object
+    })
+
+    return this.app.request.put({
+      url : this.app.urls.dataBulkTableUpsert(this.className),
+      data: objects,
+    })
+  }
+
   async bulkUpdate(condition, changes) {
     if (!condition || typeof condition !== 'string') {
       throw new Error('Condition must be provided and must be a string.')
