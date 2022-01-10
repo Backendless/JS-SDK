@@ -1071,7 +1071,7 @@ declare module Backendless {
 
         constructor(name: string | Object | Function, classToTableMap: Object);
 
-        save<T = object>(obj: T | object): Promise<T>;
+        save<T = object>(obj: T | object, isUpsert?: boolean): Promise<T>;
 
         deepSave<T = object>(obj: T | object): Promise<T>;
 

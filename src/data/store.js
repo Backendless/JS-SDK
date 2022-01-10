@@ -48,10 +48,14 @@ export default class DataStore {
     return this.rtHandlers = this.rtHandlers || new RTHandlers(this)
   }
 
-  async save(object) {
+  async save(object, isUpsert) {
+    const url = isUpsert
+      ? this.app.urls.dataTableUpsert(this.className)
+      : this.app.urls.dataTable(this.className)
+
     return this.app.request
       .put({
-        url : this.app.urls.dataTable(this.className),
+        url,
         data: convertToServerRecord(object),
       })
       .then(result => this.parseResponse(result))

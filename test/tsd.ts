@@ -462,7 +462,11 @@ function testDataStoreClass() {
     }
 
     promiseObject = dataStore.save(item);
+    promiseObject = dataStore.save(item, true);
+    promiseObject = dataStore.save(item, false);
     promisePerson = dataStore.save<Person>(person);
+    promisePerson = dataStore.save<Person>(person, true);
+    promisePerson = dataStore.save<Person>(person, false);
 
     promiseObject = dataStore.deepSave(item);
     promisePerson = dataStore.deepSave<Person>(person);

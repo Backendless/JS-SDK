@@ -109,6 +109,10 @@ export default class Urls {
     return `${this.data()}/${tableName}`
   }
 
+  dataTableUpsert(tableName) {
+    return `${this.data()}/${tableName}/upsert`
+  }
+
   dataTableDeepSave(tableName) {
     return `${this.data()}/${tableName}/deep-save`
   }
