@@ -968,6 +968,16 @@ declare module Backendless {
      * @class EventHandler
      */
     class EventHandler {
+        addUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
+        removeUpsertListeners(whereClause: string): Backendless.EventHandler;
+        removeUpsertListeners(): Backendless.EventHandler;
+
+        removeUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
         addCreateListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
@@ -997,6 +1007,13 @@ declare module Backendless {
         removeDeleteListeners(): Backendless.EventHandler;
 
         removeDeleteListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
+        addBulkUpsertListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+
+        removeBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+
+        removeBulkUpsertListeners(): Backendless.EventHandler;
 
         addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;

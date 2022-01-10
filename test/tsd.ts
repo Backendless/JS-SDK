@@ -1353,6 +1353,31 @@ function RTData() {
     }
 
     eventHandler
+        .addUpsertListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: Object) => undefined)
+        .addUpsertListener((obj: Object) => undefined)
+        .addUpsertListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: { bar: string }) => undefined)
+        .addUpsertListener((obj: { bar: string }) => undefined)
+        .addUpsertListener((obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: Person) => undefined)
+        .addUpsertListener<Person>((obj: Person) => undefined)
+        .addUpsertListener<Person>((obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: { foo: string }) => undefined)
+        .addUpsertListener<Person>((obj: { foo: string }) => undefined)
+        .addUpsertListener<Person>((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+
+    eventHandler
+        .removeUpsertListeners('whereClause')
+        .removeUpsertListeners()
+        .removeUpsertListener<Person>((obj: Person) => undefined)
+        .removeUpsertListener<Person>((obj: { foo: string }) => undefined)
+
+
+    eventHandler
         .addCreateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addCreateListener('whereClause', (obj: Object) => undefined)
         .addCreateListener((obj: Object) => undefined)
@@ -1421,6 +1446,14 @@ function RTData() {
         .removeDeleteListeners('whereClause')
         .removeDeleteListeners()
         .removeDeleteListener<Person>((obj: Person) => undefined)
+
+    eventHandler
+        .addBulkUpsertListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkUpsertListener((list: string[]) => undefined)
+
+    eventHandler
+        .removeBulkUpsertListener((list: string[]) => undefined)
+        .removeBulkUpsertListeners()
 
     eventHandler
         .addBulkCreateListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)

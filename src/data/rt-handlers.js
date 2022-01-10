@@ -1,13 +1,15 @@
 import { RTListeners } from '../rt'
 
 const ChangesTypes = {
-  CREATED: 'created',
-  UPDATED: 'updated',
-  DELETED: 'deleted',
+  CREATED : 'created',
+  UPDATED : 'updated',
+  DELETED : 'deleted',
+  UPSERTED: 'upserted',
 
-  BULK_CREATED: 'bulk-created',
-  BULK_UPDATED: 'bulk-updated',
-  BULK_DELETED: 'bulk-deleted',
+  BULK_CREATED : 'bulk-created',
+  BULK_UPDATED : 'bulk-updated',
+  BULK_DELETED : 'bulk-deleted',
+  BULK_UPSERTED: 'bulk-upserted',
 }
 
 const RelationsChangesTypes = {
@@ -20,6 +22,7 @@ const SingleChangesTypes = [
   ChangesTypes.CREATED,
   ChangesTypes.UPDATED,
   ChangesTypes.DELETED,
+  ChangesTypes.UPSERTED,
 ]
 
 export default class RTHandlers extends RTListeners {
@@ -51,6 +54,22 @@ export default class RTHandlers extends RTListeners {
     }
 
     this.removeCreateListeners(undefined, callback)
+  }
+
+  addUpsertListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.UPSERTED, whereClause, callback, onError)
+  }
+
+  removeUpsertListeners(whereClause, callback) {
+    this.removeChangesListeners(ChangesTypes.UPSERTED, whereClause, callback)
+  }
+
+  removeUpsertListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeUpsertListeners(undefined, callback)
   }
 
   addUpdateListener(whereClause, callback, onError) {
@@ -131,6 +150,22 @@ export default class RTHandlers extends RTListeners {
     }
 
     this.removeBulkDeleteListeners(undefined, callback)
+  }
+
+  addBulkUpsertListener(whereClause, callback, onError) {
+    this.addChangesListener(ChangesTypes.BULK_UPSERTED, whereClause, callback, onError)
+  }
+
+  removeBulkUpsertListeners() {
+    this.removeChangesListeners(ChangesTypes.BULK_UPSERTED)
+  }
+
+  removeBulkUpsertListener(callback) {
+    if (!callback || typeof callback !== 'function') {
+      throw new Error('Listener Function must be passed.')
+    }
+
+    this.removeChangesListeners(ChangesTypes.BULK_UPSERTED, undefined, callback)
   }
 
   addSetRelationListener(relationColumnName, parentObjects, callback, onError) {
