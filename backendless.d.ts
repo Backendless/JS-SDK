@@ -1122,6 +1122,8 @@ declare module Backendless {
 
         bulkCreate(objects: Array<object>): Promise<Array<string>>;
 
+        bulkUpsert(objects: Array<object>): Promise<Array<string>>;
+
         bulkUpdate(whereClause: string, changes: object): Promise<string>;
 
         bulkDelete(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): Promise<string>;
