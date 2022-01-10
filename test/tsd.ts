@@ -1642,6 +1642,9 @@ async function testBaseTransactions() {
     opResult = uow.create(personInst);
     opResult = uow.create(personClassName, personObj);
     ///
+    opResult = uow.upsert(personInst);
+    opResult = uow.upsert(personClassName, personObj);
+    ///
     opResult = uow.update(personInst);
     opResult = uow.update(personClassName, personObj);
     opResult = uow.update(opResult, personObj);
@@ -1659,6 +1662,9 @@ async function testBaseTransactions() {
     ///
     opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
     opResult = uow.bulkCreate([personInst, personInst, personInst]);
+    ///
+    opResult = uow.bulkUpsert(personClassName, [personObj, personObj, personObj]);
+    opResult = uow.bulkUpsert([personInst, personInst, personInst]);
     ///
     opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);

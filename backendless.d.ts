@@ -1273,6 +1273,9 @@ declare module Backendless {
         create(object: object): OpResult;
         create(tableName: string, object: object): OpResult;
 
+        upsert(object: object): OpResult;
+        upsert(tableName: string, object: object): OpResult;
+
         update(object: object): OpResult;
         update(tableName: string, object: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
@@ -1286,6 +1289,9 @@ declare module Backendless {
 
         bulkCreate(tableName: string, objects: object[]): OpResult;
         bulkCreate(objects: object[]): OpResult;
+
+        bulkUpsert(tableName: string, objects: object[]): OpResult;
+        bulkUpsert(objects: object[]): OpResult;
 
         bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;
