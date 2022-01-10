@@ -220,6 +220,35 @@ class UnitOfWork {
   }
 
   /**
+   * upsert(object: object): OpResult;
+   * upsert(tableName: string, object: object): OpResult;
+   * **/
+  upsert(...args) {
+    let tableName
+    let changes
+
+    if (args.length === 1) {
+      tableName = Utils.getClassName(args[0])
+      changes = args[0]
+    } else if (args.length === 2) {
+      tableName = args[0]
+      changes = args[1]
+    } else {
+      throw new Error('Invalid arguments')
+    }
+
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Invalid arguments')
+    }
+
+    if (!changes || typeof changes !== 'object' || Array.isArray(changes)) {
+      throw new Error('Invalid arguments')
+    }
+
+    return this.addOperations(OperationType.UPSERT, tableName, changes)
+  }
+
+  /**
    * create(object: object): OpResult;
    * create(tableName: string, object: object): OpResult;
    * **/
@@ -340,6 +369,27 @@ class UnitOfWork {
     }
 
     return this.addOperations(OperationType.DELETE, tableName, object)
+  }
+
+  /**
+   * bulkUpsert(tableName: string, objects: object[]): OpResult;
+   * bulkUpsert(objects: object[]): OpResult;
+   * **/
+  bulkUpsert(tableName, objects) {
+    if (Array.isArray(tableName)) {
+      objects = tableName
+      tableName = Utils.getClassName(objects[0])
+    }
+
+    if (!objects || !Array.isArray(objects)) {
+      throw new Error('Objects must be an array of objects.')
+    }
+
+    if (!tableName || typeof tableName !== 'string') {
+      throw new Error('Table Name must be a string.')
+    }
+
+    return this.addOperations(OperationType.UPSERT_BULK, tableName, objects)
   }
 
   /**
@@ -600,7 +650,7 @@ export default function UnitOfWorkService(app) {
 
         opResult.setOpResultId(op.opResultId)
       })
-      
+
       return uow
     }
 
