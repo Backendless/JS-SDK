@@ -943,6 +943,309 @@ describe('<Data> RT', function() {
     })
   })
 
+  describe('Upsert Listener', () => {
+    it('should add a simple listener', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test', foo: 123 })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({ bar: 'test', foo: 123 })
+    })
+
+    it('should add a simple listener with condition', async () => {
+
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addUpsertListener('foo>123', data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event      : 'upserted',
+        tableName  : 'TEST_TABLE_NAME',
+        whereClause: 'foo>123',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test', foo: 123 })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({ bar: 'test', foo: 123 })
+    })
+
+    it('should add several listeners', async () => {
+
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callback1Promise = new Promise(resolve => {
+        rtHandlers.addUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const callback2Promise = new Promise(resolve => {
+        rtHandlers.addUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const callback3Promise = new Promise(resolve => {
+        rtHandlers.addUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      expect(sub2.id).to.be.a('string')
+      expect(sub2.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub2.options).to.be.eql({
+        event    : 'upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      expect(sub3.id).to.be.a('string')
+      expect(sub3.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub3.options).to.be.eql({
+        event    : 'upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test-1', foo: 123 })
+      rtClient.subRes(sub2.id, { bar: 'test-2', foo: 123 })
+      rtClient.subRes(sub3.id, { bar: 'test-3', foo: 123 })
+
+      const callback1Result = await callback1Promise
+      const callback2Result = await callback2Promise
+      const callback3Result = await callback3Promise
+
+      expect(callback1Result).to.be.eql({ bar: 'test-1', foo: 123 })
+      expect(callback2Result).to.be.eql({ bar: 'test-2', foo: 123 })
+      expect(callback3Result).to.be.eql({ bar: 'test-3', foo: 123 })
+    })
+
+    it('should transform result into an instance', async () => {
+      class Foo {
+      }
+
+      dataStore = Backendless.Data.of(Foo)
+      rtHandlers = dataStore.rt()
+
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'upserted',
+        tableName: 'Foo',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test', foo: 123 })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({ bar: 'test', foo: 123 })
+      expect(callbackResult).to.be.instanceof(Foo)
+    })
+
+    it('should remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addUpsertListener(callback1)
+      rtHandlers.addUpsertListener(callback2)
+      rtHandlers.addUpsertListener(callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeUpsertListener(callback2)
+      rtHandlers.removeUpsertListener(callback3)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with condition #1', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addUpsertListener('foo>111', callback1)
+      rtHandlers.addUpsertListener('foo>222', callback2)
+      rtHandlers.addUpsertListener(callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeUpsertListener(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with condition #2', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addUpsertListener('foo>123', callback1)
+      rtHandlers.addUpsertListener('foo>123', callback2)
+      rtHandlers.addUpsertListener(callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeUpsertListeners('foo>123', callback1)
+      rtHandlers.removeUpsertListeners(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+    })
+
+    it('should remove listeners with condition #3', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addUpsertListener('foo>123', callback1)
+      rtHandlers.addUpsertListener('foo>123', callback2)
+      rtHandlers.addUpsertListener(callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeUpsertListeners('foo>123')
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+    })
+
+    it('fails when callback is not a function on adding listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.addUpsertListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener([])).to.throw(errorMsg)
+
+      expect(() => rtHandlers.addUpsertListener('foo')).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addUpsertListener('foo', [])).to.throw(errorMsg)
+    })
+
+    it('fails when callback is not a function on removing listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.removeUpsertListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener('str')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.removeUpsertListener([])).to.throw(errorMsg)
+    })
+  })
+
   describe('Bulk Create Listener', () => {
     it('should add a simple listener', async () => {
 
@@ -1852,6 +2155,310 @@ describe('<Data> RT', function() {
       expect(() => rtHandlers.removeBulkDeleteListener('str')).to.throw(errorMsg)
       expect(() => rtHandlers.removeBulkDeleteListener({})).to.throw(errorMsg)
       expect(() => rtHandlers.removeBulkDeleteListener([])).to.throw(errorMsg)
+    })
+  })
+
+  describe('Bulk Upsert Listener', () => {
+    it('should add a simple listener', async () => {
+
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addBulkUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'bulk-upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test', foo: 123 })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({ bar: 'test', foo: 123 })
+    })
+
+    it('should add a simple listener with condition', async () => {
+
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addBulkUpsertListener('foo>123', data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event      : 'bulk-upserted',
+        tableName  : 'TEST_TABLE_NAME',
+        whereClause: 'foo>123',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test', foo: 123 })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({ bar: 'test', foo: 123 })
+    })
+
+    it('should add several listeners', async () => {
+
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callback1Promise = new Promise(resolve => {
+        rtHandlers.addBulkUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const callback2Promise = new Promise(resolve => {
+        rtHandlers.addBulkUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const callback3Promise = new Promise(resolve => {
+        rtHandlers.addBulkUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'bulk-upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      expect(sub2.id).to.be.a('string')
+      expect(sub2.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub2.options).to.be.eql({
+        event    : 'bulk-upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      expect(sub3.id).to.be.a('string')
+      expect(sub3.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub3.options).to.be.eql({
+        event    : 'bulk-upserted',
+        tableName: 'TEST_TABLE_NAME',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test-1', foo: 123 })
+      rtClient.subRes(sub2.id, { bar: 'test-2', foo: 123 })
+      rtClient.subRes(sub3.id, { bar: 'test-3', foo: 123 })
+
+      const callback1Result = await callback1Promise
+      const callback2Result = await callback2Promise
+      const callback3Result = await callback3Promise
+
+      expect(callback1Result).to.be.eql({ bar: 'test-1', foo: 123 })
+      expect(callback2Result).to.be.eql({ bar: 'test-2', foo: 123 })
+      expect(callback3Result).to.be.eql({ bar: 'test-3', foo: 123 })
+    })
+
+    it('should not transform result into an instance', async () => {
+      class Foo {
+      }
+
+      dataStore = Backendless.Data.of(Foo)
+      rtHandlers = dataStore.rt()
+
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+
+      const callbackPromise = new Promise(resolve => {
+        rtHandlers.addBulkUpsertListener(data => {
+          resolve(data)
+        })
+      })
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('OBJECTS_CHANGES')
+      expect(sub1.options).to.be.eql({
+        event    : 'bulk-upserted',
+        tableName: 'Foo',
+      })
+
+      rtClient.subRes(sub1.id, { bar: 'test', foo: 123 })
+
+      const callbackResult = await callbackPromise
+
+      expect(callbackResult).to.be.eql({ bar: 'test', foo: 123 })
+      expect(callbackResult).to.be.not.instanceof(Foo)
+    })
+
+    it('should remove listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+      const callback3 = () => ({})
+
+      rtHandlers.addBulkUpsertListener(callback1)
+      rtHandlers.addBulkUpsertListener(callback2)
+      rtHandlers.addBulkUpsertListener(callback3)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeBulkUpsertListener(callback2)
+      rtHandlers.removeBulkUpsertListener(callback3)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with condition #1', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addBulkUpsertListener('foo>111', callback1)
+      rtHandlers.addBulkUpsertListener('foo>222', callback2)
+      rtHandlers.addBulkUpsertListener(callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeBulkUpsertListener(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub2.id)
+      expect(sub5.id).to.be.equal(sub3.id)
+    })
+
+    it('should remove listeners with condition #2', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addBulkUpsertListener('foo>123', callback1)
+      rtHandlers.addBulkUpsertListener('foo>123', callback2)
+      rtHandlers.addBulkUpsertListener(callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeBulkUpsertListeners('foo>123', callback1)
+      rtHandlers.removeBulkUpsertListeners(callback2)
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+    })
+
+    it('should remove listeners with condition #3', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub2Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub3Promise = rtClient.getNext_SUB_ON() // OBJECTS_CHANGES
+      const sub4Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+      const sub5Promise = rtClient.getNext_SUB_OFF() // OBJECTS_CHANGES
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      rtHandlers.addBulkUpsertListener('foo>123', callback1)
+      rtHandlers.addBulkUpsertListener('foo>123', callback2)
+      rtHandlers.addBulkUpsertListener(callback2)
+
+      const sub1 = await sub1Promise
+      const sub2 = await sub2Promise
+      const sub3 = await sub3Promise
+
+      rtHandlers.removeBulkUpsertListeners('foo>123')
+
+      const sub4 = await sub4Promise
+      const sub5 = await sub5Promise
+
+      expect(sub4.id).to.be.equal(sub1.id)
+      expect(sub5.id).to.be.equal(sub2.id)
+    })
+
+    it('fails when callback is not a function on adding listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.addBulkUpsertListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener([])).to.throw(errorMsg)
+
+      expect(() => rtHandlers.addBulkUpsertListener('foo')).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', null)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', true)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', false)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', 0)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', 123)).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', '')).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', 'str')).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', {})).to.throw(errorMsg)
+      expect(() => rtHandlers.addBulkUpsertListener('foo', [])).to.throw(errorMsg)
+    })
+
+    it('fails when callback is not a function on removing listener', async () => {
+      const errorMsg = 'Listener Function must be passed.'
+
+      expect(() => rtHandlers.removeBulkUpsertListener()).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener(undefined)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener(null)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener(true)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener(false)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener(0)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener(123)).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener('')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener('str')).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener({})).to.throw(errorMsg)
+      expect(() => rtHandlers.removeBulkUpsertListener([])).to.throw(errorMsg)
     })
   })
 

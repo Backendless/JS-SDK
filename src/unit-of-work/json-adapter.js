@@ -41,6 +41,8 @@ export const OperationJSONAdapter = {
 
   UPDATE: (uow, { table, payload }) => uow.update.call(uow, table, resolveOpResultValueReference(uow, payload)),
 
+  UPSERT: (uow, { table, payload }) => uow.upsert.call(uow, table, resolveOpResultValueReference(uow, payload)),
+
   UPDATE_BULK: (uow, { table, payload }) => {
     const args = baseBulkArgs(uow, { table, payload })
 
@@ -57,6 +59,10 @@ export const OperationJSONAdapter = {
 
   CREATE_BULK: (uow, { table, payload }) => {
     return uow.bulkCreate.call(uow, table, resolveOpResultValueReference(uow, payload))
+  },
+
+  UPSERT_BULK: (uow, { table, payload }) => {
+    return uow.bulkUpsert.call(uow, table, resolveOpResultValueReference(uow, payload))
   },
 
   SET_RELATION: (uow, { table, payload }) => updateRelations(uow, 'setRelation', { table, payload }),

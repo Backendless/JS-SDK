@@ -109,6 +109,10 @@ export default class Urls {
     return `${this.data()}/${tableName}`
   }
 
+  dataTableUpsert(tableName) {
+    return `${this.data()}/${tableName}/upsert`
+  }
+
   dataTableDeepSave(tableName) {
     return `${this.data()}/${tableName}/deep-save`
   }
@@ -139,6 +143,10 @@ export default class Urls {
 
   dataBulkTable(tableName) {
     return `${this.data()}/bulk/${tableName}`
+  }
+
+  dataBulkTableUpsert(tableName) {
+    return `${this.data()}/bulkupsert/${tableName}`
   }
 
   dataBulkTableDelete(tableName) {

@@ -968,6 +968,16 @@ declare module Backendless {
      * @class EventHandler
      */
     class EventHandler {
+        addUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
+        removeUpsertListeners(whereClause: string): Backendless.EventHandler;
+        removeUpsertListeners(): Backendless.EventHandler;
+
+        removeUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
         addCreateListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
@@ -997,6 +1007,13 @@ declare module Backendless {
         removeDeleteListeners(): Backendless.EventHandler;
 
         removeDeleteListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
+        addBulkUpsertListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+
+        removeBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+
+        removeBulkUpsertListeners(): Backendless.EventHandler;
 
         addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
@@ -1071,7 +1088,7 @@ declare module Backendless {
 
         constructor(name: string | Object | Function, classToTableMap: Object);
 
-        save<T = object>(obj: T | object): Promise<T>;
+        save<T = object>(obj: T | object, isUpsert?: boolean): Promise<T>;
 
         deepSave<T = object>(obj: T | object): Promise<T>;
 
@@ -1104,6 +1121,8 @@ declare module Backendless {
         deleteRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
         bulkCreate(objects: Array<object>): Promise<Array<string>>;
+
+        bulkUpsert(objects: Array<object>): Promise<Array<string>>;
 
         bulkUpdate(whereClause: string, changes: object): Promise<string>;
 
@@ -1256,6 +1275,9 @@ declare module Backendless {
         create(object: object): OpResult;
         create(tableName: string, object: object): OpResult;
 
+        upsert(object: object): OpResult;
+        upsert(tableName: string, object: object): OpResult;
+
         update(object: object): OpResult;
         update(tableName: string, object: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
@@ -1269,6 +1291,9 @@ declare module Backendless {
 
         bulkCreate(tableName: string, objects: object[]): OpResult;
         bulkCreate(objects: object[]): OpResult;
+
+        bulkUpsert(tableName: string, objects: object[]): OpResult;
+        bulkUpsert(objects: object[]): OpResult;
 
         bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;

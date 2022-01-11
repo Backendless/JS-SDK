@@ -48,10 +48,14 @@ export default class DataStore {
     return this.rtHandlers = this.rtHandlers || new RTHandlers(this)
   }
 
-  async save(object) {
+  async save(object, isUpsert) {
+    const url = isUpsert
+      ? this.app.urls.dataTableUpsert(this.className)
+      : this.app.urls.dataTable(this.className)
+
     return this.app.request
       .put({
-        url : this.app.urls.dataTable(this.className),
+        url,
         data: convertToServerRecord(object),
       })
       .then(result => this.parseResponse(result))
@@ -225,6 +229,27 @@ export default class DataStore {
 
     return this.app.request.post({
       url : this.app.urls.dataBulkTable(this.className),
+      data: objects,
+    })
+  }
+
+  async bulkUpsert(objects) {
+    const errorMessage = 'Objects must be provided and must be an array of objects.'
+
+    if (!objects || !Array.isArray(objects) || !objects.length) {
+      throw new Error(errorMessage)
+    }
+
+    objects = objects.map(object => {
+      if (!object || typeof object !== 'object' || Array.isArray(object)) {
+        throw new Error(errorMessage)
+      }
+
+      return object
+    })
+
+    return this.app.request.put({
+      url : this.app.urls.dataBulkTableUpsert(this.className),
       data: objects,
     })
   }

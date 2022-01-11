@@ -351,6 +351,28 @@ describe('<Data> CRUD', function() {
     })
   })
 
+  describe('Upsert', () => {
+    it('updates object', async () => {
+      const savedObject = getTestObjectWithId()
+      savedObject.updatedProp = 'new-value'
+
+      const req1 = prepareMockRequest({ ...savedObject })
+
+      const result1 = await Backendless.Data.of(ClassPerson).save(savedObject, true)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/ClassPerson/upsert`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : savedObject
+      })
+
+      expect(result1).to.be.eql(savedObject)
+      expect(result1).to.be.instanceof(ClassPerson)
+      expect(result1).to.not.equal(savedObject)
+    })
+  })
+
   describe('Remove', () => {
     it('removes object', async () => {
       const savedObject = getTestObjectWithId()

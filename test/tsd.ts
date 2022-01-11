@@ -462,7 +462,11 @@ function testDataStoreClass() {
     }
 
     promiseObject = dataStore.save(item);
+    promiseObject = dataStore.save(item, true);
+    promiseObject = dataStore.save(item, false);
     promisePerson = dataStore.save<Person>(person);
+    promisePerson = dataStore.save<Person>(person, true);
+    promisePerson = dataStore.save<Person>(person, false);
 
     promiseObject = dataStore.deepSave(item);
     promisePerson = dataStore.deepSave<Person>(person);
@@ -677,6 +681,8 @@ function testBulkOperations() {
     let resultString: string;
 
     resultPromiseListOfString = dataStore.bulkCreate([{}, {}, {}]);
+
+    resultPromiseListOfString = dataStore.bulkUpsert([{}, {}, {}]);
 
     resultPromiseString = dataStore.bulkUpdate('where clause string', {foo: 'bar'});
 
@@ -1349,6 +1355,31 @@ function RTData() {
     }
 
     eventHandler
+        .addUpsertListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: Object) => undefined)
+        .addUpsertListener((obj: Object) => undefined)
+        .addUpsertListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: { bar: string }) => undefined)
+        .addUpsertListener((obj: { bar: string }) => undefined)
+        .addUpsertListener((obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: Person) => undefined)
+        .addUpsertListener<Person>((obj: Person) => undefined)
+        .addUpsertListener<Person>((obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: { foo: string }) => undefined)
+        .addUpsertListener<Person>((obj: { foo: string }) => undefined)
+        .addUpsertListener<Person>((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+
+    eventHandler
+        .removeUpsertListeners('whereClause')
+        .removeUpsertListeners()
+        .removeUpsertListener<Person>((obj: Person) => undefined)
+        .removeUpsertListener<Person>((obj: { foo: string }) => undefined)
+
+
+    eventHandler
         .addCreateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addCreateListener('whereClause', (obj: Object) => undefined)
         .addCreateListener((obj: Object) => undefined)
@@ -1417,6 +1448,14 @@ function RTData() {
         .removeDeleteListeners('whereClause')
         .removeDeleteListeners()
         .removeDeleteListener<Person>((obj: Person) => undefined)
+
+    eventHandler
+        .addBulkUpsertListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkUpsertListener((list: string[]) => undefined)
+
+    eventHandler
+        .removeBulkUpsertListener((list: string[]) => undefined)
+        .removeBulkUpsertListeners()
 
     eventHandler
         .addBulkCreateListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
@@ -1605,6 +1644,9 @@ async function testBaseTransactions() {
     opResult = uow.create(personInst);
     opResult = uow.create(personClassName, personObj);
     ///
+    opResult = uow.upsert(personInst);
+    opResult = uow.upsert(personClassName, personObj);
+    ///
     opResult = uow.update(personInst);
     opResult = uow.update(personClassName, personObj);
     opResult = uow.update(opResult, personObj);
@@ -1622,6 +1664,9 @@ async function testBaseTransactions() {
     ///
     opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
     opResult = uow.bulkCreate([personInst, personInst, personInst]);
+    ///
+    opResult = uow.bulkUpsert(personClassName, [personObj, personObj, personObj]);
+    opResult = uow.bulkUpsert([personInst, personInst, personInst]);
     ///
     opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);

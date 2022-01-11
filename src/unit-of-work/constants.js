@@ -5,6 +5,8 @@ export const OperationType = {
   UPDATE_BULK    : 'UPDATE_BULK',
   DELETE         : 'DELETE',
   DELETE_BULK    : 'DELETE_BULK',
+  UPSERT         : 'UPSERT',
+  UPSERT_BULK    : 'UPSERT_BULK',
   FIND           : 'FIND',
   ADD_RELATION   : 'ADD_RELATION',
   SET_RELATION   : 'SET_RELATION',
