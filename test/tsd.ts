@@ -682,6 +682,8 @@ function testBulkOperations() {
 
     resultPromiseListOfString = dataStore.bulkCreate([{}, {}, {}]);
 
+    resultPromiseListOfString = dataStore.bulkUpsert([{}, {}, {}]);
+
     resultPromiseString = dataStore.bulkUpdate('where clause string', {foo: 'bar'});
 
     resultPromiseString = dataStore.bulkDelete('where clause string');
