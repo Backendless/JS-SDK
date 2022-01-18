@@ -467,13 +467,6 @@ declare module Backendless {
         function appendText(directoryPath: string, fileName: string, fileContent: string): Promise<string>;
         function appendText(filePath: string, fileContent: string): Promise<string>;
 
-        // promiseObject = Backendless.Files.append('path-source-file', path);
-        // promiseObject = Backendless.Files.append(path, fileName, fileContent);
-        // promiseObject = Backendless.Files.append(filePathName, fileContent);
-        //
-        // promiseObject = Backendless.Files.appendText(path, fileName, fileContent);
-        // promiseObject = Backendless.Files.appendText(filePathName, fileContent);
-
         function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 
         function getFileCount(path: string, pattern?: string, sub?: boolean, countDirectories?: boolean): Promise<number>;
