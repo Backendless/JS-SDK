@@ -9,8 +9,8 @@ describe('<Files> Browser', function() {
 
   const resultFileURL = 'http://foo.com/path/to/file.txt'
 
-  const filePath = 'test/path'
-  const filePathWithSlash = '/test/path'
+  const directoryPath = 'test/path'
+  const directoryPathWithSlash = '/test/path'
   const fileName = 'test-name.txt'
   const fileContent = 'test-content'
 
@@ -51,7 +51,7 @@ describe('<Files> Browser', function() {
 
       const file = new File(Buffer.from('test-content'), fileName)
 
-      const result1 = await Backendless.Files.saveFile(filePath, fileName, file)
+      const result1 = await Backendless.Files.saveFile(directoryPath, fileName, file)
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -66,7 +66,7 @@ describe('<Files> Browser', function() {
     it('saves a file from text', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.saveFile(filePath, fileName, 'test-content')
+      const result1 = await Backendless.Files.saveFile(directoryPath, fileName, 'test-content')
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -83,7 +83,7 @@ describe('<Files> Browser', function() {
 
       let error
       try {
-        await Backendless.Files.saveFile(filePath, fileName, brokenFileContent)
+        await Backendless.Files.saveFile(directoryPath, fileName, brokenFileContent)
       } catch (e) {
         error = e
       }
@@ -101,8 +101,8 @@ describe('<Files> Browser', function() {
 
       const file = new File(Buffer.from('test-content'), fileName)
 
-      await Backendless.Files.upload(file, filePath)
-      await Backendless.Files.upload(file, filePathWithSlash)
+      await Backendless.Files.upload(file, directoryPath)
+      await Backendless.Files.upload(file, directoryPathWithSlash)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -129,8 +129,8 @@ describe('<Files> Browser', function() {
 
       const file = new File(Buffer.from('test-content'), null)
 
-      await Backendless.Files.upload(file, `${filePath}/test-name.txt`)
-      await Backendless.Files.upload(file, `${filePathWithSlash}/test-name.txt`)
+      await Backendless.Files.upload(file, `${directoryPath}/test-name.txt`)
+      await Backendless.Files.upload(file, `${directoryPathWithSlash}/test-name.txt`)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -157,8 +157,8 @@ describe('<Files> Browser', function() {
 
       const file = new File(Buffer.from('test-content'), 'file.jpg')
 
-      await Backendless.Files.upload(file, `${filePath}/test-name.txt`)
-      await Backendless.Files.upload(file, `${filePathWithSlash}/test-name.txt`)
+      await Backendless.Files.upload(file, `${directoryPath}/test-name.txt`)
+      await Backendless.Files.upload(file, `${directoryPathWithSlash}/test-name.txt`)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -185,8 +185,8 @@ describe('<Files> Browser', function() {
 
       const file = new Blob(Buffer.from('test-content'), { type: 'test-type' })
 
-      await Backendless.Files.upload(file, `${filePath}/test-name.txt`)
-      await Backendless.Files.upload(file, `${filePathWithSlash}/test-name.txt`)
+      await Backendless.Files.upload(file, `${directoryPath}/test-name.txt`)
+      await Backendless.Files.upload(file, `${directoryPathWithSlash}/test-name.txt`)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -211,9 +211,9 @@ describe('<Files> Browser', function() {
       const req1 = prepareMockRequest({ resultFileURL })
 
       const file = new File(Buffer.from('test-content'), '')
-      file.path = `${filePath}/${fileName}`
+      file.path = `${directoryPath}/${fileName}`
 
-      await Backendless.Files.upload(file, filePath)
+      await Backendless.Files.upload(file, directoryPath)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -231,8 +231,8 @@ describe('<Files> Browser', function() {
 
       const file = new File(Buffer.from('test-content'), fileName)
 
-      await Backendless.Files.upload(file, filePath, true)
-      await Backendless.Files.upload(file, filePath, false)
+      await Backendless.Files.upload(file, directoryPath, true)
+      await Backendless.Files.upload(file, directoryPath, false)
 
       expect(req1).to.deep.include({
         method : 'POST',
@@ -253,7 +253,7 @@ describe('<Files> Browser', function() {
 
         const file = new File(Buffer.from('test-content'), fileName)
 
-        await Backendless.Files.upload(file, filePath, overwrite)
+        await Backendless.Files.upload(file, directoryPath, overwrite)
 
         expect(req1.path).to.deep.include(`${APP_PATH}/files/test/path/test-name.txt`)
       }
@@ -349,4 +349,237 @@ describe('<Files> Browser', function() {
 
   })
 
+  describe('Append', () => {
+
+    it('appends from a File with fileName and dirPath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+      const req2 = prepareMockRequest(resultFileURL)
+      const req3 = prepareMockRequest(resultFileURL)
+      const req4 = prepareMockRequest(resultFileURL)
+
+      const file = new File(Buffer.from('test-content'), fileName)
+
+      await Backendless.Files.append('/test1/path1/', 'test1.txt', file)
+      await Backendless.Files.append('test2/path2/', 'test2.txt', file)
+      await Backendless.Files.append('/test3/path3', 'test3.txt', file)
+      await Backendless.Files.append('test4/path4', 'test4.txt', file)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test1/path1/test1.txt`,
+        headers: {},
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test2/path2/test2.txt`,
+        headers: {},
+      })
+
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test3/path3/test3.txt`,
+        headers: {},
+      })
+
+      expect(req4).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test4/path4/test4.txt`,
+        headers: {},
+      })
+
+      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body.get('file')).to.be.equal(file)
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file')).to.be.equal(file)
+
+      expect(req3.body).to.be.instanceof(FormData)
+      expect(req3.body.get('file')).to.be.equal(file)
+
+      expect(req4.body).to.be.instanceof(FormData)
+      expect(req4.body.get('file')).to.be.equal(file)
+    })
+
+    it('appends from a File with filePath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+      const req2 = prepareMockRequest(resultFileURL)
+
+      const file = new File(Buffer.from('test-content'), fileName)
+
+      await Backendless.Files.append('/test1/path1/test1.txt', file)
+      await Backendless.Files.append('test2/path2/test2.txt', file)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test1/path1/test1.txt`,
+        headers: {},
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test2/path2/test2.txt`,
+        headers: {},
+      })
+
+      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body.get('file')).to.be.equal(file)
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file')).to.be.equal(file)
+    })
+
+    it('appends from a ArrayBuffer with fileName and dirPath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+      const req2 = prepareMockRequest(resultFileURL)
+      const req3 = prepareMockRequest(resultFileURL)
+      const req4 = prepareMockRequest(resultFileURL)
+
+      const file = new ArrayBuffer(16)
+
+      const result1 = await Backendless.Files.append('/test1/path1/', 'test1.txt', file)
+      const result2 = await Backendless.Files.append('test2/path2/', 'test2.txt', file)
+      const result3= await Backendless.Files.append('/test3/path3', 'test3.txt', file)
+      const result4 = await Backendless.Files.append('test4/path4', 'test4.txt', file)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test1/path1/test1.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body:'dGVzdC1jb250ZW50',
+      })
+
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test2/path2/test2.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body:'dGVzdC1jb250ZW50',
+      })
+
+      expect(req3).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test3/path3/test3.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body:'dGVzdC1jb250ZW50',
+      })
+
+      expect(req4).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test4/path4/test4.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body:'dGVzdC1jb250ZW50',
+      })
+
+      expect(result1).to.be.equal(resultFileURL)
+      expect(result2).to.be.equal(resultFileURL)
+      expect(result3).to.be.equal(resultFileURL)
+      expect(result4).to.be.equal(resultFileURL)
+    })
+
+    it('appends from a ArrayBuffer with filePath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+      const req2 = prepareMockRequest(resultFileURL)
+
+      const file = new ArrayBuffer(16)
+
+      const result1 = await Backendless.Files.append('/test1/path1/test1.txt', file)
+      const result2 = await Backendless.Files.append('test2/path2/test2.txt', file)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test1/path1/test1.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body:'dGVzdC1jb250ZW50',
+      })
+
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test2/path2/test2.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body:'dGVzdC1jb250ZW50',
+      })
+
+      expect(result1).to.be.equal(resultFileURL)
+      expect(result2).to.be.equal(resultFileURL)
+    })
+
+    it('appends from a Blob with fileName and dirPath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+      const req2 = prepareMockRequest(resultFileURL)
+      const req3 = prepareMockRequest(resultFileURL)
+      const req4 = prepareMockRequest(resultFileURL)
+
+      const file = new Blob(Buffer.from('test-content'), { type: 'test-type' })
+
+      await Backendless.Files.append('/test1/path1/', 'test1.txt', file)
+      await Backendless.Files.append('test2/path2/', 'test2.txt', file)
+      await Backendless.Files.append('/test3/path3', 'test3.txt', file)
+      await Backendless.Files.append('test4/path4', 'test4.txt', file)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test1/path1/test1.txt`,
+        headers: {},
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test2/path2/test2.txt`,
+        headers: {},
+      })
+
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test3/path3/test3.txt`,
+        headers: {},
+      })
+
+      expect(req4).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test4/path4/test4.txt`,
+        headers: {},
+      })
+
+      expect(req1.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file').type).to.be.equal('test-type')
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file').type).to.be.equal('test-type')
+
+      expect(req3.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file').type).to.be.equal('test-type')
+
+      expect(req4.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file').type).to.be.equal('test-type')
+    })
+
+    it('appends from a Blob with filePath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+      const req2 = prepareMockRequest(resultFileURL)
+
+      const file = new Blob(Buffer.from('test-content'), { type: 'test-type' })
+
+      await Backendless.Files.append('/test1/path1/test1.txt', file)
+      await Backendless.Files.append('test2/path2/test2.txt', file)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test1/path1/test1.txt`,
+        headers: {},
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test2/path2/test2.txt`,
+        headers: {},
+      })
+
+      expect(req1.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file').type).to.be.equal('test-type')
+
+      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body.get('file').type).to.be.equal('test-type')
+    })
+
+  })
 })

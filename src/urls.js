@@ -257,6 +257,14 @@ export default class Urls {
     return `${this.files()}/binary/${path}`
   }
 
+  fileAppendPath(path) {
+    return `${this.files()}/append/${path}`
+  }
+
+  fileAppendBinaryPath(path) {
+    return `${this.files()}/append/binary/${path}`
+  }
+
   //users
   users() {
     return `${this.root()}/users`

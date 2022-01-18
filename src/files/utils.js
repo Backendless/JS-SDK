@@ -1,10 +1,33 @@
 const FilesUtils = {
+
+  isBytesArray(data) {
+    if (typeof Buffer !== 'undefined' && data instanceof Buffer) {
+      return true
+    }
+
+    if (typeof ArrayBuffer !== 'undefined' && data instanceof ArrayBuffer) {
+      return true
+    }
+
+    return Array.isArray(data)
+  },
+
   ensureSlashInPath(path) {
     return !path.startsWith('/') ? `/${path}` : path
   },
 
-  preventSlashInPath(path) {
-    return (path && path.startsWith('/')) ? path.slice(1) : path
+  trimSlashesInPath(path) {
+    if (path) {
+      if (path.startsWith('/')) {
+        path = path.slice(1)
+      }
+
+      if (path.endsWith('/')) {
+        path = path.slice(0, path.length - 1)
+      }
+    }
+
+    return path
   },
 
   parseFilePath(path) {
