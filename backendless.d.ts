@@ -447,12 +447,25 @@ declare module Backendless {
 
         let restUrl: string;
 
-        function saveFile(path: string, fileName: string, fileContent: Blob | string, overwrite?: boolean): Promise<boolean>;
+        function saveFile(path: string, fileName: string, fileContent: Blob | Buffer | string, overwrite?: boolean): Promise<string>;
 
-        function upload(file: File, path: string, overwrite?: boolean): Promise<Object>;
-        function upload(fileURL: string, path: string, overwrite?: boolean): Promise<Object>;
         // @ts-ignore - file has to be an instance of File in browser env and an instance of ReadStream in nodejs env
-        function upload(readStream: ReadStream, path: string, overwrite?: boolean): Promise<Object>;
+        function upload(readStream: ReadStream, path: string, overwrite?: boolean): Promise<{ fileURL: string }>;
+        function upload(file: File, path: string, overwrite?: boolean): Promise<{ fileURL: string }>;
+        function upload(fileURL: string, path: string, overwrite?: boolean): Promise<{ fileURL: string }>;
+
+        function append(filePath: string, fileURL: string): Promise<string>;
+        function append(filePath: string, fileContent: Blob | Buffer | ArrayBuffer | number[]): Promise<string>;
+        // @ts-ignore
+        function append(filePath: string, readStream: ReadStream): Promise<string>;
+
+        function append(directoryPath: string, fileName: string, fileURL: string): Promise<string>;
+        function append(directoryPath: string, fileName: string, fileContent: Blob | Buffer | ArrayBuffer | number[]): Promise<string>;
+        // @ts-ignore
+        function append(directoryPath: string, fileName: string, readStream: ReadStream): Promise<string>;
+
+        function appendText(directoryPath: string, fileName: string, fileContent: string): Promise<string>;
+        function appendText(filePath: string, fileContent: string): Promise<string>;
 
         function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 

@@ -1027,12 +1027,16 @@ function testMessaging() {
     promiseObject = Backendless.Messaging.pushWithTemplate('templateName', {foo: 'bar'});
 }
 
-function testFilesService() {
+async function testFilesService() {
     const fs = require('fs')
 
     const path: string = 'str';
+    const dirPath: string = 'str';
+    const filePath: string = 'str';
     const fileName: string = 'str';
-    const fileContent: Blob = new Blob();
+    const fileBlobContent: Blob = new Blob();
+    const fileBufferContent: Buffer = Buffer.from('text');
+    const fileTextContent: string = 'str';
     const pattern: string = 'str';
     const sub: boolean = true;
     const pageSize: number = 123;
@@ -1044,6 +1048,7 @@ function testFilesService() {
     const sourcePath: string = 'str';
     const targetPath: string = 'str';
     const fileURL: string = 'str';
+    const sourceFileURL: string = 'str';
     const userid: string = 'str';
     const url: string = 'str';
     const permissionType: string = 'str';
@@ -1055,25 +1060,58 @@ function testFilesService() {
     let resultBool: boolean;
     let resultObj: Object;
     let resultNumber: number;
-    let promiseObject: Promise<Object>;
+    let promiseString: Promise<string>;
+    let promiseObject: Promise<object>;
+    let promiseBoolean: Promise<boolean>;
     let promiseNumber: Promise<number>;
+
+    interface IFileUploadResult {
+        fileURL: string
+    }
+
+    let promiseIFileUploadResult: Promise<IFileUploadResult>;
 
     resultStr = Backendless.Files.restUrl;
 
-    promiseObject = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
-    promiseObject = Backendless.Files.saveFile(path, fileName, fileContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBlobContent, overwrite);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBufferContent, overwrite);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBlobContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBufferContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileTextContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileTextContent, overwrite);
 
-    promiseObject = Backendless.Files.upload(file, path);
-    promiseObject = Backendless.Files.upload(file, path, overwrite);
-    promiseObject = Backendless.Files.upload(file, path, null);
+    const {fileURL: string} = await Backendless.Files.upload(file, path);
 
-    promiseObject = Backendless.Files.upload(readStream, path);
-    promiseObject = Backendless.Files.upload(readStream, path, overwrite);
-    promiseObject = Backendless.Files.upload(readStream, path, null);
+    promiseIFileUploadResult = Backendless.Files.upload(file, path);
+    promiseIFileUploadResult = Backendless.Files.upload(file, path, overwrite);
+    promiseIFileUploadResult = Backendless.Files.upload(file, path, null);
 
-    promiseObject = Backendless.Files.upload('path-source-file', path);
-    promiseObject = Backendless.Files.upload('path-source-file', path, overwrite);
-    promiseObject = Backendless.Files.upload('path-source-file', path, null);
+    promiseIFileUploadResult = Backendless.Files.upload(readStream, path);
+    promiseIFileUploadResult = Backendless.Files.upload(readStream, path, overwrite);
+    promiseIFileUploadResult = Backendless.Files.upload(readStream, path, null);
+
+    promiseIFileUploadResult = Backendless.Files.upload(sourceFileURL, path);
+    promiseIFileUploadResult = Backendless.Files.upload(sourceFileURL, path, overwrite);
+    promiseIFileUploadResult = Backendless.Files.upload(sourceFileURL, path, null);
+
+    promiseString = Backendless.Files.append(dirPath, fileName, sourceFileURL);
+    promiseString = Backendless.Files.append(dirPath, fileName, readStream);
+    promiseString = Backendless.Files.append(dirPath, fileName, fileBlobContent);
+    promiseString = Backendless.Files.append(dirPath, fileName, fileBufferContent);
+    promiseString = Backendless.Files.append(dirPath, fileName, new ArrayBuffer(8));
+    promiseString = Backendless.Files.append(dirPath, fileName, new Int32Array(new ArrayBuffer(8)));
+    promiseString = Backendless.Files.append(dirPath, fileName, [1, 2, 3]);
+
+    promiseString = Backendless.Files.append(filePath, sourceFileURL);
+    promiseString = Backendless.Files.append(filePath, readStream);
+    promiseString = Backendless.Files.append(filePath, fileBlobContent);
+    promiseString = Backendless.Files.append(filePath, fileBufferContent);
+    promiseString = Backendless.Files.append(filePath, new ArrayBuffer(8));
+    promiseString = Backendless.Files.append(filePath, new Int32Array(new ArrayBuffer(8)));
+    promiseString = Backendless.Files.append(filePath, [1, 2, 3]);
+
+    promiseString = Backendless.Files.appendText(dirPath, fileName, fileTextContent);
+    promiseString = Backendless.Files.appendText(filePath, fileTextContent);
 
     promiseObject = Backendless.Files.listing(path);
     promiseObject = Backendless.Files.listing(path, pattern);
@@ -1098,47 +1136,47 @@ function testFilesService() {
 
     promiseNumber = Backendless.Files.removeDirectory(path);
 
-    promiseObject = Backendless.Files.Permissions.READ.grantUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.grantRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyRole(roleName, url);
 
-    promiseObject = Backendless.Files.Permissions.DELETE.grantUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyRole(roleName, url);
 
-    promiseObject = Backendless.Files.Permissions.WRITE.grantUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyRole(roleName, url);
 
-    promiseObject = Backendless.Files.Permissions.READ.grantForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.grantForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.READ.grantForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.READ.grantForAllRoles(url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForAllRoles(url);
 
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllRoles(url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForAllRoles(url);
 
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllRoles(url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForAllRoles(url);
 
 }
 
@@ -1264,11 +1302,11 @@ function testCustomServices() {
     let resultObj: any
     let promiseAny: Promise<any>
     let executionType: string = Backendless.BL.ExecutionTypes.SYNC
-    let httpRequestHeaders: object = { 'custom-header': 'value'  }
+    let httpRequestHeaders: object = {'custom-header': 'value'}
     let options1: object = {}
-    let options2: object = { httpRequestHeaders }
-    let options3: object = { executionType }
-    let options4: object = { executionType, httpRequestHeaders }
+    let options2: object = {httpRequestHeaders}
+    let options3: object = {executionType}
+    let options4: object = {executionType, httpRequestHeaders}
 
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);

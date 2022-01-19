@@ -12,6 +12,8 @@ describe('<Files> Nodejs', function() {
   const resultFileURL = 'http://foo.com/path/to/file.txt'
 
   const targetDirPath = 'test/path'
+  const targetFileName = 'text.txt'
+  const targetFilePath = `${targetDirPath}/${targetFileName}`
   const sourceFilePath = __filename
   const currentFileName = path.basename(__filename)
 
@@ -79,6 +81,78 @@ describe('<Files> Nodejs', function() {
       expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
       expect(result2).to.be.eql({ fileURL: 'target-file-url-2' })
     })
+  })
+
+  describe('Append', () => {
+
+    it('appends from instance of ReadStream with fileName and dirPath', async () => {
+      const req1 = prepareMockRequest({ resultFileURL })
+
+      const fileStream = fs.createReadStream(sourceFilePath)
+
+      await Backendless.Files.append(targetDirPath, targetFileName, fileStream)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test/path/text.txt`,
+        headers: {},
+      })
+
+      // getBoundary is a method of FormData (nodejs) instance
+      expect(req1.body.getBoundary()).to.be.a('string')
+    })
+
+    it('appends from instance of ReadStream with filePath', async () => {
+      const req1 = prepareMockRequest({ resultFileURL })
+
+      const fileStream = fs.createReadStream(sourceFilePath)
+
+      await Backendless.Files.append(targetFilePath, fileStream)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/test/path/text.txt`,
+        headers: {},
+      })
+
+      // getBoundary is a method of FormData (nodejs) instance
+      expect(req1.body.getBoundary()).to.be.a('string')
+    })
+
+    it('appends from instance of Buffer with fileName and dirPath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+
+      const fileBuffer = Buffer.from('hello test')
+
+      const result1 = await Backendless.Files.append(targetDirPath, targetFileName, fileBuffer)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test/path/text.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body   : 'aGVsbG8gdGVzdA==',
+      })
+
+      expect(result1).to.be.eql(resultFileURL)
+    })
+
+    it('appends from instance of Buffer with filePath', async () => {
+      const req1 = prepareMockRequest(resultFileURL)
+
+      const fileBuffer = Buffer.from('hello test')
+
+      const result1 = await Backendless.Files.append(targetFilePath, fileBuffer)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/test/path/text.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body   : 'aGVsbG8gdGVzdA==',
+      })
+
+      expect(result1).to.be.eql(resultFileURL)
+    })
+
   })
 
 })

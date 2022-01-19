@@ -303,6 +303,44 @@ describe('Backendless.Files', function() {
     })
   })
 
+  describe('Append', function() {
+    it('appends text content', async () => {
+      const fileDir = 'test-append'
+      const fileName = 'buffer-file.txt'
+      const filePath = `${fileDir}/${fileName}`
+
+      const fileURL1 = await Files.append(fileDir, fileName, Buffer.from('aaa'))
+      const fileURL2 = await Files.append(fileDir, fileName, Buffer.from('bbb'))
+      const fileURL3 = await Files.append(fileDir, fileName, Buffer.from('ccc'))
+
+      expect(fileURL1).to.be.equal(fileURL2)
+      expect(fileURL2).to.be.equal(fileURL3)
+
+      const fileContent = await readFile(filePath)
+
+      expect(fileContent).to.eql('aaabbbccc')
+    })
+  })
+
+  describe('Append Text', function() {
+    it('appends text content', async () => {
+      const fileDir = 'test-append'
+      const fileName = 'text-file.txt'
+      const filePath = `${fileDir}/${fileName}`
+
+      const fileURL1 = await Files.appendText(fileDir, fileName, 'aaa')
+      const fileURL2 = await Files.appendText(fileDir, fileName, 'bbb')
+      const fileURL3 = await Files.appendText(fileDir, fileName, 'ccc')
+
+      expect(fileURL1).to.be.equal(fileURL2)
+      expect(fileURL2).to.be.equal(fileURL3)
+
+      const fileContent = await readFile(filePath)
+
+      expect(fileContent).to.eql('aaabbbccc')
+    })
+  })
+
   describe('Upload', function() {
     it('Upload file', function() {
       if (typeof File !== 'undefined') {

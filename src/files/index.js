@@ -29,7 +29,7 @@ export default class Files {
       query.overwrite = overwrite
     }
 
-    filePath = FilesUtils.preventSlashInPath(filePath)
+    filePath = FilesUtils.trimSlashesInPath(filePath)
     fileName = FilesUtils.sanitizeFileName(fileName)
 
     return this.app.request.put({
@@ -47,7 +47,7 @@ export default class Files {
       query.overwrite = overwrite
     }
 
-    filePath = FilesUtils.preventSlashInPath(filePath)
+    filePath = FilesUtils.trimSlashesInPath(filePath)
 
     const pathTokens = FilesUtils.parseFilePath(filePath)
 
@@ -66,7 +66,7 @@ export default class Files {
       }
 
       return this.app.request.post({
-        url  : `${this.app.urls.filePath(filePath)}/${fileName || ''}`,
+        url  : `${this.app.urls.filePath(filePath)}/${fileName}`,
         query: query,
         data : {
           url: file
@@ -93,6 +93,94 @@ export default class Files {
     })
   }
 
+  async append(filePath, fileName, fileContent) {
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('"filePath" must be provided and must be a string.')
+    }
+
+    filePath = FilesUtils.trimSlashesInPath(filePath)
+
+    if (arguments.length === 2) {
+      fileContent = fileName
+      fileName = undefined
+
+      const pathTokens = FilesUtils.parseFilePath(filePath)
+
+      if (pathTokens.fileName) {
+        filePath = pathTokens.filePath
+        fileName = pathTokens.fileName
+      }
+    }
+
+    if (!fileName) {
+      throw new Error('Can not resolve target file name')
+    }
+
+    fileName = FilesUtils.sanitizeFileName(fileName)
+
+    if (typeof fileContent === 'string') {
+      return this.app.request.post({
+        url : `${this.app.urls.fileAppendPath(filePath)}/${fileName}`,
+        data: {
+          url: fileContent
+        },
+      })
+    }
+
+    if (FilesUtils.isBytesArray(fileContent)) {
+      fileContent = await FilesUtils.toBase64(fileContent)
+
+      return this.app.request.put({
+        url    : `${this.app.urls.fileAppendBinaryPath(filePath)}/${fileName}`,
+        headers: { 'Content-Type': 'text/plain' },
+        data   : fileContent,
+      })
+    }
+
+    return this.app.request.post({
+      url : `${this.app.urls.fileAppendPath(filePath)}/${fileName}`,
+      form: {
+        file: fileContent
+      },
+    })
+  }
+
+  async appendText(filePath, fileName, textContent) {
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('"filePath" must be provided and must be a string.')
+    }
+
+    filePath = FilesUtils.trimSlashesInPath(filePath)
+
+    if (arguments.length === 2) {
+      textContent = fileName
+      fileName = undefined
+
+      const pathTokens = FilesUtils.parseFilePath(filePath)
+
+      if (pathTokens.fileName) {
+        filePath = pathTokens.filePath
+        fileName = pathTokens.fileName
+      }
+    }
+
+    if (!fileName) {
+      throw new Error('Can not resolve target file name')
+    }
+
+    if (typeof textContent !== 'string') {
+      throw new Error('"textContent" must be a string')
+    }
+
+    fileName = FilesUtils.sanitizeFileName(fileName)
+
+    return this.app.request.put({
+      url    : `${this.app.urls.fileAppendPath(filePath)}/${fileName}`,
+      headers: { 'Content-Type': 'text/plain' },
+      data   : textContent,
+    })
+  }
+
   async listing(filePath, pattern, sub, pagesize, offset) {
     const query = {}
 
@@ -100,7 +188,7 @@ export default class Files {
       throw new Error('"filePath" must be provided and must be a string.')
     }
 
-    filePath = FilesUtils.preventSlashInPath(filePath)
+    filePath = FilesUtils.trimSlashesInPath(filePath)
 
     if (pattern && typeof pattern === 'string') {
       query.pattern = pattern
@@ -181,7 +269,7 @@ export default class Files {
       throw new Error('"filePath" must be provided and must be a string.')
     }
 
-    filePath = FilesUtils.preventSlashInPath(filePath)
+    filePath = FilesUtils.trimSlashesInPath(filePath)
 
     return this.app.request.get({
       url  : this.app.urls.filePath(filePath),
@@ -196,7 +284,7 @@ export default class Files {
       throw new Error('Directory "path" must be provided and must be a string.')
     }
 
-    directoryPath = FilesUtils.preventSlashInPath(directoryPath)
+    directoryPath = FilesUtils.trimSlashesInPath(directoryPath)
 
     return this.app.request.delete({
       url: this.app.urls.filePath(directoryPath),
@@ -212,7 +300,7 @@ export default class Files {
       throw new Error('Files Pattern must be provided and must be a string.')
     }
 
-    filesPath = FilesUtils.preventSlashInPath(filesPath)
+    filesPath = FilesUtils.trimSlashesInPath(filesPath)
 
     return this.app.request.get({
       url  : this.app.urls.filePath(filesPath),

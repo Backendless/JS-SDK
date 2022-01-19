@@ -9,9 +9,10 @@ describe('<Files> Basic', function() {
 
   const resultFileURL = 'http://foo.com/path/to/file.txt'
 
-  const filePath = 'test/path'
-  const filePathWithSlash = `/${filePath}`
+  const dirPath = 'test/path'
+  const filePathWithSlash = `/${dirPath}`
   const fileName = 'test-name.txt'
+  const filePath = `${dirPath}/${fileName}`
 
   describe('Save', () => {
 
@@ -19,7 +20,7 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest({ resultFileURL })
       const req2 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.saveFile(filePath, fileName, 'test-content')
+      const result1 = await Backendless.Files.saveFile(dirPath, fileName, 'test-content')
       const result2 = await Backendless.Files.saveFile(filePathWithSlash, fileName, 'test-content')
 
       expect(req1).to.deep.include({
@@ -46,7 +47,7 @@ describe('<Files> Basic', function() {
       const B = global.Buffer
       delete global.Buffer
 
-      const result1 = await Backendless.Files.saveFile(filePath, fileName, 'dGVzdC1jb250ZW50')
+      const result1 = await Backendless.Files.saveFile(dirPath, fileName, 'dGVzdC1jb250ZW50')
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -63,7 +64,7 @@ describe('<Files> Basic', function() {
     it('saves a file from a buffer content', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.saveFile(filePath, fileName, Buffer.from('test-content'))
+      const result1 = await Backendless.Files.saveFile(dirPath, fileName, Buffer.from('test-content'))
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -79,8 +80,8 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest({ resultFileURL })
       const req2 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.saveFile(filePath, fileName, 'test-content', true)
-      const result2 = await Backendless.Files.saveFile(filePath, fileName, 'test-content', false)
+      const result1 = await Backendless.Files.saveFile(dirPath, fileName, 'test-content', true)
+      const result2 = await Backendless.Files.saveFile(dirPath, fileName, 'test-content', false)
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -104,7 +105,7 @@ describe('<Files> Basic', function() {
       const check = async overwrite => {
         const req1 = prepareMockRequest({ resultFileURL })
 
-        await Backendless.Files.saveFile(filePath, fileName, 'test-content', overwrite)
+        await Backendless.Files.saveFile(dirPath, fileName, 'test-content', overwrite)
 
         expect(req1.path).to.deep.include(`${APP_PATH}/files/binary/test/path/test-name.txt`)
       }
@@ -139,17 +140,17 @@ describe('<Files> Basic', function() {
     it('fails when fileName is invalid', async () => {
       const errorMsg = 'File Name must be provided and must be a string.'
 
-      await expect(Backendless.Files.saveFile(filePath)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, null)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, 0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, 123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, '')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, {})).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, [])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.saveFile(filePath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.saveFile(dirPath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
   })
@@ -160,7 +161,7 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest([{ resultFileURL }])
       const req2 = prepareMockRequest([{ resultFileURL }])
 
-      const result1 = await Backendless.Files.listing(filePath)
+      const result1 = await Backendless.Files.listing(dirPath)
       const result2 = await Backendless.Files.listing(filePathWithSlash)
 
       expect(req1).to.deep.include({
@@ -184,7 +185,7 @@ describe('<Files> Basic', function() {
     it('gets files list with pattern', async () => {
       const req1 = prepareMockRequest([{ resultFileURL }])
 
-      const result1 = await Backendless.Files.listing(filePath, '*.html')
+      const result1 = await Backendless.Files.listing(dirPath, '*.html')
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -199,7 +200,7 @@ describe('<Files> Basic', function() {
     it('gets files list with empty pattern', async () => {
       const req1 = prepareMockRequest([{ resultFileURL }])
 
-      const result1 = await Backendless.Files.listing(filePath, '')
+      const result1 = await Backendless.Files.listing(dirPath, '')
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -215,8 +216,8 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest([{ resultFileURL }])
       const req2 = prepareMockRequest([{ resultFileURL }])
 
-      const result1 = await Backendless.Files.listing(filePath, '*.html', true)
-      const result2 = await Backendless.Files.listing(filePath, '*.html', false)
+      const result1 = await Backendless.Files.listing(dirPath, '*.html', true)
+      const result2 = await Backendless.Files.listing(dirPath, '*.html', false)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -241,9 +242,9 @@ describe('<Files> Basic', function() {
       const req2 = prepareMockRequest([{ resultFileURL }])
       const req3 = prepareMockRequest([{ resultFileURL }])
 
-      const result1 = await Backendless.Files.listing(filePath, '*.html', true, 20)
-      const result2 = await Backendless.Files.listing(filePath, '*.html', true, -20)
-      const result3 = await Backendless.Files.listing(filePath, '*.html', true, 0)
+      const result1 = await Backendless.Files.listing(dirPath, '*.html', true, 20)
+      const result2 = await Backendless.Files.listing(dirPath, '*.html', true, -20)
+      const result3 = await Backendless.Files.listing(dirPath, '*.html', true, 0)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -276,9 +277,9 @@ describe('<Files> Basic', function() {
       const req2 = prepareMockRequest([{ resultFileURL }])
       const req3 = prepareMockRequest([{ resultFileURL }])
 
-      const result1 = await Backendless.Files.listing(filePath, '*.html', true, 20, 100)
-      const result2 = await Backendless.Files.listing(filePath, '*.html', true, 20, -100)
-      const result3 = await Backendless.Files.listing(filePath, '*.html', true, 20, 0)
+      const result1 = await Backendless.Files.listing(dirPath, '*.html', true, 20, 100)
+      const result2 = await Backendless.Files.listing(dirPath, '*.html', true, 20, -100)
+      const result3 = await Backendless.Files.listing(dirPath, '*.html', true, 20, 0)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -330,7 +331,7 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest(123)
       const req2 = prepareMockRequest(123)
 
-      const result1 = await Backendless.Files.getFileCount(filePath)
+      const result1 = await Backendless.Files.getFileCount(dirPath)
       const result2 = await Backendless.Files.getFileCount(filePathWithSlash)
 
       expect(req1).to.deep.include({
@@ -354,7 +355,7 @@ describe('<Files> Basic', function() {
     it('gets files count with [pattern]', async () => {
       const req1 = prepareMockRequest(123)
 
-      const result1 = await Backendless.Files.getFileCount(filePath, '*.png')
+      const result1 = await Backendless.Files.getFileCount(dirPath, '*.png')
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -370,8 +371,8 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest(123)
       const req2 = prepareMockRequest(123)
 
-      const result1 = await Backendless.Files.getFileCount(filePath, '*.png', true)
-      const result2 = await Backendless.Files.getFileCount(filePath, '*.png', false)
+      const result1 = await Backendless.Files.getFileCount(dirPath, '*.png', true)
+      const result2 = await Backendless.Files.getFileCount(dirPath, '*.png', false)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -395,8 +396,8 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest(123)
       const req2 = prepareMockRequest(123)
 
-      const result1 = await Backendless.Files.getFileCount(filePath, '*.png', true, true)
-      const result2 = await Backendless.Files.getFileCount(filePath, '*.png', true, false)
+      const result1 = await Backendless.Files.getFileCount(dirPath, '*.png', true, true)
+      const result2 = await Backendless.Files.getFileCount(dirPath, '*.png', true, false)
 
       expect(req1).to.deep.include({
         method : 'GET',
@@ -435,11 +436,11 @@ describe('<Files> Basic', function() {
     it('fails when pattern is invalid', async () => {
       const errorMsg = 'Files Pattern must be provided and must be a string.'
 
-      await expect(Backendless.Files.getFileCount(filePath, true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.getFileCount(filePath, 123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.getFileCount(filePath, {})).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.getFileCount(filePath, [])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.getFileCount(filePath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.getFileCount(dirPath, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.getFileCount(dirPath, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.getFileCount(dirPath, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.getFileCount(dirPath, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.getFileCount(dirPath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 
@@ -448,7 +449,7 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest({ resultFileURL })
       const req2 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.renameFile(`${filePath}/${fileName}`, 'new-file-name.txt')
+      const result1 = await Backendless.Files.renameFile(`${dirPath}/${fileName}`, 'new-file-name.txt')
       const result2 = await Backendless.Files.renameFile(`${filePathWithSlash}/${fileName}`, 'new-file-name.txt')
 
       expect(req1).to.deep.include({
@@ -494,17 +495,17 @@ describe('<Files> Basic', function() {
     it('fails when newName is invalid', async () => {
       const errorMsg = 'New File Name must be provided and must be a string.'
 
-      await expect(Backendless.Files.renameFile(filePath)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, null)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, 0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, 123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, '')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, {})).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, [])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Files.renameFile(filePath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.renameFile(dirPath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
   })
@@ -587,11 +588,11 @@ describe('<Files> Basic', function() {
     it('removes a file by a relative path', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.remove(`${filePath}/${fileName}`)
+      const result1 = await Backendless.Files.remove(`${dirPath}/${fileName}`)
 
       expect(req1).to.deep.include({
         method : 'DELETE',
-        path   : `${APP_PATH}/files/${filePath}/${fileName}`,
+        path   : `${APP_PATH}/files/${dirPath}/${fileName}`,
         headers: {},
         body   : undefined
       })
@@ -602,7 +603,7 @@ describe('<Files> Basic', function() {
     it('removes a file by an absolute path', async () => {
       const req1 = prepareMockRequest({ resultFileURL })
 
-      const absolutePath = `https://foo.com${filePath}/${fileName}`
+      const absolutePath = `https://foo.com${dirPath}/${fileName}`
 
       const result1 = await Backendless.Files.remove(absolutePath)
 
@@ -639,7 +640,7 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest({ resultFileURL })
       const req2 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.exists(`${filePath}/${fileName}`)
+      const result1 = await Backendless.Files.exists(`${dirPath}/${fileName}`)
       const result2 = await Backendless.Files.exists(`${filePathWithSlash}/${fileName}`)
 
       expect(req1).to.deep.include({
@@ -683,7 +684,7 @@ describe('<Files> Basic', function() {
       const req1 = prepareMockRequest({ resultFileURL })
       const req2 = prepareMockRequest({ resultFileURL })
 
-      const result1 = await Backendless.Files.removeDirectory(filePath)
+      const result1 = await Backendless.Files.removeDirectory(dirPath)
       const result2 = await Backendless.Files.removeDirectory(filePathWithSlash)
 
       expect(req1).to.deep.include({
@@ -763,6 +764,245 @@ describe('<Files> Basic', function() {
       expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
       expect(result2).to.be.eql({ fileURL: 'target-file-url-2' })
       expect(result3).to.be.eql({ fileURL: 'target-file-url-3' })
+    })
+
+  })
+
+  describe('Append', () => {
+
+    it('appends from URL with fileName in directoryPath', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+      const req2 = prepareMockRequest({ fileURL: 'target-file-url-2' })
+      const req3 = prepareMockRequest({ fileURL: 'target-file-url-3' })
+
+      const result1 = await Backendless.Files.append('/folder1/dir1/text1.txt', 'source-file-url-1/foo1.txt')
+      const result2 = await Backendless.Files.append('folder1/dir2/text2.txt', 'source-file-url-2/foo2.txt')
+      const result3 = await Backendless.Files.append('folder2/text3.txt', 'source-file-url-3/foo3.txt')
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/folder1/dir1/text1.txt`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-1/foo1.txt',
+        }
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/folder1/dir2/text2.txt`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-2/foo2.txt',
+        }
+      })
+
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/folder2/text3.txt`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-3/foo3.txt',
+        }
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+      expect(result2).to.be.eql({ fileURL: 'target-file-url-2' })
+      expect(result3).to.be.eql({ fileURL: 'target-file-url-3' })
+    })
+
+    it('appends from URL without fileName in directoryPath', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+      const req2 = prepareMockRequest({ fileURL: 'target-file-url-2' })
+      const req3 = prepareMockRequest({ fileURL: 'target-file-url-3' })
+
+      const result1 = await Backendless.Files.append('/folder1/dir1/', 'text1.txt', 'source-file-url-1/foo1.txt')
+      const result2 = await Backendless.Files.append('folder1/dir2/', 'text2.txt', 'source-file-url-2/foo2.txt')
+      const result3 = await Backendless.Files.append('folder2/dir3', 'text3.txt', 'source-file-url-3/foo3.txt')
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/folder1/dir1/text1.txt`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-1/foo1.txt',
+        }
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/folder1/dir2/text2.txt`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-2/foo2.txt',
+        }
+      })
+
+      expect(req3).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/append/folder2/dir3/text3.txt`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          url: 'source-file-url-3/foo3.txt',
+        }
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+      expect(result2).to.be.eql({ fileURL: 'target-file-url-2' })
+      expect(result3).to.be.eql({ fileURL: 'target-file-url-3' })
+    })
+
+    it('appends from array with fileName in directoryPath', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+
+      const result1 = await Backendless.Files.append('/folder1/dir1/text1.txt', [1, 2, 3, 4, 5])
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/folder1/dir1/text1.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body   : 'AQIDBAU='
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+    })
+
+    it('appends from array without fileName in directoryPath', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+
+      const result1 = await Backendless.Files.append('/folder1/dir1', 'text1.txt', [1, 2, 3, 4, 5])
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/binary/folder1/dir1/text1.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body   : 'AQIDBAU='
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+    })
+
+    it('fails when filePath is invalid', async () => {
+      const errorMsg = '"filePath" must be provided and must be a string.'
+
+      await expect(Backendless.Files.append()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+    it('fails when fileName is invalid', async () => {
+      const errorMsg = 'Can not resolve target file name'
+
+      await expect(Backendless.Files.append(dirPath)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, 'source-file-url.txt')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.append(dirPath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+  })
+
+  describe('Append Text', () => {
+
+    it('appends text with fileName in directoryPath', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+
+      const result1 = await Backendless.Files.appendText('/folder1/dir1/text1.txt', 'hello-test')
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/folder1/dir1/text1.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body   : 'hello-test'
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+    })
+
+    it('appends text without fileName in directoryPath', async () => {
+      const req1 = prepareMockRequest({ fileURL: 'target-file-url-1' })
+
+      const result1 = await Backendless.Files.appendText('/folder1/dir1', 'text1.txt', 'hello-test')
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/files/append/folder1/dir1/text1.txt`,
+        headers: { 'Content-Type': 'text/plain' },
+        body   : 'hello-test'
+      })
+
+      expect(result1).to.be.eql({ fileURL: 'target-file-url-1' })
+    })
+
+    it('fails when filePath is invalid', async () => {
+      const errorMsg = '"filePath" must be provided and must be a string.'
+
+      await expect(Backendless.Files.appendText()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+    it('fails when fileName is invalid', async () => {
+      const errorMsg = 'Can not resolve target file name'
+
+      await expect(Backendless.Files.appendText(dirPath)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, 'content.txt')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+    it('fails when textContent is invalid', async () => {
+      const errorMsg = '"textContent" must be a string'
+
+      await expect(Backendless.Files.appendText(filePath, undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(filePath, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+
+      await expect(Backendless.Files.appendText(dirPath, fileName, undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.appendText(dirPath, fileName, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
   })
