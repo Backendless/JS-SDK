@@ -562,6 +562,8 @@ function testPersistence() {
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
 
+    promiseObject = Backendless.Data.getTableNameById('str');
+
     Backendless.Data.mapTableToClass(Model);
     Backendless.Data.mapTableToClass('ClassName', Model);
 }

@@ -61,6 +61,12 @@ export default class Data {
     })
   }
 
+  async getTableNameById(tableId) {
+    return this.app.request.get({
+      url: this.app.urls.dataTableNameById(tableId),
+    })
+  }
+
   mapTableToClass(tableName, clientClass) {
     if (typeof tableName === 'function') {
       clientClass = tableName
