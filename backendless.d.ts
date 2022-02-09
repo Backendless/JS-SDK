@@ -269,7 +269,7 @@ declare module Backendless {
 
         function describe(model: string | Object | Function): Promise<Object>;
 
-        function getTableNameById(model: string): Promise<Object>;
+        function getTableNameById(tableId: string): Promise<Object>;
 
         function mapTableToClass(tableName: string, clientClass: Function): void;
         function mapTableToClass(clientClass: Function): void;
