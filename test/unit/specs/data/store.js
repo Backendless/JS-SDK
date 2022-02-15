@@ -188,4 +188,24 @@ describe('<Data> Store', function() {
     })
   })
 
+  describe('Table Name By Id', () => {
+    it('table id from string', async () => {
+      const fakeResult = 'tableName'
+      const tableId = '123'
+
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result = await Backendless.Data.getTableNameById(tableId)
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableId}/table-name`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result).to.be.eql(fakeResult)
+    })
+  })
+
 })

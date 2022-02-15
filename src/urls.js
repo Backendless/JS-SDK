@@ -157,6 +157,10 @@ export default class Urls {
     return `${this.dataTable(tableName)}/permissions/${permissionType}/${objectId}`
   }
 
+  dataTableNameById(tableId) {
+    return `${this.data()}/${tableId}/table-name`
+  }
+
   transactions() {
     return `${this.root()}/transaction/unit-of-work`
   }
