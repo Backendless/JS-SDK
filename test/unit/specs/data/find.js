@@ -255,21 +255,21 @@ describe('<Data> Find', function() {
 
       expect(req1).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=50&offset=15&property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25&distinct=true`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}?property=foo&property=bar&property=prop1&property=prop2&property=prop3&property=prop4&property=prop5&property=prop6&property=prop7&property=prop8&property=prop9&property=*&excludeProps=foo,bar,prop1,prop2,prop3,prop4,prop5,prop6,prop7,prop8&where=age%20%3E%3D%20100&having=age%20%3E%3D%20200&sortBy=created&groupBy=objectId&loadRelations=rel1,rel2,rel3&relationsDepth=3&relationsPageSize=25&distinct=true`,
         headers: {},
         body   : undefined
       })
 
       expect(req2).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=10`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}`,
         headers: {},
         body   : undefined
       })
 
       expect(req3).to.deep.include({
         method : 'GET',
-        path   : `${APP_PATH}/data/${tableName}/${objectId}?pageSize=30&offset=40&property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
+        path   : `${APP_PATH}/data/${tableName}/${objectId}?property=prop-1&property=prop-2&excludeProps=prop-3,prop-3&where=test-where&having=test-having&sortBy=test-sortby&groupBy=test-groupby&loadRelations=rel-1,rel-2&relationsDepth=4&relationsPageSize=70`,
         headers: {},
         body   : undefined
       })

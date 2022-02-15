@@ -131,6 +131,11 @@ export default class DataStore {
         throw new Error('Object Id must be provided and must be a string or an object of primary keys.')
       }
 
+      if (query) {
+        query.pageSize = null
+        query.offset = null
+      }
+
       result = await this.app.request
         .get({
           url        : this.app.urls.dataTableObject(this.className, objectId),
