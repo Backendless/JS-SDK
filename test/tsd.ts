@@ -487,19 +487,19 @@ function testDataStoreClass() {
     promiseObject = dataStore.findById('myId');
     promiseObject = dataStore.findById('myId', dataQueryBuilder);
     promiseObject = dataStore.findById('myId', dataQueryObject);
-    promiseObject = dataStore.findById('myId', {pageSize: 123});
+    promiseObject = dataStore.findById('myId', {properties: ['foo']});
     promiseObject = dataStore.findById({foo: 'myId'});
     promiseObject = dataStore.findById({foo: 'myId'}, dataQueryBuilder);
-    promiseObject = dataStore.findById({foo: 'myId'}, {pageSize: 123});
+    promiseObject = dataStore.findById({foo: 'myId'}, {properties: ['foo']});
 
     promisePerson = dataStore.findById<Person>('myId');
     promisePerson = dataStore.findById<Person>('myId', dataQueryBuilder);
     promisePerson = dataStore.findById<Person>('myId', dataQueryObject);
-    promisePerson = dataStore.findById<Person>('myId', {pageSize: 123});
+    promisePerson = dataStore.findById<Person>('myId', {properties: ['foo']});
     promisePerson = dataStore.findById<Person>({foo: 'myId'});
     promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
     promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
-    promisePerson = dataStore.findById<Person>({foo: 'myId'}, {pageSize: 123});
+    promisePerson = dataStore.findById<Person>({foo: 'myId'}, {properties: ['foo']});
 
     promiseObject = dataStore.findFirst();
     promiseObject = dataStore.findFirst(dataQueryBuilder);
