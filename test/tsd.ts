@@ -808,6 +808,7 @@ function testUserService() {
     promiseObject = Backendless.UserService.register(newUser);
 
     promiseListOfString = Backendless.UserService.getUserRoles();
+    promiseListOfString = Backendless.UserService.getUserRoles('test-user-id');
 
     promiseVoid = Backendless.UserService.assignRole(identity, roleName);
 

@@ -290,8 +290,8 @@ export default class Urls {
     return `${this.users()}/logout`
   }
 
-  userRoles() {
-    return `${this.users()}/userroles`
+  userRoles(userId) {
+    return `${this.users()}/userroles${userId ? `/${userId}` : ''}`
   }
 
   usersRole(roleName) {

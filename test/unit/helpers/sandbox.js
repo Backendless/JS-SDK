@@ -113,11 +113,11 @@ function wrapRequest(R) {
   }
 }
 
-export function prepareMockRequest(responseFn) {
+export function prepareMockRequest(response) {
   const mockRequest = {
-    responseFn: typeof responseFn === 'function'
-      ? responseFn
-      : () => ({ body: responseFn })
+    responseFn: typeof response === 'function'
+      ? response
+      : () => ({ body: response })
   }
 
   mockRequests.push(mockRequest)

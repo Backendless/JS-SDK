@@ -266,8 +266,8 @@ export default class Users {
     return this.roles.findByRole(roleName, loadRoles, query)
   }
 
-  async getUserRoles() {
-    return this.roles.getUserRoles()
+  async getUserRoles(userId) {
+    return this.roles.getUserRoles(userId)
   }
 
   async assignRole(identity, rolename) {
