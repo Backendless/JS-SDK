@@ -312,14 +312,14 @@ export default class DataStore {
    * @private
    * */
   parseRelationsResponse(result, RelationModel) {
-    return convertToClientRecords(result, RelationModel, this.classToTableMap)
+    return convertToClientRecords(result, RelationModel, this)
   }
 
   /**
    * @private
    * */
   parseResponse(result) {
-    return convertToClientRecords(result, this.model, this.classToTableMap)
+    return convertToClientRecords(result, this.model, this)
   }
 
   /**
@@ -419,16 +419,17 @@ const convertToServerRecord = (() => {
 })()
 
 const convertToClientRecords = (() => {
-  return (records, RootModel, classToTableMap) => {
+  return (records, RootModel, dataStore) => {
     if (!records) {
       return records
     }
 
     const context = {
       RootModel,
-      classToTableMap,
-      subIds    : {},
-      postAssign: [],
+      app            : dataStore.app,
+      classToTableMap: dataStore.classToTableMap,
+      subIds         : {},
+      postAssign     : [],
     }
 
     const result = Array.isArray(records)
@@ -448,7 +449,19 @@ const convertToClientRecords = (() => {
       delete source[prop].__subID
 
     } else {
-      const Model = context.classToTableMap[source[prop].___class] || Utils.globalScope[source[prop].___class]
+      let Model = context.classToTableMap[source[prop].___class]
+
+      if (!Model && context.app.useTableClassesFromGlobalScope && Utils.globalScope[source[prop].___class]) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          'Resolving DataTable classes from the global scope is deprecated ' +
+          'and it won\'t be supported in the nearest future. ' +
+          'Instead, you should register your DataTable classes ' +
+          'using the following method Backendless.Data.mapTableToClass'
+        )
+
+        Model = Utils.globalScope[source[prop].___class]
+      }
 
       target[prop] = Model ? new Model() : {}
 

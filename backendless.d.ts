@@ -4,6 +4,7 @@
  */
 declare module Backendless {
     let debugMode: boolean;
+    let useTableClassesFromGlobalScope: boolean;
     let serverURL: string;
     let appId: string;
     let apiKey: string;
@@ -35,7 +36,8 @@ declare module Backendless {
         serverURL?: string;
         domain?: string;
         debugMode?: boolean;
-        XMLHttpRequest?: XMLHttpRequest,
+        XMLHttpRequest?: XMLHttpRequest;
+        useTableClassesFromGlobalScope?: boolean;
     }
 
     /**

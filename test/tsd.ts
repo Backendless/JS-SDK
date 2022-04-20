@@ -23,6 +23,7 @@ function testMain() {
         apiKey: 'JS_SECRET_KEY',
         standalone: true,
         debugMode: true,
+        useTableClassesFromGlobalScope: false,
         serverURL: 'serverURL'
     });
 
