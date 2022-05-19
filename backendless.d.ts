@@ -362,7 +362,7 @@ declare module Backendless {
 
         function disableUser(userId: string): Promise<void>;
 
-        function getAuthorizationUrlLink(providerCode: string, fieldsMapping?: object, scope?: string, redirect?: boolean, redirectAfterLoginUrl?: string): Promise<string>;
+        function getAuthorizationUrlLink(providerCode: string, fieldsMapping?: object, scope?: string, redirect?: boolean, redirectAfterLoginUrl?: string, callbackUrlDomain?: string): Promise<string>;
     }
 
     /**

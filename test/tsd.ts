@@ -920,10 +920,12 @@ function testUserService() {
 
     promiseVoid = Backendless.UserService.disableUser(userId);
 
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', {email: 'userEmail'}, 'email;photo', false, 'https://foo', 'foo.bar');
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', {email: 'userEmail'}, 'email;photo', false);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, true);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google');
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, false, 'url');
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, false, null, 'foo.bar');
 
     promiseUsersList = Backendless.UserService.findByRole(roleName);
     promiseUsersList = Backendless.UserService.findByRole(roleName, true);

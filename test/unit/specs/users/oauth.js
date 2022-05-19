@@ -134,7 +134,11 @@ describe('<Users> OAuth Login', function() {
     describe('with guestUser argument', () => {
       const guestObjectId = Utils.objectId()
       const guestUserToken = Utils.uid()
-      const guestUser = new Backendless.User({ objectId: guestObjectId, 'user-token': guestUserToken, userStatus: 'GUEST' })
+      const guestUser = new Backendless.User({
+        objectId    : guestObjectId,
+        'user-token': guestUserToken,
+        userStatus  : 'GUEST'
+      })
 
       it('login with guestUser', async () => {
         const objectId = Utils.objectId()
@@ -256,10 +260,11 @@ describe('<Users> OAuth Login', function() {
         const scope = 'email;photo'
         const redirect = false
         const redirectAfterLoginUrl = 'https://authorization-redirect-url-example.com'
+        const callbackUrlDomain = 'foo.bar'
 
         const req = prepareMockRequest(url)
 
-        const authorizationURL = await Backendless.UserService.getAuthorizationUrlLink(provideCode, fieldsMapping, scope, redirect, redirectAfterLoginUrl)
+        const authorizationURL = await Backendless.UserService.getAuthorizationUrlLink(provideCode, fieldsMapping, scope, redirect, redirectAfterLoginUrl, callbackUrlDomain)
 
         expect(req).to.deep.include({
           method : 'POST',
@@ -270,6 +275,7 @@ describe('<Users> OAuth Login', function() {
             permissions: scope,
             redirect,
             redirectAfterLoginUrl,
+            callbackUrlDomain,
           }
         })
 
