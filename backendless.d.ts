@@ -1219,7 +1219,7 @@ declare module Backendless {
 
         removeCommandListener(callback: (command: Object) => void): ChannelClass;
 
-        removeCommandListeners(): ChannelClass;
+        removeCommandListeners(callback?: (command: Object) => void): ChannelClass;
 
         addUserStatusListener(callback: (userStates: Object) => void, onError?: (error: Object) => void): ChannelClass;
 

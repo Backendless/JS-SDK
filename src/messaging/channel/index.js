@@ -115,6 +115,12 @@ export default class Channel extends RTScopeConnector {
     return this
   }
 
+  removeCommandListener(callback) {
+    super.removeCommandListeners.call(this, callback)
+
+    return this
+  }
+
   removeCommandListeners(callback) {
     super.removeCommandListeners.call(this, callback)
 
