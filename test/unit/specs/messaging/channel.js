@@ -947,8 +947,8 @@ describe('<Messaging> Channel', function() {
       expect(sub3.name).to.be.equal('PUB_SUB_COMMANDS')
       expect(sub3.options).to.be.eql({ channel: 'TEST_CHANNEL_NAME' })
 
-      channel.removeCommandListeners(callback1)
-      channel.removeCommandListeners(callback2)
+      channel.removeCommandListener(callback1)
+      channel.removeCommandListener(callback2)
 
       const subOff1 = await subOff1Promise
       const subOff2 = await subOff2Promise
@@ -956,6 +956,48 @@ describe('<Messaging> Channel', function() {
       expect(sub2.id).to.be.equal(subOff1.id)
       expect(sub3.id).to.be.equal(subOff2.id)
 
+    })
+
+    it('removes all simple listeners', async () => {
+      const sub1Promise = rtClient.getNext_SUB_ON() // PUB_SUB_CONNECT
+      const sub2Promise = rtClient.getNext_SUB_ON() // PUB_SUB_COMMANDS
+      const sub3Promise = rtClient.getNext_SUB_ON() // PUB_SUB_COMMANDS
+      const subOff1Promise = rtClient.getNext_SUB_OFF() // PUB_SUB_COMMANDS
+      const subOff2Promise = rtClient.getNext_SUB_OFF() // PUB_SUB_COMMANDS
+
+      const callback1 = () => ({})
+      const callback2 = () => ({})
+
+      channel.addCommandListener(callback1)
+      channel.addCommandListener(callback2)
+
+      const sub1 = await sub1Promise
+
+      expect(sub1.id).to.be.a('string')
+      expect(sub1.name).to.be.equal('PUB_SUB_CONNECT')
+      expect(sub1.options).to.be.eql({ channel: 'TEST_CHANNEL_NAME' })
+
+      rtClient.subReady(sub1.id)
+
+      const sub2 = await sub2Promise
+
+      expect(sub2.id).to.be.a('string')
+      expect(sub2.name).to.be.equal('PUB_SUB_COMMANDS')
+      expect(sub2.options).to.be.eql({ channel: 'TEST_CHANNEL_NAME' })
+
+      const sub3 = await sub3Promise
+
+      expect(sub3.id).to.be.a('string')
+      expect(sub3.name).to.be.equal('PUB_SUB_COMMANDS')
+      expect(sub3.options).to.be.eql({ channel: 'TEST_CHANNEL_NAME' })
+
+      channel.removeCommandListeners()
+
+      const subOff1 = await subOff1Promise
+      const subOff2 = await subOff2Promise
+
+      expect(sub2.id).to.be.equal(subOff1.id)
+      expect(sub3.id).to.be.equal(subOff2.id)
     })
 
     it('sends command', async () => {

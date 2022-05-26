@@ -23,6 +23,7 @@ function testMain() {
         apiKey: 'JS_SECRET_KEY',
         standalone: true,
         debugMode: true,
+        useTableClassesFromGlobalScope: false,
         serverURL: 'serverURL'
     });
 
@@ -462,7 +463,11 @@ function testDataStoreClass() {
     }
 
     promiseObject = dataStore.save(item);
+    promiseObject = dataStore.save(item, true);
+    promiseObject = dataStore.save(item, false);
     promisePerson = dataStore.save<Person>(person);
+    promisePerson = dataStore.save<Person>(person, true);
+    promisePerson = dataStore.save<Person>(person, false);
 
     promiseObject = dataStore.deepSave(item);
     promisePerson = dataStore.deepSave<Person>(person);
@@ -483,19 +488,19 @@ function testDataStoreClass() {
     promiseObject = dataStore.findById('myId');
     promiseObject = dataStore.findById('myId', dataQueryBuilder);
     promiseObject = dataStore.findById('myId', dataQueryObject);
-    promiseObject = dataStore.findById('myId', {pageSize: 123});
+    promiseObject = dataStore.findById('myId', {properties: ['foo']});
     promiseObject = dataStore.findById({foo: 'myId'});
     promiseObject = dataStore.findById({foo: 'myId'}, dataQueryBuilder);
-    promiseObject = dataStore.findById({foo: 'myId'}, {pageSize: 123});
+    promiseObject = dataStore.findById({foo: 'myId'}, {properties: ['foo']});
 
     promisePerson = dataStore.findById<Person>('myId');
     promisePerson = dataStore.findById<Person>('myId', dataQueryBuilder);
     promisePerson = dataStore.findById<Person>('myId', dataQueryObject);
-    promisePerson = dataStore.findById<Person>('myId', {pageSize: 123});
+    promisePerson = dataStore.findById<Person>('myId', {properties: ['foo']});
     promisePerson = dataStore.findById<Person>({foo: 'myId'});
     promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
     promisePerson = dataStore.findById<Person>({foo: 'myId'}, dataQueryBuilder);
-    promisePerson = dataStore.findById<Person>({foo: 'myId'}, {pageSize: 123});
+    promisePerson = dataStore.findById<Person>({foo: 'myId'}, {properties: ['foo']});
 
     promiseObject = dataStore.findFirst();
     promiseObject = dataStore.findFirst(dataQueryBuilder);
@@ -557,6 +562,8 @@ function testPersistence() {
     promiseObject = Backendless.Data.describe(Model);
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
+
+    promiseObject = Backendless.Data.getTableNameById('str');
 
     Backendless.Data.mapTableToClass(Model);
     Backendless.Data.mapTableToClass('ClassName', Model);
@@ -853,6 +860,8 @@ function testBulkOperations() {
 
     resultPromiseListOfString = dataStore.bulkCreate([{}, {}, {}]);
 
+    resultPromiseListOfString = dataStore.bulkUpsert([{}, {}, {}]);
+
     resultPromiseString = dataStore.bulkUpdate('where clause string', {foo: 'bar'});
 
     resultPromiseString = dataStore.bulkDelete('where clause string');
@@ -975,6 +984,7 @@ function testUserService() {
     promiseObject = Backendless.UserService.register(newUser);
 
     promiseListOfString = Backendless.UserService.getUserRoles();
+    promiseListOfString = Backendless.UserService.getUserRoles('test-user-id');
 
     promiseVoid = Backendless.UserService.assignRole(identity, roleName);
 
@@ -1085,10 +1095,12 @@ function testUserService() {
 
     promiseVoid = Backendless.UserService.disableUser(userId);
 
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', {email: 'userEmail'}, 'email;photo', false, 'https://foo', 'foo.bar');
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', {email: 'userEmail'}, 'email;photo', false);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, true);
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google');
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, false, 'url');
+    promiseString = Backendless.UserService.getAuthorizationUrlLink('google', null, null, false, null, 'foo.bar');
 
     promiseUsersList = Backendless.UserService.findByRole(roleName);
     promiseUsersList = Backendless.UserService.findByRole(roleName, true);
@@ -1197,12 +1209,16 @@ function testMessaging() {
     promiseObject = Backendless.Messaging.pushWithTemplate('templateName', {foo: 'bar'});
 }
 
-function testFilesService() {
+async function testFilesService() {
     const fs = require('fs')
 
     const path: string = 'str';
+    const dirPath: string = 'str';
+    const filePath: string = 'str';
     const fileName: string = 'str';
-    const fileContent: Blob = new Blob();
+    const fileBlobContent: Blob = new Blob();
+    const fileBufferContent: Buffer = Buffer.from('text');
+    const fileTextContent: string = 'str';
     const pattern: string = 'str';
     const sub: boolean = true;
     const pageSize: number = 123;
@@ -1214,6 +1230,7 @@ function testFilesService() {
     const sourcePath: string = 'str';
     const targetPath: string = 'str';
     const fileURL: string = 'str';
+    const sourceFileURL: string = 'str';
     const userid: string = 'str';
     const url: string = 'str';
     const permissionType: string = 'str';
@@ -1225,26 +1242,58 @@ function testFilesService() {
     let resultBool: boolean;
     let resultObj: object;
     let resultNumber: number;
+    let promiseString: Promise<string>;
     let promiseObject: Promise<object>;
     let promiseBoolean: Promise<boolean>;
     let promiseNumber: Promise<number>;
 
+    interface IFileUploadResult {
+        fileURL: string
+    }
+
+    let promiseIFileUploadResult: Promise<IFileUploadResult>;
+
     resultStr = Backendless.Files.restUrl;
 
-    promiseBoolean = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
-    promiseBoolean = Backendless.Files.saveFile(path, fileName, fileContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBlobContent, overwrite);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBufferContent, overwrite);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBlobContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileBufferContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileTextContent);
+    promiseString = Backendless.Files.saveFile(path, fileName, fileTextContent, overwrite);
 
-    promiseObject = Backendless.Files.upload(file, path);
-    promiseObject = Backendless.Files.upload(file, path, overwrite);
-    promiseObject = Backendless.Files.upload(file, path, null);
+    const {fileURL: string} = await Backendless.Files.upload(file, path);
 
-    promiseObject = Backendless.Files.upload(readStream, path);
-    promiseObject = Backendless.Files.upload(readStream, path, overwrite);
-    promiseObject = Backendless.Files.upload(readStream, path, null);
+    promiseIFileUploadResult = Backendless.Files.upload(file, path);
+    promiseIFileUploadResult = Backendless.Files.upload(file, path, overwrite);
+    promiseIFileUploadResult = Backendless.Files.upload(file, path, null);
 
-    promiseObject = Backendless.Files.upload('path-source-file', path);
-    promiseObject = Backendless.Files.upload('path-source-file', path, overwrite);
-    promiseObject = Backendless.Files.upload('path-source-file', path, null);
+    promiseIFileUploadResult = Backendless.Files.upload(readStream, path);
+    promiseIFileUploadResult = Backendless.Files.upload(readStream, path, overwrite);
+    promiseIFileUploadResult = Backendless.Files.upload(readStream, path, null);
+
+    promiseIFileUploadResult = Backendless.Files.upload(sourceFileURL, path);
+    promiseIFileUploadResult = Backendless.Files.upload(sourceFileURL, path, overwrite);
+    promiseIFileUploadResult = Backendless.Files.upload(sourceFileURL, path, null);
+
+    promiseString = Backendless.Files.append(dirPath, fileName, sourceFileURL);
+    promiseString = Backendless.Files.append(dirPath, fileName, readStream);
+    promiseString = Backendless.Files.append(dirPath, fileName, fileBlobContent);
+    promiseString = Backendless.Files.append(dirPath, fileName, fileBufferContent);
+    promiseString = Backendless.Files.append(dirPath, fileName, new ArrayBuffer(8));
+    promiseString = Backendless.Files.append(dirPath, fileName, new Int32Array(new ArrayBuffer(8)));
+    promiseString = Backendless.Files.append(dirPath, fileName, [1, 2, 3]);
+
+    promiseString = Backendless.Files.append(filePath, sourceFileURL);
+    promiseString = Backendless.Files.append(filePath, readStream);
+    promiseString = Backendless.Files.append(filePath, fileBlobContent);
+    promiseString = Backendless.Files.append(filePath, fileBufferContent);
+    promiseString = Backendless.Files.append(filePath, new ArrayBuffer(8));
+    promiseString = Backendless.Files.append(filePath, new Int32Array(new ArrayBuffer(8)));
+    promiseString = Backendless.Files.append(filePath, [1, 2, 3]);
+
+    promiseString = Backendless.Files.appendText(dirPath, fileName, fileTextContent);
+    promiseString = Backendless.Files.appendText(filePath, fileTextContent);
 
     promiseObject = Backendless.Files.listing(path);
     promiseObject = Backendless.Files.listing(path, pattern);
@@ -1436,11 +1485,11 @@ function testCustomServices() {
     let resultObj: any
     let promiseAny: Promise<any>
     let executionType: string = Backendless.BL.ExecutionTypes.SYNC
-    let httpRequestHeaders: object = { 'custom-header': 'value'  }
+    let httpRequestHeaders: object = {'custom-header': 'value'}
     let options1: object = {}
-    let options2: object = { httpRequestHeaders }
-    let options3: object = { executionType }
-    let options4: object = { executionType, httpRequestHeaders }
+    let options2: object = {httpRequestHeaders}
+    let options3: object = {executionType}
+    let options4: object = {executionType, httpRequestHeaders}
 
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
     promiseAny = Backendless.CustomServices.invoke(serviceName, method, parameters);
@@ -1527,6 +1576,31 @@ function RTData() {
     }
 
     eventHandler
+        .addUpsertListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: Object) => undefined)
+        .addUpsertListener((obj: Object) => undefined)
+        .addUpsertListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener('whereClause', (obj: { bar: string }) => undefined)
+        .addUpsertListener((obj: { bar: string }) => undefined)
+        .addUpsertListener((obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: Person) => undefined)
+        .addUpsertListener<Person>((obj: Person) => undefined)
+        .addUpsertListener<Person>((obj: Person) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpsertListener<Person>('whereClause', (obj: { foo: string }) => undefined)
+        .addUpsertListener<Person>((obj: { foo: string }) => undefined)
+        .addUpsertListener<Person>((obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+
+    eventHandler
+        .removeUpsertListeners('whereClause')
+        .removeUpsertListeners()
+        .removeUpsertListener<Person>((obj: Person) => undefined)
+        .removeUpsertListener<Person>((obj: { foo: string }) => undefined)
+
+
+    eventHandler
         .addCreateListener('whereClause', (obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addCreateListener('whereClause', (obj: object) => undefined)
         .addCreateListener((obj: object) => undefined)
@@ -1595,6 +1669,14 @@ function RTData() {
         .removeDeleteListeners('whereClause')
         .removeDeleteListeners()
         .removeDeleteListener<Person>((obj: Person) => undefined)
+
+    eventHandler
+        .addBulkUpsertListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addBulkUpsertListener((list: string[]) => undefined)
+
+    eventHandler
+        .removeBulkUpsertListener((list: string[]) => undefined)
+        .removeBulkUpsertListeners()
 
     eventHandler
         .addBulkCreateListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
@@ -1783,6 +1865,9 @@ async function testBaseTransactions() {
     opResult = uow.create(personInst);
     opResult = uow.create(personClassName, personObj);
     ///
+    opResult = uow.upsert(personInst);
+    opResult = uow.upsert(personClassName, personObj);
+    ///
     opResult = uow.update(personInst);
     opResult = uow.update(personClassName, personObj);
     opResult = uow.update(opResult, personObj);
@@ -1800,6 +1885,9 @@ async function testBaseTransactions() {
     ///
     opResult = uow.bulkCreate(personClassName, [personObj, personObj, personObj]);
     opResult = uow.bulkCreate([personInst, personInst, personInst]);
+    ///
+    opResult = uow.bulkUpsert(personClassName, [personObj, personObj, personObj]);
+    opResult = uow.bulkUpsert([personInst, personInst, personInst]);
     ///
     opResult = uow.bulkUpdate(personClassName, whereClause, changesObj);
     opResult = uow.bulkUpdate(personClassName, [personObjectId, personObjectId, personObjectId], changesObj);

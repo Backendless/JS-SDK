@@ -4,6 +4,7 @@
  */
 declare module Backendless {
     let debugMode: boolean;
+    let useTableClassesFromGlobalScope: boolean;
     let serverURL: string;
     let appId: string;
     let apiKey: string;
@@ -35,7 +36,8 @@ declare module Backendless {
         serverURL?: string;
         domain?: string;
         debugMode?: boolean;
-        XMLHttpRequest?: XMLHttpRequest,
+        XMLHttpRequest?: XMLHttpRequest;
+        useTableClassesFromGlobalScope?: boolean;
     }
 
     /**
@@ -269,6 +271,8 @@ declare module Backendless {
 
         function describe(model: string | Object | Function): Promise<Object>;
 
+        function getTableNameById(tableId: string): Promise<string>;
+
         function mapTableToClass(tableName: string, clientClass: Function): void;
         function mapTableToClass(clientClass: Function): void;
     }
@@ -468,7 +472,7 @@ declare module Backendless {
 
         function findByRole<T = Backendless.User>(roleName: string, loadRoles?: boolean, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T[]>;
 
-        function getUserRoles(): Promise<string[]>;
+        function getUserRoles(userId?: string): Promise<string[]>;
 
         function describeUserClass(): Promise<Object[]>;
 
@@ -531,7 +535,7 @@ declare module Backendless {
 
         function disableUser(userId: string): Promise<void>;
 
-        function getAuthorizationUrlLink(providerCode: string, fieldsMapping?: object, scope?: string, redirect?: boolean, redirectAfterLoginUrl?: string): Promise<string>;
+        function getAuthorizationUrlLink(providerCode: string, fieldsMapping?: object, scope?: string, redirect?: boolean, redirectAfterLoginUrl?: string, callbackUrlDomain?: string): Promise<string>;
     }
 
     /**
@@ -620,12 +624,25 @@ declare module Backendless {
 
         let restUrl: string;
 
-        function saveFile(path: string, fileName: string, fileContent: Blob | string, overwrite?: boolean): Promise<boolean>;
+        function saveFile(path: string, fileName: string, fileContent: Blob | Buffer | string, overwrite?: boolean): Promise<string>;
 
-        function upload(file: File, path: string, overwrite?: boolean): Promise<Object>;
-        function upload(fileURL: string, path: string, overwrite?: boolean): Promise<Object>;
         // @ts-ignore - file has to be an instance of File in browser env and an instance of ReadStream in nodejs env
-        function upload(readStream: ReadStream, path: string, overwrite?: boolean): Promise<Object>;
+        function upload(readStream: ReadStream, path: string, overwrite?: boolean): Promise<{ fileURL: string }>;
+        function upload(file: File, path: string, overwrite?: boolean): Promise<{ fileURL: string }>;
+        function upload(fileURL: string, path: string, overwrite?: boolean): Promise<{ fileURL: string }>;
+
+        function append(filePath: string, fileURL: string): Promise<string>;
+        function append(filePath: string, fileContent: Blob | Buffer | ArrayBuffer | number[]): Promise<string>;
+        // @ts-ignore
+        function append(filePath: string, readStream: ReadStream): Promise<string>;
+
+        function append(directoryPath: string, fileName: string, fileURL: string): Promise<string>;
+        function append(directoryPath: string, fileName: string, fileContent: Blob | Buffer | ArrayBuffer | number[]): Promise<string>;
+        // @ts-ignore
+        function append(directoryPath: string, fileName: string, readStream: ReadStream): Promise<string>;
+
+        function appendText(directoryPath: string, fileName: string, fileContent: string): Promise<string>;
+        function appendText(filePath: string, fileContent: string): Promise<string>;
 
         function listing(path: string, pattern?: string, sub?: boolean, pageSize?: number, offset?: number): Promise<Object>;
 
@@ -1141,6 +1158,16 @@ declare module Backendless {
      * @class EventHandler
      */
     class EventHandler {
+        addUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
+        removeUpsertListeners(whereClause: string): Backendless.EventHandler;
+        removeUpsertListeners(): Backendless.EventHandler;
+
+        removeUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
         addCreateListener<T = object>(callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
@@ -1170,6 +1197,13 @@ declare module Backendless {
         removeDeleteListeners(): Backendless.EventHandler;
 
         removeDeleteListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+
+        addBulkUpsertListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+
+        removeBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+
+        removeBulkUpsertListeners(): Backendless.EventHandler;
 
         addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
@@ -1244,7 +1278,7 @@ declare module Backendless {
 
         constructor(name: string | Object | Function, classToTableMap: Object);
 
-        save<T = object>(obj: T | object): Promise<T>;
+        save<T = object>(obj: T | object, isUpsert?: boolean): Promise<T>;
 
         deepSave<T = object>(obj: T | object): Promise<T>;
 
@@ -1277,6 +1311,8 @@ declare module Backendless {
         deleteRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
 
         bulkCreate(objects: Array<object>): Promise<Array<string>>;
+
+        bulkUpsert(objects: Array<object>): Promise<Array<string>>;
 
         bulkUpdate(whereClause: string, changes: object): Promise<string>;
 
@@ -1356,7 +1392,7 @@ declare module Backendless {
 
         removeCommandListener(callback: (command: Object) => void): ChannelClass;
 
-        removeCommandListeners(): ChannelClass;
+        removeCommandListeners(callback?: (command: Object) => void): ChannelClass;
 
         addUserStatusListener(callback: (userStates: Object) => void, onError?: (error: Object) => void): ChannelClass;
 
@@ -1429,6 +1465,9 @@ declare module Backendless {
         create(object: object): OpResult;
         create(tableName: string, object: object): OpResult;
 
+        upsert(object: object): OpResult;
+        upsert(tableName: string, object: object): OpResult;
+
         update(object: object): OpResult;
         update(tableName: string, object: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
@@ -1442,6 +1481,9 @@ declare module Backendless {
 
         bulkCreate(tableName: string, objects: object[]): OpResult;
         bulkCreate(objects: object[]): OpResult;
+
+        bulkUpsert(tableName: string, objects: object[]): OpResult;
+        bulkUpsert(objects: object[]): OpResult;
 
         bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult;
         bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult;

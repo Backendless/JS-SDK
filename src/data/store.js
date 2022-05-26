@@ -48,10 +48,14 @@ export default class DataStore {
     return this.rtHandlers = this.rtHandlers || new RTHandlers(this)
   }
 
-  async save(object) {
+  async save(object, isUpsert) {
+    const url = isUpsert
+      ? this.app.urls.dataTableUpsert(this.className)
+      : this.app.urls.dataTable(this.className)
+
     return this.app.request
       .put({
-        url : this.app.urls.dataTable(this.className),
+        url,
         data: convertToServerRecord(object),
       })
       .then(result => this.parseResponse(result))
@@ -125,6 +129,11 @@ export default class DataStore {
     } else {
       if (!objectId || typeof objectId !== 'string') {
         throw new Error('Object Id must be provided and must be a string or an object of primary keys.')
+      }
+
+      if (query) {
+        query.pageSize = null
+        query.offset = null
       }
 
       result = await this.app.request
@@ -229,6 +238,27 @@ export default class DataStore {
     })
   }
 
+  async bulkUpsert(objects) {
+    const errorMessage = 'Objects must be provided and must be an array of objects.'
+
+    if (!objects || !Array.isArray(objects) || !objects.length) {
+      throw new Error(errorMessage)
+    }
+
+    objects = objects.map(object => {
+      if (!object || typeof object !== 'object' || Array.isArray(object)) {
+        throw new Error(errorMessage)
+      }
+
+      return object
+    })
+
+    return this.app.request.put({
+      url : this.app.urls.dataBulkTableUpsert(this.className),
+      data: objects,
+    })
+  }
+
   async bulkUpdate(condition, changes) {
     if (!condition || typeof condition !== 'string') {
       throw new Error('Condition must be provided and must be a string.')
@@ -282,14 +312,14 @@ export default class DataStore {
    * @private
    * */
   parseRelationsResponse(result, RelationModel) {
-    return convertToClientRecords(result, RelationModel, this.classToTableMap)
+    return convertToClientRecords(result, RelationModel, this)
   }
 
   /**
    * @private
    * */
   parseResponse(result) {
-    return convertToClientRecords(result, this.model, this.classToTableMap)
+    return convertToClientRecords(result, this.model, this)
   }
 
   /**
@@ -389,16 +419,17 @@ const convertToServerRecord = (() => {
 })()
 
 const convertToClientRecords = (() => {
-  return (records, RootModel, classToTableMap) => {
+  return (records, RootModel, dataStore) => {
     if (!records) {
       return records
     }
 
     const context = {
       RootModel,
-      classToTableMap,
-      subIds    : {},
-      postAssign: [],
+      app            : dataStore.app,
+      classToTableMap: dataStore.classToTableMap,
+      subIds         : {},
+      postAssign     : [],
     }
 
     const result = Array.isArray(records)
@@ -418,7 +449,19 @@ const convertToClientRecords = (() => {
       delete source[prop].__subID
 
     } else {
-      const Model = context.classToTableMap[source[prop].___class] || Utils.globalScope[source[prop].___class]
+      let Model = context.classToTableMap[source[prop].___class]
+
+      if (!Model && context.app.useTableClassesFromGlobalScope && Utils.globalScope[source[prop].___class]) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          'Resolving DataTable classes from the global scope is deprecated ' +
+          'and it won\'t be supported in the nearest future. ' +
+          'Instead, you should register your DataTable classes ' +
+          'using the following method Backendless.Data.mapTableToClass'
+        )
+
+        Model = Utils.globalScope[source[prop].___class]
+      }
 
       target[prop] = Model ? new Model() : {}
 

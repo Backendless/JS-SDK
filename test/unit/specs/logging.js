@@ -128,6 +128,29 @@ describe('<Logging>', function() {
     expect(req1.body[4].exception).to.include('fatal exception')
   })
 
+  it('throws an error when message is not string', async () => {
+    const errorMsg = '"message" must be a string'
+
+    async function check(method) {
+      expect(() => logger[method](0)).to.throw(errorMsg)
+      expect(() => logger[method](123)).to.throw(errorMsg)
+      expect(() => logger[method](true)).to.throw(errorMsg)
+      expect(() => logger[method](false)).to.throw(errorMsg)
+      expect(() => logger[method](null)).to.throw(errorMsg)
+      expect(() => logger[method](undefined)).to.throw(errorMsg)
+      expect(() => logger[method](_ => _)).to.throw(errorMsg)
+      expect(() => logger[method]({ bar: 123 })).to.throw(errorMsg)
+      expect(() => logger[method](['foo', 123, true, false, null, undefined, { bar: 123 }])).to.throw(errorMsg)
+    }
+
+    await check('debug')
+    await check('info')
+    await check('warn')
+    await check('error')
+    await check('fatal')
+    await check('trace')
+  })
+
   it('send messages pool by timer', async () => {
     const req1 = prepareMockRequest()
 

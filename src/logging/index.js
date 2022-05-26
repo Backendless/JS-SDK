@@ -47,6 +47,10 @@ export default class Logging {
   }
 
   push(logger, logLevel, message, exception) {
+    if (typeof message !== 'string') {
+      throw new Error('"message" must be a string')
+    }
+
     this.pool.push({ logger, message, exception, 'log-level': logLevel, timestamp: Date.now() })
 
     this.checkMessagesLen()

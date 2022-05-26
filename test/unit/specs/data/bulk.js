@@ -118,6 +118,54 @@ describe('<Data> Bulk Operations', function() {
     })
   })
 
+  describe('Upsert', () => {
+    it('updates objects', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await dataStore.bulkUpsert([{ foo: 333 }, { foo: 111 }])
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/bulkupsert/${tableName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : [{ foo: 333 }, { foo: 111 }]
+      })
+
+      expect(result1).to.be.equal(fakeResult)
+    })
+
+    it('fails when objects list is invalid', async () => {
+      const errorMsg = 'Objects must be provided and must be an array of objects.'
+
+      await expect(dataStore.bulkUpsert()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert('str')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert(undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+    it('fails when at least one item is invalid', async () => {
+      const errorMsg = 'Objects must be provided and must be an array of objects.'
+
+      await expect(dataStore.bulkUpsert([{}, ''])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, 'str'])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, false])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, true])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, null])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, undefined])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, 0])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, 123])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, []])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(dataStore.bulkUpsert([{}, () => ({})])).to.eventually.be.rejectedWith(errorMsg)
+    })
+  })
+
   describe('Delete', () => {
     it('deletes objects with condition', async () => {
       const req1 = prepareMockRequest(fakeResult)

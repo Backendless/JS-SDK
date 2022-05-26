@@ -37,9 +37,9 @@ export default class UsersRoles {
       .then(result => this.users.dataStore.parseResponse(result))
   }
 
-  async getUserRoles() {
+  async getUserRoles(userId) {
     return this.app.request.get({
-      url: this.app.urls.userRoles(),
+      url: this.app.urls.userRoles(userId),
     })
   }
 

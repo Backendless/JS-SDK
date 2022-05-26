@@ -15,6 +15,10 @@ const DEFAULT_PROPS = {
   XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
     ? XMLHttpRequest
     : undefined,
+
+  //TODO: this is a temporary to disable getting DataTable classes from the global scope
+  //TODO: it will be removed in the nearest future
+  useTableClassesFromGlobalScope: true,
 }
 
 const STATELESS_PROPS = ['appId', 'apiKey', 'domain']
@@ -254,6 +258,15 @@ class Backendless {
       `Setting '${appPath}' value to Backendless.appPath directly is not possible, ` +
       'instead you must use Backendless.initApp(APP_ID, API_KEY) for setup the value'
     )
+  }
+
+  ///--------useTableClassesFromGlobalScope-------///
+  get useTableClassesFromGlobalScope() {
+    return this.__useTableClassesFromGlobalScope
+  }
+
+  set useTableClassesFromGlobalScope(useTableClassesFromGlobalScope) {
+    this.__useTableClassesFromGlobalScope = !!useTableClassesFromGlobalScope
   }
 
   ///--------debugMode-------///

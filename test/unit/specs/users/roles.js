@@ -261,10 +261,10 @@ describe('<Users> Roles', function() {
     })
   })
 
-  it('gets user roles', async () => {
-    const req1 = prepareMockRequest()
+  it('gets current user roles', async () => {
+    const req1 = prepareMockRequest(['role-1','role-2'])
 
-    await Backendless.UserService.getUserRoles()
+    const result = await Backendless.UserService.getUserRoles()
 
     expect(req1).to.deep.include({
       method : 'GET',
@@ -272,6 +272,23 @@ describe('<Users> Roles', function() {
       headers: {},
       body   : undefined
     })
+
+    expect(result).to.be.eql(['role-1','role-2'])
+  })
+
+  it('gets a specific user roles', async () => {
+    const req1 = prepareMockRequest(['role-1','role-2'])
+
+    const result = await Backendless.UserService.getUserRoles('user-id')
+
+    expect(req1).to.deep.include({
+      method : 'GET',
+      path   : `${APP_PATH}/users/userroles/user-id`,
+      headers: {},
+      body   : undefined
+    })
+
+    expect(result).to.be.eql(['role-1','role-2'])
   })
 
   it('adds user roles', async () => {

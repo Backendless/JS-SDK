@@ -259,8 +259,8 @@ describe('RSO', function() {
       expect(sub3.name).to.be.equal('RSO_COMMANDS')
       expect(sub3.options).to.be.eql({ name: 'TEST_RSO_NAME' })
 
-      rso.removeCommandListeners(callback1)
-      rso.removeCommandListeners(callback2)
+      rso.removeCommandListener(callback1)
+      rso.removeCommandListener(callback2)
 
       const subOff1 = await subOff1Promise
       const subOff2 = await subOff2Promise

@@ -151,6 +151,141 @@ describe('Data - Bulk Operations', function() {
 
   })
 
+  describe('Upsert Operation', function() {
+
+    describe('should be successful when', function() {
+
+      it('passed non empty objects in array', async function() {
+        const sourceItems = [
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog', objectId: '1' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog', objectId: '2' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog', objectId: '3' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'cat', objectId: '4' }
+        ]
+
+        const result = await TestTable.bulkUpsert(sourceItems)
+
+        expect(result).to.be.an('array')
+        expect(result).to.have.length(4)
+
+        expect(result[0]).to.be.an('string')
+        expect(result[1]).to.be.an('string')
+        expect(result[2]).to.be.an('string')
+        expect(result[3]).to.be.an('string')
+
+        const query = Backendless.Data.QueryBuilder.create()
+          .setWhereClause('name like \'non-empty-%\'')
+
+        const savedItems = await TestTable.find(query)
+
+        expect(savedItems).to.be.an('array')
+        expect(savedItems).to.have.length(4)
+      })
+
+      it('passed a few empty objects in array', async function() {
+        const sourceItems = [
+          { name: `few-empty-${Utils.uid()}`, kind: 'dog' },
+          {},
+          { name: `few-empty-${Utils.uid()}`, kind: 'dog' },
+          {}
+        ]
+
+        const result = await TestTable.bulkUpsert(sourceItems)
+
+        expect(result).to.be.an('array')
+        expect(result).to.have.length(4)
+
+        const query = Backendless.Data.QueryBuilder.create()
+          .setWhereClause(`objectId in (${result.map(o => `'${o}'`).join(',')})`)
+
+        const savedItems = await TestTable.find(query)
+
+        expect(savedItems).to.be.an('array')
+        expect(savedItems).to.have.length(4)
+      })
+
+      it('update already existed objects', async function() {
+        const alreadyExistedObject = await TestTable.save({ name: `non-empty-${Utils.uid()}`, kind: 'cat' })
+
+        const updatedObject = { ...alreadyExistedObject, name: 'foobar' }
+
+        const items = [
+          updatedObject,
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog', objectId: '2' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'dog', objectId: '3' },
+          { name: `non-empty-${Utils.uid()}`, kind: 'cat', objectId: '4' },
+        ]
+
+        const result = await TestTable.bulkUpsert(items)
+
+        expect(result).to.be.an('array')
+        expect(result).to.have.length(4)
+
+        const query = Backendless.Data.QueryBuilder.create().setWhereClause(`name = 'foobar'`)
+
+        const receivedObject = await TestTable.findFirst(query)
+
+        expect(receivedObject.updated).to.be.an('number')
+        expect(receivedObject.name).to.equal('foobar')
+        expect(receivedObject.objectId).to.equal(alreadyExistedObject.objectId)
+      })
+    })
+
+    describe('should throw an error when', function() {
+      const errorMessage = 'Objects must be provided and must be an array of objects.'
+
+      it('not passed any arguments', function() {
+        return TestTable.bulkUpsert()
+          .catch(error => {
+            expect(error.message).to.be.equal(errorMessage)
+          })
+      })
+
+      it('passed NULL in array', function() {
+        return TestTable.bulkUpsert([TEST_DATA[1], null, TEST_DATA[2]])
+          .catch(error => {
+            expect(error.message).to.be.equal(errorMessage)
+          })
+      })
+
+      it('passed STRING in array', function() {
+        return TestTable.bulkUpsert([TEST_DATA[1], 'someString', TEST_DATA[2]])
+          .catch(error => {
+            expect(error.message).to.be.equal(errorMessage)
+          })
+      })
+
+      it('passed BOOLEAN in array', function() {
+        return TestTable.bulkUpsert([TEST_DATA[1], true, TEST_DATA[2]])
+          .catch(error => {
+            expect(error.message).to.be.equal(errorMessage)
+          })
+      })
+
+      it('passed NUMBER in array', function() {
+        return TestTable.bulkUpsert([TEST_DATA[1], 123, TEST_DATA[2]])
+          .catch(error => {
+            expect(error.message).to.be.equal(errorMessage)
+          })
+      })
+
+      it('passed UNDEFINED in array', function() {
+        return TestTable.bulkUpsert([TEST_DATA[1], undefined, TEST_DATA[2]])
+          .catch(error => {
+            expect(error.message).to.be.equal(errorMessage)
+          })
+      })
+
+      it('passed ARRAY in array', function() {
+        return TestTable.bulkUpsert([TEST_DATA[1], [], TEST_DATA[2]])
+          .catch(error => {
+            expect(error.message).to.be.equal(errorMessage)
+          })
+      })
+    })
+
+  })
+
   describe('Delete Operation', function() {
 
     beforeEach(async () => {

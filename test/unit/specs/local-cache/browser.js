@@ -29,8 +29,22 @@ describe('<LocalCache> Browser', function() {
     delete global.localStorage
   })
 
-  it('has default storage name', () => {
+  it('has default storage name with app id', () => {
     expect(Backendless.LocalCache.storageName).to.be.equal(`Backendless_${APP_ID}`)
+
+    Backendless.LocalCache.set('foo', 'bar')
+
+    expect(JSON.stringify(global.localStorage)).to.be.equal(`{"Backendless_${APP_ID}":"{\\"foo\\":\\"bar\\"}"}`)
+  })
+
+  it('has default storage name without app id', () => {
+    Backendless.initApp('https://foo.bar')
+
+    expect(Backendless.LocalCache.storageName).to.be.equal('Backendless')
+
+    Backendless.LocalCache.set('foo', 'bar')
+
+    expect(JSON.stringify(global.localStorage)).to.be.equal('{"Backendless":"{\\"foo\\":\\"bar\\"}"}')
   })
 
   it('should migrate legacy storage', () => {

@@ -109,6 +109,10 @@ export default class Urls {
     return `${this.data()}/${tableName}`
   }
 
+  dataTableUpsert(tableName) {
+    return `${this.data()}/${tableName}/upsert`
+  }
+
   dataTableDeepSave(tableName) {
     return `${this.data()}/${tableName}/deep-save`
   }
@@ -141,12 +145,20 @@ export default class Urls {
     return `${this.data()}/bulk/${tableName}`
   }
 
+  dataBulkTableUpsert(tableName) {
+    return `${this.data()}/bulkupsert/${tableName}`
+  }
+
   dataBulkTableDelete(tableName) {
     return `${this.dataBulkTable(tableName)}/delete`
   }
 
   dataObjectPermission(tableName, permissionType, objectId) {
     return `${this.dataTable(tableName)}/permissions/${permissionType}/${objectId}`
+  }
+
+  dataTableNameById(tableId) {
+    return `${this.data()}/${tableId}/table-name`
   }
 
   transactions() {
@@ -259,6 +271,14 @@ export default class Urls {
     return `${this.files()}/binary/${path}`
   }
 
+  fileAppendPath(path) {
+    return `${this.files()}/append/${path}`
+  }
+
+  fileAppendBinaryPath(path) {
+    return `${this.files()}/append/binary/${path}`
+  }
+
   //users
   users() {
     return `${this.root()}/users`
@@ -280,8 +300,8 @@ export default class Urls {
     return `${this.users()}/logout`
   }
 
-  userRoles() {
-    return `${this.users()}/userroles`
+  userRoles(userId) {
+    return `${this.users()}/userroles${userId ? `/${userId}` : ''}`
   }
 
   usersRole(roleName) {
