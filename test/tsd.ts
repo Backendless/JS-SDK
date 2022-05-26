@@ -33,7 +33,7 @@ function testMain() {
 function testLocalCache() {
     const key: string = 'key';
     const str: string = 'string';
-    const obj: Object = {};
+    const obj: object = {};
     const arr: any[] = [];
     const num: number = 1234;
     const bol: boolean = true;
@@ -410,13 +410,13 @@ function testGroupQueryBuilder() {
 }
 
 function testDataStoreClass() {
-    const item: Object = {};
+    const item: object = {};
     const dataStore: Backendless.DataStore = Backendless.Data.of('str');
     const dataStore2: Backendless.DataStore = Backendless.Data.of({});
     const dataStore3: Backendless.DataStore = Backendless.Data.of(function () {
     });
 
-    const model: Function | Object = dataStore.model;
+    const model: Function | object = dataStore.model;
     const className: string = dataStore.className;
     const restUrl: string = dataStore.restUrl;
 
@@ -433,11 +433,11 @@ function testDataStoreClass() {
 
     const person = new Person()
 
-    let resultObj: Object;
+    let resultObj: object;
     let resultNum: number;
     let promisePerson: Promise<Person>;
     let promisePersons: Promise<Person[]>;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
     let promiseNum: Promise<number>;
 
     const dataQueryObject = {
@@ -534,10 +534,10 @@ function testDataStoreClass() {
 }
 
 function testPersistence() {
-    let resultObj: Object;
+    let resultObj: object;
     let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
@@ -642,10 +642,10 @@ function testDataPolygon() {
 }
 
 function testData() {
-    let resultObj: Object;
+    let resultObj: object;
     let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
@@ -665,6 +665,181 @@ function testData() {
     promiseObject = Backendless.Data.describe(Model);
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
+}
+
+function testHive() {
+    const str: string = 'test';
+
+    let dataHive: Backendless.Hive.DataHive = Backendless.Hive(str);
+    let hiveStore: Backendless.Hive.HiveStore;
+    let promiseVoid: Promise<void>;
+    let promiseNumber: Promise<number>;
+
+    let hiveNames: Array<string> = Backendless.Hive.getNames();
+
+    promiseVoid = dataHive.create()
+    promiseVoid = dataHive.rename(str)
+    promiseNumber = dataHive.delete()
+
+    hiveStore = dataHive.KeyValueStore()
+    hiveStore = dataHive.ListStore(str)
+    hiveStore = dataHive.MapStore(str)
+    hiveStore = dataHive.SetStore(str)
+    hiveStore = dataHive.SortedSetStore(str)
+}
+
+function testHiveOperations() {
+    const str: string = 'str';
+    const num: number = 123;
+    const bool: boolean = false;
+    const strArr: Array<string> = ['str1', 'str2'];
+    const obj: object = {x: 1, y: 2};
+
+    let promiseObject: Promise<object>;
+    let promiseNumber: Promise<number>;
+    let promiseString: Promise<string>;
+    let promiseBoolean: Promise<boolean>;
+
+    let promiseListOfString: Promise<Array<string>>;
+    let promiseListOfStringOrNull: Promise<Array<string> | null>;
+
+    let promiseStringOrNull: Promise<string | null>;
+
+    /* KEY-VALUE */
+
+    /* General */
+    let storeKeysOptions: Backendless.Hive.StoreKeysOptionsI;
+
+    promiseObject = Backendless.Hive(str).KeyValueStore().storeKeys();
+    promiseObject = Backendless.Hive(str).KeyValueStore().storeKeys(storeKeysOptions);
+
+    promiseNumber = Backendless.Hive(str).KeyValueStore().delete(str);
+    promiseNumber = Backendless.Hive(str).KeyValueStore().delete(strArr);
+
+    promiseNumber = Backendless.Hive(str).KeyValueStore().exists(str);
+    promiseNumber = Backendless.Hive(str).KeyValueStore().exists(strArr);
+
+    promiseNumber = Backendless.Hive(str).KeyValueStore().getExpiration(str);
+    promiseBoolean = Backendless.Hive(str).KeyValueStore().removeExpiration(str);
+
+    promiseNumber = Backendless.Hive(str).KeyValueStore().touch(str);
+    promiseNumber = Backendless.Hive(str).KeyValueStore().touch(strArr);
+
+    promiseBoolean = Backendless.Hive(str).KeyValueStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).KeyValueStore().expireAt(str, num);
+
+    promiseString = Backendless.Hive(str).KeyValueStore().rename(str, str);
+    promiseBoolean = Backendless.Hive(str).KeyValueStore().renameIfNotExists(str, str);
+    /* General */
+
+    promiseStringOrNull = Backendless.Hive(str).KeyValueStore().get(str);
+    promiseObject = Backendless.Hive(str).KeyValueStore().get(strArr);
+
+    let setKeyOptions: Backendless.Hive.KeyValueSetKeyOptionsI;
+
+    promiseString = Backendless.Hive(str).KeyValueStore().set(obj);
+    promiseString = Backendless.Hive(str).KeyValueStore().set(str, str);
+    promiseString = Backendless.Hive(str).KeyValueStore().set(str, str, setKeyOptions);
+
+    promiseNumber = Backendless.Hive(str).KeyValueStore(str).increment(num);
+    promiseNumber = Backendless.Hive(str).KeyValueStore(str).decrement(num);
+
+    /* LIST */
+
+    /* General */
+    promiseNumber = Backendless.Hive(str).ListStore().delete(str);
+    promiseNumber = Backendless.Hive(str).ListStore().delete(strArr);
+
+    promiseNumber = Backendless.Hive(str).ListStore().exists(str);
+    promiseNumber = Backendless.Hive(str).ListStore().exists(strArr);
+
+    promiseNumber = Backendless.Hive(str).ListStore().getExpiration(str);
+    promiseBoolean = Backendless.Hive(str).ListStore().removeExpiration(str);
+
+    promiseNumber = Backendless.Hive(str).ListStore().touch(str);
+    promiseNumber = Backendless.Hive(str).ListStore().touch(strArr);
+
+    promiseBoolean = Backendless.Hive(str).ListStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).ListStore().expireAt(str, num);
+
+    promiseString = Backendless.Hive(str).ListStore().rename(str, str);
+    promiseBoolean = Backendless.Hive(str).ListStore().renameIfNotExists(str, str);
+    /* General */
+
+    promiseListOfString = Backendless.Hive(str).ListStore(str).get();
+    promiseStringOrNull = Backendless.Hive(str).ListStore(str).get(num);
+    promiseListOfString = Backendless.Hive(str).ListStore(str).get(num, num);
+
+    promiseNumber = Backendless.Hive(str).ListStore(str).length();
+
+    promiseNumber = Backendless.Hive(str).ListStore(str).set([str, str]);
+    promiseString = Backendless.Hive(str).ListStore(str).set(str, num);
+
+    promiseNumber = Backendless.Hive(str).ListStore(str).insert(str, str);
+    promiseNumber = Backendless.Hive(str).ListStore(str).insert(str, str, bool);
+
+    promiseNumber = Backendless.Hive(str).ListStore(str).addFirst(str);
+    promiseNumber = Backendless.Hive(str).ListStore(str).addFirst(strArr);
+
+    promiseNumber = Backendless.Hive(str).ListStore(str).addLast(str);
+    promiseNumber = Backendless.Hive(str).ListStore(str).addLast(strArr);
+
+    promiseStringOrNull = Backendless.Hive(str).ListStore(str).removeFirst();
+    promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).removeFirst(num);
+
+    promiseStringOrNull = Backendless.Hive(str).ListStore(str).removeLast();
+    promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).removeLast(num);
+
+    promiseNumber = Backendless.Hive(str).ListStore(str).removeValue(str);
+    promiseNumber = Backendless.Hive(str).ListStore(str).removeValue(str, num);
+
+    /* MAP */
+
+    /* General */
+    promiseNumber = Backendless.Hive(str).MapStore().delete(str);
+    promiseNumber = Backendless.Hive(str).MapStore().delete(strArr);
+
+    promiseNumber = Backendless.Hive(str).MapStore().exists(str);
+    promiseNumber = Backendless.Hive(str).MapStore().exists(strArr);
+
+    promiseNumber = Backendless.Hive(str).MapStore().getExpiration(str);
+    promiseBoolean = Backendless.Hive(str).MapStore().removeExpiration(str);
+
+    promiseNumber = Backendless.Hive(str).MapStore().touch(str);
+    promiseNumber = Backendless.Hive(str).MapStore().touch(strArr);
+
+    promiseBoolean = Backendless.Hive(str).MapStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).MapStore().expireAt(str, num);
+
+    promiseString = Backendless.Hive(str).MapStore().rename(str, str);
+    promiseBoolean = Backendless.Hive(str).MapStore().renameIfNotExists(str, str);
+    /* General */
+
+    promiseObject = Backendless.Hive(str).MapStore(str).get();
+    promiseObject = Backendless.Hive(str).MapStore(str).get(str);
+    promiseObject = Backendless.Hive(str).MapStore(str).get(strArr);
+
+    promiseStringOrNull = Backendless.Hive(str).MapStore(str).getValue(str);
+
+    promiseBoolean = Backendless.Hive(str).MapStore(str).keyExists(str);
+
+    promiseNumber = Backendless.Hive(str).MapStore(str).length();
+
+    promiseListOfString = Backendless.Hive(str).MapStore(str).keys();
+    promiseListOfString = Backendless.Hive(str).MapStore(str).values();
+
+    promiseNumber = Backendless.Hive(str).MapStore(str).set(obj);
+
+    promiseNumber = Backendless.Hive(str).MapStore(str).add(obj);
+
+    promiseBoolean = Backendless.Hive(str).MapStore(str).setValue(str, str);
+    promiseBoolean = Backendless.Hive(str).MapStore(str).setValue(str, str, bool);
+
+    promiseNumber = Backendless.Hive(str).MapStore(str).increment(str);
+    promiseNumber = Backendless.Hive(str).MapStore(str).increment(str, num);
+
+    promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(str);
+    promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(strArr);
 }
 
 function testBulkOperations() {
@@ -691,7 +866,7 @@ function testDataPermissions() {
     const roleName: string = 'myRole';
     const dataObj: Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
     let resultObj: Backendless.ExistDataItemI;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
 
     promiseObject = Backendless.Data.Permissions.FIND.grantUser(userId, dataObj);
     promiseObject = Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj);
@@ -761,7 +936,7 @@ function testUserService() {
     let newUser: Backendless.User = new Backendless.User();
     let guestUser: Backendless.User = new Backendless.User();
     let resultStr: string;
-    let resultObj: Object;
+    let resultObj: object;
     let resultVoid: void;
     let resultNull: null;
     let resultUndefined: null;
@@ -975,11 +1150,12 @@ function testMessaging() {
     const deviceToken: string = 'str';
     const subject: string = 'str';
     const messageId: string = 'str';
-    const message: string | Object = 'str';
-    let promiseObject: Promise<Object>;
+    const message: string | object = 'str';
+    let promiseObject: Promise<object>;
+    let promiseBoolean: Promise<boolean>;
     const bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
     const envelopeObject: Backendless.EmailEnvelope = new Backendless.EmailEnvelope();
-    const templateValues: Object | Backendless.EmailEnvelope = {};
+    const templateValues: object | Backendless.EmailEnvelope = {};
     const templateName: string = 'str';
     const recipients: string[] = ['str'];
     const attachments: string[] = ['str'];
@@ -989,7 +1165,7 @@ function testMessaging() {
     const deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
 
     let channel: Backendless.ChannelClass;
-    const subscriptionCallback = function (data: Object): void {
+    const subscriptionCallback = function (data: object): void {
         const messagesArray: Array<String> = data["messages"];
     };
 
@@ -1007,7 +1183,7 @@ function testMessaging() {
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
 
-    promiseObject = Backendless.Messaging.cancel(messageId);
+    promiseBoolean = Backendless.Messaging.cancel(messageId);
 
     promiseObject = Backendless.Messaging.registerDevice(deviceToken, channels, expiration);
 
@@ -1047,15 +1223,16 @@ function testFilesService() {
 
     let resultStr: string;
     let resultBool: boolean;
-    let resultObj: Object;
+    let resultObj: object;
     let resultNumber: number;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
+    let promiseBoolean: Promise<boolean>;
     let promiseNumber: Promise<number>;
 
     resultStr = Backendless.Files.restUrl;
 
-    promiseObject = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
-    promiseObject = Backendless.Files.saveFile(path, fileName, fileContent);
+    promiseBoolean = Backendless.Files.saveFile(path, fileName, fileContent, overwrite);
+    promiseBoolean = Backendless.Files.saveFile(path, fileName, fileContent);
 
     promiseObject = Backendless.Files.upload(file, path);
     promiseObject = Backendless.Files.upload(file, path, overwrite);
@@ -1092,47 +1269,47 @@ function testFilesService() {
 
     promiseNumber = Backendless.Files.removeDirectory(path);
 
-    promiseObject = Backendless.Files.Permissions.READ.grantUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.grantRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyRole(roleName, url);
 
-    promiseObject = Backendless.Files.Permissions.DELETE.grantUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyRole(roleName, url);
 
-    promiseObject = Backendless.Files.Permissions.WRITE.grantUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyRole(roleName, url);
 
-    promiseObject = Backendless.Files.Permissions.READ.grantForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.READ.grantForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.READ.grantForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.READ.grantForAllRoles(url);
-    promiseObject = Backendless.Files.Permissions.READ.denyForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.grantForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.READ.denyForAllRoles(url);
 
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.DELETE.grantForAllRoles(url);
-    promiseObject = Backendless.Files.Permissions.DELETE.denyForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.grantForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.DELETE.denyForAllRoles(url);
 
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForUser(userid, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForRole(roleName, url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllUsers(url);
-    promiseObject = Backendless.Files.Permissions.WRITE.grantForAllRoles(url);
-    promiseObject = Backendless.Files.Permissions.WRITE.denyForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForUser(userid, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForRole(roleName, url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForAllUsers(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.grantForAllRoles(url);
+    promiseBoolean = Backendless.Files.Permissions.WRITE.denyForAllRoles(url);
 
 }
 
@@ -1143,8 +1320,8 @@ function testCommerce() {
     const subscriptionId: string = 'str';
 
     let resultStr: string;
-    let resultObj: Object;
-    let promiseObject: Promise<Object>;
+    let resultObj: object;
+    let promiseObject: Promise<object>;
 
     resultStr = Backendless.Commerce.restUrl;
 
@@ -1157,11 +1334,11 @@ function testCommerce() {
 
 function testEvents() {
     const eventName: string = 'str';
-    const eventArgs: Object = {};
+    const eventArgs: object = {};
 
     let resultStr: string;
-    let resultObj: Object;
-    let promiseObject: Promise<Object>;
+    let resultObj: object;
+    let promiseObject: Promise<object>;
 
     resultStr = Backendless.Events.restUrl;
 
@@ -1179,8 +1356,8 @@ function testCache() {
     const seconds: number = 123;
     const date: Date = new Date();
 
-    let resultObj: Object;
-    let promiseObject: Promise<Object>;
+    let resultObj: object;
+    let promiseObject: Promise<object>;
 
     promiseObject = Backendless.Cache.put(key, value);
     promiseObject = Backendless.Cache.put(key, value, timeToLive);
@@ -1203,7 +1380,8 @@ function testCounters() {
     const counterName: string = 'str';
     const expected: number = 123;
     const updated: number = 123;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
+    let promiseNumber: Promise<number>;
     let promiseStrings: Promise<string[]>;
 
     //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
@@ -1212,43 +1390,43 @@ function testCounters() {
     promiseStrings = Backendless.Counters.list();
     promiseStrings = Backendless.Counters.list('*');
 
-    promiseObject = Backendless.Counters.get(counterName);
+    promiseNumber = Backendless.Counters.get(counterName);
 
-    promiseObject = Backendless.Counters.getAndIncrement(counterName);
+    promiseNumber = Backendless.Counters.getAndIncrement(counterName);
 
-    promiseObject = Backendless.Counters.incrementAndGet(counterName);
+    promiseNumber = Backendless.Counters.incrementAndGet(counterName);
 
-    promiseObject = Backendless.Counters.getAndDecrement(counterName);
+    promiseNumber = Backendless.Counters.getAndDecrement(counterName);
 
-    promiseObject = Backendless.Counters.decrementAndGet(counterName);
+    promiseNumber = Backendless.Counters.decrementAndGet(counterName);
 
-    promiseObject = Backendless.Counters.addAndGet(counterName, value);
+    promiseNumber = Backendless.Counters.addAndGet(counterName, value);
 
-    promiseObject = Backendless.Counters.getAndAdd(counterName, value);
+    promiseNumber = Backendless.Counters.getAndAdd(counterName, value);
 
-    promiseObject = Backendless.Counters.compareAndSet(counterName, expected, updated);
+    promiseNumber = Backendless.Counters.compareAndSet(counterName, expected, updated);
 
-    promiseObject = Backendless.Counters.reset(counterName);
+    promiseNumber = Backendless.Counters.reset(counterName);
 
     const counter: Counter = Backendless.Counters.of(counterName);
 
-    promiseObject = counter.get();
+    promiseNumber = counter.get();
 
-    promiseObject = counter.getAndIncrement();
+    promiseNumber = counter.getAndIncrement();
 
-    promiseObject = counter.incrementAndGet();
+    promiseNumber = counter.incrementAndGet();
 
-    promiseObject = counter.getAndDecrement();
+    promiseNumber = counter.getAndDecrement();
 
-    promiseObject = counter.decrementAndGet();
+    promiseNumber = counter.decrementAndGet();
 
-    promiseObject = counter.addAndGet(value);
+    promiseNumber = counter.addAndGet(value);
 
-    promiseObject = counter.getAndAdd(value);
+    promiseNumber = counter.getAndAdd(value);
 
-    promiseObject = counter.compareAndSet(expected, updated);
+    promiseNumber = counter.compareAndSet(expected, updated);
 
-    promiseObject = counter.reset();
+    promiseNumber = counter.reset();
 }
 
 function testCustomServices() {
@@ -1297,8 +1475,8 @@ function testLogging() {
     const exception: string = 'str';
 
     const restUrl: string = Backendless.Logging.restUrl;
-    const loggers: Object = Backendless.Logging.loggers;
-    const logInfo: Object[] = Backendless.Logging.logInfo;
+    const loggers: object = Backendless.Logging.loggers;
+    const logInfo: object[] = Backendless.Logging.logInfo;
     const messagesCount: number = Backendless.Logging.messagesCount;
     const numOfMessages: number = Backendless.Logging.numOfMessages;
     const timeFrequency: number = Backendless.Logging.timeFrequency;
@@ -1349,10 +1527,10 @@ function RTData() {
     }
 
     eventHandler
-        .addCreateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addCreateListener('whereClause', (obj: Object) => undefined)
-        .addCreateListener((obj: Object) => undefined)
-        .addCreateListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener('whereClause', (obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener('whereClause', (obj: object) => undefined)
+        .addCreateListener((obj: object) => undefined)
+        .addCreateListener((obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addCreateListener('whereClause', (obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addCreateListener('whereClause', (obj: { bar: string }) => undefined)
         .addCreateListener((obj: { bar: string }) => undefined)
@@ -1373,10 +1551,10 @@ function RTData() {
         .removeCreateListener<Person>((obj: { foo: string }) => undefined)
 
     eventHandler
-        .addUpdateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addUpdateListener('whereClause', (obj: Object) => undefined)
-        .addUpdateListener((obj: Object) => undefined)
-        .addUpdateListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener('whereClause', (obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener('whereClause', (obj: object) => undefined)
+        .addUpdateListener((obj: object) => undefined)
+        .addUpdateListener((obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addUpdateListener('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addUpdateListener('whereClause', (obj: { foo: string }) => undefined)
         .addUpdateListener((obj: { foo: string }) => undefined)
@@ -1396,10 +1574,10 @@ function RTData() {
         .removeUpdateListener<Person>((obj: Person) => undefined)
 
     eventHandler
-        .addDeleteListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addDeleteListener('whereClause', (obj: Object) => undefined)
-        .addDeleteListener((obj: Object) => undefined)
-        .addDeleteListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener('whereClause', (obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener('whereClause', (obj: object) => undefined)
+        .addDeleteListener((obj: object) => undefined)
+        .addDeleteListener((obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addDeleteListener('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addDeleteListener('whereClause', (obj: { foo: string }) => undefined)
         .addDeleteListener((obj: { foo: string }) => undefined)
@@ -1507,7 +1685,7 @@ function RTData() {
 
     eventHandler
         .removeAllListeners()
-        .addDeleteListener('whereClause', (obj: Object) => undefined)
+        .addDeleteListener('whereClause', (obj: object) => undefined)
 }
 
 function RTChannel() {

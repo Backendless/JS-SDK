@@ -275,6 +275,179 @@ declare module Backendless {
 
     /**
      * @public
+     * @type: Function
+     **/
+    function Hive(hiveName: string): Backendless.Hive.DataHive;
+
+    /**
+     * @public
+     * @namespace Backendless.Hive
+     */
+    namespace Hive {
+        /**
+         * @public
+         * @type: Function
+         */
+        function getNames(): Array<string>
+
+        /**
+         * @public
+         * @class Backendless.Hive.DataHive
+         * @constructor
+         */
+        class DataHive {
+            constructor(hiveName: string, appContext: object);
+
+            create(): Promise<void>
+
+            delete(): Promise<number>
+
+            rename(newName: string): Promise<void>
+
+            KeyValueStore(storeKey?: string): KeyValueStore;
+
+            ListStore(storeKey?: string): ListStore;
+
+            MapStore(storeKey?: string): MapStore;
+
+            SetStore(storeKey?: string): SetStore;
+
+            SortedSetStore(storeKey?: string): SortedSetStore;
+        }
+
+        interface StoreKeysOptionsI {
+            filterPattern?: string;
+            cursor?: number;
+            pageSize?: number;
+        }
+
+        /**
+         * @private
+         * @class HiveStore
+         * @constructor
+         */
+        class HiveStore {
+            constructor(appContext: object);
+
+            storeKeys(options?: StoreKeysOptionsI): Promise<object>;
+
+            delete(key: string): Promise<1 | 0>;
+            delete(keys: Array<string>): Promise<number>;
+
+            rename(key: string, newKey: string): Promise<'OK'>;
+
+            renameIfNotExists(key: string, newKey: string): Promise<boolean>;
+
+            exists(key: string): Promise<number>;
+            exists(keys: Array<string>): Promise<number>;
+
+            getExpiration(key: string): Promise<number>;
+
+            removeExpiration(key: string): Promise<boolean>;
+
+            touch(key: string): Promise<1 | 0>;
+            touch(keys: Array<string>): Promise<number>;
+
+            expire(key: string, ttl: number): Promise<boolean>;
+
+            expireAt(key: string, timestamp: number): Promise<boolean>;
+        }
+
+        interface KeyValueSetKeyOptionsI {
+            expirationSeconds?: number;
+            expiration?: 'TTL' | 'UnixTimestamp' | 'None';
+            condition?: 'IfExists' | 'IfNotExists' | 'Always';
+        }
+
+        /**
+         * @public
+         * @class KeyValueStore
+         * @extends HiveStore
+         * @constructor
+         */
+        class KeyValueStore extends HiveStore {
+            constructor(context: object, storeKey?: string);
+
+            get(key: string): Promise<string | null>;
+            get(keys: Array<string>): Promise<object>;
+
+            set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<'OK'>;
+            set(keysMap: object): Promise<'OK'>;
+
+            increment(value: number): Promise<number>;
+
+            decrement(value: number): Promise<number>;
+        }
+
+        class ListStore extends HiveStore {
+            constructor(context: object, storeKey: string);
+
+            get(): Promise<Array<string>>;
+            get(index: number): Promise<string | null>;
+            get(indexFrom: number, indexTo: number): Promise<Array<string>>;
+
+            set(values: Array<string>): Promise<number>;
+            set(value: string, index: number): Promise<'OK'>;
+
+            insert(targetValue: string, value: string, before?: boolean): Promise<number>;
+
+            length(): Promise<number>;
+
+            addFirst(value: string): Promise<number>
+            addFirst(values: Array<string>): Promise<number>
+
+            addLast(value: string): Promise<number>
+            addLast(values: Array<string>): Promise<number>
+
+            removeFirst(): Promise<string | null>
+            removeFirst(count: number): Promise<Array<string> | null>
+
+            removeLast(): Promise<string | null>
+            removeLast(count: number): Promise<Array<string> | null>
+
+            removeValue(value: string, count?: number): Promise<number>
+        }
+
+        class MapStore extends HiveStore {
+            constructor(context: object, storeKey: string);
+
+            get(): Promise<object>;
+            get(key: string): Promise<object>;
+            get(keys?: Array<string>): Promise<object>;
+
+            getValue(key: string): Promise<string | null>;
+
+            keyExists(key: string): Promise<boolean>;
+
+            length(): Promise<number>;
+
+            keys(): Promise<Array<string>>;
+
+            values(): Promise<Array<string>>;
+
+            set(data: object): Promise<number>;
+
+            add(data: object): Promise<number>;
+
+            setValue(key: string, value: string, ifNotExists?: boolean): Promise<boolean>;
+
+            increment(key: string, count?: number): Promise<number>;
+
+            deleteKeys(key: string): Promise<number>;
+            deleteKeys(keys: Array<string>): Promise<number>;
+        }
+
+        class SetStore extends HiveStore {
+            constructor(context: object, storeKey: string);
+        }
+
+        class SortedSetStore extends HiveStore {
+            constructor(context: object, storeKey: string);
+        }
+    }
+
+    /**
+     * @public
      * @namespace Backendless.UserService
      **/
     namespace UserService {
