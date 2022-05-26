@@ -543,6 +543,7 @@ function testPersistence() {
     let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
     let promiseObject: Promise<object>;
+    let promiseString: Promise<string>;
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
@@ -563,7 +564,7 @@ function testPersistence() {
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
 
-    promiseObject = Backendless.Data.getTableNameById('str');
+    promiseString = Backendless.Data.getTableNameById('str');
 
     Backendless.Data.mapTableToClass(Model);
     Backendless.Data.mapTableToClass('ClassName', Model);
