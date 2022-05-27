@@ -3,7 +3,7 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('Key Value Store', function() {
+describe('Set Store', function() {
   forTest(this)
 
   const hiveName = 'test'
@@ -13,11 +13,11 @@ describe('Key Value Store', function() {
 
     let store
 
-    beforeEach(() => {
-      store = Backendless.Hive(hiveName).KeyValueStore()
-    })
-
     describe('Basic', () => {
+      beforeEach(() => {
+        store = Backendless.Hive(hiveName).SetStore()
+      })
+
       describe('Store Keys', async () => {
         it('success', async () => {
           const req1 = prepareMockRequest(fakeResult)
@@ -26,7 +26,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/keys`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/keys`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -43,7 +43,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/keys?filterPattern=123&cursor=20&pageSize=30`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/keys?filterPattern=123&cursor=20&pageSize=30`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -109,7 +109,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method : 'DELETE',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value`,
+            path   : `${APP_PATH}/hive/${hiveName}/set`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey']
           })
@@ -124,7 +124,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method : 'DELETE',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value`,
+            path   : `${APP_PATH}/hive/${hiveName}/set`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey1', 'testKey2']
           })
@@ -155,7 +155,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value/exists`,
+            path   : `${APP_PATH}/hive/${hiveName}/set/exists`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey']
           })
@@ -170,7 +170,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value/exists`,
+            path   : `${APP_PATH}/hive/${hiveName}/set/exists`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey1', 'testKey1']
           })
@@ -200,7 +200,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/testKey1/rename?newKey=testKey2`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/testKey1/rename?newKey=testKey2`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -238,7 +238,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/testKey1/rename-if-not-exists?newKey=testKey2`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/testKey1/rename-if-not-exists?newKey=testKey2`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -276,7 +276,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/testKey1/get-expiration-ttl`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/testKey1/get-expiration-ttl`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -296,7 +296,7 @@ describe('Key Value Store', function() {
         })
       })
 
-      describe('Remove Expiration', async () => {
+      it('Remove Expiration', async () => {
         it('success', async () => {
           const req1 = prepareMockRequest(fakeResult)
 
@@ -304,7 +304,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/testKey1/remove-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/testKey1/remove-expiration`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -332,7 +332,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/testKey1/expire?ttl=100`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/testKey1/expire?ttl=100`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -370,7 +370,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/testKey1/expire-at?unixTime=100`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/testKey1/expire-at?unixTime=100`,
           })
 
           expect(result1).to.be.eql(fakeResult)
@@ -408,7 +408,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value/touch`,
+            path   : `${APP_PATH}/hive/${hiveName}/set/touch`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey']
           })
@@ -423,7 +423,7 @@ describe('Key Value Store', function() {
 
           expect(req1).to.deep.include({
             method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value/touch`,
+            path   : `${APP_PATH}/hive/${hiveName}/set/touch`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey1', 'testKey1']
           })
@@ -442,258 +442,6 @@ describe('Key Value Store', function() {
           await expect(() => store.touch(123)).to.throw(errorMsg)
           await expect(() => store.touch(() => undefined)).to.throw(errorMsg)
           await expect(() => store.touch({})).to.throw(errorMsg)
-        })
-      })
-    })
-
-    describe('Store related', () => {
-      describe('Get', () => {
-        it('success with single key', async () => {
-          const req1 = prepareMockRequest(fakeResult)
-
-          const result1 = await store.get('testKey')
-
-          expect(req1).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/testKey`,
-          })
-
-          expect(result1).to.be.eql(fakeResult)
-        })
-
-        it('success with multi keys', async () => {
-          const req1 = prepareMockRequest(fakeResult)
-
-          const result1 = await store.get(['testKey1', 'testKey2'])
-
-          expect(req1).to.deep.include({
-            method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey1', 'testKey2']
-          })
-
-          expect(result1).to.be.eql(fakeResult)
-        })
-
-        it('fails when keys is invalid', async () => {
-          const errorMsg = 'Key(s) must be provided and must be a string or list of strings.'
-
-          await expect(() => store.get(undefined)).to.throw(errorMsg)
-          await expect(() => store.get(null)).to.throw(errorMsg)
-          await expect(() => store.get(0)).to.throw(errorMsg)
-          await expect(() => store.get(false)).to.throw(errorMsg)
-          await expect(() => store.get('')).to.throw(errorMsg)
-          await expect(() => store.get(true)).to.throw(errorMsg)
-          await expect(() => store.get(123)).to.throw(errorMsg)
-          await expect(() => store.get(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.get({})).to.throw(errorMsg)
-        })
-      })
-
-      describe('Set', async () => {
-        it('success with single key', async () => {
-          const req1 = prepareMockRequest(fakeResult)
-
-          const result1 = await store.set('testKey', 'testValue')
-
-          expect(req1).to.deep.include({
-            method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value/testKey`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : { value: 'testValue' }
-          })
-
-          expect(result1).to.be.eql(fakeResult)
-        })
-
-        it('success with options', async () => {
-          const req1 = prepareMockRequest(fakeResult)
-
-          const result1 = await store.set('testKey', 'testValue', {
-            expirationSeconds: 100,
-            expiration       : 'TTL',
-            condition        : 'Always'
-          })
-
-          expect(req1).to.deep.include({
-            method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value/testKey`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : {
-              'condition'        : 'Always',
-              'expiration'       : 'TTL',
-              'expirationSeconds': 100,
-              'value'            : 'testValue'
-            }
-          })
-
-          expect(result1).to.be.eql(fakeResult)
-        })
-
-        it('success with multi keys', async () => {
-          const req1 = prepareMockRequest(fakeResult)
-
-          const result1 = await store.set({ 'testKey1': 'testValue1', 'testKey2': 'testValue2' })
-
-          expect(req1).to.deep.include({
-            method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : {
-              'testKey1': 'testValue1',
-              'testKey2': 'testValue2',
-            }
-          })
-
-          expect(result1).to.be.eql(fakeResult)
-        })
-
-        it('fails when key is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
-
-          await expect(() => store.set(undefined, 'testValue')).to.throw(errorMsg)
-          await expect(() => store.set(null, 'testValue')).to.throw(errorMsg)
-          await expect(() => store.set(false, 'testValue')).to.throw(errorMsg)
-          await expect(() => store.set(0, 'testValue')).to.throw(errorMsg)
-          await expect(() => store.set(true, 'testValue')).to.throw(errorMsg)
-          await expect(() => store.set(123, 'testValue')).to.throw(errorMsg)
-          await expect(() => store.set(() => undefined), 'testValue').to.throw(errorMsg)
-        })
-
-        it('fails when object is empty', async () => {
-          const errorMsg = 'Provided object must have at least 1 key.'
-
-          await expect(() => store.set({})).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.set('k', 'v', null)).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', NaN)).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', '')).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', '123')).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', 123)).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', 0)).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', [])).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', true)).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', false)).to.throw(errorMsg)
-        })
-
-        it('fails when Expiration Seconds is invalid', async () => {
-          const errorMsg = 'Expiration seconds must be a number.'
-
-          await expect(() => store.set('k', 'v', { expirationSeconds: null })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expirationSeconds: false })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expirationSeconds: true })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expirationSeconds: '' })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expirationSeconds: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expirationSeconds: NaN })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expirationSeconds: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Expiration is invalid', async () => {
-          const errorMsg = 'Expiration must be one of this values: TTL, UnixTimestamp, None.'
-
-          await expect(() => store.set('k', 'v', { expiration: null })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expiration: false })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expiration: true })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expiration: '' })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expiration: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expiration: NaN })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { expiration: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Condition is invalid', async () => {
-          const errorMsg = 'Condition must be one of this values: IfExists, IfNotExists, Always.'
-
-          await expect(() => store.set('k', 'v', { condition: null })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { condition: false })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { condition: true })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { condition: '' })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { condition: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { condition: NaN })).to.throw(errorMsg)
-          await expect(() => store.set('k', 'v', { condition: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Increment', () => {
-        it('success', async () => {
-          store = Backendless.Hive(hiveName).KeyValueStore('storeKey')
-
-          const req1 = prepareMockRequest(fakeResult)
-
-          const result1 = await store.increment(10)
-
-          expect(req1).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/storeKey/increment?value=10`,
-          })
-
-          expect(result1).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.increment(10)).to.throw(errorMsg)
-        })
-
-        it('fails when value is invalid', async () => {
-          store = Backendless.Hive(hiveName).KeyValueStore('storeKey')
-
-          const errorMsg = 'Value must be provided and must be a number.'
-
-          await expect(() => store.increment(undefined)).to.throw(errorMsg)
-          await expect(() => store.increment(null)).to.throw(errorMsg)
-          await expect(() => store.increment(false)).to.throw(errorMsg)
-          await expect(() => store.increment('')).to.throw(errorMsg)
-          await expect(() => store.increment('123')).to.throw(errorMsg)
-          await expect(() => store.increment(NaN)).to.throw(errorMsg)
-          await expect(() => store.increment(true)).to.throw(errorMsg)
-          await expect(() => store.increment(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.increment({})).to.throw(errorMsg)
-        })
-      })
-
-      describe('Decrement', () => {
-        it('success', async () => {
-          store = Backendless.Hive(hiveName).KeyValueStore('storeKey')
-
-          const req1 = prepareMockRequest(fakeResult)
-
-          const result1 = await store.decrement(10)
-
-          expect(req1).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/key-value/storeKey/decrement?value=10`,
-          })
-
-          expect(result1).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.decrement(10)).to.throw(errorMsg)
-        })
-
-        it('fails when value is invalid', async () => {
-          store = Backendless.Hive(hiveName).KeyValueStore('storeKey')
-
-          const errorMsg = 'Value must be provided and must be a number.'
-
-          await expect(() => store.decrement(undefined)).to.throw(errorMsg)
-          await expect(() => store.decrement(null)).to.throw(errorMsg)
-          await expect(() => store.decrement(false)).to.throw(errorMsg)
-          await expect(() => store.decrement('')).to.throw(errorMsg)
-          await expect(() => store.decrement('123')).to.throw(errorMsg)
-          await expect(() => store.decrement(NaN)).to.throw(errorMsg)
-          await expect(() => store.decrement(true)).to.throw(errorMsg)
-          await expect(() => store.decrement(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.decrement({})).to.throw(errorMsg)
         })
       })
     })
