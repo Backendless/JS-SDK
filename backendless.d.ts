@@ -443,10 +443,105 @@ declare module Backendless {
 
         class SetStore extends HiveStore {
             constructor(context: object, storeKey: string);
+
+            get(): Promise<Array<string>>;
+
+            getRandom(count?: number): Promise<Array<string>>;
+
+            getRandomAndDelete(count?: number): Promise<Array<string>>;
+
+            set(value: string | Array<string>): Promise<number>;
+
+            add(value: string | Array<string>): Promise<number>;
+
+            removeValues(value: string | Array<string>): Promise<number>;
+
+            isMember(value: string): Promise<boolean>;
+
+            length(): Promise<number>;
+
+            difference(storeKeys: Array<string>): Promise<Array<string>>;
+
+            intersection(storeKeys: Array<string>): Promise<Array<string>>;
+
+            union(storeKeys: Array<string>): Promise<Array<string>>;
+        }
+
+        type SortedSetItem = [number, string]
+        type Bound = 'Include' | 'Exclude' | 'Infinity'
+
+        interface SortedSetItemOptionsI {
+            duplicateBehaviour?: 'OnlyUpdate' | 'AlwaysAdd';
+            scoreUpdateMode?: 'Greater' | 'Less';
+            resultType?: 'NewAdded' | 'TotalChanged';
         }
 
         class SortedSetStore extends HiveStore {
             constructor(context: object, storeKey: string);
+
+            add(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
+
+            set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
+
+            incrementScore(value: string, count: number): Promise<number>
+
+            getAndRemoveMaxScore(count?: number): Promise<Array<SortedSetItem>>
+
+            getAndRemoveMinScore(count?: number): Promise<Array<SortedSetItem>>
+
+            getRandom(options?: { count?: number, withScores?: false }): Promise<Array<string>>
+            getRandom(options?: { count?: number, withScores?: true }): Promise<Array<SortedSetItem>>
+
+            getScore(value: string, reverse?: boolean): Promise<number | null>
+
+            getRangeByRank(startRank: number, stopRank: number): Promise<Array<string>>
+            getRangeByRank(startRank: number, stopRank: number, options?: {
+                reverse?: boolean,
+                withScores?: true
+            }): Promise<Array<SortedSetItem>>
+            getRangeByRank(startRank: number, stopRank: number, options?: {
+                reverse?: boolean,
+                withScores?: false
+            }): Promise<Array<string>>
+
+            getRangeByScore(minScore: number, maxScore: number, options?: {
+                minBound?: 'Include' | 'Exclude' | 'Infinity',
+                maxBound?: 'Include' | 'Exclude' | 'Infinity',
+                offset?: number,
+                count?: number
+                reverse?: boolean,
+                withScores: true
+            }): Promise<Array<SortedSetItem>>
+            getRangeByScore(minScore: number, maxScore: number, options?: {
+                minBound?: 'Include' | 'Exclude' | 'Infinity',
+                maxBound?: 'Include' | 'Exclude' | 'Infinity',
+                offset?: number,
+                count?: number
+                reverse?: boolean,
+                withScores: false
+            }): Promise<Array<string>>
+
+            difference(storeKeys: Array<string>): Promise<Array<string>>;
+
+            intersection(storeKeys: Array<string>): Promise<Array<string>>;
+
+            union(storeKeys: Array<string>): Promise<Array<string>>;
+
+            removeValues(value: string | Array<string>): Promise<number>;
+
+            removeValuesByRank(startRank: number, stopRank: number): Promise<number>;
+
+            removeValuesByScore(minScore: number, maxScore: number, options?: {
+                minBound?: 'Include' | 'Exclude' | 'Infinity',
+                maxBound?: 'Include' | 'Exclude' | 'Infinity',
+            }): Promise<number>;
+
+            length(): Promise<number>;
+
+            countBetweenScores(minScore: number, maxScore: number, options?: {
+                minBound?: 'Include' | 'Exclude' | 'Infinity',
+                maxBound?: 'Include' | 'Exclude' | 'Infinity',
+            }): Promise<number>;
         }
     }
 

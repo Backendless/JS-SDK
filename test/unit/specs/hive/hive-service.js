@@ -29,61 +29,61 @@ describe('HiveService', function() {
 
     describe('Get Names', async () => {
       it('success', async () => {
-        const req1 = prepareMockRequest(fakeResult)
+        const request = prepareMockRequest(fakeResult)
 
-        const result1 = await Backendless.Hive.getNames()
+        const result = await Backendless.Hive.getNames()
 
-        expect(req1).to.deep.include({
+        expect(request).to.deep.include({
           method: 'GET',
           path  : `${APP_PATH}/hive`,
         })
 
-        expect(result1).to.be.eql(fakeResult)
+        expect(result).to.be.eql(fakeResult)
       })
     })
 
     describe('Delete', async () => {
       it('success', async () => {
-        const req1 = prepareMockRequest(fakeResult)
+        const request = prepareMockRequest(fakeResult)
 
-        const result1 = await Backendless.Hive(hiveName).delete()
+        const result = await Backendless.Hive(hiveName).delete()
 
-        expect(req1).to.deep.include({
+        expect(request).to.deep.include({
           method: 'DELETE',
           path  : `${APP_PATH}/hive/${hiveName}`,
         })
 
-        expect(result1).to.be.eql(fakeResult)
+        expect(result).to.be.eql(fakeResult)
       })
     })
 
     describe('Create', async () => {
       it('success', async () => {
-        const req1 = prepareMockRequest(fakeResult)
+        const request = prepareMockRequest(fakeResult)
 
-        const result1 = await Backendless.Hive(hiveName).create()
+        const result = await Backendless.Hive(hiveName).create()
 
-        expect(req1).to.deep.include({
+        expect(request).to.deep.include({
           method: 'POST',
           path  : `${APP_PATH}/hive/${hiveName}`,
         })
 
-        expect(result1).to.be.eql(fakeResult)
+        expect(result).to.be.eql(fakeResult)
       })
     })
 
     describe('Rename', async () => {
       it('success', async () => {
-        const req1 = prepareMockRequest(fakeResult)
+        const request = prepareMockRequest(fakeResult)
 
-        const result1 = await Backendless.Hive(hiveName).rename('newHiveName')
+        const result = await Backendless.Hive(hiveName).rename('newHiveName')
 
-        expect(req1).to.deep.include({
+        expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}?newName=newHiveName`,
         })
 
-        expect(result1).to.be.eql(fakeResult)
+        expect(result).to.be.eql(fakeResult)
       })
 
       it('fails when new hive name is invalid', async () => {

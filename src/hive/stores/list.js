@@ -96,7 +96,7 @@ export class ListStore extends HiveStore {
       throw new Error('Value must be provided and must be a string.')
     }
 
-    if (before !== undefined && !!before !== before) {
+    if (before !== undefined && typeof before !== 'boolean') {
       throw new Error('Argument Before must be a boolean.')
     }
 

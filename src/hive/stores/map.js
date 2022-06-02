@@ -141,7 +141,7 @@ export class MapStore extends HiveStore {
       throw new Error('Value must be provided and must be a string.')
     }
 
-    if (ifNotExists !== undefined && !!ifNotExists !== ifNotExists) {
+    if (ifNotExists !== undefined && typeof ifNotExists !== 'boolean') {
       throw new Error('Argument ifNotExists must be a boolean.')
     }
 

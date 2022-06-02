@@ -848,6 +848,132 @@ function testHiveOperations() {
 
     promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(str);
     promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(strArr);
+
+    /* SET */
+
+    /* General */
+    promiseNumber = Backendless.Hive(str).SetStore().delete(str);
+    promiseNumber = Backendless.Hive(str).SetStore().delete(strArr);
+
+    promiseNumber = Backendless.Hive(str).SetStore().exists(str);
+    promiseNumber = Backendless.Hive(str).SetStore().exists(strArr);
+
+    promiseNumber = Backendless.Hive(str).SetStore().getExpiration(str);
+    promiseBoolean = Backendless.Hive(str).SetStore().removeExpiration(str);
+
+    promiseNumber = Backendless.Hive(str).SetStore().touch(str);
+    promiseNumber = Backendless.Hive(str).SetStore().touch(strArr);
+
+    promiseBoolean = Backendless.Hive(str).SetStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).SetStore().expireAt(str, num);
+
+    promiseString = Backendless.Hive(str).SetStore().rename(str, str);
+    promiseBoolean = Backendless.Hive(str).SetStore().renameIfNotExists(str, str);
+    /* General */
+
+    promiseListOfString = Backendless.Hive(str).SetStore(str).get();
+
+    promiseListOfString = Backendless.Hive(str).SetStore(str).getRandom();
+    promiseListOfString = Backendless.Hive(str).SetStore(str).getRandom(num);
+
+    promiseListOfString = Backendless.Hive(str).SetStore(str).getRandomAndDelete();
+    promiseListOfString = Backendless.Hive(str).SetStore(str).getRandomAndDelete(num);
+
+    promiseNumber = Backendless.Hive(str).SetStore(str).set(str);
+    promiseNumber = Backendless.Hive(str).SetStore(str).set(strArr);
+
+    promiseNumber = Backendless.Hive(str).SetStore(str).add(str);
+    promiseNumber = Backendless.Hive(str).SetStore(str).add(strArr);
+
+    promiseNumber = Backendless.Hive(str).SetStore(str).removeValues(str);
+    promiseNumber = Backendless.Hive(str).SetStore(str).removeValues(strArr);
+
+    promiseBoolean = Backendless.Hive(str).SetStore(str).isMember(str);
+
+    promiseListOfString = Backendless.Hive(str).SetStore(str).difference(strArr);
+    promiseListOfString = Backendless.Hive(str).SetStore(str).intersection(strArr);
+    promiseListOfString = Backendless.Hive(str).SetStore(str).union(strArr);
+
+    /* SORTED SET */
+
+    let item: Backendless.Hive.SortedSetItem;
+    let itemOptions: Backendless.Hive.SortedSetItemOptionsI;
+    let itemsList: [Backendless.Hive.SortedSetItem]
+    let promiseItem: Promise<Backendless.Hive.SortedSetItem>
+    let promiseItemsList: Promise<Array<Backendless.Hive.SortedSetItem>>
+    let bound: Backendless.Hive.Bound
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).add(itemsList)
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).add(itemsList, itemOptions)
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList)
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList, itemOptions)
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(str, num)
+
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndRemoveMaxScore()
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndRemoveMaxScore(num)
+
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndRemoveMinScore()
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndRemoveMinScore(num)
+
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRandom()
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRandom({count: num, withScores: bool})
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRandom({withScores: false})
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRandom({withScores: true})
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).getScore(str)
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).getScore(str)
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).getScore(str, true)
+
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num)
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num, {
+        withScores: bool,
+        reverse: bool
+    })
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num, {
+        withScores: false,
+    })
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num, {
+        withScores: true,
+    })
+
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore(num, num, {
+        minBound: bound,
+        maxBound: bound,
+        offset: num,
+        count: num,
+        reverse: bool,
+        withScores: bool
+    })
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRangeByScore(num, num, {
+        withScores: true
+    })
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore(num, num, {
+        withScores: false
+    })
+
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).difference(strArr)
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).intersection(strArr)
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).union(strArr)
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValues(str)
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValues(strArr)
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValuesByRank(num, num)
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValuesByScore(num, num, {
+        minBound: bound,
+        maxBound: bound
+    })
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).length()
+
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).countBetweenScores(num, num, {
+        minBound: bound,
+        maxBound: bound
+    })
 }
 
 function testBulkOperations() {
