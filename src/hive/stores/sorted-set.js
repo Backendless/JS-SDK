@@ -248,17 +248,9 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  getRangeByScore(minScore, maxScore, options) {
+  getRangeByScore(options) {
     if (!this.storeKey) {
       throw new Error('Store must be created with store key.')
-    }
-
-    if (isNaN(minScore) || typeof minScore !== 'number') {
-      throw new Error('Minimal Score must be provided and must be a number.')
-    }
-
-    if (isNaN(maxScore) || typeof maxScore !== 'number') {
-      throw new Error('Maximal Score must be provided and must be a number.')
     }
 
     if (options !== undefined) {
@@ -266,7 +258,15 @@ export class SortedSetStore extends HiveStore {
         throw new Error('Options must be an object.')
       }
 
-      const { minBound, maxBound, offset, count, withScores, reverse } = options
+      const { minScore, maxScore, minBound, maxBound, offset, count, withScores, reverse } = options
+
+      if (minScore !== undefined && (isNaN(minScore) || typeof minScore !== 'number')) {
+        throw new Error('Minimal Score must be a number.')
+      }
+
+      if (maxScore !== undefined && (isNaN(maxScore) || typeof maxScore !== 'number')) {
+        throw new Error('Maximal Score must be a number.')
+      }
 
       if (minBound !== undefined && !['Include', 'Exclude', 'Infinity'].includes(minBound)) {
         throw new Error('Minimal bound must be one of this values: Include, Exclude, Infinity.')
@@ -296,7 +296,7 @@ export class SortedSetStore extends HiveStore {
     return this.app.request
       .get({
         url  : `${this.storeUrl}/${this.storeKey}/get-range-by-score`,
-        query: { minScore, maxScore, ...options },
+        query: { ...options },
       })
   }
 
@@ -372,17 +372,9 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  removeValuesByScore(minScore, maxScore, options) {
+  removeValuesByScore(options) {
     if (!this.storeKey) {
       throw new Error('Store must be created with store key.')
-    }
-
-    if (isNaN(minScore) || typeof minScore !== 'number') {
-      throw new Error('Minimal Score must be provided and must be a number.')
-    }
-
-    if (isNaN(maxScore) || typeof maxScore !== 'number') {
-      throw new Error('Maximal Score must be provided and must be a number.')
     }
 
     if (options !== undefined) {
@@ -390,7 +382,15 @@ export class SortedSetStore extends HiveStore {
         throw new Error('Options must be an object.')
       }
 
-      const { minBound, maxBound } = options
+      const { minScore, maxScore, minBound, maxBound } = options
+
+      if (minScore !== undefined && (isNaN(minScore) || typeof minScore !== 'number')) {
+        throw new Error('Minimal Score must be a number.')
+      }
+
+      if (maxScore !== undefined && (isNaN(maxScore) || typeof maxScore !== 'number')) {
+        throw new Error('Maximal Score must be a number.')
+      }
 
       if (minBound !== undefined && !['Include', 'Exclude', 'Infinity'].includes(minBound)) {
         throw new Error('Minimal bound must be one of this values: Include, Exclude, Infinity.')
@@ -404,7 +404,7 @@ export class SortedSetStore extends HiveStore {
     return this.app.request
       .delete({
         url  : `${this.storeUrl}/${this.storeKey}/remove-by-score`,
-        query: { minScore, maxScore, ...options },
+        query: { ...options },
       })
   }
 
@@ -419,17 +419,9 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  countBetweenScores(minScore, maxScore, options) {
+  countBetweenScores(options) {
     if (!this.storeKey) {
       throw new Error('Store must be created with store key.')
-    }
-
-    if (isNaN(minScore) || typeof minScore !== 'number') {
-      throw new Error('Minimal Score must be provided and must be a number.')
-    }
-
-    if (isNaN(maxScore) || typeof maxScore !== 'number') {
-      throw new Error('Maximal Score must be provided and must be a number.')
     }
 
     if (options !== undefined) {
@@ -437,7 +429,15 @@ export class SortedSetStore extends HiveStore {
         throw new Error('Options must be an object.')
       }
 
-      const { minBound, maxBound } = options
+      const { minScore, maxScore, minBound, maxBound } = options
+
+      if (minScore !== undefined && (isNaN(minScore) || typeof minScore !== 'number')) {
+        throw new Error('Minimal Score must be a number.')
+      }
+
+      if (maxScore !== undefined && (isNaN(maxScore) || typeof maxScore !== 'number')) {
+        throw new Error('Maximal Score must be a number.')
+      }
 
       if (minBound !== undefined && !['Include', 'Exclude', 'Infinity'].includes(minBound)) {
         throw new Error('Minimal bound must be one of this values: Include, Exclude, Infinity.')
@@ -451,7 +451,7 @@ export class SortedSetStore extends HiveStore {
     return this.app.request
       .get({
         url  : `${this.storeUrl}/${this.storeKey}/count`,
-        query: { minScore, maxScore, ...options },
+        query: { ...options },
       })
   }
 }

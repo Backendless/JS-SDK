@@ -504,7 +504,9 @@ declare module Backendless {
                 withScores?: false
             }): Promise<Array<string>>
 
-            getRangeByScore(minScore: number, maxScore: number, options?: {
+            getRangeByScore(options?: {
+                minScore?: number,
+                maxScore?: number,
                 minBound?: 'Include' | 'Exclude' | 'Infinity',
                 maxBound?: 'Include' | 'Exclude' | 'Infinity',
                 offset?: number,
@@ -512,7 +514,9 @@ declare module Backendless {
                 reverse?: boolean,
                 withScores: true
             }): Promise<Array<SortedSetItem>>
-            getRangeByScore(minScore: number, maxScore: number, options?: {
+            getRangeByScore(options?: {
+                minScore?: number,
+                maxScore?: number,
                 minBound?: 'Include' | 'Exclude' | 'Infinity',
                 maxBound?: 'Include' | 'Exclude' | 'Infinity',
                 offset?: number,
@@ -531,14 +535,18 @@ declare module Backendless {
 
             removeValuesByRank(startRank: number, stopRank: number): Promise<number>;
 
-            removeValuesByScore(minScore: number, maxScore: number, options?: {
+            removeValuesByScore(options?: {
+                minScore?: number,
+                maxScore?: number,
                 minBound?: 'Include' | 'Exclude' | 'Infinity',
                 maxBound?: 'Include' | 'Exclude' | 'Infinity',
             }): Promise<number>;
 
             length(): Promise<number>;
 
-            countBetweenScores(minScore: number, maxScore: number, options?: {
+            countBetweenScores(options?: {
+                minScore?: number,
+                maxScore?: number,
                 minBound?: 'Include' | 'Exclude' | 'Infinity',
                 maxBound?: 'Include' | 'Exclude' | 'Infinity',
             }): Promise<number>;

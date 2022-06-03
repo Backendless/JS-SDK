@@ -1198,11 +1198,11 @@ describe('Sorted Set Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.getRangeByScore(1, 2)
+          const result = await store.getRangeByScore()
 
           expect(request).to.deep.include({
             method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-score?minScore=1&maxScore=2`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-score`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -1211,7 +1211,9 @@ describe('Sorted Set Store', function() {
         it('success with options', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.getRangeByScore(1, 2, {
+          const result = await store.getRangeByScore({
+            minScore: 1,
+            maxScore: 2,
             minBound: 'Include',
             maxBound: 'Exclude',
             offset  : 123,
@@ -1234,131 +1236,135 @@ describe('Sorted Set Store', function() {
           await expect(() => store.getRangeByScore()).to.throw(errorMsg)
         })
 
-        it('fails when Minimal Score is invalid', async () => {
-          const errorMsg = 'Minimal Score must be provided and must be a number.'
-
-          await expect(() => store.getRangeByScore(null)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(false)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(true)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore('')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore('foo')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(NaN)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(() => undefined)).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Score is invalid', async () => {
-          const errorMsg = 'Maximal Score must be provided and must be a number.'
-
-          await expect(() => store.getRangeByScore(1, null)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, false)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, true)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, '')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 'foo')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, NaN)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, () => undefined)).to.throw(errorMsg)
-        })
-
         it('fails when options is invalid', async () => {
           const errorMsg = 'Options must be an object.'
 
-          await expect(() => store.getRangeByScore(1, 2, null)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, NaN)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, '')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, '123')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, 123)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, 0)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, [])).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, () => undefined)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, true)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, false)).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore(null)).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore(NaN)).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore('')).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore('123')).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore(123)).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore(0)).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore([])).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore(() => undefined)).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore(true)).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore(false)).to.throw(errorMsg)
+        })
+
+        it('fails when Minimal Score is invalid', async () => {
+          const errorMsg = 'Minimal Score must be a number.'
+
+          await expect(() => store.getRangeByScore({ minScore: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: false })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: true })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minScore: () => undefined })).to.throw(errorMsg)
+        })
+
+        it('fails when Maximal Score is invalid', async () => {
+          const errorMsg = 'Maximal Score must be a number.'
+
+          await expect(() => store.getRangeByScore({ maxScore: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: false })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: true })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxScore: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Minimal Bound is invalid', async () => {
           const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
 
-          await expect(() => store.getRangeByScore(1, 2, { minBound: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { minBound: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: 0 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: 123 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: true })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: false })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ minBound: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Maximal Bound is invalid', async () => {
           const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
 
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { maxBound: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: 0 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: 123 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: true })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: false })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ maxBound: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Count is invalid', async () => {
           const errorMsg = 'Count must be a number.'
 
-          await expect(() => store.getRangeByScore(1, 2, { count: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { count: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: true })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: false })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ count: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Offset is invalid', async () => {
           const errorMsg = 'Offset must be a number.'
 
-          await expect(() => store.getRangeByScore(1, 2, { offset: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { offset: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: false })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: true })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ offset: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when With Scores is invalid', async () => {
           const errorMsg = 'With Scores argument must be a boolean.'
 
-          await expect(() => store.getRangeByScore(1, 2, { withScores: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { withScores: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: 0 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: 123 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ withScores: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Reverse is invalid', async () => {
           const errorMsg = 'Reverse argument must be a boolean.'
 
-          await expect(() => store.getRangeByScore(1, 2, { reverse: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(1, 2, { reverse: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: null })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: '' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: NaN })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: {} })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: [] })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: 0 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: 123 })).to.throw(errorMsg)
+          await expect(() => store.getRangeByScore({ reverse: () => undefined })).to.throw(errorMsg)
         })
       })
 
@@ -1413,11 +1419,11 @@ describe('Sorted Set Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeValuesByScore(1, 2)
+          const result = await store.removeValuesByScore()
 
           expect(request).to.deep.include({
             method: 'DELETE',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score?minScore=1&maxScore=2`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -1426,7 +1432,9 @@ describe('Sorted Set Store', function() {
         it('success with options', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeValuesByScore(1, 2, {
+          const result = await store.removeValuesByScore({
+            minScore: 1,
+            maxScore: 2,
             minBound: 'Include',
             maxBound: 'Exclude'
           })
@@ -1447,75 +1455,80 @@ describe('Sorted Set Store', function() {
           await expect(() => store.removeValuesByScore()).to.throw(errorMsg)
         })
 
-        it('fails when Minimal Score is invalid', async () => {
-          const errorMsg = 'Minimal Score must be provided and must be a number.'
-
-          await expect(() => store.removeValuesByScore(null)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(false)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(true)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore('')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore('foo')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(NaN)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(() => undefined)).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Score is invalid', async () => {
-          const errorMsg = 'Maximal Score must be provided and must be a number.'
-
-          await expect(() => store.removeValuesByScore(1, null)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, false)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, true)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, '')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 'foo')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, NaN)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, () => undefined)).to.throw(errorMsg)
-        })
-
         it('fails when options is invalid', async () => {
           const errorMsg = 'Options must be an object.'
 
-          await expect(() => store.removeValuesByScore(1, 2, null)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, NaN)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, '')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, '123')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, 123)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, 0)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, [])).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, () => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, true)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, false)).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore(null)).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore(NaN)).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore('')).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore('123')).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore(123)).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore(0)).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore([])).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore(() => undefined)).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore(true)).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore(false)).to.throw(errorMsg)
+        })
+
+        it('fails when Minimal Score is invalid', async () => {
+          const errorMsg = 'Minimal Score must be a number.'
+
+          await expect(() => store.removeValuesByScore({ minScore: null })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: false })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: true })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: '' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: NaN })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: [] })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: {} })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minScore: () => undefined })).to.throw(errorMsg)
+        })
+
+        it('fails when Maximal Score is invalid', async () => {
+          const errorMsg = 'Maximal Score must be a number.'
+
+          await expect(() => store.removeValuesByScore({ maxScore: null })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: false })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: true })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: '' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: NaN })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: [] })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: {} })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxScore: () => undefined })).to.throw(errorMsg)
+
         })
 
         it('fails when Minimal Bound is invalid', async () => {
           const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
 
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: null })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: '' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: {} })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: [] })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: true })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: false })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { minBound: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: null })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: '' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: NaN })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: {} })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: 0 })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: 123 })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: [] })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: true })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: false })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ minBound: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Maximal Bound is invalid', async () => {
           const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
 
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: null })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: '' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: {} })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: [] })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: true })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: false })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(1, 2, { maxBound: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: null })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: '' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: NaN })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: {} })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: 0 })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: 123 })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: [] })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: true })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: false })).to.throw(errorMsg)
+          await expect(() => store.removeValuesByScore({ maxBound: () => undefined })).to.throw(errorMsg)
         })
       })
 
@@ -1546,11 +1559,11 @@ describe('Sorted Set Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.countBetweenScores(1, 2)
+          const result = await store.countBetweenScores()
 
           expect(request).to.deep.include({
             method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/count?minScore=1&maxScore=2`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/count`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -1559,7 +1572,9 @@ describe('Sorted Set Store', function() {
         it('success with options', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.countBetweenScores(1, 2, {
+          const result = await store.countBetweenScores({
+            minScore: 1,
+            maxScore: 2,
             minBound: 'Include',
             maxBound: 'Exclude'
           })
@@ -1581,74 +1596,78 @@ describe('Sorted Set Store', function() {
         })
 
         it('fails when Minimal Score is invalid', async () => {
-          const errorMsg = 'Minimal Score must be provided and must be a number.'
+          const errorMsg = 'Minimal Score must be a number.'
 
-          await expect(() => store.countBetweenScores(null)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(false)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(true)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores('')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores('foo')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(NaN)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(() => undefined)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: null })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: false })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: true })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: '' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: [] })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: {} })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: NaN })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minScore: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Maximal Score is invalid', async () => {
-          const errorMsg = 'Maximal Score must be provided and must be a number.'
+          const errorMsg = 'Maximal Score must be a number.'
 
-          await expect(() => store.countBetweenScores(1, null)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, false)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, true)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, '')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 'foo')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, NaN)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, () => undefined)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: null })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: false })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: true })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: '' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: [] })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: {} })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: NaN })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxScore: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when options is invalid', async () => {
           const errorMsg = 'Options must be an object.'
 
-          await expect(() => store.countBetweenScores(1, 2, null)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, NaN)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, '')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, '123')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, 123)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, 0)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, [])).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, () => undefined)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, true)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, false)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores(null)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores(NaN)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores('')).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores('123')).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores(123)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores(0)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores([])).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores(() => undefined)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores(true)).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores(false)).to.throw(errorMsg)
         })
 
         it('fails when Minimal Bound is invalid', async () => {
           const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
 
-          await expect(() => store.countBetweenScores(1, 2, { minBound: null })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: '' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: {} })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: [] })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: true })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: false })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { minBound: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: null })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: '' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: NaN })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: {} })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: 0 })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: 123 })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: [] })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: true })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: false })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ minBound: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Maximal Bound is invalid', async () => {
           const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
 
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: null })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: '' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: {} })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: [] })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: true })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: false })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(1, 2, { maxBound: () => undefined })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: null })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: '' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: 'foo' })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: NaN })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: {} })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: 0 })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: 123 })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: [] })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: true })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: false })).to.throw(errorMsg)
+          await expect(() => store.countBetweenScores({ maxBound: () => undefined })).to.throw(errorMsg)
         })
       })
 

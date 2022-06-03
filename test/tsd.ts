@@ -939,7 +939,9 @@ function testHiveOperations() {
         withScores: true,
     })
 
-    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore(num, num, {
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore({
+        minScore: num,
+        maxScore: num,
         minBound: bound,
         maxBound: bound,
         offset: num,
@@ -947,10 +949,10 @@ function testHiveOperations() {
         reverse: bool,
         withScores: bool
     })
-    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRangeByScore(num, num, {
+    promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRangeByScore({
         withScores: true
     })
-    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore(num, num, {
+    promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore({
         withScores: false
     })
 
@@ -963,14 +965,18 @@ function testHiveOperations() {
 
     promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValuesByRank(num, num)
 
-    promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValuesByScore(num, num, {
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValuesByScore({
+        minScore: num,
+        maxScore: num,
         minBound: bound,
         maxBound: bound
     })
 
     promiseNumber = Backendless.Hive(str).SortedSetStore(str).length()
 
-    promiseNumber = Backendless.Hive(str).SortedSetStore(str).countBetweenScores(num, num, {
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).countBetweenScores({
+        minScore: num,
+        maxScore: num,
         minBound: bound,
         maxBound: bound
     })
