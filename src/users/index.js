@@ -146,6 +146,8 @@ export default class Users {
         .then(user => {
           this.currentUserRequest = null
 
+          user['user-token'] = this.currentUser && this.currentUser['user-token'] || undefined
+
           return this.currentUser = user
         })
         .catch(error => {

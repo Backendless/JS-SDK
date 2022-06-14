@@ -239,6 +239,85 @@ describe('<Users> Current User', function() {
     expect(Backendless.UserService.currentUser).to.be.equal(user)
   })
 
+  it('should keep current user token after hard user reload', async () => {
+    const objectId = Utils.objectId()
+    const userToken = Utils.uid()
+
+    const req1 = prepareMockRequest({ ...getTestUserObject(), objectId, 'user-token': userToken })
+
+    const user1 = await Backendless.UserService.login('foo@bar.com', '123456')
+
+    expect(req1).to.deep.include({
+      method : 'POST',
+      path   : `${APP_PATH}/users/login`,
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    expect(user1).to.deep.equal({
+      ___class    : 'Users',
+      email       : 'foo@bar.com',
+      name        : 'Bob Miller',
+      objectId,
+      password    : '123456',
+      'user-token': userToken,
+    })
+
+    const user2 = await Backendless.UserService.getCurrentUser()
+
+    expect(user2).to.deep.equal({
+      ___class    : 'Users',
+      email       : 'foo@bar.com',
+      name        : 'Bob Miller',
+      objectId,
+      password    : '123456',
+      'user-token': userToken,
+    })
+
+    const req2 = prepareMockRequest(true)
+    const isLoginValid1 = await Backendless.UserService.isValidLogin()
+
+    expect(req2).to.deep.include({
+      method : 'GET',
+      path   : `${APP_PATH}/users/isvalidusertoken/${userToken}`,
+      headers: { 'user-token': userToken },
+    })
+
+    expect(isLoginValid1).to.be.equal(true)
+
+    const currentUserRes = { ...user1 }
+    delete currentUserRes['user-token']
+
+    const req3 = prepareMockRequest(currentUserRes)
+
+    const user3 = await Backendless.UserService.getCurrentUser(true)
+
+    expect(req3).to.deep.include({
+      method : 'GET',
+      path   : `${APP_PATH}/data/Users/${objectId}`,
+      headers: { 'user-token': userToken },
+    })
+
+    expect(user3).to.deep.equal({
+      ___class    : 'Users',
+      email       : 'foo@bar.com',
+      name        : 'Bob Miller',
+      objectId,
+      password    : '123456',
+      'user-token': userToken,
+    })
+
+    const req4 = prepareMockRequest(true)
+    const isLoginValid2 = await Backendless.UserService.isValidLogin()
+
+    expect(req4).to.deep.include({
+      method : 'GET',
+      path   : `${APP_PATH}/users/isvalidusertoken/${userToken}`,
+      headers: { 'user-token': userToken },
+    })
+
+    expect(isLoginValid2).to.be.equal(true)
+  })
+
   describe('User Token', () => {
     it('should get current user token', async () => {
       const token1 = 'test-1'
