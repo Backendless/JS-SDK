@@ -114,7 +114,7 @@ export class HiveStore {
       })
   }
 
-  expire(key, ttl) {
+  expireAfter(key, ttl) {
     if (!key || typeof key !== 'string') {
       throw new Error('Key must be provided and must be a string.')
     }

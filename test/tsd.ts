@@ -733,7 +733,7 @@ function testHiveOperations() {
     promiseNumber = Backendless.Hive(str).KeyValueStore().touch(str);
     promiseNumber = Backendless.Hive(str).KeyValueStore().touch(strArr);
 
-    promiseBoolean = Backendless.Hive(str).KeyValueStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).KeyValueStore().expireAfter(str, num);
     promiseBoolean = Backendless.Hive(str).KeyValueStore().expireAt(str, num);
 
     promiseString = Backendless.Hive(str).KeyValueStore().rename(str, str);
@@ -767,7 +767,7 @@ function testHiveOperations() {
     promiseNumber = Backendless.Hive(str).ListStore().touch(str);
     promiseNumber = Backendless.Hive(str).ListStore().touch(strArr);
 
-    promiseBoolean = Backendless.Hive(str).ListStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).ListStore().expireAfter(str, num);
     promiseBoolean = Backendless.Hive(str).ListStore().expireAt(str, num);
 
     promiseString = Backendless.Hive(str).ListStore().rename(str, str);
@@ -816,7 +816,7 @@ function testHiveOperations() {
     promiseNumber = Backendless.Hive(str).MapStore().touch(str);
     promiseNumber = Backendless.Hive(str).MapStore().touch(strArr);
 
-    promiseBoolean = Backendless.Hive(str).MapStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).MapStore().expireAfter(str, num);
     promiseBoolean = Backendless.Hive(str).MapStore().expireAt(str, num);
 
     promiseString = Backendless.Hive(str).MapStore().rename(str, str);
@@ -864,7 +864,7 @@ function testHiveOperations() {
     promiseNumber = Backendless.Hive(str).SetStore().touch(str);
     promiseNumber = Backendless.Hive(str).SetStore().touch(strArr);
 
-    promiseBoolean = Backendless.Hive(str).SetStore().expire(str, num);
+    promiseBoolean = Backendless.Hive(str).SetStore().expireAfter(str, num);
     promiseBoolean = Backendless.Hive(str).SetStore().expireAt(str, num);
 
     promiseString = Backendless.Hive(str).SetStore().rename(str, str);
@@ -924,8 +924,8 @@ function testHiveOperations() {
 
     promiseNumber = Backendless.Hive(str).SortedSetStore(str).getScore(str)
 
-    promiseNumber = Backendless.Hive(str).SortedSetStore(str).getScore(str)
-    promiseNumber = Backendless.Hive(str).SortedSetStore(str).getScore(str, true)
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).getRank(str)
+    promiseNumber = Backendless.Hive(str).SortedSetStore(str).getRank(str, true)
 
     promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num)
     promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num, {

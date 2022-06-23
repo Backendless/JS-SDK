@@ -352,7 +352,7 @@ declare module Backendless {
             touch(key: string): Promise<1 | 0>;
             touch(keys: Array<string>): Promise<number>;
 
-            expire(key: string, ttl: number): Promise<boolean>;
+            expireAfter(key: string, ttl: number): Promise<boolean>;
 
             expireAt(key: string, timestamp: number): Promise<boolean>;
         }
@@ -492,7 +492,9 @@ declare module Backendless {
             getRandom(options?: { count?: number, withScores?: false }): Promise<Array<string>>
             getRandom(options?: { count?: number, withScores?: true }): Promise<Array<SortedSetItem>>
 
-            getScore(value: string, reverse?: boolean): Promise<number | null>
+            getScore(value: string): Promise<number | null>
+
+            getRank(value: string, reverse?: boolean): Promise<number | null>
 
             getRangeByRank(startRank: number, stopRank: number): Promise<Array<string>>
             getRangeByRank(startRank: number, stopRank: number, options?: {

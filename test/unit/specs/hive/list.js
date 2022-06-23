@@ -335,7 +335,7 @@ describe('List Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.expire('testKey1', 100)
+          const result = await store.expireAfter('testKey1', 100)
 
           expect(request).to.deep.include({
             method: 'PUT',
@@ -348,26 +348,26 @@ describe('List Store', function() {
         it('fails when key name is invalid', async () => {
           const errorMsg = 'Key must be provided and must be a string.'
 
-          await expect(() => store.expire(undefined)).to.throw(errorMsg)
-          await expect(() => store.expire(null)).to.throw(errorMsg)
-          await expect(() => store.expire(false)).to.throw(errorMsg)
-          await expect(() => store.expire(true)).to.throw(errorMsg)
-          await expect(() => store.expire(0)).to.throw(errorMsg)
-          await expect(() => store.expire(123)).to.throw(errorMsg)
-          await expect(() => store.expire(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.expire({})).to.throw(errorMsg)
+          await expect(() => store.expireAfter(undefined)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(null)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(false)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(true)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(0)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(123)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(() => undefined)).to.throw(errorMsg)
+          await expect(() => store.expireAfter({})).to.throw(errorMsg)
         })
 
         it('fails when TTL argument is invalid', async () => {
           const errorMsg = 'TTL must be a number.'
 
-          await expect(() => store.expire('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.expire('test', null)).to.throw(errorMsg)
-          await expect(() => store.expire('test', false)).to.throw(errorMsg)
-          await expect(() => store.expire('test', true)).to.throw(errorMsg)
-          await expect(() => store.expire('test', NaN)).to.throw(errorMsg)
-          await expect(() => store.expire('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.expire('test', {})).to.throw(errorMsg)
+          await expect(() => store.expireAfter('test', undefined)).to.throw(errorMsg)
+          await expect(() => store.expireAfter('test', null)).to.throw(errorMsg)
+          await expect(() => store.expireAfter('test', false)).to.throw(errorMsg)
+          await expect(() => store.expireAfter('test', true)).to.throw(errorMsg)
+          await expect(() => store.expireAfter('test', NaN)).to.throw(errorMsg)
+          await expect(() => store.expireAfter('test', () => undefined)).to.throw(errorMsg)
+          await expect(() => store.expireAfter('test', {})).to.throw(errorMsg)
         })
       })
 

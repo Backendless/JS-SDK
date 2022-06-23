@@ -38,7 +38,6 @@ export class SortedSetStore extends HiveStore {
       }
     }
 
-    //TODO: Waining for BKNDLSS-28543
     return this.app.request
       .put({
         url : `${this.storeUrl}/${this.storeKey}/add`,
@@ -187,7 +186,6 @@ export class SortedSetStore extends HiveStore {
         headers: { 'Content-Type': 'text/plain' },
         data   : value,
       })
-
   }
 
   getRank(value, reverse) {
