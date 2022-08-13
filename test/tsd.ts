@@ -676,27 +676,39 @@ function testData() {
 }
 
 function testHive() {
-    const str: string = 'test';
-
-    let dataHive: Backendless.Hive.DataHive = Backendless.Hive(str);
+    let dataHive: Backendless.Hive.DataHive = Backendless.Hive('hiveName');
     let hiveStore: Backendless.Hive.HiveStore;
+    let keyValueStore: Backendless.Hive.KeyValueStore;
+    let listStore: Backendless.Hive.ListStore;
+    let mapStore: Backendless.Hive.MapStore;
+    let setStore: Backendless.Hive.SetStore;
+    let sortedSetStore: Backendless.Hive.SortedSetStore;
     let promiseVoid: Promise<void>;
     let promiseNumber: Promise<number>;
 
     let hiveNames: Array<string> = Backendless.Hive.getNames();
 
     promiseVoid = dataHive.create()
-    promiseVoid = dataHive.rename(str)
+    promiseVoid = dataHive.rename('newHiveName')
     promiseNumber = dataHive.delete()
 
     hiveStore = dataHive.KeyValueStore()
-    hiveStore = dataHive.ListStore(str)
-    hiveStore = dataHive.MapStore(str)
-    hiveStore = dataHive.SetStore(str)
-    hiveStore = dataHive.SortedSetStore(str)
+    keyValueStore = dataHive.KeyValueStore()
+
+    hiveStore = dataHive.ListStore('storeName')
+    listStore = dataHive.ListStore('storeName')
+
+    hiveStore = dataHive.MapStore('storeName')
+    mapStore = dataHive.MapStore('storeName')
+
+    hiveStore = dataHive.SetStore('storeName')
+    setStore = dataHive.SetStore('storeName')
+
+    hiveStore = dataHive.SortedSetStore('storeName')
+    sortedSetStore = dataHive.SortedSetStore('storeName')
 }
 
-function testHiveOperations() {
+function testHiveStores() {
     const str: string = 'str';
     const num: number = 123;
     const bool: boolean = false;
@@ -708,8 +720,8 @@ function testHiveOperations() {
     let promiseString: Promise<string>;
     let promiseBoolean: Promise<boolean>;
 
-    let promiseListOfString: Promise<Array<string>>;
-    let promiseListOfStringOrNull: Promise<Array<string> | null>;
+    let promiseListOfString: Promise<string[]>;
+    let promiseListOfStringOrNull: Promise<string[] | null>;
 
     let promiseStringOrNull: Promise<string | null>;
 
