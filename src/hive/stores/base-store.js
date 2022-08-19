@@ -1,16 +1,34 @@
 import Utils from '../../utils'
 
 export class HiveStore {
-  constructor(context, storeType) {
+
+  static STATIC_METHODS = ['keys', 'delete', 'exists', 'touch']
+
+  static registerType(hive) {
+    const context = { ...this, app: hive.app, hiveName: hive.hiveName }
+    const factory = storeKey => new this(context, storeKey)
+
+    this.STATIC_METHODS.forEach(methodName => {
+      factory[methodName] = (...args) => this[methodName].apply(context, args)
+    })
+
+    return factory
+  }
+
+  constructor(context, storeKey) {
+    this.TYPE = this.constructor.TYPE
+
+    if (!storeKey || typeof storeKey !== 'string') {
+      throw new Error('Store key must be a string.')
+    }
+
     this.app = context.app
     this.hiveName = context.hiveName
 
-    this.storeType = storeType
-
-    this.storeUrl = this.app.urls.hiveStore(this.hiveName, this.storeType)
+    this.storeKey = storeKey
   }
 
-  storeKeys(options) {
+  static keys(options) {
     if (options !== undefined) {
       if (!Utils.isObject(options)) {
         throw new Error('Options must be an object.')
@@ -33,126 +51,124 @@ export class HiveStore {
 
     return this.app.request
       .get({
-        url  : `${this.storeUrl}/keys`,
+        url  : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/keys`,
         query: options
       })
   }
 
-  delete(keys) {
-    if (!keys || !(typeof keys === 'string' || Array.isArray(keys))) {
-      throw new Error('Key(s) must be provided and must be a string or list of strings.')
+  static delete(keys) {
+    if (!Array.isArray(keys)) {
+      throw new Error('Keys must be provided and must be a list of strings.')
     }
 
     return this.app.request
       .delete({
-        url : this.storeUrl,
-        data: Utils.castArray(keys)
+        url : this.app.urls.hiveStore(this.hiveName, this.TYPE),
+        data: keys
       })
   }
 
-  exists(keys) {
-    if (!keys || !(typeof keys === 'string' || Array.isArray(keys))) {
-      throw new Error('Key(s) must be provided and must be a string or list of strings.')
+  static exists(keys) {
+    if (!Array.isArray(keys)) {
+      throw new Error('Keys must be provided and must be a list of strings.')
     }
 
     return this.app.request
       .post({
-        url : `${this.storeUrl}/exists`,
-        data: Utils.castArray(keys)
+        url : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/action/exists`,
+        data: keys
       })
   }
 
-  rename(key, newKey) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('Old key name must be provided and must be a string.')
+  static touch(keys) {
+    if (!Array.isArray(keys)) {
+      throw new Error('Keys must be provided and must be a list of strings.')
     }
 
+    return this.app.request
+      .put({
+        url : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/action/touch`,
+        data: keys
+      })
+  }
+
+  getBaseURL() {
+    return `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/${this.storeKey}`
+  }
+
+  delete() {
+    return this.constructor.delete.call({ ...this, ...this.constructor }, [this.storeKey])
+  }
+
+  async exists() {
+    const result = await this.constructor.exists.call({ ...this, ...this.constructor }, [this.storeKey])
+
+    return !!result
+  }
+
+  rename(newKey) {
     if (!newKey || typeof newKey !== 'string') {
       throw new Error('New key name must be provided and must be a string.')
     }
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${key}/rename?newKey=${newKey}`,
+        url  : `${this.getBaseURL()}/rename`,
+        query: { newKey }
       })
   }
 
-  renameIfNotExists(key, newKey) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('Old key name must be provided and must be a string.')
-    }
-
+  renameIfNotExists(newKey) {
     if (!newKey || typeof newKey !== 'string') {
       throw new Error('New key name must be provided and must be a string.')
     }
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${key}/rename-if-not-exists?newKey=${newKey}`,
+        url  : `${this.getBaseURL()}/rename-if-not-exists`,
+        query: { newKey }
       })
   }
 
-  getExpiration(key) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('Key must be provided and must be a string.')
-    }
-
+  getExpiration() {
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${key}/get-expiration-ttl`,
+        url: `${this.getBaseURL()}/get-expiration-ttl`,
       })
   }
 
-  removeExpiration(key) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('Key must be provided and must be a string.')
-    }
-
+  removeExpiration() {
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${key}/remove-expiration`,
+        url: `${this.getBaseURL()}/remove-expiration`,
       })
   }
 
-  expireAfter(key, ttl) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('Key must be provided and must be a string.')
-    }
-
+  expireAfter(ttl) {
     if (isNaN(ttl) || typeof ttl !== 'number') {
       throw new Error('TTL must be a number.')
     }
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${key}/expire?ttl=${ttl}`,
+        url  : `${this.getBaseURL()}/expire`,
+        query: { ttl }
       })
   }
 
-  expireAt(key, unixTime) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('Key must be provided and must be a string.')
-    }
-
+  expireAt(unixTime) {
     if (isNaN(unixTime) || typeof unixTime !== 'number') {
       throw new Error('Expiration time must be a number.')
     }
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${key}/expire-at?unixTime=${unixTime}`,
+        url  : `${this.getBaseURL()}/expire-at`,
+        query: { unixTime }
       })
   }
 
-  touch(keys) {
-    if (!keys || !(typeof keys === 'string' || Array.isArray(keys))) {
-      throw new Error('Key(s) must be provided and must be a string or list of strings.')
-    }
-
-    return this.app.request
-      .put({
-        url : `${this.storeUrl}/touch`,
-        data: Utils.castArray(keys)
-      })
+  touch() {
+    return this.constructor.touch.call({ ...this, ...this.constructor }, [this.storeKey])
   }
 }

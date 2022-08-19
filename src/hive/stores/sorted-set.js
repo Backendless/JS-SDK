@@ -2,18 +2,41 @@ import { HiveStore } from './base-store'
 import { HiveTypes } from '../constants'
 import Utils from '../../utils'
 
-export class SortedSetStore extends HiveStore {
-  constructor(dataStore, storeKey) {
-    super(dataStore, HiveTypes.SORTED_SET)
+import { SetStore } from './set'
 
-    this.storeKey = storeKey
+export class SortedSetStore extends HiveStore {
+
+  static TYPE = HiveTypes.SORTED_SET
+
+  static STATIC_METHODS = [...HiveStore.STATIC_METHODS, 'difference', 'intersection', 'union']
+
+  static difference = SetStore.difference
+
+  static intersection(keyNames) {
+    if (!Array.isArray(keyNames)) {
+      throw new Error('Store keys must be provided and must be an array.')
+    }
+
+    return this.app.request
+      .post({
+        url : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/action/intersection`,
+        data: keyNames
+      })
+  }
+
+  static union(keyNames) {
+    if (!Array.isArray(keyNames)) {
+      throw new Error('Store keys must be provided and must be an array.')
+    }
+
+    return this.app.request
+      .post({
+        url : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/action/union`,
+        data: keyNames
+      })
   }
 
   add(items, options) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!items || !Array.isArray(items)) {
       throw new Error('Items must be provided and must be an array.')
     }
@@ -40,7 +63,7 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .put({
-        url : `${this.storeUrl}/${this.storeKey}/add`,
+        url : `${this.getBaseURL()}/add`,
         data: {
           items,
           ...options
@@ -49,10 +72,6 @@ export class SortedSetStore extends HiveStore {
   }
 
   set(items, options) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!items || !Array.isArray(items)) {
       throw new Error('Items must be provided and must be an array.')
     }
@@ -80,7 +99,7 @@ export class SortedSetStore extends HiveStore {
     //TODO: Waining for BKNDLSS-28543
     return this.app.request
       .put({
-        url : `${this.storeUrl}/${this.storeKey}`,
+        url : this.getBaseURL(),
         data: {
           items,
           ...options
@@ -89,10 +108,6 @@ export class SortedSetStore extends HiveStore {
   }
 
   incrementScore(value, count) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!value || typeof value !== 'string') {
       throw new Error('Value must be provided and must be a string.')
     }
@@ -103,7 +118,7 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .put({
-        url : `${this.storeUrl}/${this.storeKey}/increment`,
+        url : `${this.getBaseURL()}/increment`,
         data: {
           scoreAmount: count,
           member     : value,
@@ -112,42 +127,30 @@ export class SortedSetStore extends HiveStore {
   }
 
   getAndRemoveMaxScore(count) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }
 
     return this.app.request
       .put({
-        url  : `${this.storeUrl}/${this.storeKey}/get-first-and-remove`,
+        url  : `${this.getBaseURL()}/get-first-and-remove`,
         query: { count },
       })
   }
 
   getAndRemoveMinScore(count) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }
 
     return this.app.request
       .put({
-        url  : `${this.storeUrl}/${this.storeKey}/get-last-and-remove`,
+        url  : `${this.getBaseURL()}/get-last-and-remove`,
         query: { count },
       })
   }
 
   getRandom(options) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (options !== undefined) {
       if (!Utils.isObject(options)) {
         throw new Error('Options must be an object.')
@@ -166,33 +169,25 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .get({
-        url  : `${this.storeUrl}/${this.storeKey}/get-random`,
+        url  : `${this.getBaseURL()}/get-random`,
         query: { ...options },
       })
   }
 
   getScore(value) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!value || typeof value !== 'string') {
       throw new Error('Value must be provided and must be a string.')
     }
 
     return this.app.request
       .post({
-        url    : `${this.storeUrl}/${this.storeKey}/get-score`,
+        url    : `${this.getBaseURL()}/get-score`,
         headers: { 'Content-Type': 'text/plain' },
         data   : value,
       })
   }
 
   getRank(value, reverse) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!value || typeof value !== 'string') {
       throw new Error('Value must be provided and must be a string.')
     }
@@ -203,7 +198,7 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .post({
-        url    : `${this.storeUrl}/${this.storeKey}/get-rank`,
+        url    : `${this.getBaseURL()}/get-rank`,
         headers: { 'Content-Type': 'text/plain' },
         query  : { reverse },
         data   : value,
@@ -211,10 +206,6 @@ export class SortedSetStore extends HiveStore {
   }
 
   getRangeByRank(startRank, stopRank, options) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (isNaN(startRank) || typeof startRank !== 'number') {
       throw new Error('Start Rank must be provided and must be a number.')
     }
@@ -241,16 +232,12 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .get({
-        url  : `${this.storeUrl}/${this.storeKey}/get-range-by-rank`,
+        url  : `${this.getBaseURL()}/get-range-by-rank`,
         query: { startRank, stopRank, ...options },
       })
   }
 
   getRangeByScore(options) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (options !== undefined) {
       if (!Utils.isObject(options)) {
         throw new Error('Options must be an object.')
@@ -293,68 +280,24 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .get({
-        url  : `${this.storeUrl}/${this.storeKey}/get-range-by-score`,
+        url  : `${this.getBaseURL()}/get-range-by-score`,
         query: { ...options },
       })
   }
 
-  difference(storeKeys) {
-    if (!storeKeys || !Array.isArray(storeKeys)) {
-      throw new Error('Store keys must be provided and must be an array.')
-    }
-
-    return this.app.request
-      .post({
-        url : `${this.storeUrl}/action/difference`,
-        data: storeKeys
-      })
-  }
-
-  intersection(storeKeys) {
-    if (!storeKeys || !Array.isArray(storeKeys)) {
-      throw new Error('Store keys must be provided and must be an array.')
-    }
-
-    return this.app.request
-      .post({
-        url : `${this.storeUrl}/action/intersection`,
-        data: storeKeys
-      })
-  }
-
-  union(storeKeys) {
-    if (!storeKeys || !Array.isArray(storeKeys)) {
-      throw new Error('Store keys must be provided and must be an array.')
-    }
-
-    return this.app.request
-      .post({
-        url : `${this.storeUrl}/action/union`,
-        data: storeKeys
-      })
-  }
-
   removeValues(values) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!values || !(typeof values === 'string' || Array.isArray(values))) {
       throw new Error('Value(s) must be provided and must be a string or list of strings.')
     }
 
     return this.app.request
       .delete({
-        url : `${this.storeUrl}/${this.storeKey}/values`,
+        url : `${this.getBaseURL()}/values`,
         data: Utils.castArray(values)
       })
   }
 
   removeValuesByRank(startRank, stopRank) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (isNaN(startRank) || typeof startRank !== 'number') {
       throw new Error('Start Rank must be provided and must be a number.')
     }
@@ -365,16 +308,12 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .delete({
-        url  : `${this.storeUrl}/${this.storeKey}/remove-by-rank`,
+        url  : `${this.getBaseURL()}/remove-by-rank`,
         query: { startRank, stopRank },
       })
   }
 
   removeValuesByScore(options) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (options !== undefined) {
       if (!Utils.isObject(options)) {
         throw new Error('Options must be an object.')
@@ -401,27 +340,19 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .delete({
-        url  : `${this.storeUrl}/${this.storeKey}/remove-by-score`,
+        url  : `${this.getBaseURL()}/remove-by-score`,
         query: { ...options },
       })
   }
 
   length() {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}/length`,
+        url: `${this.getBaseURL()}/length`,
       })
   }
 
   countBetweenScores(options) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (options !== undefined) {
       if (!Utils.isObject(options)) {
         throw new Error('Options must be an object.')
@@ -448,7 +379,7 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .get({
-        url  : `${this.storeUrl}/${this.storeKey}/count`,
+        url  : `${this.getBaseURL()}/count`,
         query: { ...options },
       })
   }

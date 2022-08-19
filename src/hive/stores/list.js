@@ -3,17 +3,10 @@ import { HiveStore } from './base-store'
 import Utils from '../../utils'
 
 export class ListStore extends HiveStore {
-  constructor(dataStore, storeKey) {
-    super(dataStore, HiveTypes.LIST)
 
-    this.storeKey = storeKey
-  }
+  static TYPE = HiveTypes.LIST
 
   get(from, to) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (to !== undefined) {
       if (isNaN(to) || typeof to !== 'number') {
         throw new Error('Index To must be a number.')
@@ -25,7 +18,7 @@ export class ListStore extends HiveStore {
 
       return this.app.request
         .get({
-          url  : `${this.storeUrl}/${this.storeKey}`,
+          url  : this.getBaseURL(),
           query: { from, to }
         })
     }
@@ -37,25 +30,21 @@ export class ListStore extends HiveStore {
 
       return this.app.request
         .get({
-          url: `${this.storeUrl}/${this.storeKey}/${from}`,
+          url: `${this.getBaseURL()}/${from}`,
         })
     }
 
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}`,
+        url: this.getBaseURL(),
       })
   }
 
   set(value, index) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (Array.isArray(value)) {
       return this.app.request
         .put({
-          url : `${this.storeUrl}/${this.storeKey}`,
+          url : this.getBaseURL(),
           data: value
         })
     }
@@ -66,28 +55,20 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url    : `${this.storeUrl}/${this.storeKey}/${index}`,
+        url    : `${this.getBaseURL()}/${index}`,
         headers: { 'Content-Type': 'text/plain' },
         data   : value
       })
   }
 
   length() {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}/length`,
+        url: `${this.getBaseURL()}/length`,
       })
   }
 
   insert(targetValue, value, before) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!targetValue || typeof targetValue !== 'string') {
       throw new Error('Target Value must be provided and must be a string.')
     }
@@ -102,7 +83,7 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url : `${this.storeUrl}/${this.storeKey}/insert`,
+        url : `${this.getBaseURL()}/insert`,
         data: {
           targetValue,
           value,
@@ -112,10 +93,6 @@ export class ListStore extends HiveStore {
   }
 
   removeValue(value, count) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!value || typeof value !== 'string') {
       throw new Error('Value must be provided and must be a string.')
     }
@@ -126,7 +103,7 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url    : `${this.storeUrl}/${this.storeKey}/remove-value`,
+        url    : `${this.getBaseURL()}/remove-value`,
         headers: { 'Content-Type': 'text/plain' },
         data   : value,
         query  : { count }
@@ -134,64 +111,49 @@ export class ListStore extends HiveStore {
   }
 
   addFirst(value) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!value || !(typeof value === 'string' || Array.isArray(value))) {
       throw new Error('Value(s) must be provided and must be a string or list of strings.')
     }
 
     return this.app.request
       .put({
-        url : `${this.storeUrl}/${this.storeKey}/add-first`,
+        url : `${this.getBaseURL()}/add-first`,
         data: Utils.castArray(value)
       })
   }
 
   addLast(value) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!value || !(typeof value === 'string' || Array.isArray(value))) {
       throw new Error('Value(s) must be provided and must be a string or list of strings.')
     }
 
     return this.app.request
       .put({
-        url : `${this.storeUrl}/${this.storeKey}/add-last`,
+        url : `${this.getBaseURL()}/add-last`,
         data: Utils.castArray(value)
       })
   }
 
   removeFirst(count) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }
 
     return this.app.request
       .put({
-        url  : `${this.storeUrl}/${this.storeKey}/get-first-and-remove`,
+        url  : `${this.getBaseURL()}/get-first-and-remove`,
         query: { count },
       })
   }
 
   removeLast(count) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }
+
     return this.app.request
       .put({
-        url  : `${this.storeUrl}/${this.storeKey}/get-last-and-remove`,
+        url  : `${this.getBaseURL()}/get-last-and-remove`,
         query: { count },
       })
   }

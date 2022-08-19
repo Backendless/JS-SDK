@@ -3,27 +3,30 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('List Store', function() {
+describe('Hive - List Store', function() {
   forTest(this)
 
   const hiveName = 'testHiveName'
   const storeKey = 'testStoreKey'
 
-  describe('Methods', () => {
-    const fakeResult = { foo: true }
+  const fakeResult = { foo: true }
 
-    let store
+  let store
+  let Store
 
-    describe('Basic', () => {
-      beforeEach(() => {
-        store = Backendless.Hive(hiveName).ListStore()
-      })
+  beforeEach(() => {
+    Store = Backendless.Hive(hiveName).ListStore
+    store = Backendless.Hive(hiveName).ListStore(storeKey)
+  })
 
-      describe('Store Keys', async () => {
+  describe('General Methods', () => {
+    describe('Static Methods', () => {
+
+      describe('Keys', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.storeKeys()
+          const result = await Store.keys()
 
           expect(request).to.deep.include({
             method: 'GET',
@@ -36,7 +39,7 @@ describe('List Store', function() {
         it('success with options', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.storeKeys({
+          const result = await Store.keys({
             filterPattern: '123',
             cursor       : 20,
             pageSize     : 30
@@ -53,75 +56,60 @@ describe('List Store', function() {
         it('fails when options is invalid', async () => {
           const errorMsg = 'Options must be an object.'
 
-          await expect(() => store.storeKeys(null)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(NaN)).to.throw(errorMsg)
-          await expect(() => store.storeKeys('')).to.throw(errorMsg)
-          await expect(() => store.storeKeys('123')).to.throw(errorMsg)
-          await expect(() => store.storeKeys(123)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(0)).to.throw(errorMsg)
-          await expect(() => store.storeKeys([])).to.throw(errorMsg)
-          await expect(() => store.storeKeys(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(true)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(false)).to.throw(errorMsg)
+          await expect(() => Store.keys(null)).to.throw(errorMsg)
+          await expect(() => Store.keys(NaN)).to.throw(errorMsg)
+          await expect(() => Store.keys('')).to.throw(errorMsg)
+          await expect(() => Store.keys('123')).to.throw(errorMsg)
+          await expect(() => Store.keys(123)).to.throw(errorMsg)
+          await expect(() => Store.keys(0)).to.throw(errorMsg)
+          await expect(() => Store.keys([])).to.throw(errorMsg)
+          await expect(() => Store.keys(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.keys(true)).to.throw(errorMsg)
+          await expect(() => Store.keys(false)).to.throw(errorMsg)
         })
 
         it('fails when Cursor is invalid', async () => {
           const errorMsg = 'Cursor must be a number.'
 
-          await expect(() => store.storeKeys({ cursor: null })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: false })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: true })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: '' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: NaN })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: () => undefined })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: null })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: false })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: true })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: '' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: 'foo' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: NaN })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Page Size is invalid', async () => {
           const errorMsg = 'Page size must be a number.'
 
-          await expect(() => store.storeKeys({ pageSize: null })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: false })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: true })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: '' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: NaN })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: () => undefined })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: null })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: false })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: true })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: '' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: 'foo' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: NaN })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Filter Pattern is invalid', async () => {
           const errorMsg = 'Filter pattern must be a string.'
 
-          await expect(() => store.storeKeys({ filterPattern: null })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: false })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: true })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: 123 })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: 0 })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: NaN })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: () => undefined })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: null })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: false })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: true })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: 123 })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: 0 })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: NaN })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: () => undefined })).to.throw(errorMsg)
         })
       })
 
       describe('Delete', () => {
-        it('success with single key', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.delete('testKey')
-
-          expect(request).to.deep.include({
-            method : 'DELETE',
-            path   : `${APP_PATH}/hive/${hiveName}/list`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
         it('success with multi keys', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.delete(['testKey1', 'testKey2'])
+          const result = await Store.delete(['testKey1', 'testKey2'])
 
           expect(request).to.deep.include({
             method : 'DELETE',
@@ -134,44 +122,30 @@ describe('List Store', function() {
         })
 
         it('fails when key is invalid', async () => {
-          const errorMsg = 'Key(s) must be provided and must be a string or list of strings.'
+          const errorMsg = 'Keys must be provided and must be a list of strings.'
 
-          await expect(() => store.delete(undefined)).to.throw(errorMsg)
-          await expect(() => store.delete(null)).to.throw(errorMsg)
-          await expect(() => store.delete(0)).to.throw(errorMsg)
-          await expect(() => store.delete(false)).to.throw(errorMsg)
-          await expect(() => store.delete('')).to.throw(errorMsg)
-          await expect(() => store.delete(true)).to.throw(errorMsg)
-          await expect(() => store.delete(123)).to.throw(errorMsg)
-          await expect(() => store.delete(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.delete({})).to.throw(errorMsg)
+          await expect(() => Store.delete(undefined)).to.throw(errorMsg)
+          await expect(() => Store.delete(null)).to.throw(errorMsg)
+          await expect(() => Store.delete(123)).to.throw(errorMsg)
+          await expect(() => Store.delete(0)).to.throw(errorMsg)
+          await expect(() => Store.delete(false)).to.throw(errorMsg)
+          await expect(() => Store.delete(true)).to.throw(errorMsg)
+          await expect(() => Store.delete('')).to.throw(errorMsg)
+          await expect(() => Store.delete('key')).to.throw(errorMsg)
+          await expect(() => Store.delete(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.delete({})).to.throw(errorMsg)
         })
       })
 
       describe('Exists', async () => {
-        it('success with single key', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.exists('testKey')
-
-          expect(request).to.deep.include({
-            method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/list/exists`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
         it('success with multi keys', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.exists(['testKey1', 'testKey1'])
+          const result = await Store.exists(['testKey1', 'testKey1'])
 
           expect(request).to.deep.include({
             method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/list/exists`,
+            path   : `${APP_PATH}/hive/${hiveName}/list/action/exists`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey1', 'testKey1']
           })
@@ -180,16 +154,114 @@ describe('List Store', function() {
         })
 
         it('fails when key(s) is invalid', async () => {
-          const errorMsg = 'Key(s) must be provided and must be a string or list of strings.'
+          const errorMsg = 'Keys must be provided and must be a list of strings.'
 
-          await expect(() => store.exists(undefined)).to.throw(errorMsg)
-          await expect(() => store.exists(null)).to.throw(errorMsg)
-          await expect(() => store.exists(false)).to.throw(errorMsg)
-          await expect(() => store.exists(0)).to.throw(errorMsg)
-          await expect(() => store.exists(true)).to.throw(errorMsg)
-          await expect(() => store.exists(123)).to.throw(errorMsg)
-          await expect(() => store.exists(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.exists({})).to.throw(errorMsg)
+          await expect(() => Store.exists(undefined)).to.throw(errorMsg)
+          await expect(() => Store.exists(null)).to.throw(errorMsg)
+          await expect(() => Store.exists(false)).to.throw(errorMsg)
+          await expect(() => Store.exists(true)).to.throw(errorMsg)
+          await expect(() => Store.exists('')).to.throw(errorMsg)
+          await expect(() => Store.exists('key')).to.throw(errorMsg)
+          await expect(() => Store.exists(0)).to.throw(errorMsg)
+          await expect(() => Store.exists(123)).to.throw(errorMsg)
+          await expect(() => Store.exists(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.exists({})).to.throw(errorMsg)
+        })
+      })
+
+      describe('Touch', async () => {
+        it('success with multi keys', async () => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await Store.touch(['testKey1', 'testKey1'])
+
+          expect(request).to.deep.include({
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/action/touch`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : ['testKey1', 'testKey1']
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        })
+
+        it('fails when key(s) is invalid', async () => {
+          const errorMsg = 'Keys must be provided and must be a list of strings.'
+
+          await expect(() => Store.touch(undefined)).to.throw(errorMsg)
+          await expect(() => Store.touch(null)).to.throw(errorMsg)
+          await expect(() => Store.touch(false)).to.throw(errorMsg)
+          await expect(() => Store.touch(true)).to.throw(errorMsg)
+          await expect(() => Store.touch('')).to.throw(errorMsg)
+          await expect(() => Store.touch('key')).to.throw(errorMsg)
+          await expect(() => Store.touch(0)).to.throw(errorMsg)
+          await expect(() => Store.touch(123)).to.throw(errorMsg)
+          await expect(() => Store.touch(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.touch({})).to.throw(errorMsg)
+        })
+      })
+    })
+
+    describe('Instance Methods ', () => {
+
+      it('fails when init store without key', async () => {
+        const errorMsg = 'Store key must be a string.'
+
+        const hive = Backendless.Hive(hiveName)
+
+        await expect(() => hive.ListStore()).to.throw(errorMsg)
+        await expect(() => hive.ListStore('')).to.throw(errorMsg)
+        await expect(() => hive.ListStore(null)).to.throw(errorMsg)
+        await expect(() => hive.ListStore(0)).to.throw(errorMsg)
+        await expect(() => hive.ListStore(false)).to.throw(errorMsg)
+        await expect(() => hive.ListStore(true)).to.throw(errorMsg)
+        await expect(() => hive.ListStore(123)).to.throw(errorMsg)
+        await expect(() => hive.ListStore(() => undefined)).to.throw(errorMsg)
+        await expect(() => hive.ListStore({})).to.throw(errorMsg)
+      })
+
+      describe('Delete', () => {
+        it('success with single key', async () => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.delete()
+
+          expect(request).to.deep.include({
+            method : 'DELETE',
+            path   : `${APP_PATH}/hive/${hiveName}/list`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [storeKey]
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        })
+      })
+
+      describe('Exists', async () => {
+
+        it('success with single key', async () => {
+          const req1 = prepareMockRequest(1)
+          const req2 = prepareMockRequest(0)
+
+          const result1 = await store.exists(storeKey)
+          const result2 = await store.exists(storeKey)
+
+          expect(req1).to.deep.include({
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/list/action/exists`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [storeKey]
+          })
+
+          expect(req2).to.deep.include({
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/list/action/exists`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [storeKey]
+          })
+
+          expect(result1).to.be.eql(true)
+          expect(result2).to.be.eql(false)
         })
       })
 
@@ -197,11 +269,11 @@ describe('List Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.rename('testKey1', 'testKey2')
+          const result = await store.rename('testKey2')
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/testKey1/rename?newKey=testKey2`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/rename?newKey=testKey2`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -209,19 +281,6 @@ describe('List Store', function() {
 
         it('fails when new key name is invalid', async () => {
           const errorMsg = 'New key name must be provided and must be a string.'
-
-          await expect(() => store.rename('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.rename('test', null)).to.throw(errorMsg)
-          await expect(() => store.rename('test', false)).to.throw(errorMsg)
-          await expect(() => store.rename('test', true)).to.throw(errorMsg)
-          await expect(() => store.rename('test', 0)).to.throw(errorMsg)
-          await expect(() => store.rename('test', 123)).to.throw(errorMsg)
-          await expect(() => store.rename('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.rename('test', {})).to.throw(errorMsg)
-        })
-
-        it('fails when old key name is invalid', async () => {
-          const errorMsg = 'Old key name must be provided and must be a string.'
 
           await expect(() => store.rename(undefined)).to.throw(errorMsg)
           await expect(() => store.rename(null)).to.throw(errorMsg)
@@ -232,17 +291,18 @@ describe('List Store', function() {
           await expect(() => store.rename(() => undefined)).to.throw(errorMsg)
           await expect(() => store.rename({})).to.throw(errorMsg)
         })
+
       })
 
       describe('Rename If Not Exists', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.renameIfNotExists('testKey1', 'testKey2')
+          const result = await store.renameIfNotExists('testKey2')
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/testKey1/rename-if-not-exists?newKey=testKey2`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/rename-if-not-exists?newKey=testKey2`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -250,19 +310,6 @@ describe('List Store', function() {
 
         it('fails when new key name is invalid', async () => {
           const errorMsg = 'New key name must be provided and must be a string.'
-
-          await expect(() => store.renameIfNotExists('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', null)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', false)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', true)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', 0)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', 123)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', {})).to.throw(errorMsg)
-        })
-
-        it('fails when old key name is invalid', async () => {
-          const errorMsg = 'Old key name must be provided and must be a string.'
 
           await expect(() => store.renameIfNotExists(undefined)).to.throw(errorMsg)
           await expect(() => store.renameIfNotExists(null)).to.throw(errorMsg)
@@ -273,101 +320,65 @@ describe('List Store', function() {
           await expect(() => store.renameIfNotExists(() => undefined)).to.throw(errorMsg)
           await expect(() => store.renameIfNotExists({})).to.throw(errorMsg)
         })
+
       })
 
       describe('Get Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.getExpiration('testKey1')
+          const result = await store.getExpiration()
 
           expect(request).to.deep.include({
             method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/list/testKey1/get-expiration-ttl`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-expiration-ttl`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key names is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
-
-          await expect(() => store.getExpiration(undefined)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(null)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(false)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(true)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(0)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(123)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.getExpiration({})).to.throw(errorMsg)
-        })
       })
 
-      it('Remove Expiration', async () => {
+      describe('Remove Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeExpiration('testKey1')
+          const result = await store.removeExpiration()
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/testKey1/remove-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-expiration`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key names is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
-
-          await expect(() => store.removeExpiration(undefined)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(null)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(false)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(true)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(0)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(123)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration({})).to.throw(errorMsg)
-        })
       })
 
       describe('Expire', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.expireAfter('testKey1', 100)
+          const result = await store.expireAfter(100)
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/testKey1/expire?ttl=100`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/expire?ttl=100`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key name is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
+        it('fails when TTL argument is invalid', async () => {
+          const errorMsg = 'TTL must be a number.'
 
           await expect(() => store.expireAfter(undefined)).to.throw(errorMsg)
           await expect(() => store.expireAfter(null)).to.throw(errorMsg)
           await expect(() => store.expireAfter(false)).to.throw(errorMsg)
           await expect(() => store.expireAfter(true)).to.throw(errorMsg)
-          await expect(() => store.expireAfter(0)).to.throw(errorMsg)
-          await expect(() => store.expireAfter(123)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(NaN)).to.throw(errorMsg)
           await expect(() => store.expireAfter(() => undefined)).to.throw(errorMsg)
           await expect(() => store.expireAfter({})).to.throw(errorMsg)
-        })
-
-        it('fails when TTL argument is invalid', async () => {
-          const errorMsg = 'TTL must be a number.'
-
-          await expect(() => store.expireAfter('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', null)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', false)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', true)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', NaN)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', {})).to.throw(errorMsg)
         })
       })
 
@@ -375,39 +386,26 @@ describe('List Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.expireAt('testKey1', 100)
+          const result = await store.expireAt(100)
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/testKey1/expire-at?unixTime=100`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/expire-at?unixTime=100`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key name is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
+        it('fails when expiration time is invalid', async () => {
+          const errorMsg = 'Expiration time must be a number.'
 
           await expect(() => store.expireAt(undefined)).to.throw(errorMsg)
           await expect(() => store.expireAt(null)).to.throw(errorMsg)
           await expect(() => store.expireAt(false)).to.throw(errorMsg)
           await expect(() => store.expireAt(true)).to.throw(errorMsg)
-          await expect(() => store.expireAt(0)).to.throw(errorMsg)
-          await expect(() => store.expireAt(123)).to.throw(errorMsg)
+          await expect(() => store.expireAt(NaN)).to.throw(errorMsg)
           await expect(() => store.expireAt(() => undefined)).to.throw(errorMsg)
           await expect(() => store.expireAt({})).to.throw(errorMsg)
-        })
-
-        it('fails when expiration time is invalid', async () => {
-          const errorMsg = 'Expiration time must be a number.'
-
-          await expect(() => store.expireAt('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', null)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', false)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', true)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', NaN)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', {})).to.throw(errorMsg)
         })
       })
 
@@ -415,52 +413,22 @@ describe('List Store', function() {
         it('success with single key', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.touch('testKey')
+          const result = await store.touch()
 
           expect(request).to.deep.include({
             method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/list/touch`,
+            path   : `${APP_PATH}/hive/${hiveName}/list/action/touch`,
             headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey']
+            body   : [storeKey]
           })
 
           expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with multi keys', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.touch(['testKey1', 'testKey1'])
-
-          expect(request).to.deep.include({
-            method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/list/touch`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey1', 'testKey1']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when key(s) is invalid', async () => {
-          const errorMsg = 'Key(s) must be provided and must be a string or list of strings.'
-
-          await expect(() => store.touch(undefined)).to.throw(errorMsg)
-          await expect(() => store.touch(null)).to.throw(errorMsg)
-          await expect(() => store.touch(false)).to.throw(errorMsg)
-          await expect(() => store.touch(0)).to.throw(errorMsg)
-          await expect(() => store.touch(true)).to.throw(errorMsg)
-          await expect(() => store.touch(123)).to.throw(errorMsg)
-          await expect(() => store.touch(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.touch({})).to.throw(errorMsg)
         })
       })
     })
+  })
 
-    describe('Store related', ()=> {
-      beforeEach(() => {
-        store = Backendless.Hive(hiveName).ListStore(storeKey)
-      })
+    describe('Instance', ()=> {
 
       describe('Get', () => {
         it('success', async () => {
@@ -500,14 +468,6 @@ describe('List Store', function() {
           })
 
           expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.get()).to.throw(errorMsg)
         })
 
         it('fails when Index is invalid', async () => {
@@ -580,14 +540,6 @@ describe('List Store', function() {
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.set('value', 0)).to.throw(errorMsg)
-        })
-
         it('fails with invalid index', async () => {
           store = Backendless.Hive(hiveName).ListStore(storeKey)
 
@@ -618,13 +570,6 @@ describe('List Store', function() {
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.length()).to.throw(errorMsg)
-        })
       })
 
       describe('Insert', async () => {
@@ -654,14 +599,6 @@ describe('List Store', function() {
           })
 
           expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.insert('keyValue', 'newValue')).to.throw(errorMsg)
         })
 
         it('fails with invalid targetValue', async () => {
@@ -737,14 +674,6 @@ describe('List Store', function() {
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.removeValue('keyValue')).to.throw(errorMsg)
-        })
-
         it('fails with invalid value', async () => {
           const errorMsg = 'Value must be provided and must be a string.'
 
@@ -803,14 +732,6 @@ describe('List Store', function() {
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.addFirst('keyValue')).to.throw(errorMsg)
-        })
-
         it('fails with invalid value', async () => {
           const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
 
@@ -855,14 +776,6 @@ describe('List Store', function() {
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.addLast('keyValue')).to.throw(errorMsg)
-        })
-
         it('fails with invalid value', async () => {
           const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
 
@@ -903,14 +816,6 @@ describe('List Store', function() {
           })
 
           expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.removeFirst()).to.throw(errorMsg)
         })
 
         it('fails with invalid count', async () => {
@@ -954,14 +859,6 @@ describe('List Store', function() {
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).ListStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.removeLast()).to.throw(errorMsg)
-        })
-
         it('fails with invalid count', async () => {
           const errorMsg = 'Count must be a number.'
 
@@ -976,5 +873,4 @@ describe('List Store', function() {
         })
       })
     })
-  })
 })

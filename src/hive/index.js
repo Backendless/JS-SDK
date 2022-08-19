@@ -22,7 +22,14 @@ export default function HiveService(app) {
 export class DataHive {
   constructor(name, context) {
     this.hiveName = name
+
     this.app = context.app
+
+    this.KeyValueStore = KeyValueStore.registerType(this)
+    this.ListStore = ListStore.registerType(this)
+    this.MapStore = MapStore.registerType(this)
+    this.SetStore = SetStore.registerType(this)
+    this.SortedSetStore = SortedSetStore.registerType(this)
   }
 
   create() {
@@ -49,45 +56,5 @@ export class DataHive {
         url  : this.app.urls.dataHive(this.hiveName),
         query: { newName }
       })
-  }
-
-  KeyValueStore(storeKey) {
-    if (storeKey !== undefined && typeof storeKey !== 'string') {
-      throw new Error('Store key must be a string.')
-    }
-
-    return new KeyValueStore(this, storeKey)
-  }
-
-  ListStore(storeKey) {
-    if (storeKey !== undefined && typeof storeKey !== 'string') {
-      throw new Error('Store key must be a string.')
-    }
-
-    return new ListStore(this, storeKey)
-  }
-
-  MapStore(storeKey) {
-    if (storeKey !== undefined && typeof storeKey !== 'string') {
-      throw new Error('Store key must be a string.')
-    }
-
-    return new MapStore(this, storeKey)
-  }
-
-  SetStore(storeKey) {
-    if (storeKey !== undefined && typeof storeKey !== 'string') {
-      throw new Error('Store key must be a string.')
-    }
-
-    return new SetStore(this, storeKey)
-  }
-
-  SortedSetStore(storeKey) {
-    if (storeKey !== undefined && typeof storeKey !== 'string') {
-      throw new Error('Store key must be a string.')
-    }
-
-    return new SortedSetStore(this, storeKey)
   }
 }

@@ -3,32 +3,24 @@ import { HiveStore } from './base-store'
 import Utils from '../../utils'
 
 export class KeyValueStore extends HiveStore {
-  constructor(dataStore, storeKey) {
-    super(dataStore, HiveTypes.KEY_VALUE)
 
-    this.storeKey = storeKey
-  }
+  static TYPE = HiveTypes.KEY_VALUE
 
-  get(keys) {
-    if (!keys || !(typeof keys === 'string' || Array.isArray(keys))) {
-      throw new Error('Key(s) must be provided and must be a string or list of strings.')
-    }
+  static STATIC_METHODS = [...HiveStore.STATIC_METHODS, 'get', 'set']
 
-    if (Array.isArray(keys)) {
-      return this.app.request
-        .post({
-          url : this.storeUrl,
-          data: keys
-        })
+  static get(keys) {
+    if (!Array.isArray(keys)) {
+      throw new Error('Keys must be provided and must be a list of strings.')
     }
 
     return this.app.request
-      .get({
-        url: `${this.storeUrl}/${keys}`,
+      .post({
+        url : this.app.urls.hiveStore(this.hiveName, this.TYPE),
+        data: keys
       })
   }
 
-  set(key, value, options) {
+  static set(key, value, options) {
     if (Utils.isObject(key)) {
       if (!Object.keys(key).length) {
         throw new Error('Provided object must have at least 1 key.')
@@ -36,7 +28,7 @@ export class KeyValueStore extends HiveStore {
 
       return this.app.request
         .put({
-          url : this.storeUrl,
+          url : this.app.urls.hiveStore(this.hiveName, this.TYPE),
           data: key
         })
     }
@@ -67,7 +59,7 @@ export class KeyValueStore extends HiveStore {
 
     return this.app.request
       .put({
-        url : `${this.storeUrl}/${key}`,
+        url : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/${key}`,
         data: {
           value,
           ...options
@@ -75,33 +67,36 @@ export class KeyValueStore extends HiveStore {
       })
   }
 
-  increment(value) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
+  get() {
+    return this.app.request
+      .get({
+        url: this.getBaseURL(),
+      })
+  }
 
+  set(value, options) {
+    return this.constructor.set.apply({ ...this, ...this.constructor }, [this.storeKey, value, options])
+  }
+
+  increment(value) {
     if (isNaN(value) || typeof value !== 'number') {
       throw new Error('Value must be provided and must be a number.')
     }
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${this.storeKey}/increment?value=${value}`
+        url: `${this.getBaseURL()}/increment?value=${value}`
       })
   }
 
   decrement(value) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (isNaN(value) || typeof value !== 'number') {
       throw new Error('Value must be provided and must be a number.')
     }
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${this.storeKey}/decrement?value=${value}`,
+        url: `${this.getBaseURL()}/decrement?value=${value}`,
       })
   }
 }

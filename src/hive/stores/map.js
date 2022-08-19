@@ -3,96 +3,65 @@ import { HiveStore } from './base-store'
 import Utils from '../../utils'
 
 export class MapStore extends HiveStore {
-  constructor(dataStore, storeKey) {
-    super(dataStore, HiveTypes.MAP)
 
-    this.storeKey = storeKey
-  }
+  static TYPE = HiveTypes.MAP
 
   get(keys) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (keys !== undefined && !(typeof keys === 'string' || Array.isArray(keys))) {
       throw new Error('Key(s) must be a string or list of strings.')
     }
 
     return this.app.request
       .post({
-        url : `${this.storeUrl}/${this.storeKey}`,
+        url : this.getBaseURL(),
         data: Utils.castArray(keys)
       })
   }
 
   getValue(key) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!key || typeof key !== 'string') {
       throw new Error('Key must be provided and must be a string.')
     }
 
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}/get/${key}`,
+        url: `${this.getBaseURL()}/get/${key}`,
       })
   }
 
   keyExists(key) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!key || typeof key !== 'string') {
       throw new Error('Key must be provided and must be a string.')
     }
 
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}/exists/${key}`,
+        url: `${this.getBaseURL()}/exists/${key}`,
       })
   }
 
   length() {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}/length`,
+        url: `${this.getBaseURL()}/length`,
       })
   }
 
   keys() {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}/keys`,
+        url: `${this.getBaseURL()}/keys`,
       })
   }
 
   values() {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     return this.app.request
       .get({
-        url: `${this.storeUrl}/${this.storeKey}/values`,
+        url: `${this.getBaseURL()}/values`,
       })
   }
 
   set(data) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!Utils.isObject(data)) {
       throw new Error('Payload must be an object.')
     }
@@ -103,16 +72,12 @@ export class MapStore extends HiveStore {
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${this.storeKey}`,
+        url: this.getBaseURL(),
         data,
       })
   }
 
   add(data) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!Utils.isObject(data)) {
       throw new Error('Payload must be an object.')
     }
@@ -123,16 +88,12 @@ export class MapStore extends HiveStore {
 
     return this.app.request
       .put({
-        url: `${this.storeUrl}/${this.storeKey}/add`,
+        url: `${this.getBaseURL()}/add`,
         data,
       })
   }
 
   setValue(key, value, ifNotExists) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!key || typeof key !== 'string') {
       throw new Error('Key must be provided and must be a string.')
     }
@@ -147,7 +108,7 @@ export class MapStore extends HiveStore {
 
     return this.app.request
       .put({
-        url    : `${this.storeUrl}/${this.storeKey}/set/${key}`,
+        url    : `${this.getBaseURL()}/set/${key}`,
         data   : value,
         headers: { 'Content-Type': 'text/plain' },
         query  : { ifNotExists }
@@ -155,10 +116,6 @@ export class MapStore extends HiveStore {
   }
 
   increment(key, count) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!key || typeof key !== 'string') {
       throw new Error('Key must be provided and must be a string.')
     }
@@ -169,23 +126,19 @@ export class MapStore extends HiveStore {
 
     return this.app.request
       .put({
-        url  : `${this.storeUrl}/${this.storeKey}/increment/${key}`,
+        url  : `${this.getBaseURL()}/increment/${key}`,
         query: { count }
       })
   }
 
   deleteKeys(keys) {
-    if (!this.storeKey) {
-      throw new Error('Store must be created with store key.')
-    }
-
     if (!keys || !(typeof keys === 'string' || Array.isArray(keys))) {
       throw new Error('Key(s) must be provided and must be a string or list of strings.')
     }
 
     return this.app.request
       .delete({
-        url : `${this.storeUrl}/${this.storeKey}/by-obj-keys`,
+        url : `${this.getBaseURL()}/by-obj-keys`,
         data: Utils.castArray(keys)
       })
   }

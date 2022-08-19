@@ -3,27 +3,29 @@ import { describe, it } from 'mocha'
 
 import Backendless, { APP_PATH, forTest, prepareMockRequest } from '../../helpers/sandbox'
 
-describe('Sorted Set Store', function() {
+describe('Hive - Sorted Set Store', function() {
   forTest(this)
 
   const hiveName = 'testHiveName'
   const storeKey = 'testStoreKey'
 
-  describe('Methods', () => {
-    const fakeResult = { foo: true }
+  const fakeResult = { foo: true }
 
-    let store
+  let store
+  let Store
 
-    describe('Basic', () => {
-      beforeEach(() => {
-        store = Backendless.Hive(hiveName).SortedSetStore()
-      })
+  beforeEach(() => {
+    Store = Backendless.Hive(hiveName).SortedSetStore
+    store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
+  })
 
-      describe('Store Keys', async () => {
+  describe('General Methods', () => {
+    describe('Static Methods', () => {
+      describe('Keys', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.storeKeys()
+          const result = await Store.keys()
 
           expect(request).to.deep.include({
             method: 'GET',
@@ -36,7 +38,7 @@ describe('Sorted Set Store', function() {
         it('success with options', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.storeKeys({
+          const result = await Store.keys({
             filterPattern: '123',
             cursor       : 20,
             pageSize     : 30
@@ -53,75 +55,60 @@ describe('Sorted Set Store', function() {
         it('fails when options is invalid', async () => {
           const errorMsg = 'Options must be an object.'
 
-          await expect(() => store.storeKeys(null)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(NaN)).to.throw(errorMsg)
-          await expect(() => store.storeKeys('')).to.throw(errorMsg)
-          await expect(() => store.storeKeys('123')).to.throw(errorMsg)
-          await expect(() => store.storeKeys(123)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(0)).to.throw(errorMsg)
-          await expect(() => store.storeKeys([])).to.throw(errorMsg)
-          await expect(() => store.storeKeys(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(true)).to.throw(errorMsg)
-          await expect(() => store.storeKeys(false)).to.throw(errorMsg)
+          await expect(() => Store.keys(null)).to.throw(errorMsg)
+          await expect(() => Store.keys(NaN)).to.throw(errorMsg)
+          await expect(() => Store.keys('')).to.throw(errorMsg)
+          await expect(() => Store.keys('123')).to.throw(errorMsg)
+          await expect(() => Store.keys(123)).to.throw(errorMsg)
+          await expect(() => Store.keys(0)).to.throw(errorMsg)
+          await expect(() => Store.keys([])).to.throw(errorMsg)
+          await expect(() => Store.keys(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.keys(true)).to.throw(errorMsg)
+          await expect(() => Store.keys(false)).to.throw(errorMsg)
         })
 
         it('fails when Cursor is invalid', async () => {
           const errorMsg = 'Cursor must be a number.'
 
-          await expect(() => store.storeKeys({ cursor: null })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: false })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: true })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: '' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: NaN })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ cursor: () => undefined })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: null })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: false })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: true })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: '' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: 'foo' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: NaN })).to.throw(errorMsg)
+          await expect(() => Store.keys({ cursor: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Page Size is invalid', async () => {
           const errorMsg = 'Page size must be a number.'
 
-          await expect(() => store.storeKeys({ pageSize: null })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: false })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: true })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: '' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: NaN })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ pageSize: () => undefined })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: null })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: false })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: true })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: '' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: 'foo' })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: NaN })).to.throw(errorMsg)
+          await expect(() => Store.keys({ pageSize: () => undefined })).to.throw(errorMsg)
         })
 
         it('fails when Filter Pattern is invalid', async () => {
           const errorMsg = 'Filter pattern must be a string.'
 
-          await expect(() => store.storeKeys({ filterPattern: null })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: false })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: true })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: 123 })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: 0 })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: NaN })).to.throw(errorMsg)
-          await expect(() => store.storeKeys({ filterPattern: () => undefined })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: null })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: false })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: true })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: 123 })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: 0 })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: NaN })).to.throw(errorMsg)
+          await expect(() => Store.keys({ filterPattern: () => undefined })).to.throw(errorMsg)
         })
       })
 
       describe('Delete', () => {
-        it('success with single key', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.delete('testKey')
-
-          expect(request).to.deep.include({
-            method : 'DELETE',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
         it('success with multi keys', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.delete(['testKey1', 'testKey2'])
+          const result = await Store.delete(['testKey1', 'testKey2'])
 
           expect(request).to.deep.include({
             method : 'DELETE',
@@ -134,44 +121,30 @@ describe('Sorted Set Store', function() {
         })
 
         it('fails when key is invalid', async () => {
-          const errorMsg = 'Key(s) must be provided and must be a string or list of strings.'
+          const errorMsg = 'Keys must be provided and must be a list of strings.'
 
-          await expect(() => store.delete(undefined)).to.throw(errorMsg)
-          await expect(() => store.delete(null)).to.throw(errorMsg)
-          await expect(() => store.delete(0)).to.throw(errorMsg)
-          await expect(() => store.delete(false)).to.throw(errorMsg)
-          await expect(() => store.delete('')).to.throw(errorMsg)
-          await expect(() => store.delete(true)).to.throw(errorMsg)
-          await expect(() => store.delete(123)).to.throw(errorMsg)
-          await expect(() => store.delete(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.delete({})).to.throw(errorMsg)
+          await expect(() => Store.delete(undefined)).to.throw(errorMsg)
+          await expect(() => Store.delete(null)).to.throw(errorMsg)
+          await expect(() => Store.delete(123)).to.throw(errorMsg)
+          await expect(() => Store.delete(0)).to.throw(errorMsg)
+          await expect(() => Store.delete(false)).to.throw(errorMsg)
+          await expect(() => Store.delete(true)).to.throw(errorMsg)
+          await expect(() => Store.delete('')).to.throw(errorMsg)
+          await expect(() => Store.delete('key')).to.throw(errorMsg)
+          await expect(() => Store.delete(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.delete({})).to.throw(errorMsg)
         })
       })
 
       describe('Exists', async () => {
-        it('success with single key', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.exists('testKey')
-
-          expect(request).to.deep.include({
-            method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/exists`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
         it('success with multi keys', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.exists(['testKey1', 'testKey1'])
+          const result = await Store.exists(['testKey1', 'testKey1'])
 
           expect(request).to.deep.include({
             method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/exists`,
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/action/exists`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey1', 'testKey1']
           })
@@ -180,16 +153,114 @@ describe('Sorted Set Store', function() {
         })
 
         it('fails when key(s) is invalid', async () => {
-          const errorMsg = 'Key(s) must be provided and must be a string or list of strings.'
+          const errorMsg = 'Keys must be provided and must be a list of strings.'
 
-          await expect(() => store.exists(undefined)).to.throw(errorMsg)
-          await expect(() => store.exists(null)).to.throw(errorMsg)
-          await expect(() => store.exists(false)).to.throw(errorMsg)
-          await expect(() => store.exists(0)).to.throw(errorMsg)
-          await expect(() => store.exists(true)).to.throw(errorMsg)
-          await expect(() => store.exists(123)).to.throw(errorMsg)
-          await expect(() => store.exists(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.exists({})).to.throw(errorMsg)
+          await expect(() => Store.exists(undefined)).to.throw(errorMsg)
+          await expect(() => Store.exists(null)).to.throw(errorMsg)
+          await expect(() => Store.exists(false)).to.throw(errorMsg)
+          await expect(() => Store.exists(true)).to.throw(errorMsg)
+          await expect(() => Store.exists('')).to.throw(errorMsg)
+          await expect(() => Store.exists('key')).to.throw(errorMsg)
+          await expect(() => Store.exists(0)).to.throw(errorMsg)
+          await expect(() => Store.exists(123)).to.throw(errorMsg)
+          await expect(() => Store.exists(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.exists({})).to.throw(errorMsg)
+        })
+      })
+
+      describe('Touch', async () => {
+        it('success with multi keys', async () => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await Store.touch(['testKey1', 'testKey1'])
+
+          expect(request).to.deep.include({
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/action/touch`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : ['testKey1', 'testKey1']
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        })
+
+        it('fails when key(s) is invalid', async () => {
+          const errorMsg = 'Keys must be provided and must be a list of strings.'
+
+          await expect(() => Store.touch(undefined)).to.throw(errorMsg)
+          await expect(() => Store.touch(null)).to.throw(errorMsg)
+          await expect(() => Store.touch(false)).to.throw(errorMsg)
+          await expect(() => Store.touch(true)).to.throw(errorMsg)
+          await expect(() => Store.touch('')).to.throw(errorMsg)
+          await expect(() => Store.touch('key')).to.throw(errorMsg)
+          await expect(() => Store.touch(0)).to.throw(errorMsg)
+          await expect(() => Store.touch(123)).to.throw(errorMsg)
+          await expect(() => Store.touch(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.touch({})).to.throw(errorMsg)
+        })
+      })
+    })
+
+    describe('Instance Methods ', () => {
+
+      it('fails when init store without key', async () => {
+        const errorMsg = 'Store key must be a string.'
+
+        const hive = Backendless.Hive(hiveName)
+
+        await expect(() => hive.SortedSetStore()).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore('')).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore(null)).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore(0)).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore(false)).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore(true)).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore(123)).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore(() => undefined)).to.throw(errorMsg)
+        await expect(() => hive.SortedSetStore({})).to.throw(errorMsg)
+      })
+
+      describe('Delete', () => {
+        it('success with single key', async () => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.delete()
+
+          expect(request).to.deep.include({
+            method : 'DELETE',
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [storeKey]
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        })
+      })
+
+      describe('Exists', async () => {
+
+        it('success with single key', async () => {
+          const req1 = prepareMockRequest(1)
+          const req2 = prepareMockRequest(0)
+
+          const result1 = await store.exists(storeKey)
+          const result2 = await store.exists(storeKey)
+
+          expect(req1).to.deep.include({
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/action/exists`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [storeKey]
+          })
+
+          expect(req2).to.deep.include({
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/action/exists`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [storeKey]
+          })
+
+          expect(result1).to.be.eql(true)
+          expect(result2).to.be.eql(false)
         })
       })
 
@@ -197,11 +268,11 @@ describe('Sorted Set Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.rename('testKey1', 'testKey2')
+          const result = await store.rename('testKey2')
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/testKey1/rename?newKey=testKey2`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/rename?newKey=testKey2`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -209,19 +280,6 @@ describe('Sorted Set Store', function() {
 
         it('fails when new key name is invalid', async () => {
           const errorMsg = 'New key name must be provided and must be a string.'
-
-          await expect(() => store.rename('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.rename('test', null)).to.throw(errorMsg)
-          await expect(() => store.rename('test', false)).to.throw(errorMsg)
-          await expect(() => store.rename('test', true)).to.throw(errorMsg)
-          await expect(() => store.rename('test', 0)).to.throw(errorMsg)
-          await expect(() => store.rename('test', 123)).to.throw(errorMsg)
-          await expect(() => store.rename('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.rename('test', {})).to.throw(errorMsg)
-        })
-
-        it('fails when old key name is invalid', async () => {
-          const errorMsg = 'Old key name must be provided and must be a string.'
 
           await expect(() => store.rename(undefined)).to.throw(errorMsg)
           await expect(() => store.rename(null)).to.throw(errorMsg)
@@ -232,17 +290,18 @@ describe('Sorted Set Store', function() {
           await expect(() => store.rename(() => undefined)).to.throw(errorMsg)
           await expect(() => store.rename({})).to.throw(errorMsg)
         })
+
       })
 
       describe('Rename If Not Exists', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.renameIfNotExists('testKey1', 'testKey2')
+          const result = await store.renameIfNotExists('testKey2')
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/testKey1/rename-if-not-exists?newKey=testKey2`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/rename-if-not-exists?newKey=testKey2`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -250,19 +309,6 @@ describe('Sorted Set Store', function() {
 
         it('fails when new key name is invalid', async () => {
           const errorMsg = 'New key name must be provided and must be a string.'
-
-          await expect(() => store.renameIfNotExists('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', null)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', false)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', true)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', 0)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', 123)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists('test', {})).to.throw(errorMsg)
-        })
-
-        it('fails when old key name is invalid', async () => {
-          const errorMsg = 'Old key name must be provided and must be a string.'
 
           await expect(() => store.renameIfNotExists(undefined)).to.throw(errorMsg)
           await expect(() => store.renameIfNotExists(null)).to.throw(errorMsg)
@@ -273,101 +319,65 @@ describe('Sorted Set Store', function() {
           await expect(() => store.renameIfNotExists(() => undefined)).to.throw(errorMsg)
           await expect(() => store.renameIfNotExists({})).to.throw(errorMsg)
         })
+
       })
 
       describe('Get Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.getExpiration('testKey1')
+          const result = await store.getExpiration()
 
           expect(request).to.deep.include({
             method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/testKey1/get-expiration-ttl`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-expiration-ttl`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key name is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
-
-          await expect(() => store.getExpiration(undefined)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(null)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(false)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(true)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(0)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(123)).to.throw(errorMsg)
-          await expect(() => store.getExpiration(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.getExpiration({})).to.throw(errorMsg)
-        })
       })
 
       describe('Remove Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeExpiration('testKey1')
+          const result = await store.removeExpiration()
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/testKey1/remove-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-expiration`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key name is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
-
-          await expect(() => store.removeExpiration(undefined)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(null)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(false)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(true)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(0)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(123)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeExpiration({})).to.throw(errorMsg)
-        })
       })
 
       describe('Expire', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.expireAfter('testKey1', 100)
+          const result = await store.expireAfter(100)
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/testKey1/expire?ttl=100`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/expire?ttl=100`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key name is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
+        it('fails when TTL argument is invalid', async () => {
+          const errorMsg = 'TTL must be a number.'
 
           await expect(() => store.expireAfter(undefined)).to.throw(errorMsg)
           await expect(() => store.expireAfter(null)).to.throw(errorMsg)
           await expect(() => store.expireAfter(false)).to.throw(errorMsg)
           await expect(() => store.expireAfter(true)).to.throw(errorMsg)
-          await expect(() => store.expireAfter(0)).to.throw(errorMsg)
-          await expect(() => store.expireAfter(123)).to.throw(errorMsg)
+          await expect(() => store.expireAfter(NaN)).to.throw(errorMsg)
           await expect(() => store.expireAfter(() => undefined)).to.throw(errorMsg)
           await expect(() => store.expireAfter({})).to.throw(errorMsg)
-        })
-
-        it('fails when TTL argument is invalid', async () => {
-          const errorMsg = 'TTL must be a number.'
-
-          await expect(() => store.expireAfter('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', null)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', false)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', true)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', NaN)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAfter('test', {})).to.throw(errorMsg)
         })
       })
 
@@ -375,39 +385,26 @@ describe('Sorted Set Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.expireAt('testKey1', 100)
+          const result = await store.expireAt(100)
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/testKey1/expire-at?unixTime=100`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/expire-at?unixTime=100`,
           })
 
           expect(result).to.be.eql(fakeResult)
         })
 
-        it('fails when key name is invalid', async () => {
-          const errorMsg = 'Key must be provided and must be a string.'
+        it('fails when expiration time is invalid', async () => {
+          const errorMsg = 'Expiration time must be a number.'
 
           await expect(() => store.expireAt(undefined)).to.throw(errorMsg)
           await expect(() => store.expireAt(null)).to.throw(errorMsg)
           await expect(() => store.expireAt(false)).to.throw(errorMsg)
           await expect(() => store.expireAt(true)).to.throw(errorMsg)
-          await expect(() => store.expireAt(0)).to.throw(errorMsg)
-          await expect(() => store.expireAt(123)).to.throw(errorMsg)
+          await expect(() => store.expireAt(NaN)).to.throw(errorMsg)
           await expect(() => store.expireAt(() => undefined)).to.throw(errorMsg)
           await expect(() => store.expireAt({})).to.throw(errorMsg)
-        })
-
-        it('fails when expiration time is invalid', async () => {
-          const errorMsg = 'Expiration time must be a number.'
-
-          await expect(() => store.expireAt('test', undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', null)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', false)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', true)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', NaN)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.expireAt('test', {})).to.throw(errorMsg)
         })
       })
 
@@ -415,1348 +412,1201 @@ describe('Sorted Set Store', function() {
         it('success with single key', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.touch('testKey')
+          const result = await store.touch()
 
           expect(request).to.deep.include({
             method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/touch`,
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/action/touch`,
             headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey']
+            body   : [storeKey]
           })
 
           expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with multi keys', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.touch(['testKey1', 'testKey1'])
-
-          expect(request).to.deep.include({
-            method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/touch`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey1', 'testKey1']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when key(s) is invalid', async () => {
-          const errorMsg = 'Key(s) must be provided and must be a string or list of strings.'
-
-          await expect(() => store.touch(undefined)).to.throw(errorMsg)
-          await expect(() => store.touch(null)).to.throw(errorMsg)
-          await expect(() => store.touch(false)).to.throw(errorMsg)
-          await expect(() => store.touch(0)).to.throw(errorMsg)
-          await expect(() => store.touch(true)).to.throw(errorMsg)
-          await expect(() => store.touch(123)).to.throw(errorMsg)
-          await expect(() => store.touch(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.touch({})).to.throw(errorMsg)
         })
       })
     })
+  })
 
-    describe('Store related', () => {
-      beforeEach(() => {
+  describe('Static Methods', () => {
+    describe('Difference', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await Store.difference(['set1', 'set2'])
+
+        expect(request).to.deep.include({
+          method: 'POST',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/action/difference`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when store keys argument is invalid', async () => {
+        const errorMsg = 'Store keys must be provided and must be an array.'
+
+        await expect(() => Store.difference(undefined)).to.throw(errorMsg)
+        await expect(() => Store.difference(null)).to.throw(errorMsg)
+        await expect(() => Store.difference(false)).to.throw(errorMsg)
+        await expect(() => Store.difference(0)).to.throw(errorMsg)
+        await expect(() => Store.difference(123)).to.throw(errorMsg)
+        await expect(() => Store.difference('')).to.throw(errorMsg)
+        await expect(() => Store.difference({})).to.throw(errorMsg)
+        await expect(() => Store.difference(() => undefined)).to.throw(errorMsg)
+        await expect(() => Store.difference(true)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Intersection', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await Store.intersection(['set1', 'set2'])
+
+        expect(request).to.deep.include({
+          method: 'POST',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/action/intersection`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when store keys argument is invalid', async () => {
+        const errorMsg = 'Store keys must be provided and must be an array.'
+
+        await expect(() => Store.intersection(undefined)).to.throw(errorMsg)
+        await expect(() => Store.intersection(null)).to.throw(errorMsg)
+        await expect(() => Store.intersection(false)).to.throw(errorMsg)
+        await expect(() => Store.intersection(0)).to.throw(errorMsg)
+        await expect(() => Store.intersection(123)).to.throw(errorMsg)
+        await expect(() => Store.intersection('')).to.throw(errorMsg)
+        await expect(() => Store.intersection({})).to.throw(errorMsg)
+        await expect(() => Store.intersection(() => undefined)).to.throw(errorMsg)
+        await expect(() => Store.intersection(true)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Union', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await Store.union(['set1', 'set2'])
+
+        expect(request).to.deep.include({
+          method: 'POST',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/action/union`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when store keys argument is invalid', async () => {
+        const errorMsg = 'Store keys must be provided and must be an array.'
+
+        await expect(() => Store.union(undefined)).to.throw(errorMsg)
+        await expect(() => Store.union(null)).to.throw(errorMsg)
+        await expect(() => Store.union(false)).to.throw(errorMsg)
+        await expect(() => Store.union(0)).to.throw(errorMsg)
+        await expect(() => Store.union(123)).to.throw(errorMsg)
+        await expect(() => Store.union('')).to.throw(errorMsg)
+        await expect(() => Store.union({})).to.throw(errorMsg)
+        await expect(() => Store.union(() => undefined)).to.throw(errorMsg)
+        await expect(() => Store.union(true)).to.throw(errorMsg)
+      })
+    })
+  })
+
+  describe('Instance Methods', () => {
+
+    describe('Add', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.add([[1, 'key1'], [2, 'key2']])
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/add`,
+          body  : { 'items': [[1, 'key1'], [2, 'key2']] }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with options', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.add([[1, 'key1'], [2, 'key2']], {
+          duplicateBehaviour: 'OnlyUpdate',
+          scoreUpdateMode   : 'Greater',
+          resultType        : 'NewAdded'
+        })
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/add`,
+          body  : {
+            items             : [[1, 'key1'], [2, 'key2']],
+            duplicateBehaviour: 'OnlyUpdate',
+            scoreUpdateMode   : 'Greater',
+            resultType        : 'NewAdded'
+          }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when items is invalid', async () => {
+        const errorMsg = 'Items must be provided and must be an array.'
+
+        await expect(() => store.add(undefined)).to.throw(errorMsg)
+        await expect(() => store.add(null)).to.throw(errorMsg)
+        await expect(() => store.add(NaN)).to.throw(errorMsg)
+        await expect(() => store.add(0)).to.throw(errorMsg)
+        await expect(() => store.add(123)).to.throw(errorMsg)
+        await expect(() => store.add('')).to.throw(errorMsg)
+        await expect(() => store.add('foo')).to.throw(errorMsg)
+        await expect(() => store.add(true)).to.throw(errorMsg)
+        await expect(() => store.add(false)).to.throw(errorMsg)
+      })
+
+      it('fails when options is invalid', async () => {
+        const errorMsg = 'Options must be an object.'
+
+        await expect(() => store.add([], null)).to.throw(errorMsg)
+        await expect(() => store.add([], NaN)).to.throw(errorMsg)
+        await expect(() => store.add([], '')).to.throw(errorMsg)
+        await expect(() => store.add([], '123')).to.throw(errorMsg)
+        await expect(() => store.add([], 123)).to.throw(errorMsg)
+        await expect(() => store.add([], 0)).to.throw(errorMsg)
+        await expect(() => store.add([], [])).to.throw(errorMsg)
+        await expect(() => store.add([], () => undefined)).to.throw(errorMsg)
+        await expect(() => store.add([], true)).to.throw(errorMsg)
+        await expect(() => store.add([], false)).to.throw(errorMsg)
+      })
+
+      it('fails when Duplicate Behaviour Seconds is invalid', async () => {
+        const errorMsg = 'Duplicate Behaviour argument must be one of this values: OnlyUpdate, AlwaysAdd.'
+
+        await expect(() => store.add([], { duplicateBehaviour: null })).to.throw(errorMsg)
+        await expect(() => store.add([], { duplicateBehaviour: false })).to.throw(errorMsg)
+        await expect(() => store.add([], { duplicateBehaviour: true })).to.throw(errorMsg)
+        await expect(() => store.add([], { duplicateBehaviour: '' })).to.throw(errorMsg)
+        await expect(() => store.add([], { duplicateBehaviour: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.add([], { duplicateBehaviour: NaN })).to.throw(errorMsg)
+        await expect(() => store.add([], { duplicateBehaviour: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Score Update Mode is invalid', async () => {
+        const errorMsg = 'Score Update Mode argument must be one of this values: Greater, Less.'
+
+        await expect(() => store.add([], { scoreUpdateMode: null })).to.throw(errorMsg)
+        await expect(() => store.add([], { scoreUpdateMode: false })).to.throw(errorMsg)
+        await expect(() => store.add([], { scoreUpdateMode: true })).to.throw(errorMsg)
+        await expect(() => store.add([], { scoreUpdateMode: '' })).to.throw(errorMsg)
+        await expect(() => store.add([], { scoreUpdateMode: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.add([], { scoreUpdateMode: NaN })).to.throw(errorMsg)
+        await expect(() => store.add([], { scoreUpdateMode: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Result Type is invalid', async () => {
+        const errorMsg = 'Result Type must be one of this values: NewAdded, TotalChanged.'
+
+        await expect(() => store.add([], { resultType: null })).to.throw(errorMsg)
+        await expect(() => store.add([], { resultType: false })).to.throw(errorMsg)
+        await expect(() => store.add([], { resultType: true })).to.throw(errorMsg)
+        await expect(() => store.add([], { resultType: '' })).to.throw(errorMsg)
+        await expect(() => store.add([], { resultType: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.add([], { resultType: NaN })).to.throw(errorMsg)
+        await expect(() => store.add([], { resultType: () => undefined })).to.throw(errorMsg)
+      })
+    })
+
+    describe('Set', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.set([[1, 'key1'], [2, 'key2']])
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}`,
+          body  : { 'items': [[1, 'key1'], [2, 'key2']] }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with options', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.set([[1, 'key1'], [2, 'key2']], {
+          duplicateBehaviour: 'OnlyUpdate',
+          scoreUpdateMode   : 'Greater',
+          resultType        : 'NewAdded'
+        })
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}`,
+          body  : {
+            items             : [[1, 'key1'], [2, 'key2']],
+            duplicateBehaviour: 'OnlyUpdate',
+            scoreUpdateMode   : 'Greater',
+            resultType        : 'NewAdded'
+          }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when items is invalid', async () => {
+        const errorMsg = 'Items must be provided and must be an array.'
+
+        await expect(() => store.set(undefined)).to.throw(errorMsg)
+        await expect(() => store.set(null)).to.throw(errorMsg)
+        await expect(() => store.set(NaN)).to.throw(errorMsg)
+        await expect(() => store.set(0)).to.throw(errorMsg)
+        await expect(() => store.set(123)).to.throw(errorMsg)
+        await expect(() => store.set('')).to.throw(errorMsg)
+        await expect(() => store.set('foo')).to.throw(errorMsg)
+        await expect(() => store.set(true)).to.throw(errorMsg)
+        await expect(() => store.set(false)).to.throw(errorMsg)
+      })
+
+      it('fails when options is invalid', async () => {
+        const errorMsg = 'Options must be an object.'
+
+        await expect(() => store.set([], null)).to.throw(errorMsg)
+        await expect(() => store.set([], NaN)).to.throw(errorMsg)
+        await expect(() => store.set([], '')).to.throw(errorMsg)
+        await expect(() => store.set([], '123')).to.throw(errorMsg)
+        await expect(() => store.set([], 123)).to.throw(errorMsg)
+        await expect(() => store.set([], 0)).to.throw(errorMsg)
+        await expect(() => store.set([], [])).to.throw(errorMsg)
+        await expect(() => store.set([], () => undefined)).to.throw(errorMsg)
+        await expect(() => store.set([], true)).to.throw(errorMsg)
+        await expect(() => store.set([], false)).to.throw(errorMsg)
+      })
+
+      it('fails when Duplicate Behaviour Seconds is invalid', async () => {
+        const errorMsg = 'Duplicate Behaviour argument must be one of this values: OnlyUpdate, AlwaysAdd.'
+
+        await expect(() => store.set([], { duplicateBehaviour: null })).to.throw(errorMsg)
+        await expect(() => store.set([], { duplicateBehaviour: false })).to.throw(errorMsg)
+        await expect(() => store.set([], { duplicateBehaviour: true })).to.throw(errorMsg)
+        await expect(() => store.set([], { duplicateBehaviour: '' })).to.throw(errorMsg)
+        await expect(() => store.set([], { duplicateBehaviour: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.set([], { duplicateBehaviour: NaN })).to.throw(errorMsg)
+        await expect(() => store.set([], { duplicateBehaviour: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Score Update Mode is invalid', async () => {
+        const errorMsg = 'Score Update Mode argument must be one of this values: Greater, Less.'
+
+        await expect(() => store.set([], { scoreUpdateMode: null })).to.throw(errorMsg)
+        await expect(() => store.set([], { scoreUpdateMode: false })).to.throw(errorMsg)
+        await expect(() => store.set([], { scoreUpdateMode: true })).to.throw(errorMsg)
+        await expect(() => store.set([], { scoreUpdateMode: '' })).to.throw(errorMsg)
+        await expect(() => store.set([], { scoreUpdateMode: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.set([], { scoreUpdateMode: NaN })).to.throw(errorMsg)
+        await expect(() => store.set([], { scoreUpdateMode: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Result Type is invalid', async () => {
+        const errorMsg = 'Result Type must be one of this values: NewAdded, TotalChanged.'
+
+        await expect(() => store.set([], { resultType: null })).to.throw(errorMsg)
+        await expect(() => store.set([], { resultType: false })).to.throw(errorMsg)
+        await expect(() => store.set([], { resultType: true })).to.throw(errorMsg)
+        await expect(() => store.set([], { resultType: '' })).to.throw(errorMsg)
+        await expect(() => store.set([], { resultType: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.set([], { resultType: NaN })).to.throw(errorMsg)
+        await expect(() => store.set([], { resultType: () => undefined })).to.throw(errorMsg)
+      })
+    })
+
+    describe('Get Random', () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRandom()
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-random`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with count', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRandom({ count: 3 })
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-random?count=3`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with scores', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRandom({ count: 3, withScores: true })
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-random?count=3&withScores=true`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when options is invalid', async () => {
+        const errorMsg = 'Options must be an object.'
+
+        await expect(() => store.getRandom(null)).to.throw(errorMsg)
+        await expect(() => store.getRandom(NaN)).to.throw(errorMsg)
+        await expect(() => store.getRandom('')).to.throw(errorMsg)
+        await expect(() => store.getRandom('123')).to.throw(errorMsg)
+        await expect(() => store.getRandom(123)).to.throw(errorMsg)
+        await expect(() => store.getRandom(0)).to.throw(errorMsg)
+        await expect(() => store.getRandom([])).to.throw(errorMsg)
+        await expect(() => store.getRandom(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.getRandom(true)).to.throw(errorMsg)
+        await expect(() => store.getRandom(false)).to.throw(errorMsg)
+      })
+
+      it('fails when count is invalid', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.getRandom({ count: null })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: false })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: true })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: '' })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: {} })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: [] })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ count: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when withScores argument is invalid', async () => {
+        const errorMsg = 'With Scores argument must be a boolean.'
+
+        await expect(() => store.getRandom({ withScores: null })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: 0 })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: 123 })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: '' })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: {} })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: [] })).to.throw(errorMsg)
+        await expect(() => store.getRandom({ withScores: () => undefined })).to.throw(errorMsg)
+      })
+    })
+
+    describe('Get Score', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getScore('testKey1')
+
+        expect(request).to.deep.include({
+          method: 'POST',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when values is invalid', async () => {
+        const errorMsg = 'Value must be provided and must be a string.'
+
+        await expect(() => store.getScore(undefined)).to.throw(errorMsg)
+        await expect(() => store.getScore(null)).to.throw(errorMsg)
+        await expect(() => store.getScore(0)).to.throw(errorMsg)
+        await expect(() => store.getScore(false)).to.throw(errorMsg)
+        await expect(() => store.getScore('')).to.throw(errorMsg)
+        await expect(() => store.getScore(true)).to.throw(errorMsg)
+        await expect(() => store.getScore(123)).to.throw(errorMsg)
+        await expect(() => store.getScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.getScore({})).to.throw(errorMsg)
+      })
+    })
+
+    describe('Increment Score', () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.incrementScore('foo', 10)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/increment`,
+          body  : { member: 'foo', scoreAmount: 10 }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when value is invalid', async () => {
         store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
+
+        const errorMsg = 'Value must be provided and must be a string.'
+
+        await expect(() => store.incrementScore(undefined)).to.throw(errorMsg)
+        await expect(() => store.incrementScore(null)).to.throw(errorMsg)
+        await expect(() => store.incrementScore(false)).to.throw(errorMsg)
+        await expect(() => store.incrementScore('')).to.throw(errorMsg)
+        await expect(() => store.incrementScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.incrementScore(true)).to.throw(errorMsg)
+        await expect(() => store.incrementScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.incrementScore({})).to.throw(errorMsg)
       })
 
-      describe('Add', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.add([[1, 'key1'], [2, 'key2']])
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/add`,
-            body  : { 'items': [[1, 'key1'], [2, 'key2']] }
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with options', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.add([[1, 'key1'], [2, 'key2']], {
-            duplicateBehaviour: 'OnlyUpdate',
-            scoreUpdateMode   : 'Greater',
-            resultType        : 'NewAdded'
-          })
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/add`,
-            body  : {
-              items             : [[1, 'key1'], [2, 'key2']],
-              duplicateBehaviour: 'OnlyUpdate',
-              scoreUpdateMode   : 'Greater',
-              resultType        : 'NewAdded'
-            }
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when items is invalid', async () => {
-          const errorMsg = 'Items must be provided and must be an array.'
-
-          await expect(() => store.add(undefined)).to.throw(errorMsg)
-          await expect(() => store.add(null)).to.throw(errorMsg)
-          await expect(() => store.add(NaN)).to.throw(errorMsg)
-          await expect(() => store.add(0)).to.throw(errorMsg)
-          await expect(() => store.add(123)).to.throw(errorMsg)
-          await expect(() => store.add('')).to.throw(errorMsg)
-          await expect(() => store.add('foo')).to.throw(errorMsg)
-          await expect(() => store.add(true)).to.throw(errorMsg)
-          await expect(() => store.add(false)).to.throw(errorMsg)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.add([])).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.add([], null)).to.throw(errorMsg)
-          await expect(() => store.add([], NaN)).to.throw(errorMsg)
-          await expect(() => store.add([], '')).to.throw(errorMsg)
-          await expect(() => store.add([], '123')).to.throw(errorMsg)
-          await expect(() => store.add([], 123)).to.throw(errorMsg)
-          await expect(() => store.add([], 0)).to.throw(errorMsg)
-          await expect(() => store.add([], [])).to.throw(errorMsg)
-          await expect(() => store.add([], () => undefined)).to.throw(errorMsg)
-          await expect(() => store.add([], true)).to.throw(errorMsg)
-          await expect(() => store.add([], false)).to.throw(errorMsg)
-        })
-
-        it('fails when Duplicate Behaviour Seconds is invalid', async () => {
-          const errorMsg = 'Duplicate Behaviour argument must be one of this values: OnlyUpdate, AlwaysAdd.'
-
-          await expect(() => store.add([], { duplicateBehaviour: null })).to.throw(errorMsg)
-          await expect(() => store.add([], { duplicateBehaviour: false })).to.throw(errorMsg)
-          await expect(() => store.add([], { duplicateBehaviour: true })).to.throw(errorMsg)
-          await expect(() => store.add([], { duplicateBehaviour: '' })).to.throw(errorMsg)
-          await expect(() => store.add([], { duplicateBehaviour: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.add([], { duplicateBehaviour: NaN })).to.throw(errorMsg)
-          await expect(() => store.add([], { duplicateBehaviour: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Score Update Mode is invalid', async () => {
-          const errorMsg = 'Score Update Mode argument must be one of this values: Greater, Less.'
-
-          await expect(() => store.add([], { scoreUpdateMode: null })).to.throw(errorMsg)
-          await expect(() => store.add([], { scoreUpdateMode: false })).to.throw(errorMsg)
-          await expect(() => store.add([], { scoreUpdateMode: true })).to.throw(errorMsg)
-          await expect(() => store.add([], { scoreUpdateMode: '' })).to.throw(errorMsg)
-          await expect(() => store.add([], { scoreUpdateMode: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.add([], { scoreUpdateMode: NaN })).to.throw(errorMsg)
-          await expect(() => store.add([], { scoreUpdateMode: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Result Type is invalid', async () => {
-          const errorMsg = 'Result Type must be one of this values: NewAdded, TotalChanged.'
-
-          await expect(() => store.add([], { resultType: null })).to.throw(errorMsg)
-          await expect(() => store.add([], { resultType: false })).to.throw(errorMsg)
-          await expect(() => store.add([], { resultType: true })).to.throw(errorMsg)
-          await expect(() => store.add([], { resultType: '' })).to.throw(errorMsg)
-          await expect(() => store.add([], { resultType: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.add([], { resultType: NaN })).to.throw(errorMsg)
-          await expect(() => store.add([], { resultType: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Set', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.set([[1, 'key1'], [2, 'key2']])
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}`,
-            body  : { 'items': [[1, 'key1'], [2, 'key2']] }
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with options', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.set([[1, 'key1'], [2, 'key2']], {
-            duplicateBehaviour: 'OnlyUpdate',
-            scoreUpdateMode   : 'Greater',
-            resultType        : 'NewAdded'
-          })
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}`,
-            body  : {
-              items             : [[1, 'key1'], [2, 'key2']],
-              duplicateBehaviour: 'OnlyUpdate',
-              scoreUpdateMode   : 'Greater',
-              resultType        : 'NewAdded'
-            }
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.set([])).to.throw(errorMsg)
-        })
-
-        it('fails when items is invalid', async () => {
-          const errorMsg = 'Items must be provided and must be an array.'
-
-          await expect(() => store.set(undefined)).to.throw(errorMsg)
-          await expect(() => store.set(null)).to.throw(errorMsg)
-          await expect(() => store.set(NaN)).to.throw(errorMsg)
-          await expect(() => store.set(0)).to.throw(errorMsg)
-          await expect(() => store.set(123)).to.throw(errorMsg)
-          await expect(() => store.set('')).to.throw(errorMsg)
-          await expect(() => store.set('foo')).to.throw(errorMsg)
-          await expect(() => store.set(true)).to.throw(errorMsg)
-          await expect(() => store.set(false)).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.set([], null)).to.throw(errorMsg)
-          await expect(() => store.set([], NaN)).to.throw(errorMsg)
-          await expect(() => store.set([], '')).to.throw(errorMsg)
-          await expect(() => store.set([], '123')).to.throw(errorMsg)
-          await expect(() => store.set([], 123)).to.throw(errorMsg)
-          await expect(() => store.set([], 0)).to.throw(errorMsg)
-          await expect(() => store.set([], [])).to.throw(errorMsg)
-          await expect(() => store.set([], () => undefined)).to.throw(errorMsg)
-          await expect(() => store.set([], true)).to.throw(errorMsg)
-          await expect(() => store.set([], false)).to.throw(errorMsg)
-        })
-
-        it('fails when Duplicate Behaviour Seconds is invalid', async () => {
-          const errorMsg = 'Duplicate Behaviour argument must be one of this values: OnlyUpdate, AlwaysAdd.'
-
-          await expect(() => store.set([], { duplicateBehaviour: null })).to.throw(errorMsg)
-          await expect(() => store.set([], { duplicateBehaviour: false })).to.throw(errorMsg)
-          await expect(() => store.set([], { duplicateBehaviour: true })).to.throw(errorMsg)
-          await expect(() => store.set([], { duplicateBehaviour: '' })).to.throw(errorMsg)
-          await expect(() => store.set([], { duplicateBehaviour: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.set([], { duplicateBehaviour: NaN })).to.throw(errorMsg)
-          await expect(() => store.set([], { duplicateBehaviour: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Score Update Mode is invalid', async () => {
-          const errorMsg = 'Score Update Mode argument must be one of this values: Greater, Less.'
-
-          await expect(() => store.set([], { scoreUpdateMode: null })).to.throw(errorMsg)
-          await expect(() => store.set([], { scoreUpdateMode: false })).to.throw(errorMsg)
-          await expect(() => store.set([], { scoreUpdateMode: true })).to.throw(errorMsg)
-          await expect(() => store.set([], { scoreUpdateMode: '' })).to.throw(errorMsg)
-          await expect(() => store.set([], { scoreUpdateMode: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.set([], { scoreUpdateMode: NaN })).to.throw(errorMsg)
-          await expect(() => store.set([], { scoreUpdateMode: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Result Type is invalid', async () => {
-          const errorMsg = 'Result Type must be one of this values: NewAdded, TotalChanged.'
-
-          await expect(() => store.set([], { resultType: null })).to.throw(errorMsg)
-          await expect(() => store.set([], { resultType: false })).to.throw(errorMsg)
-          await expect(() => store.set([], { resultType: true })).to.throw(errorMsg)
-          await expect(() => store.set([], { resultType: '' })).to.throw(errorMsg)
-          await expect(() => store.set([], { resultType: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.set([], { resultType: NaN })).to.throw(errorMsg)
-          await expect(() => store.set([], { resultType: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Get Random', () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRandom()
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-random`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with count', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRandom({ count: 3 })
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-random?count=3`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with scores', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRandom({ count: 3, withScores: true })
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-random?count=3&withScores=true`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.getRandom()).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.getRandom(null)).to.throw(errorMsg)
-          await expect(() => store.getRandom(NaN)).to.throw(errorMsg)
-          await expect(() => store.getRandom('')).to.throw(errorMsg)
-          await expect(() => store.getRandom('123')).to.throw(errorMsg)
-          await expect(() => store.getRandom(123)).to.throw(errorMsg)
-          await expect(() => store.getRandom(0)).to.throw(errorMsg)
-          await expect(() => store.getRandom([])).to.throw(errorMsg)
-          await expect(() => store.getRandom(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.getRandom(true)).to.throw(errorMsg)
-          await expect(() => store.getRandom(false)).to.throw(errorMsg)
-        })
-
-        it('fails when count is invalid', async () => {
-          const errorMsg = 'Count must be a number.'
-
-          await expect(() => store.getRandom({ count: null })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: false })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: true })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: '' })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: {} })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: [] })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ count: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when withScores argument is invalid', async () => {
-          const errorMsg = 'With Scores argument must be a boolean.'
-
-          await expect(() => store.getRandom({ withScores: null })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: '' })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: {} })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: [] })).to.throw(errorMsg)
-          await expect(() => store.getRandom({ withScores: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Get Score', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getScore('testKey1')
-
-          expect(request).to.deep.include({
-            method: 'POST',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.getScore('keyValue')).to.throw(errorMsg)
-        })
-
-        it('fails when values is invalid', async () => {
-          const errorMsg = 'Value must be provided and must be a string.'
-
-          await expect(() => store.getScore(undefined)).to.throw(errorMsg)
-          await expect(() => store.getScore(null)).to.throw(errorMsg)
-          await expect(() => store.getScore(0)).to.throw(errorMsg)
-          await expect(() => store.getScore(false)).to.throw(errorMsg)
-          await expect(() => store.getScore('')).to.throw(errorMsg)
-          await expect(() => store.getScore(true)).to.throw(errorMsg)
-          await expect(() => store.getScore(123)).to.throw(errorMsg)
-          await expect(() => store.getScore(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.getScore({})).to.throw(errorMsg)
-        })
-      })
-
-      describe('Increment Score', () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.incrementScore('foo', 10)
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/increment`,
-            body  : { member: 'foo', scoreAmount: 10 }
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.incrementScore('foo', 10)).to.throw(errorMsg)
-        })
-
-        it('fails when value is invalid', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
-
-          const errorMsg = 'Value must be provided and must be a string.'
-
-          await expect(() => store.incrementScore(undefined)).to.throw(errorMsg)
-          await expect(() => store.incrementScore(null)).to.throw(errorMsg)
-          await expect(() => store.incrementScore(false)).to.throw(errorMsg)
-          await expect(() => store.incrementScore('')).to.throw(errorMsg)
-          await expect(() => store.incrementScore(NaN)).to.throw(errorMsg)
-          await expect(() => store.incrementScore(true)).to.throw(errorMsg)
-          await expect(() => store.incrementScore(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.incrementScore({})).to.throw(errorMsg)
-        })
-
-        it('fails when increment count is invalid', async () => {
-          const errorMsg = 'Count must be provided and must be a number.'
-
-          await expect(() => store.incrementScore('foo', undefined)).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', null)).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', false)).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', '')).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', '123')).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', NaN)).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', true)).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.incrementScore('foo', {})).to.throw(errorMsg)
-        })
-      })
-
-      describe('Get and Remove Max Score', () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getAndRemoveMaxScore()
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-first-and-remove`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with count', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getAndRemoveMaxScore(3)
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-first-and-remove?count=3`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.getAndRemoveMaxScore()).to.throw(errorMsg)
-        })
-
-        it('fails when count is invalid', async () => {
-          const errorMsg = 'Count must be a number.'
-
-          await expect(() => store.getAndRemoveMaxScore(null)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore(false)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore(true)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore('')).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore('foo')).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore(NaN)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore({})).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore([])).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMaxScore(() => undefined)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Get and Remove Min Score', () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getAndRemoveMinScore()
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-last-and-remove`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with count', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getAndRemoveMinScore(3)
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-last-and-remove?count=3`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.getAndRemoveMinScore()).to.throw(errorMsg)
-        })
-
-        it('fails when count is invalid', async () => {
-          const errorMsg = 'Count must be a number.'
-
-          await expect(() => store.getAndRemoveMinScore(null)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore(false)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore(true)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore('')).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore('foo')).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore(NaN)).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore({})).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore([])).to.throw(errorMsg)
-          await expect(() => store.getAndRemoveMinScore(() => undefined)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Get Rank', () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRank('foo')
-
-          expect(request).to.deep.include({
-            method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
-            headers: { 'Content-Type': 'text/plain' },
-            body   : 'foo'
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with reverse', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRank('foo', true)
-
-          expect(request).to.deep.include({
-            method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank?reverse=true`,
-            headers: { 'Content-Type': 'text/plain' },
-            body   : 'foo'
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.getRank('foo')).to.throw(errorMsg)
-        })
-
-        it('fails when values is invalid', async () => {
-          const errorMsg = 'Value must be provided and must be a string.'
-
-          await expect(() => store.getRank(undefined)).to.throw(errorMsg)
-          await expect(() => store.getRank(null)).to.throw(errorMsg)
-          await expect(() => store.getRank(0)).to.throw(errorMsg)
-          await expect(() => store.getRank(false)).to.throw(errorMsg)
-          await expect(() => store.getRank('')).to.throw(errorMsg)
-          await expect(() => store.getRank(true)).to.throw(errorMsg)
-          await expect(() => store.getRank(123)).to.throw(errorMsg)
-          await expect(() => store.getRank(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.getRank({})).to.throw(errorMsg)
-        })
-
-        it('fails when Reverse argument is invalid', async () => {
-          const errorMsg = 'Reverse argument must be a boolean.'
-
-          await expect(() => store.getRank('foo', null)).to.throw(errorMsg)
-          await expect(() => store.getRank('foo', '')).to.throw(errorMsg)
-          await expect(() => store.getRank('foo', 'foo')).to.throw(errorMsg)
-          await expect(() => store.getRank('foo', NaN)).to.throw(errorMsg)
-          await expect(() => store.getRank('foo', {})).to.throw(errorMsg)
-          await expect(() => store.getRank('foo', [])).to.throw(errorMsg)
-          await expect(() => store.getRank('foo', () => undefined)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Delete Values', () => {
-        it('success with single key', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeValues('testKey')
-
-          expect(request).to.deep.include({
-            method : 'DELETE',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/values`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with multi keys', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeValues(['testKey1', 'testKey2'])
-
-          expect(request).to.deep.include({
-            method : 'DELETE',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/values`,
-            headers: { 'Content-Type': 'application/json' },
-            body   : ['testKey1', 'testKey2']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.removeValues()).to.throw(errorMsg)
-        })
-
-        it('fails when values is invalid', async () => {
-          const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
-
-          await expect(() => store.removeValues(undefined)).to.throw(errorMsg)
-          await expect(() => store.removeValues(null)).to.throw(errorMsg)
-          await expect(() => store.removeValues(0)).to.throw(errorMsg)
-          await expect(() => store.removeValues(false)).to.throw(errorMsg)
-          await expect(() => store.removeValues('')).to.throw(errorMsg)
-          await expect(() => store.removeValues(true)).to.throw(errorMsg)
-          await expect(() => store.removeValues(123)).to.throw(errorMsg)
-          await expect(() => store.removeValues(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeValues({})).to.throw(errorMsg)
-        })
-      })
-
-      describe('Get Range by Rank', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRangeByRank(1, 2)
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-rank?startRank=1&stopRank=2`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with options', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRangeByRank(1, 2, {
-            withScores: true,
-            reverse   : true,
-          })
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-rank?startRank=1&stopRank=2&withScores=true&reverse=true`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.getRangeByRank()).to.throw(errorMsg)
-        })
-
-        it('fails when Start Rank is invalid', async () => {
-          const errorMsg = 'Start Rank must be provided and must be a number.'
-
-          await expect(() => store.getRangeByRank(null)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(false)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(true)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank('')).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank('foo')).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(NaN)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(() => undefined)).to.throw(errorMsg)
-        })
-
-        it('fails when Stop Rank is invalid', async () => {
-          const errorMsg = 'Stop Rank must be provided and must be a number.'
-
-          await expect(() => store.getRangeByRank(1, null)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, false)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, true)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, '')).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 'foo')).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, NaN)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, () => undefined)).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.getRangeByRank(1, 2, null)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, NaN)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, '')).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, '123')).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, 123)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, 0)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, [])).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, () => undefined)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, true)).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, false)).to.throw(errorMsg)
-        })
-
-        it('fails when With Scores is invalid', async () => {
-          const errorMsg = 'With Scores argument must be a boolean.'
-
-          await expect(() => store.getRangeByRank(1, 2, { withScores: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { withScores: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Reverse is invalid', async () => {
-          const errorMsg = 'Reverse argument must be a boolean.'
-
-          await expect(() => store.getRangeByRank(1, 2, { reverse: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByRank(1, 2, { reverse: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Get Range by Score', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRangeByScore()
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-score`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with options', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.getRangeByScore({
-            minScore: 1,
-            maxScore: 2,
-            minBound: 'Include',
-            maxBound: 'Exclude',
-            offset  : 123,
-            count   : 4,
-          })
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-score?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude&offset=123&count=4`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.getRangeByScore()).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.getRangeByScore(null)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(NaN)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore('')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore('123')).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(123)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(0)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore([])).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(true)).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore(false)).to.throw(errorMsg)
-        })
-
-        it('fails when Minimal Score is invalid', async () => {
-          const errorMsg = 'Minimal Score must be a number.'
-
-          await expect(() => store.getRangeByScore({ minScore: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minScore: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Score is invalid', async () => {
-          const errorMsg = 'Maximal Score must be a number.'
-
-          await expect(() => store.getRangeByScore({ maxScore: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxScore: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Minimal Bound is invalid', async () => {
-          const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
-
-          await expect(() => store.getRangeByScore({ minBound: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ minBound: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Bound is invalid', async () => {
-          const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
-
-          await expect(() => store.getRangeByScore({ maxBound: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ maxBound: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Count is invalid', async () => {
-          const errorMsg = 'Count must be a number.'
-
-          await expect(() => store.getRangeByScore({ count: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ count: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Offset is invalid', async () => {
-          const errorMsg = 'Offset must be a number.'
-
-          await expect(() => store.getRangeByScore({ offset: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: false })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: true })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ offset: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when With Scores is invalid', async () => {
-          const errorMsg = 'With Scores argument must be a boolean.'
-
-          await expect(() => store.getRangeByScore({ withScores: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ withScores: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Reverse is invalid', async () => {
-          const errorMsg = 'Reverse argument must be a boolean.'
-
-          await expect(() => store.getRangeByScore({ reverse: null })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: '' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: NaN })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: {} })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: [] })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: 0 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: 123 })).to.throw(errorMsg)
-          await expect(() => store.getRangeByScore({ reverse: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Remove values by Rank', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeValuesByRank(1, 2)
-
-          expect(request).to.deep.include({
-            method: 'DELETE',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-rank?startRank=1&stopRank=2`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.removeValuesByRank([])).to.throw(errorMsg)
-        })
-
-        it('fails when Start Rank is invalid', async () => {
-          const errorMsg = 'Start Rank must be provided and must be a number.'
-
-          await expect(() => store.removeValuesByRank(null)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(false)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(true)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank('')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank('foo')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(NaN)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(() => undefined)).to.throw(errorMsg)
-        })
-
-        it('fails when Stop Rank is invalid', async () => {
-          const errorMsg = 'Stop Rank must be provided and must be a number.'
-
-          await expect(() => store.removeValuesByRank(1, null)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(1, false)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(1, true)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(1, '')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(1, 'foo')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(1, NaN)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByRank(1, () => undefined)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Remove values by Score', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeValuesByScore()
-
-          expect(request).to.deep.include({
-            method: 'DELETE',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with options', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeValuesByScore({
-            minScore: 1,
-            maxScore: 2,
-            minBound: 'Include',
-            maxBound: 'Exclude'
-          })
-
-          expect(request).to.deep.include({
-            method: 'DELETE',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.removeValuesByScore()).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.removeValuesByScore(null)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(NaN)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore('')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore('123')).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(123)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(0)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore([])).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(true)).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore(false)).to.throw(errorMsg)
-        })
-
-        it('fails when Minimal Score is invalid', async () => {
-          const errorMsg = 'Minimal Score must be a number.'
-
-          await expect(() => store.removeValuesByScore({ minScore: null })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: false })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: true })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: '' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: NaN })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: [] })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: {} })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minScore: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Score is invalid', async () => {
-          const errorMsg = 'Maximal Score must be a number.'
-
-          await expect(() => store.removeValuesByScore({ maxScore: null })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: false })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: true })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: '' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: NaN })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: [] })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: {} })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxScore: () => undefined })).to.throw(errorMsg)
-
-        })
-
-        it('fails when Minimal Bound is invalid', async () => {
-          const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
-
-          await expect(() => store.removeValuesByScore({ minBound: null })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: '' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: {} })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: [] })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: true })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: false })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ minBound: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Bound is invalid', async () => {
-          const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
-
-          await expect(() => store.removeValuesByScore({ maxBound: null })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: '' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: {} })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: [] })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: true })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: false })).to.throw(errorMsg)
-          await expect(() => store.removeValuesByScore({ maxBound: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Length', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.length()
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/length`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.length()).to.throw(errorMsg)
-        })
-      })
-
-      describe('Count between Scores', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.countBetweenScores()
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/count`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with options', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.countBetweenScores({
-            minScore: 1,
-            maxScore: 2,
-            minBound: 'Include',
-            maxBound: 'Exclude'
-          })
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/count?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store created without key', async () => {
-          store = Backendless.Hive(hiveName).SortedSetStore()
-
-          const errorMsg = 'Store must be created with store key.'
-
-          await expect(() => store.countBetweenScores()).to.throw(errorMsg)
-        })
-
-        it('fails when Minimal Score is invalid', async () => {
-          const errorMsg = 'Minimal Score must be a number.'
-
-          await expect(() => store.countBetweenScores({ minScore: null })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: false })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: true })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: '' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: [] })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: {} })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: NaN })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minScore: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Score is invalid', async () => {
-          const errorMsg = 'Maximal Score must be a number.'
-
-          await expect(() => store.countBetweenScores({ maxScore: null })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: false })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: true })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: '' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: [] })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: {} })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: NaN })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxScore: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when options is invalid', async () => {
-          const errorMsg = 'Options must be an object.'
-
-          await expect(() => store.countBetweenScores(null)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(NaN)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores('')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores('123')).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(123)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(0)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores([])).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(true)).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores(false)).to.throw(errorMsg)
-        })
-
-        it('fails when Minimal Bound is invalid', async () => {
-          const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
-
-          await expect(() => store.countBetweenScores({ minBound: null })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: '' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: {} })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: [] })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: true })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: false })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ minBound: () => undefined })).to.throw(errorMsg)
-        })
-
-        it('fails when Maximal Bound is invalid', async () => {
-          const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
-
-          await expect(() => store.countBetweenScores({ maxBound: null })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: '' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: 'foo' })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: NaN })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: {} })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: 0 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: 123 })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: [] })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: true })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: false })).to.throw(errorMsg)
-          await expect(() => store.countBetweenScores({ maxBound: () => undefined })).to.throw(errorMsg)
-        })
-      })
-
-      describe('Difference', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.difference(['set1', 'set2'])
-
-          expect(request).to.deep.include({
-            method: 'POST',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/action/difference`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store keys argument is invalid', async () => {
-          const errorMsg = 'Store keys must be provided and must be an array.'
-
-          await expect(() => store.difference(undefined)).to.throw(errorMsg)
-          await expect(() => store.difference(null)).to.throw(errorMsg)
-          await expect(() => store.difference(false)).to.throw(errorMsg)
-          await expect(() => store.difference(0)).to.throw(errorMsg)
-          await expect(() => store.difference(123)).to.throw(errorMsg)
-          await expect(() => store.difference('')).to.throw(errorMsg)
-          await expect(() => store.difference({})).to.throw(errorMsg)
-          await expect(() => store.difference(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.difference(true)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Intersection', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.intersection(['set1', 'set2'])
-
-          expect(request).to.deep.include({
-            method: 'POST',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/action/intersection`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store keys argument is invalid', async () => {
-          const errorMsg = 'Store keys must be provided and must be an array.'
-
-          await expect(() => store.intersection(undefined)).to.throw(errorMsg)
-          await expect(() => store.intersection(null)).to.throw(errorMsg)
-          await expect(() => store.intersection(false)).to.throw(errorMsg)
-          await expect(() => store.intersection(0)).to.throw(errorMsg)
-          await expect(() => store.intersection(123)).to.throw(errorMsg)
-          await expect(() => store.intersection('')).to.throw(errorMsg)
-          await expect(() => store.intersection({})).to.throw(errorMsg)
-          await expect(() => store.intersection(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.intersection(true)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Union', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.union(['set1', 'set2'])
-
-          expect(request).to.deep.include({
-            method: 'POST',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/action/union`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when store keys argument is invalid', async () => {
-          const errorMsg = 'Store keys must be provided and must be an array.'
-
-          await expect(() => store.union(undefined)).to.throw(errorMsg)
-          await expect(() => store.union(null)).to.throw(errorMsg)
-          await expect(() => store.union(false)).to.throw(errorMsg)
-          await expect(() => store.union(0)).to.throw(errorMsg)
-          await expect(() => store.union(123)).to.throw(errorMsg)
-          await expect(() => store.union('')).to.throw(errorMsg)
-          await expect(() => store.union({})).to.throw(errorMsg)
-          await expect(() => store.union(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.union(true)).to.throw(errorMsg)
-        })
+      it('fails when increment count is invalid', async () => {
+        const errorMsg = 'Count must be provided and must be a number.'
+
+        await expect(() => store.incrementScore('foo', undefined)).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', null)).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', false)).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', '')).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', '123')).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', NaN)).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', true)).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.incrementScore('foo', {})).to.throw(errorMsg)
       })
     })
+
+    describe('Get and Remove Max Score', () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getAndRemoveMaxScore()
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-first-and-remove`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with count', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getAndRemoveMaxScore(3)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-first-and-remove?count=3`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when count is invalid', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.getAndRemoveMaxScore(null)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore(false)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore(true)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore('')).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore('foo')).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore({})).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore([])).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMaxScore(() => undefined)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Get and Remove Min Score', () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getAndRemoveMinScore()
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-last-and-remove`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with count', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getAndRemoveMinScore(3)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-last-and-remove?count=3`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when count is invalid', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.getAndRemoveMinScore(null)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore(false)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore(true)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore('')).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore('foo')).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore({})).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore([])).to.throw(errorMsg)
+        await expect(() => store.getAndRemoveMinScore(() => undefined)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Get Rank', () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRank('foo')
+
+        expect(request).to.deep.include({
+          method : 'POST',
+          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
+          headers: { 'Content-Type': 'text/plain' },
+          body   : 'foo'
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with reverse', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRank('foo', true)
+
+        expect(request).to.deep.include({
+          method : 'POST',
+          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank?reverse=true`,
+          headers: { 'Content-Type': 'text/plain' },
+          body   : 'foo'
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when values is invalid', async () => {
+        const errorMsg = 'Value must be provided and must be a string.'
+
+        await expect(() => store.getRank(undefined)).to.throw(errorMsg)
+        await expect(() => store.getRank(null)).to.throw(errorMsg)
+        await expect(() => store.getRank(0)).to.throw(errorMsg)
+        await expect(() => store.getRank(false)).to.throw(errorMsg)
+        await expect(() => store.getRank('')).to.throw(errorMsg)
+        await expect(() => store.getRank(true)).to.throw(errorMsg)
+        await expect(() => store.getRank(123)).to.throw(errorMsg)
+        await expect(() => store.getRank(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.getRank({})).to.throw(errorMsg)
+      })
+
+      it('fails when Reverse argument is invalid', async () => {
+        const errorMsg = 'Reverse argument must be a boolean.'
+
+        await expect(() => store.getRank('foo', null)).to.throw(errorMsg)
+        await expect(() => store.getRank('foo', '')).to.throw(errorMsg)
+        await expect(() => store.getRank('foo', 'foo')).to.throw(errorMsg)
+        await expect(() => store.getRank('foo', NaN)).to.throw(errorMsg)
+        await expect(() => store.getRank('foo', {})).to.throw(errorMsg)
+        await expect(() => store.getRank('foo', [])).to.throw(errorMsg)
+        await expect(() => store.getRank('foo', () => undefined)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Delete Values', () => {
+      it('success with single key', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeValues('testKey')
+
+        expect(request).to.deep.include({
+          method : 'DELETE',
+          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/values`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : ['testKey']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with multi keys', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeValues(['testKey1', 'testKey2'])
+
+        expect(request).to.deep.include({
+          method : 'DELETE',
+          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/values`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : ['testKey1', 'testKey2']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when values is invalid', async () => {
+        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+
+        await expect(() => store.removeValues(undefined)).to.throw(errorMsg)
+        await expect(() => store.removeValues(null)).to.throw(errorMsg)
+        await expect(() => store.removeValues(0)).to.throw(errorMsg)
+        await expect(() => store.removeValues(false)).to.throw(errorMsg)
+        await expect(() => store.removeValues('')).to.throw(errorMsg)
+        await expect(() => store.removeValues(true)).to.throw(errorMsg)
+        await expect(() => store.removeValues(123)).to.throw(errorMsg)
+        await expect(() => store.removeValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.removeValues({})).to.throw(errorMsg)
+      })
+    })
+
+    describe('Get Range by Rank', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRangeByRank(1, 2)
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-rank?startRank=1&stopRank=2`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with options', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRangeByRank(1, 2, {
+          withScores: true,
+          reverse   : true,
+        })
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-rank?startRank=1&stopRank=2&withScores=true&reverse=true`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when Start Rank is invalid', async () => {
+        const errorMsg = 'Start Rank must be provided and must be a number.'
+
+        await expect(() => store.getRangeByRank(null)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(false)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(true)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank('')).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank('foo')).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(NaN)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(() => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails when Stop Rank is invalid', async () => {
+        const errorMsg = 'Stop Rank must be provided and must be a number.'
+
+        await expect(() => store.getRangeByRank(1, null)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, false)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, true)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, '')).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 'foo')).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, NaN)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, () => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails when options is invalid', async () => {
+        const errorMsg = 'Options must be an object.'
+
+        await expect(() => store.getRangeByRank(1, 2, null)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, NaN)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, '')).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, '123')).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, 123)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, 0)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, [])).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, () => undefined)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, true)).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, false)).to.throw(errorMsg)
+      })
+
+      it('fails when With Scores is invalid', async () => {
+        const errorMsg = 'With Scores argument must be a boolean.'
+
+        await expect(() => store.getRangeByRank(1, 2, { withScores: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: 0 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: 123 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { withScores: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Reverse is invalid', async () => {
+        const errorMsg = 'Reverse argument must be a boolean.'
+
+        await expect(() => store.getRangeByRank(1, 2, { reverse: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: 0 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: 123 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByRank(1, 2, { reverse: () => undefined })).to.throw(errorMsg)
+      })
+    })
+
+    describe('Get Range by Score', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRangeByScore()
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-score`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with options', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.getRangeByScore({
+          minScore: 1,
+          maxScore: 2,
+          minBound: 'Include',
+          maxBound: 'Exclude',
+          offset  : 123,
+          count   : 4,
+        })
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-range-by-score?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude&offset=123&count=4`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when options is invalid', async () => {
+        const errorMsg = 'Options must be an object.'
+
+        await expect(() => store.getRangeByScore(null)).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore('')).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore('123')).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore(123)).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore(0)).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore([])).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore(true)).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore(false)).to.throw(errorMsg)
+      })
+
+      it('fails when Minimal Score is invalid', async () => {
+        const errorMsg = 'Minimal Score must be a number.'
+
+        await expect(() => store.getRangeByScore({ minScore: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: false })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: true })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minScore: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Maximal Score is invalid', async () => {
+        const errorMsg = 'Maximal Score must be a number.'
+
+        await expect(() => store.getRangeByScore({ maxScore: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: false })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: true })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxScore: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Minimal Bound is invalid', async () => {
+        const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
+
+        await expect(() => store.getRangeByScore({ minBound: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: true })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: false })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ minBound: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Maximal Bound is invalid', async () => {
+        const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
+
+        await expect(() => store.getRangeByScore({ maxBound: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: true })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: false })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ maxBound: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Count is invalid', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.getRangeByScore({ count: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: true })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: false })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ count: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Offset is invalid', async () => {
+        const errorMsg = 'Offset must be a number.'
+
+        await expect(() => store.getRangeByScore({ offset: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: false })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: true })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ offset: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when With Scores is invalid', async () => {
+        const errorMsg = 'With Scores argument must be a boolean.'
+
+        await expect(() => store.getRangeByScore({ withScores: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: 0 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: 123 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ withScores: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Reverse is invalid', async () => {
+        const errorMsg = 'Reverse argument must be a boolean.'
+
+        await expect(() => store.getRangeByScore({ reverse: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: 0 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: 123 })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ reverse: () => undefined })).to.throw(errorMsg)
+      })
+    })
+
+    describe('Remove values by Rank', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeValuesByRank(1, 2)
+
+        expect(request).to.deep.include({
+          method: 'DELETE',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-rank?startRank=1&stopRank=2`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when Start Rank is invalid', async () => {
+        const errorMsg = 'Start Rank must be provided and must be a number.'
+
+        await expect(() => store.removeValuesByRank(null)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(false)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(true)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank('')).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank('foo')).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(NaN)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(() => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails when Stop Rank is invalid', async () => {
+        const errorMsg = 'Stop Rank must be provided and must be a number.'
+
+        await expect(() => store.removeValuesByRank(1, null)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(1, false)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(1, true)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(1, '')).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(1, 'foo')).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(1, NaN)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByRank(1, () => undefined)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Remove values by Score', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeValuesByScore()
+
+        expect(request).to.deep.include({
+          method: 'DELETE',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with options', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeValuesByScore({
+          minScore: 1,
+          maxScore: 2,
+          minBound: 'Include',
+          maxBound: 'Exclude'
+        })
+
+        expect(request).to.deep.include({
+          method: 'DELETE',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when options is invalid', async () => {
+        const errorMsg = 'Options must be an object.'
+
+        await expect(() => store.removeValuesByScore(null)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore('')).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore('123')).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore(123)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore(0)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore([])).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore(true)).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore(false)).to.throw(errorMsg)
+      })
+
+      it('fails when Minimal Score is invalid', async () => {
+        const errorMsg = 'Minimal Score must be a number.'
+
+        await expect(() => store.removeValuesByScore({ minScore: null })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: false })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: true })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: '' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: [] })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: {} })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minScore: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Maximal Score is invalid', async () => {
+        const errorMsg = 'Maximal Score must be a number.'
+
+        await expect(() => store.removeValuesByScore({ maxScore: null })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: false })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: true })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: '' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: [] })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: {} })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxScore: () => undefined })).to.throw(errorMsg)
+
+      })
+
+      it('fails when Minimal Bound is invalid', async () => {
+        const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
+
+        await expect(() => store.removeValuesByScore({ minBound: null })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: '' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: {} })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: [] })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: true })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: false })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ minBound: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Maximal Bound is invalid', async () => {
+        const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
+
+        await expect(() => store.removeValuesByScore({ maxBound: null })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: '' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: {} })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: [] })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: true })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: false })).to.throw(errorMsg)
+        await expect(() => store.removeValuesByScore({ maxBound: () => undefined })).to.throw(errorMsg)
+      })
+    })
+
+    describe('Length', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.length()
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/length`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+    })
+
+    describe('Count between Scores', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.countBetweenScores()
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/count`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with options', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.countBetweenScores({
+          minScore: 1,
+          maxScore: 2,
+          minBound: 'Include',
+          maxBound: 'Exclude'
+        })
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/count?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when Minimal Score is invalid', async () => {
+        const errorMsg = 'Minimal Score must be a number.'
+
+        await expect(() => store.countBetweenScores({ minScore: null })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: false })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: true })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: '' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: [] })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: {} })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minScore: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Maximal Score is invalid', async () => {
+        const errorMsg = 'Maximal Score must be a number.'
+
+        await expect(() => store.countBetweenScores({ maxScore: null })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: false })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: true })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: '' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: [] })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: {} })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxScore: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when options is invalid', async () => {
+        const errorMsg = 'Options must be an object.'
+
+        await expect(() => store.countBetweenScores(null)).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores(NaN)).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores('')).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores('123')).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores(123)).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores(0)).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores([])).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores(true)).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores(false)).to.throw(errorMsg)
+      })
+
+      it('fails when Minimal Bound is invalid', async () => {
+        const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
+
+        await expect(() => store.countBetweenScores({ minBound: null })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: '' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: {} })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: [] })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: true })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: false })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ minBound: () => undefined })).to.throw(errorMsg)
+      })
+
+      it('fails when Maximal Bound is invalid', async () => {
+        const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
+
+        await expect(() => store.countBetweenScores({ maxBound: null })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: '' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: {} })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: [] })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: true })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: false })).to.throw(errorMsg)
+        await expect(() => store.countBetweenScores({ maxBound: () => undefined })).to.throw(errorMsg)
+      })
+    })
+
   })
 })
