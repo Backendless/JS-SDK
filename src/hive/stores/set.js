@@ -119,8 +119,9 @@ export class SetStore extends HiveStore {
     return this.app.request
       .get({
         url    : `${this.getBaseURL()}/contains`,
-        headers: { 'Content-Type': 'text/plain' },
-        data   : value
+        data   : {
+          value
+        }
       })
   }
 

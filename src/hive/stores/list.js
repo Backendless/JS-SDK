@@ -55,9 +55,10 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url    : `${this.getBaseURL()}/${index}`,
-        headers: { 'Content-Type': 'text/plain' },
-        data   : value
+        url : `${this.getBaseURL()}/${index}`,
+        data: {
+          value
+        }
       })
   }
 
@@ -103,10 +104,11 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url    : `${this.getBaseURL()}/remove-value`,
-        headers: { 'Content-Type': 'text/plain' },
-        data   : value,
-        query  : { count }
+        url : `${this.getBaseURL()}/remove-value`,
+        data: {
+          value,
+          count
+        },
       })
   }
 

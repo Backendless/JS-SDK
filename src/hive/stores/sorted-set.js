@@ -181,9 +181,10 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .post({
-        url    : `${this.getBaseURL()}/get-score`,
-        headers: { 'Content-Type': 'text/plain' },
-        data   : value,
+        url : `${this.getBaseURL()}/get-score`,
+        data: {
+          value
+        },
       })
   }
 
@@ -198,10 +199,11 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .post({
-        url    : `${this.getBaseURL()}/get-rank`,
-        headers: { 'Content-Type': 'text/plain' },
-        query  : { reverse },
-        data   : value,
+        url : `${this.getBaseURL()}/get-rank`,
+        data: {
+          value,
+          reverse
+        },
       })
   }
 

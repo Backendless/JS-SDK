@@ -665,12 +665,14 @@ describe('Hive - Map Store', function() {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.setValue('target', 'value')
+        const result = await store.setValue('target', 'value1')
 
         expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
-          body  : 'value'
+          body  : {
+            value: 'value1'
+          }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -679,12 +681,15 @@ describe('Hive - Map Store', function() {
       it('success with before argument', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.setValue('target', 'value', false)
+        const result = await store.setValue('target', 'value1', false)
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target?ifNotExists=false`,
-          body  : 'value'
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
+          body  : {
+            value      : 'value1',
+            ifNotExists: false
+          }
         })
 
         expect(result).to.be.eql(fakeResult)

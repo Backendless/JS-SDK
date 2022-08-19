@@ -428,449 +428,455 @@ describe('Hive - List Store', function() {
     })
   })
 
-    describe('Instance', ()=> {
+  describe('Instance', () => {
 
-      describe('Get', () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
+    describe('Get', () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
 
-          const result = await store.get()
+        const result = await store.get()
 
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}`,
         })
 
-        it('success with index', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.get(0)
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/0`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with range', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.get(0, 3)
-
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}?from=0&to=3`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when Index is invalid', async () => {
-          const errorMsg = 'Index must be a number.'
-
-          await expect(() => store.get(null)).to.throw(errorMsg)
-          await expect(() => store.get(NaN)).to.throw(errorMsg)
-          await expect(() => store.get(false)).to.throw(errorMsg)
-          await expect(() => store.get('')).to.throw(errorMsg)
-          await expect(() => store.get('qwe')).to.throw(errorMsg)
-          await expect(() => store.get(true)).to.throw(errorMsg)
-          await expect(() => store.get(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.get({})).to.throw(errorMsg)
-        })
-
-        it('fails when Index To is invalid', async () => {
-          const errorMsg = 'Index To must be a number.'
-
-          await expect(() => store.get(1, null)).to.throw(errorMsg)
-          await expect(() => store.get(1, NaN)).to.throw(errorMsg)
-          await expect(() => store.get(1, false)).to.throw(errorMsg)
-          await expect(() => store.get(1, '')).to.throw(errorMsg)
-          await expect(() => store.get(1, 'qwe')).to.throw(errorMsg)
-          await expect(() => store.get(1, true)).to.throw(errorMsg)
-          await expect(() => store.get(1, () => undefined)).to.throw(errorMsg)
-          await expect(() => store.get(1, {})).to.throw(errorMsg)
-        })
-
-        it('fails when Index From is invalid', async () => {
-          const errorMsg = 'Index From must be a number.'
-
-          await expect(() => store.get(null, 1)).to.throw(errorMsg)
-          await expect(() => store.get(NaN, 1)).to.throw(errorMsg)
-          await expect(() => store.get(false, 1)).to.throw(errorMsg)
-          await expect(() => store.get('', 1)).to.throw(errorMsg)
-          await expect(() => store.get('qwe', 1)).to.throw(errorMsg)
-          await expect(() => store.get(true, 1)).to.throw(errorMsg)
-          await expect(() => store.get(() => undefined, 1)).to.throw(errorMsg)
-          await expect(() => store.get({}, 1)).to.throw(errorMsg)
-        })
+        expect(result).to.be.eql(fakeResult)
       })
 
-      describe('Set', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
+      it('success with index', async () => {
+        const request = prepareMockRequest(fakeResult)
 
-          const result = await store.set(['value1', 'value2'])
+        const result = await store.get(0)
 
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}`,
-            body  : ['value1', 'value2']
-          })
-
-          expect(result).to.be.eql(fakeResult)
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/0`,
         })
 
-        it('success with index', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.set('value1', 0)
-
-          expect(request).to.deep.include({
-            method : 'PUT',
-            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/0`,
-            headers: { 'Content-Type': 'text/plain' },
-            body   : 'value1'
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails with invalid index', async () => {
-          store = Backendless.Hive(hiveName).ListStore(storeKey)
-
-          const errorMsg = 'Index must be a number.'
-
-          await expect(() => store.set('v', null)).to.throw(errorMsg)
-          await expect(() => store.set('v', NaN)).to.throw(errorMsg)
-          await expect(() => store.set('v', false)).to.throw(errorMsg)
-          await expect(() => store.set('v', '')).to.throw(errorMsg)
-          await expect(() => store.set('v', 'qwe')).to.throw(errorMsg)
-          await expect(() => store.set('v', true)).to.throw(errorMsg)
-          await expect(() => store.set('v', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.set('v', {})).to.throw(errorMsg)
-        })
+        expect(result).to.be.eql(fakeResult)
       })
 
-      describe('Length', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
+      it('success with range', async () => {
+        const request = prepareMockRequest(fakeResult)
 
-          const result = await store.length()
+        const result = await store.get(0, 3)
 
-          expect(request).to.deep.include({
-            method: 'GET',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/length`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}?from=0&to=3`,
         })
 
+        expect(result).to.be.eql(fakeResult)
       })
 
-      describe('Insert', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
+      it('fails when Index is invalid', async () => {
+        const errorMsg = 'Index must be a number.'
 
-          const result = await store.insert('target', 'value')
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert`,
-            body  : { 'targetValue': 'target', 'value': 'value', }
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with before argument', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.insert('target', 'value', false)
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert`,
-            body  : { 'targetValue': 'target', 'value': 'value', 'before': false }
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails with invalid targetValue', async () => {
-          const errorMsg = 'Target Value must be provided and must be a string.'
-
-          await expect(() => store.insert(undefined, 'v')).to.throw(errorMsg)
-          await expect(() => store.insert(null, 'v')).to.throw(errorMsg)
-          await expect(() => store.insert(false, 'v')).to.throw(errorMsg)
-          await expect(() => store.insert(true, 'v')).to.throw(errorMsg)
-          await expect(() => store.insert(0, 'v')).to.throw(errorMsg)
-          await expect(() => store.insert(123, 'v')).to.throw(errorMsg)
-          await expect(() => store.insert('', 'v')).to.throw(errorMsg)
-          await expect(() => store.insert({}, 'v')).to.throw(errorMsg)
-          await expect(() => store.insert([], 'v')).to.throw(errorMsg)
-          await expect(() => store.insert(() => undefined, 'v')).to.throw(errorMsg)
-        })
-
-        it('fails with invalid value', async () => {
-          const errorMsg = 'Value must be provided and must be a string.'
-
-          await expect(() => store.insert('v', undefined)).to.throw(errorMsg)
-          await expect(() => store.insert('v', null)).to.throw(errorMsg)
-          await expect(() => store.insert('v', false)).to.throw(errorMsg)
-          await expect(() => store.insert('v', 0)).to.throw(errorMsg)
-          await expect(() => store.insert('v', '')).to.throw(errorMsg)
-          await expect(() => store.insert('v', true)).to.throw(errorMsg)
-          await expect(() => store.insert('v', 123)).to.throw(errorMsg)
-          await expect(() => store.insert('v', {})).to.throw(errorMsg)
-          await expect(() => store.insert('v', [])).to.throw(errorMsg)
-          await expect(() => store.insert('v', () => undefined)).to.throw(errorMsg)
-        })
-
-        it('fails with invalid before argument', async () => {
-          const errorMsg = 'Argument Before must be a boolean.'
-
-          await expect(() => store.insert('v', 'v', null)).to.throw(errorMsg)
-          await expect(() => store.insert('v', 'v', {})).to.throw(errorMsg)
-          await expect(() => store.insert('v', 'v', [])).to.throw(errorMsg)
-          await expect(() => store.insert('v', 'v', 0)).to.throw(errorMsg)
-          await expect(() => store.insert('v', 'v', 123)).to.throw(errorMsg)
-          await expect(() => store.insert('v', 'v', '')).to.throw(errorMsg)
-          await expect(() => store.insert('v', 'v', '123')).to.throw(errorMsg)
-          await expect(() => store.insert('v', 'v', () => undefined)).to.throw(errorMsg)
-        })
+        await expect(() => store.get(null)).to.throw(errorMsg)
+        await expect(() => store.get(NaN)).to.throw(errorMsg)
+        await expect(() => store.get(false)).to.throw(errorMsg)
+        await expect(() => store.get('')).to.throw(errorMsg)
+        await expect(() => store.get('qwe')).to.throw(errorMsg)
+        await expect(() => store.get(true)).to.throw(errorMsg)
+        await expect(() => store.get(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.get({})).to.throw(errorMsg)
       })
 
-      describe('Remove Value', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
+      it('fails when Index To is invalid', async () => {
+        const errorMsg = 'Index To must be a number.'
 
-          const result = await store.removeValue('value')
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-value`,
-            body  : 'value'
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with count', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeValue('value', 3)
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-value?count=3`,
-            body  : 'value'
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails with invalid value', async () => {
-          const errorMsg = 'Value must be provided and must be a string.'
-
-          await expect(() => store.removeValue(undefined)).to.throw(errorMsg)
-          await expect(() => store.removeValue(null)).to.throw(errorMsg)
-          await expect(() => store.removeValue(false)).to.throw(errorMsg)
-          await expect(() => store.removeValue(true)).to.throw(errorMsg)
-          await expect(() => store.removeValue(0)).to.throw(errorMsg)
-          await expect(() => store.removeValue(123)).to.throw(errorMsg)
-          await expect(() => store.removeValue('')).to.throw(errorMsg)
-          await expect(() => store.removeValue({})).to.throw(errorMsg)
-          await expect(() => store.removeValue([])).to.throw(errorMsg)
-          await expect(() => store.removeValue(() => undefined)).to.throw(errorMsg)
-        })
-
-        it('fails with invalid count', async () => {
-          const errorMsg = 'Count must be a number.'
-
-          await expect(() => store.removeValue('v', null)).to.throw(errorMsg)
-          await expect(() => store.removeValue('v', NaN)).to.throw(errorMsg)
-          await expect(() => store.removeValue('v', false)).to.throw(errorMsg)
-          await expect(() => store.removeValue('v', '')).to.throw(errorMsg)
-          await expect(() => store.removeValue('v', 'qwe')).to.throw(errorMsg)
-          await expect(() => store.removeValue('v', true)).to.throw(errorMsg)
-          await expect(() => store.removeValue('v', () => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeValue('v', {})).to.throw(errorMsg)
-        })
+        await expect(() => store.get(1, null)).to.throw(errorMsg)
+        await expect(() => store.get(1, NaN)).to.throw(errorMsg)
+        await expect(() => store.get(1, false)).to.throw(errorMsg)
+        await expect(() => store.get(1, '')).to.throw(errorMsg)
+        await expect(() => store.get(1, 'qwe')).to.throw(errorMsg)
+        await expect(() => store.get(1, true)).to.throw(errorMsg)
+        await expect(() => store.get(1, () => undefined)).to.throw(errorMsg)
+        await expect(() => store.get(1, {})).to.throw(errorMsg)
       })
 
-      describe('Add First', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
+      it('fails when Index From is invalid', async () => {
+        const errorMsg = 'Index From must be a number.'
 
-          const result = await store.addFirst('value')
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
-            body  : ['value']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with array of values', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.addFirst(['value1', 'value2'])
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
-            body  : ['value1', 'value2']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails with invalid value', async () => {
-          const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
-
-          await expect(() => store.addFirst(undefined)).to.throw(errorMsg)
-          await expect(() => store.addFirst(null)).to.throw(errorMsg)
-          await expect(() => store.addFirst(false)).to.throw(errorMsg)
-          await expect(() => store.addFirst(0)).to.throw(errorMsg)
-          await expect(() => store.addFirst(123)).to.throw(errorMsg)
-          await expect(() => store.addFirst('')).to.throw(errorMsg)
-          await expect(() => store.addFirst({})).to.throw(errorMsg)
-          await expect(() => store.addFirst(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.addFirst(true)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Add Last', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.addLast('value')
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
-            body  : ['value']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with array of values', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.addLast(['value1', 'value2'])
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
-            body  : ['value1', 'value2']
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails with invalid value', async () => {
-          const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
-
-          await expect(() => store.addLast(undefined)).to.throw(errorMsg)
-          await expect(() => store.addLast(null)).to.throw(errorMsg)
-          await expect(() => store.addLast(false)).to.throw(errorMsg)
-          await expect(() => store.addLast(0)).to.throw(errorMsg)
-          await expect(() => store.addLast(123)).to.throw(errorMsg)
-          await expect(() => store.addLast('')).to.throw(errorMsg)
-          await expect(() => store.addLast({})).to.throw(errorMsg)
-          await expect(() => store.addLast(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.addLast(true)).to.throw(errorMsg)
-        })
-      })
-
-      describe('Remove First', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeFirst()
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-remove`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with count', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeFirst(3)
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-remove?count=3`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails with invalid count', async () => {
-          const errorMsg = 'Count must be a number.'
-
-          await expect(() => store.removeFirst(null)).to.throw(errorMsg)
-          await expect(() => store.removeFirst(NaN)).to.throw(errorMsg)
-          await expect(() => store.removeFirst(false)).to.throw(errorMsg)
-          await expect(() => store.removeFirst('')).to.throw(errorMsg)
-          await expect(() => store.removeFirst('qwe')).to.throw(errorMsg)
-          await expect(() => store.removeFirst(true)).to.throw(errorMsg)
-          await expect(() => store.removeFirst(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeFirst({})).to.throw(errorMsg)
-        })
-      })
-
-      describe('Remove Last', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeLast()
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-remove`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('success with count', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.removeLast(3)
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-remove?count=3`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails with invalid count', async () => {
-          const errorMsg = 'Count must be a number.'
-
-          await expect(() => store.removeLast(null)).to.throw(errorMsg)
-          await expect(() => store.removeLast(NaN)).to.throw(errorMsg)
-          await expect(() => store.removeLast(false)).to.throw(errorMsg)
-          await expect(() => store.removeLast('')).to.throw(errorMsg)
-          await expect(() => store.removeLast('qwe')).to.throw(errorMsg)
-          await expect(() => store.removeLast(true)).to.throw(errorMsg)
-          await expect(() => store.removeLast(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.removeLast({})).to.throw(errorMsg)
-        })
+        await expect(() => store.get(null, 1)).to.throw(errorMsg)
+        await expect(() => store.get(NaN, 1)).to.throw(errorMsg)
+        await expect(() => store.get(false, 1)).to.throw(errorMsg)
+        await expect(() => store.get('', 1)).to.throw(errorMsg)
+        await expect(() => store.get('qwe', 1)).to.throw(errorMsg)
+        await expect(() => store.get(true, 1)).to.throw(errorMsg)
+        await expect(() => store.get(() => undefined, 1)).to.throw(errorMsg)
+        await expect(() => store.get({}, 1)).to.throw(errorMsg)
       })
     })
+
+    describe('Set', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.set(['value1', 'value2'])
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}`,
+          body  : ['value1', 'value2']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with index', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.set('value1', 0)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/0`,
+          body  : {
+            value: 'value1'
+          }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid index', async () => {
+        store = Backendless.Hive(hiveName).ListStore(storeKey)
+
+        const errorMsg = 'Index must be a number.'
+
+        await expect(() => store.set('v', null)).to.throw(errorMsg)
+        await expect(() => store.set('v', NaN)).to.throw(errorMsg)
+        await expect(() => store.set('v', false)).to.throw(errorMsg)
+        await expect(() => store.set('v', '')).to.throw(errorMsg)
+        await expect(() => store.set('v', 'qwe')).to.throw(errorMsg)
+        await expect(() => store.set('v', true)).to.throw(errorMsg)
+        await expect(() => store.set('v', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.set('v', {})).to.throw(errorMsg)
+      })
+    })
+
+    describe('Length', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.length()
+
+        expect(request).to.deep.include({
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/length`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+    })
+
+    describe('Insert', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.insert('target', 'value')
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert`,
+          body  : { 'targetValue': 'target', 'value': 'value', }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with before argument', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.insert('target', 'value', false)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert`,
+          body  : { 'targetValue': 'target', 'value': 'value', 'before': false }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid targetValue', async () => {
+        const errorMsg = 'Target Value must be provided and must be a string.'
+
+        await expect(() => store.insert(undefined, 'v')).to.throw(errorMsg)
+        await expect(() => store.insert(null, 'v')).to.throw(errorMsg)
+        await expect(() => store.insert(false, 'v')).to.throw(errorMsg)
+        await expect(() => store.insert(true, 'v')).to.throw(errorMsg)
+        await expect(() => store.insert(0, 'v')).to.throw(errorMsg)
+        await expect(() => store.insert(123, 'v')).to.throw(errorMsg)
+        await expect(() => store.insert('', 'v')).to.throw(errorMsg)
+        await expect(() => store.insert({}, 'v')).to.throw(errorMsg)
+        await expect(() => store.insert([], 'v')).to.throw(errorMsg)
+        await expect(() => store.insert(() => undefined, 'v')).to.throw(errorMsg)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be a string.'
+
+        await expect(() => store.insert('v', undefined)).to.throw(errorMsg)
+        await expect(() => store.insert('v', null)).to.throw(errorMsg)
+        await expect(() => store.insert('v', false)).to.throw(errorMsg)
+        await expect(() => store.insert('v', 0)).to.throw(errorMsg)
+        await expect(() => store.insert('v', '')).to.throw(errorMsg)
+        await expect(() => store.insert('v', true)).to.throw(errorMsg)
+        await expect(() => store.insert('v', 123)).to.throw(errorMsg)
+        await expect(() => store.insert('v', {})).to.throw(errorMsg)
+        await expect(() => store.insert('v', [])).to.throw(errorMsg)
+        await expect(() => store.insert('v', () => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails with invalid before argument', async () => {
+        const errorMsg = 'Argument Before must be a boolean.'
+
+        await expect(() => store.insert('v', 'v', null)).to.throw(errorMsg)
+        await expect(() => store.insert('v', 'v', {})).to.throw(errorMsg)
+        await expect(() => store.insert('v', 'v', [])).to.throw(errorMsg)
+        await expect(() => store.insert('v', 'v', 0)).to.throw(errorMsg)
+        await expect(() => store.insert('v', 'v', 123)).to.throw(errorMsg)
+        await expect(() => store.insert('v', 'v', '')).to.throw(errorMsg)
+        await expect(() => store.insert('v', 'v', '123')).to.throw(errorMsg)
+        await expect(() => store.insert('v', 'v', () => undefined)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Remove Value', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeValue('value1')
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-value`,
+          body  : {
+            value: 'value1'
+          }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with count', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeValue('value1', 3)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-value`,
+          body  : {
+            value: 'value1',
+            count: 3,
+          }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be a string.'
+
+        await expect(() => store.removeValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.removeValue(null)).to.throw(errorMsg)
+        await expect(() => store.removeValue(false)).to.throw(errorMsg)
+        await expect(() => store.removeValue(true)).to.throw(errorMsg)
+        await expect(() => store.removeValue(0)).to.throw(errorMsg)
+        await expect(() => store.removeValue(123)).to.throw(errorMsg)
+        await expect(() => store.removeValue('')).to.throw(errorMsg)
+        await expect(() => store.removeValue({})).to.throw(errorMsg)
+        await expect(() => store.removeValue([])).to.throw(errorMsg)
+        await expect(() => store.removeValue(() => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails with invalid count', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.removeValue('v', null)).to.throw(errorMsg)
+        await expect(() => store.removeValue('v', NaN)).to.throw(errorMsg)
+        await expect(() => store.removeValue('v', false)).to.throw(errorMsg)
+        await expect(() => store.removeValue('v', '')).to.throw(errorMsg)
+        await expect(() => store.removeValue('v', 'qwe')).to.throw(errorMsg)
+        await expect(() => store.removeValue('v', true)).to.throw(errorMsg)
+        await expect(() => store.removeValue('v', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.removeValue('v', {})).to.throw(errorMsg)
+      })
+    })
+
+    describe('Add First', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.addFirst('value')
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
+          body  : ['value']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with array of values', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.addFirst(['value1', 'value2'])
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
+          body  : ['value1', 'value2']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+
+        await expect(() => store.addFirst(undefined)).to.throw(errorMsg)
+        await expect(() => store.addFirst(null)).to.throw(errorMsg)
+        await expect(() => store.addFirst(false)).to.throw(errorMsg)
+        await expect(() => store.addFirst(0)).to.throw(errorMsg)
+        await expect(() => store.addFirst(123)).to.throw(errorMsg)
+        await expect(() => store.addFirst('')).to.throw(errorMsg)
+        await expect(() => store.addFirst({})).to.throw(errorMsg)
+        await expect(() => store.addFirst(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.addFirst(true)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Add Last', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.addLast('value')
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
+          body  : ['value']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with array of values', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.addLast(['value1', 'value2'])
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
+          body  : ['value1', 'value2']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+
+        await expect(() => store.addLast(undefined)).to.throw(errorMsg)
+        await expect(() => store.addLast(null)).to.throw(errorMsg)
+        await expect(() => store.addLast(false)).to.throw(errorMsg)
+        await expect(() => store.addLast(0)).to.throw(errorMsg)
+        await expect(() => store.addLast(123)).to.throw(errorMsg)
+        await expect(() => store.addLast('')).to.throw(errorMsg)
+        await expect(() => store.addLast({})).to.throw(errorMsg)
+        await expect(() => store.addLast(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.addLast(true)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Remove First', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeFirst()
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-remove`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with count', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeFirst(3)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-remove?count=3`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid count', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.removeFirst(null)).to.throw(errorMsg)
+        await expect(() => store.removeFirst(NaN)).to.throw(errorMsg)
+        await expect(() => store.removeFirst(false)).to.throw(errorMsg)
+        await expect(() => store.removeFirst('')).to.throw(errorMsg)
+        await expect(() => store.removeFirst('qwe')).to.throw(errorMsg)
+        await expect(() => store.removeFirst(true)).to.throw(errorMsg)
+        await expect(() => store.removeFirst(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.removeFirst({})).to.throw(errorMsg)
+      })
+    })
+
+    describe('Remove Last', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeLast()
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-remove`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with count', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.removeLast(3)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-remove?count=3`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid count', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.removeLast(null)).to.throw(errorMsg)
+        await expect(() => store.removeLast(NaN)).to.throw(errorMsg)
+        await expect(() => store.removeLast(false)).to.throw(errorMsg)
+        await expect(() => store.removeLast('')).to.throw(errorMsg)
+        await expect(() => store.removeLast('qwe')).to.throw(errorMsg)
+        await expect(() => store.removeLast(true)).to.throw(errorMsg)
+        await expect(() => store.removeLast(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.removeLast({})).to.throw(errorMsg)
+      })
+    })
+  })
 })

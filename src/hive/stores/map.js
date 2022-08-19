@@ -108,10 +108,11 @@ export class MapStore extends HiveStore {
 
     return this.app.request
       .put({
-        url    : `${this.getBaseURL()}/set/${key}`,
-        data   : value,
-        headers: { 'Content-Type': 'text/plain' },
-        query  : { ifNotExists }
+        url : `${this.getBaseURL()}/set/${key}`,
+        data: {
+          value,
+          ifNotExists
+        },
       })
   }
 
