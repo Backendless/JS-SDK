@@ -358,6 +358,8 @@ declare module Backendless {
 
             touch(): Promise<void>;
 
+            secondsSinceLastOperation(): Promise<number>;
+
             expireAfter(ttl: number): Promise<boolean>;
 
             expireAt(timestamp: number): Promise<boolean>;

@@ -171,4 +171,11 @@ export class HiveStore {
   touch() {
     return this.constructor.touch.call({ ...this, ...this.constructor }, [this.storeKey])
   }
+
+  secondsSinceLastOperation() {
+    return this.app.request
+      .get({
+        url: `${this.getBaseURL()}/seconds-since-last-operation`,
+      })
+  }
 }

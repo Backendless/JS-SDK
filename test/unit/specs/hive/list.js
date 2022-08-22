@@ -425,6 +425,21 @@ describe('Hive - List Store', function() {
           expect(result).to.be.eql(fakeResult)
         })
       })
+
+      describe('SecondsSinceLastOperation', async () => {
+        it('success with single key', async () => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.secondsSinceLastOperation()
+
+          expect(request).to.deep.include({
+            method : 'GET',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/seconds-since-last-operation`,
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        })
+      })
     })
   })
 

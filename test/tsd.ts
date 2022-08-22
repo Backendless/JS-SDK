@@ -754,6 +754,8 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).KeyValueStore(str).removeExpiration();
 
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).KeyValueStore(str).secondsSinceLastOperation();
         }
 
         function testStatic() {
@@ -801,6 +803,8 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).ListStore(str).removeExpiration();
 
             promiseVoid = Backendless.Hive(str).ListStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).secondsSinceLastOperation();
         }
 
         function testInstance() {
@@ -856,6 +860,8 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).MapStore(str).removeExpiration();
 
             promiseVoid = Backendless.Hive(str).MapStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).secondsSinceLastOperation();
         }
 
         function testInstance() {
@@ -915,6 +921,8 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).SetStore(str).removeExpiration();
 
             promiseVoid = Backendless.Hive(str).SetStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).SetStore(str).secondsSinceLastOperation();
         }
 
         function testStatic() {
@@ -970,6 +978,8 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).SortedSetStore(str).removeExpiration();
 
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).secondsSinceLastOperation();
         }
 
         function testStatic() {
