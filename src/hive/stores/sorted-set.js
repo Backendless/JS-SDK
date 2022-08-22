@@ -217,9 +217,9 @@ export class SortedSetStore extends HiveStore {
     }
 
     return this.app.request
-      .post({
-        url : `${this.getBaseURL()}/get-rank`,
-        data: {
+      .get({
+        url  : `${this.getBaseURL()}/get-rank`,
+        query: {
           value,
           reverse
         },

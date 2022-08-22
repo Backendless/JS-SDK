@@ -118,8 +118,8 @@ export class SetStore extends HiveStore {
 
     return this.app.request
       .get({
-        url    : `${this.getBaseURL()}/contains`,
-        data   : {
+        url  : `${this.getBaseURL()}/contains`,
+        query: {
           value
         }
       })

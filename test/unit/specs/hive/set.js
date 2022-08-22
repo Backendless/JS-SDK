@@ -769,7 +769,7 @@ describe('Hive - Set Store', function() {
 
         expect(request).to.deep.include({
           method: 'GET',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains`,
+          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains?value=testKey1`,
         })
 
         expect(result).to.be.eql(fakeResult)

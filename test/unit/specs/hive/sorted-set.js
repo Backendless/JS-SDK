@@ -432,8 +432,8 @@ describe('Hive - Sorted Set Store', function() {
           const result = await store.secondsSinceLastOperation()
 
           expect(request).to.deep.include({
-            method : 'GET',
-            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/seconds-since-last-operation`,
+            method: 'GET',
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/seconds-since-last-operation`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -1035,11 +1035,8 @@ describe('Hive - Sorted Set Store', function() {
         const result = await store.getRank('foo')
 
         expect(request).to.deep.include({
-          method: 'POST',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
-          body  : {
-            value: 'foo'
-          }
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank?value=foo`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -1051,12 +1048,8 @@ describe('Hive - Sorted Set Store', function() {
         const result = await store.getRank('foo', true)
 
         expect(request).to.deep.include({
-          method: 'POST',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
-          body  : {
-            value  : 'foo',
-            reverse: true,
-          }
+          method: 'GET',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank?value=foo&reverse=true`,
         })
 
         expect(result).to.be.eql(fakeResult)
