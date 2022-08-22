@@ -344,9 +344,9 @@ declare module Backendless {
          */
         interface hiveStore {
 
-            delete(): Promise<1 | 0>;
+            delete(): Promise<void>;
 
-            rename(newKeyName: string): Promise<'OK'>;
+            rename(newKeyName: string): Promise<void>;
 
             renameIfNotExists(newKeyName: string): Promise<boolean>;
 
@@ -354,15 +354,15 @@ declare module Backendless {
 
             getExpiration(): Promise<number>;
 
-            removeExpiration(): Promise<boolean>;
+            removeExpiration(): Promise<void>;
 
             touch(): Promise<void>;
 
             secondsSinceLastOperation(): Promise<number>;
 
-            expireAfter(ttl: number): Promise<boolean>;
+            expireAfter(ttl: number): Promise<void>;
 
-            expireAt(timestamp: number): Promise<boolean>;
+            expireAt(timestamp: number): Promise<void>;
         }
 
         interface KeyValueSetKeyOptionsI {
@@ -379,7 +379,7 @@ declare module Backendless {
 
             get(keys: Array<string>): Promise<object>;
 
-            set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<'OK'>;
+            set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<void>;
 
             set(keysMap: object): Promise<'OK'>;
         }
@@ -390,7 +390,7 @@ declare module Backendless {
         interface keyValueStore extends hiveStore {
             get(): Promise<string | null>;
 
-            set(value: string, options?: KeyValueSetKeyOptionsI): Promise<'OK'>;
+            set(value: string, options?: KeyValueSetKeyOptionsI): Promise<void>;
 
             increment(value: number): Promise<number>;
 
@@ -416,7 +416,7 @@ declare module Backendless {
 
             set(values: Array<string>): Promise<number>;
 
-            set(value: string, index: number): Promise<'OK'>;
+            set(value: string, index: number): Promise<void>;
 
             insertBefore(valueToInsert: string, anchorValue: string): Promise<void>;
 
