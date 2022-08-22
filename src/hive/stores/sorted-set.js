@@ -107,39 +107,39 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  incrementScore(member, scoreAmount) {
+  incrementScore(member, scoreValue) {
     if (!member || typeof member !== 'string') {
       throw new Error('Member must be provided and must be a string.')
     }
 
-    if (isNaN(scoreAmount) || typeof scoreAmount !== 'number') {
-      throw new Error('ScoreAmount must be provided and must be a number.')
+    if (isNaN(scoreValue) || typeof scoreValue !== 'number') {
+      throw new Error('ScoreValue must be provided and must be a number.')
     }
 
     return this.app.request
       .put({
         url : `${this.getBaseURL()}/increment`,
         data: {
-          scoreAmount,
+          scoreValue,
           member,
         }
       })
   }
 
-  decrementScore(member, scoreAmount) {
+  decrementScore(member, scoreValue) {
     if (!member || typeof member !== 'string') {
       throw new Error('Member must be provided and must be a string.')
     }
 
-    if (isNaN(scoreAmount) || typeof scoreAmount !== 'number') {
-      throw new Error('ScoreAmount must be provided and must be a number.')
+    if (isNaN(scoreValue) || typeof scoreValue !== 'number') {
+      throw new Error('ScoreValue must be provided and must be a number.')
     }
 
     return this.app.request
       .put({
         url : `${this.getBaseURL()}/decrement`,
         data: {
-          scoreAmount,
+          scoreValue,
           member,
         }
       })
@@ -199,9 +199,9 @@ export class SortedSetStore extends HiveStore {
     }
 
     return this.app.request
-      .post({
+      .get({
         url : `${this.getBaseURL()}/get-score`,
-        data: {
+        query: {
           value
         },
       })

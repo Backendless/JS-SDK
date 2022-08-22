@@ -563,9 +563,9 @@ declare module Backendless {
 
             set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
 
-            incrementScore(value: string, count: number): Promise<number>
+            incrementScore(member: string, scoreValue: number): Promise<number>
 
-            decrementScore(value: string, count: number): Promise<number>
+            decrementScore(member: string, scoreValue: number): Promise<number>
 
             getAndRemoveMaxScore(count?: number): Promise<Array<SortedSetItem>>
 
