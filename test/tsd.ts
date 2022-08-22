@@ -715,6 +715,7 @@ function testHiveStores() {
     const strArr: Array<string> = ['str1', 'str2'];
     const obj: object = {x: 1, y: 2};
 
+    let promiseVoid: Promise<void>;
     let promiseObject: Promise<object>;
     let promiseNumber: Promise<number>;
     let promiseString: Promise<string>;
@@ -752,7 +753,7 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).KeyValueStore(str).getExpiration();
             promiseBoolean = Backendless.Hive(str).KeyValueStore(str).removeExpiration();
 
-            promiseNumber = Backendless.Hive(str).KeyValueStore(str).touch();
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).touch();
         }
 
         function testStatic() {
@@ -799,7 +800,7 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).ListStore(str).getExpiration();
             promiseBoolean = Backendless.Hive(str).ListStore(str).removeExpiration();
 
-            promiseNumber = Backendless.Hive(str).ListStore(str).touch();
+            promiseVoid = Backendless.Hive(str).ListStore(str).touch();
         }
 
         function testInstance() {
@@ -854,7 +855,7 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).MapStore(str).getExpiration();
             promiseBoolean = Backendless.Hive(str).MapStore(str).removeExpiration();
 
-            promiseNumber = Backendless.Hive(str).MapStore(str).touch();
+            promiseVoid = Backendless.Hive(str).MapStore(str).touch();
         }
 
         function testInstance() {
@@ -910,7 +911,7 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).SetStore(str).getExpiration();
             promiseBoolean = Backendless.Hive(str).SetStore(str).removeExpiration();
 
-            promiseNumber = Backendless.Hive(str).SetStore(str).touch();
+            promiseVoid = Backendless.Hive(str).SetStore(str).touch();
         }
 
         function testStatic() {
@@ -965,7 +966,7 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).getExpiration();
             promiseBoolean = Backendless.Hive(str).SortedSetStore(str).removeExpiration();
 
-            promiseNumber = Backendless.Hive(str).SortedSetStore(str).touch();
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).touch();
         }
 
         function testStatic() {

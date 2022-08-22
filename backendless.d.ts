@@ -356,7 +356,7 @@ declare module Backendless {
 
             removeExpiration(): Promise<boolean>;
 
-            touch(): Promise<1 | 0>;
+            touch(): Promise<void>;
 
             expireAfter(ttl: number): Promise<boolean>;
 
