@@ -431,8 +431,8 @@ describe('Hive - Key Value Store', function() {
           const result = await store.secondsSinceLastOperation()
 
           expect(request).to.deep.include({
-            method : 'GET',
-            path   : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}/seconds-since-last-operation`,
+            method: 'GET',
+            path  : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}/seconds-since-last-operation`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -496,9 +496,9 @@ describe('Hive - Key Value Store', function() {
         const request = prepareMockRequest(fakeResult)
 
         const result = await Store.set('testKey', 'testValue', {
-          expirationSeconds: 100,
-          expiration       : 'TTL',
-          condition        : 'Always'
+          ttl      : 100,
+          expireAt : 1234567890,
+          condition: 'SetIfExists'
         })
 
         expect(request).to.deep.include({
@@ -506,10 +506,10 @@ describe('Hive - Key Value Store', function() {
           path   : `${APP_PATH}/hive/${hiveName}/key-value/testKey`,
           headers: { 'Content-Type': 'application/json' },
           body   : {
-            'condition'        : 'Always',
-            'expiration'       : 'TTL',
-            'expirationSeconds': 100,
-            'value'            : 'testValue'
+            'value'  : 'testValue',
+            ttl      : 100,
+            expireAt : 1234567890,
+            condition: 'SetIfExists',
           }
         })
 
@@ -568,32 +568,32 @@ describe('Hive - Key Value Store', function() {
         await expect(() => Store.set('k', 'v', false)).to.throw(errorMsg)
       })
 
-      it('fails when Expiration Seconds is invalid', async () => {
-        const errorMsg = 'Expiration seconds must be a number.'
+      it('fails when Expiration TTL Seconds is invalid', async () => {
+        const errorMsg = 'TTL in seconds must be a number.'
 
-        await expect(() => Store.set('k', 'v', { expirationSeconds: null })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expirationSeconds: false })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expirationSeconds: true })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expirationSeconds: '' })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expirationSeconds: 'foo' })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expirationSeconds: NaN })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expirationSeconds: () => undefined })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { ttl: null })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { ttl: false })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { ttl: true })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { ttl: '' })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { ttl: 'foo' })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { ttl: NaN })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { ttl: () => undefined })).to.throw(errorMsg)
       })
 
       it('fails when Expiration is invalid', async () => {
-        const errorMsg = 'Expiration must be one of this values: TTL, UnixTimestamp, None.'
+        const errorMsg = 'ExpireAt timestamp must be a number.'
 
-        await expect(() => Store.set('k', 'v', { expiration: null })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expiration: false })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expiration: true })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expiration: '' })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expiration: 'foo' })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expiration: NaN })).to.throw(errorMsg)
-        await expect(() => Store.set('k', 'v', { expiration: () => undefined })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { expireAt: null })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { expireAt: false })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { expireAt: true })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { expireAt: '' })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { expireAt: 'foo' })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { expireAt: NaN })).to.throw(errorMsg)
+        await expect(() => Store.set('k', 'v', { expireAt: () => undefined })).to.throw(errorMsg)
       })
 
       it('fails when Condition is invalid', async () => {
-        const errorMsg = 'Condition must be one of this values: IfExists, IfNotExists, Always.'
+        const errorMsg = 'Condition must be one of this values: SetIfExists, SetIfNotExists.'
 
         await expect(() => Store.set('k', 'v', { condition: null })).to.throw(errorMsg)
         await expect(() => Store.set('k', 'v', { condition: false })).to.throw(errorMsg)
@@ -643,9 +643,9 @@ describe('Hive - Key Value Store', function() {
         const request = prepareMockRequest(fakeResult)
 
         const result = await store.set('testValue', {
-          expirationSeconds: 100,
-          expiration       : 'TTL',
-          condition        : 'Always'
+          ttl      : 100,
+          expireAt : 1234567890,
+          condition: 'SetIfNotExists'
         })
 
         expect(request).to.deep.include({
@@ -653,10 +653,10 @@ describe('Hive - Key Value Store', function() {
           path   : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}`,
           headers: { 'Content-Type': 'application/json' },
           body   : {
-            'condition'        : 'Always',
-            'expiration'       : 'TTL',
-            'expirationSeconds': 100,
-            'value'            : 'testValue'
+            'value'  : 'testValue',
+            ttl      : 100,
+            expireAt : 1234567890,
+            condition: 'SetIfNotExists',
           }
         })
 
@@ -679,31 +679,31 @@ describe('Hive - Key Value Store', function() {
       })
 
       it('fails when Expiration Seconds is invalid', async () => {
-        const errorMsg = 'Expiration seconds must be a number.'
+        const errorMsg = 'TTL in seconds must be a number.'
 
-        await expect(() => store.set('v', { expirationSeconds: null })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expirationSeconds: false })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expirationSeconds: true })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expirationSeconds: '' })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expirationSeconds: 'foo' })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expirationSeconds: NaN })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expirationSeconds: () => undefined })).to.throw(errorMsg)
+        await expect(() => store.set('v', { ttl: null })).to.throw(errorMsg)
+        await expect(() => store.set('v', { ttl: false })).to.throw(errorMsg)
+        await expect(() => store.set('v', { ttl: true })).to.throw(errorMsg)
+        await expect(() => store.set('v', { ttl: '' })).to.throw(errorMsg)
+        await expect(() => store.set('v', { ttl: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.set('v', { ttl: NaN })).to.throw(errorMsg)
+        await expect(() => store.set('v', { ttl: () => undefined })).to.throw(errorMsg)
       })
 
       it('fails when Expiration is invalid', async () => {
-        const errorMsg = 'Expiration must be one of this values: TTL, UnixTimestamp, None.'
+        const errorMsg = 'ExpireAt timestamp must be a number.'
 
-        await expect(() => store.set('v', { expiration: null })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expiration: false })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expiration: true })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expiration: '' })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expiration: 'foo' })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expiration: NaN })).to.throw(errorMsg)
-        await expect(() => store.set('v', { expiration: () => undefined })).to.throw(errorMsg)
+        await expect(() => store.set('v', { expireAt: null })).to.throw(errorMsg)
+        await expect(() => store.set('v', { expireAt: false })).to.throw(errorMsg)
+        await expect(() => store.set('v', { expireAt: true })).to.throw(errorMsg)
+        await expect(() => store.set('v', { expireAt: '' })).to.throw(errorMsg)
+        await expect(() => store.set('v', { expireAt: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.set('v', { expireAt: NaN })).to.throw(errorMsg)
+        await expect(() => store.set('v', { expireAt: () => undefined })).to.throw(errorMsg)
       })
 
       it('fails when Condition is invalid', async () => {
-        const errorMsg = 'Condition must be one of this values: IfExists, IfNotExists, Always.'
+        const errorMsg = 'Condition must be one of this values: SetIfExists, SetIfNotExists.'
 
         await expect(() => store.set('v', { condition: null })).to.throw(errorMsg)
         await expect(() => store.set('v', { condition: false })).to.throw(errorMsg)

@@ -730,6 +730,8 @@ function testHiveStores() {
     let promiseStoreKeysResult: Promise<Backendless.Hive.StoreKeysResultI>;
 
     function testKeyValueStore() {
+        let setKeyOptions: Backendless.Hive.KeyValueSetKeyOptionsI;
+
         function testGeneralStatic() {
             promiseStoreKeysResult = Backendless.Hive(str).KeyValueStore.keys();
             promiseStoreKeysResult = Backendless.Hive(str).KeyValueStore.keys(storeKeysOptions);
@@ -759,19 +761,23 @@ function testHiveStores() {
         }
 
         function testStatic() {
-            let setKeyOptions: Backendless.Hive.KeyValueSetKeyOptionsI;
-
             promiseObject = Backendless.Hive(str).KeyValueStore.get(strArr);
 
             promiseString = Backendless.Hive(str).KeyValueStore.set(obj);
             promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str);
             promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, setKeyOptions);
+            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {});
+            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {ttl: 123});
+            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {expireAt: 123});
+            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'SetIfExists'});
+            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'SetIfNotExists'});
         }
 
         function testInstance() {
             promiseStringOrNull = Backendless.Hive(str).KeyValueStore(str).get();
 
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).set(str);
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).set(str, setKeyOptions);
 
             promiseNumber = Backendless.Hive(str).KeyValueStore(str).increment(num);
             promiseNumber = Backendless.Hive(str).KeyValueStore(str).decrement(num);

@@ -42,18 +42,18 @@ export class KeyValueStore extends HiveStore {
         throw new Error('Options must be an object.')
       }
 
-      const { expirationSeconds, expiration, condition } = options
+      const { ttl, expireAt, condition } = options
 
-      if (expirationSeconds !== undefined && (isNaN(expirationSeconds) || typeof expirationSeconds !== 'number')) {
-        throw new Error('Expiration seconds must be a number.')
+      if (ttl !== undefined && (isNaN(ttl) || typeof ttl !== 'number')) {
+        throw new Error('TTL in seconds must be a number.')
       }
 
-      if (expiration !== undefined && !['TTL', 'UnixTimestamp', 'None'].includes(expiration)) {
-        throw new Error('Expiration must be one of this values: TTL, UnixTimestamp, None.')
+      if (expireAt !== undefined && (isNaN(expireAt) || typeof expireAt !== 'number')) {
+        throw new Error('ExpireAt timestamp must be a number.')
       }
 
-      if (condition !== undefined && !['IfExists', 'IfNotExists', 'Always'].includes(condition)) {
-        throw new Error('Condition must be one of this values: IfExists, IfNotExists, Always.')
+      if (condition !== undefined && !['SetIfExists', 'SetIfNotExists'].includes(condition)) {
+        throw new Error('Condition must be one of this values: SetIfExists, SetIfNotExists.')
       }
     }
 
