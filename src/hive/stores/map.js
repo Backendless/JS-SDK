@@ -93,7 +93,7 @@ export class MapStore extends HiveStore {
       })
   }
 
-  setValue(key, value, ifNotExists) {
+  setValue(key, value, overwrite) {
     if (!key || typeof key !== 'string') {
       throw new Error('Key must be provided and must be a string.')
     }
@@ -102,8 +102,8 @@ export class MapStore extends HiveStore {
       throw new Error('Value must be provided and must be a string.')
     }
 
-    if (ifNotExists !== undefined && typeof ifNotExists !== 'boolean') {
-      throw new Error('Argument ifNotExists must be a boolean.')
+    if (overwrite !== undefined && typeof overwrite !== 'boolean') {
+      throw new Error('Overwrite must be a boolean.')
     }
 
     return this.app.request
@@ -111,7 +111,7 @@ export class MapStore extends HiveStore {
         url : `${this.getBaseURL()}/set/${key}`,
         data: {
           value,
-          ifNotExists
+          overwrite
         },
       })
   }

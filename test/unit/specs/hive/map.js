@@ -441,8 +441,8 @@ describe('Hive - Map Store', function() {
           const result = await store.secondsSinceLastOperation()
 
           expect(request).to.deep.include({
-            method : 'GET',
-            path   : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/seconds-since-last-operation`,
+            method: 'GET',
+            path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/seconds-since-last-operation`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -702,21 +702,33 @@ describe('Hive - Map Store', function() {
         expect(result).to.be.eql(fakeResult)
       })
 
-      it('success with before argument', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success with overwrite option', async () => {
+        const request1 = prepareMockRequest(fakeResult)
+        const request2 = prepareMockRequest(fakeResult)
 
-        const result = await store.setValue('target', 'value1', false)
+        const result1 = await store.setValue('target', 'value1', true)
+        const result2 = await store.setValue('target', 'value1', false)
 
-        expect(request).to.deep.include({
+        expect(request1).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
           body  : {
-            value      : 'value1',
-            ifNotExists: false
+            value    : 'value1',
+            overwrite: true
           }
         })
 
-        expect(result).to.be.eql(fakeResult)
+        expect(request2).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
+          body  : {
+            value    : 'value1',
+            overwrite: false
+          }
+        })
+
+        expect(result1).to.be.eql(fakeResult)
+        expect(result2).to.be.eql(fakeResult)
       })
 
       it('fails with invalid key', async () => {
@@ -749,8 +761,8 @@ describe('Hive - Map Store', function() {
         await expect(() => store.setValue('k', () => undefined)).to.throw(errorMsg)
       })
 
-      it('fails with invalid ifNotExist argument', async () => {
-        const errorMsg = 'Argument ifNotExists must be a boolean.'
+      it('fails with invalid overwrite argument', async () => {
+        const errorMsg = 'Overwrite must be a boolean.'
 
         await expect(() => store.setValue('k', 'v', null)).to.throw(errorMsg)
         await expect(() => store.setValue('k', 'v', {})).to.throw(errorMsg)
