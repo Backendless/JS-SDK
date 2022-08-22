@@ -69,26 +69,29 @@ export class ListStore extends HiveStore {
       })
   }
 
-  insert(targetValue, value, before) {
-    if (!targetValue || typeof targetValue !== 'string') {
-      throw new Error('Target Value must be provided and must be a string.')
+  insertBefore(valueToInsert, anchorValue) {
+    return this.insert(valueToInsert, anchorValue, true)
+  }
+
+  insertAfter(valueToInsert, anchorValue) {
+    return this.insert(valueToInsert, anchorValue, false)
+  }
+
+  insert(valueToInsert, anchorValue, before) {
+    if (!valueToInsert || typeof valueToInsert !== 'string') {
+      throw new Error('ValueToInsert must be provided and must be a string.')
     }
 
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
-    }
-
-    if (before !== undefined && typeof before !== 'boolean') {
-      throw new Error('Argument Before must be a boolean.')
+    if (!anchorValue || typeof anchorValue !== 'string') {
+      throw new Error('AnchorValue must be provided and must be a string.')
     }
 
     return this.app.request
       .put({
-        url : `${this.getBaseURL()}/insert`,
+        url : `${this.getBaseURL()}/insert/${before ? 'before' : 'after'}`,
         data: {
-          targetValue,
-          value,
-          before
+          valueToInsert,
+          anchorValue,
         }
       })
   }

@@ -573,76 +573,103 @@ describe('Hive - List Store', function() {
 
     })
 
-    describe('Insert', async () => {
+    describe('Insert Before', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.insert('target', 'value')
+        const result = await store.insertBefore('valueToInsert1', 'anchorValue1')
 
         expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert`,
-          body  : { 'targetValue': 'target', 'value': 'value', }
+          method : 'PUT',
+          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert/before`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            valueToInsert: 'valueToInsert1',
+            anchorValue  : 'anchorValue1',
+          }
         })
 
         expect(result).to.be.eql(fakeResult)
       })
 
-      it('success with before argument', async () => {
+      it('fails with invalid ValueToInsert', async () => {
+        const errorMsg = 'ValueToInsert must be provided and must be a string.'
+
+        await expect(() => store.insertBefore(undefined, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(null, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(false, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(true, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(0, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(123, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore('', 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore({}, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore([], 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(() => undefined, 'v')).to.throw(errorMsg)
+      })
+
+      it('fails with invalid AnchorValue', async () => {
+        const errorMsg = 'AnchorValue must be provided and must be a string.'
+
+        await expect(() => store.insertBefore('v', undefined)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', null)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', false)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', 0)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', '')).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', true)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', 123)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', {})).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', [])).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', () => undefined)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Insert After', async () => {
+      it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.insert('target', 'value', false)
+        const result = await store.insertAfter('valueToInsert1', 'anchorValue1')
 
         expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert`,
-          body  : { 'targetValue': 'target', 'value': 'value', 'before': false }
+          method : 'PUT',
+          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert/after`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            valueToInsert: 'valueToInsert1',
+            anchorValue  : 'anchorValue1',
+          }
         })
 
         expect(result).to.be.eql(fakeResult)
       })
 
-      it('fails with invalid targetValue', async () => {
-        const errorMsg = 'Target Value must be provided and must be a string.'
+      it('fails with invalid ValueToInsert', async () => {
+        const errorMsg = 'ValueToInsert must be provided and must be a string.'
 
-        await expect(() => store.insert(undefined, 'v')).to.throw(errorMsg)
-        await expect(() => store.insert(null, 'v')).to.throw(errorMsg)
-        await expect(() => store.insert(false, 'v')).to.throw(errorMsg)
-        await expect(() => store.insert(true, 'v')).to.throw(errorMsg)
-        await expect(() => store.insert(0, 'v')).to.throw(errorMsg)
-        await expect(() => store.insert(123, 'v')).to.throw(errorMsg)
-        await expect(() => store.insert('', 'v')).to.throw(errorMsg)
-        await expect(() => store.insert({}, 'v')).to.throw(errorMsg)
-        await expect(() => store.insert([], 'v')).to.throw(errorMsg)
-        await expect(() => store.insert(() => undefined, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(undefined, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(null, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(false, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(true, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(0, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(123, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter('', 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter({}, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter([], 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(() => undefined, 'v')).to.throw(errorMsg)
       })
 
-      it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+      it('fails with invalid AnchorValue', async () => {
+        const errorMsg = 'AnchorValue must be provided and must be a string.'
 
-        await expect(() => store.insert('v', undefined)).to.throw(errorMsg)
-        await expect(() => store.insert('v', null)).to.throw(errorMsg)
-        await expect(() => store.insert('v', false)).to.throw(errorMsg)
-        await expect(() => store.insert('v', 0)).to.throw(errorMsg)
-        await expect(() => store.insert('v', '')).to.throw(errorMsg)
-        await expect(() => store.insert('v', true)).to.throw(errorMsg)
-        await expect(() => store.insert('v', 123)).to.throw(errorMsg)
-        await expect(() => store.insert('v', {})).to.throw(errorMsg)
-        await expect(() => store.insert('v', [])).to.throw(errorMsg)
-        await expect(() => store.insert('v', () => undefined)).to.throw(errorMsg)
-      })
-
-      it('fails with invalid before argument', async () => {
-        const errorMsg = 'Argument Before must be a boolean.'
-
-        await expect(() => store.insert('v', 'v', null)).to.throw(errorMsg)
-        await expect(() => store.insert('v', 'v', {})).to.throw(errorMsg)
-        await expect(() => store.insert('v', 'v', [])).to.throw(errorMsg)
-        await expect(() => store.insert('v', 'v', 0)).to.throw(errorMsg)
-        await expect(() => store.insert('v', 'v', 123)).to.throw(errorMsg)
-        await expect(() => store.insert('v', 'v', '')).to.throw(errorMsg)
-        await expect(() => store.insert('v', 'v', '123')).to.throw(errorMsg)
-        await expect(() => store.insert('v', 'v', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', undefined)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', null)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', false)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', 0)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', '')).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', true)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', 123)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', {})).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', [])).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', () => undefined)).to.throw(errorMsg)
       })
     })
 

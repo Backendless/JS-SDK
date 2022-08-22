@@ -416,7 +416,9 @@ declare module Backendless {
 
             set(value: string, index: number): Promise<'OK'>;
 
-            insert(targetValue: string, value: string, before?: boolean): Promise<number>;
+            insertBefore(valueToInsert: string, anchorValue: string): Promise<void>;
+
+            insertAfter(valueToInsert: string, anchorValue: string): Promise<void>;
 
             length(): Promise<number>;
 
@@ -583,9 +585,10 @@ declare module Backendless {
                 count?: number
                 reverse?: boolean,
                 withScores?: boolean
-            } ): Promise<Array<T>>
+            }): Promise<Array<T>>
 
             removeValues(value: string): Promise<number>;
+
             removeValues(values: Array<string>): Promise<number>;
 
             removeValuesByRank(startRank: number, stopRank: number): Promise<number>;
