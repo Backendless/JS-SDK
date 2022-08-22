@@ -96,7 +96,7 @@ export class ListStore extends HiveStore {
       })
   }
 
-  removeValue(value, count) {
+  deleteValue(value, count) {
     if (!value || typeof value !== 'string') {
       throw new Error('Value must be provided and must be a string.')
     }
@@ -107,7 +107,7 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url : `${this.getBaseURL()}/remove-value`,
+        url : `${this.getBaseURL()}/delete-value`,
         data: {
           value,
           count
@@ -139,26 +139,26 @@ export class ListStore extends HiveStore {
       })
   }
 
-  removeFirst(count) {
+  deleteFirst(count) {
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }
 
     return this.app.request
       .put({
-        url  : `${this.getBaseURL()}/get-first-and-remove`,
+        url  : `${this.getBaseURL()}/get-first-and-delete`,
         query: { count },
       })
   }
 
-  removeLast(count) {
+  deleteLast(count) {
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }
 
     return this.app.request
       .put({
-        url  : `${this.getBaseURL()}/get-last-and-remove`,
+        url  : `${this.getBaseURL()}/get-last-and-delete`,
         query: { count },
       })
   }

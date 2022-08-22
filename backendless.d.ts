@@ -354,7 +354,7 @@ declare module Backendless {
 
             getExpiration(): Promise<number>;
 
-            removeExpiration(): Promise<void>;
+            deleteExpiration(): Promise<void>;
 
             touch(): Promise<void>;
 
@@ -432,15 +432,15 @@ declare module Backendless {
 
             addLast(values: Array<string>): Promise<number>
 
-            removeFirst(): Promise<string | null>
+            deleteFirst(): Promise<string | null>
 
-            removeFirst(count: number): Promise<Array<string> | null>
+            deleteFirst(count: number): Promise<Array<string> | null>
 
-            removeLast(): Promise<string | null>
+            deleteLast(): Promise<string | null>
 
-            removeLast(count: number): Promise<Array<string> | null>
+            deleteLast(count: number): Promise<Array<string> | null>
 
-            removeValue(value: string, count?: number): Promise<number>
+            deleteValue(value: string, count?: number): Promise<number>
         }
 
         /**
@@ -518,7 +518,7 @@ declare module Backendless {
 
             add(values: Array<string>): Promise<number>;
 
-            removeValues(value: string | Array<string>): Promise<number>;
+            deleteValues(value: string | Array<string>): Promise<number>;
 
             isMember(value: string): Promise<boolean>;
 
@@ -593,13 +593,13 @@ declare module Backendless {
                 withScores?: boolean
             }): Promise<Array<T>>
 
-            removeValues(value: string): Promise<number>;
+            deleteValues(value: string): Promise<number>;
 
-            removeValues(values: Array<string>): Promise<number>;
+            deleteValues(values: Array<string>): Promise<number>;
 
-            removeValuesByRank(startRank: number, stopRank: number): Promise<number>;
+            deleteValuesByRank(startRank: number, stopRank: number): Promise<number>;
 
-            removeValuesByScore(options?: SortedSetFilterI): Promise<number>;
+            deleteValuesByScore(options?: SortedSetFilterI): Promise<number>;
 
             length(): Promise<number>;
 

@@ -137,10 +137,10 @@ export class HiveStore {
       })
   }
 
-  removeExpiration() {
+  deleteExpiration() {
     return this.app.request
       .put({
-        url: `${this.getBaseURL()}/remove-expiration`,
+        url: `${this.getBaseURL()}/delete-expiration`,
       })
   }
 

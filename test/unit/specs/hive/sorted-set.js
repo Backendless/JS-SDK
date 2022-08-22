@@ -338,15 +338,15 @@ describe('Hive - Sorted Set Store', function() {
 
       })
 
-      describe('Remove Expiration', async () => {
+      describe('Delete Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeExpiration()
+          const result = await store.deleteExpiration()
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/delete-expiration`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -1086,7 +1086,7 @@ describe('Hive - Sorted Set Store', function() {
       it('success with single key', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValues('testKey')
+        const result = await store.deleteValues('testKey')
 
         expect(request).to.deep.include({
           method : 'DELETE',
@@ -1101,7 +1101,7 @@ describe('Hive - Sorted Set Store', function() {
       it('success with multi keys', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValues(['testKey1', 'testKey2'])
+        const result = await store.deleteValues(['testKey1', 'testKey2'])
 
         expect(request).to.deep.include({
           method : 'DELETE',
@@ -1116,15 +1116,15 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when values is invalid', async () => {
         const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
 
-        await expect(() => store.removeValues(undefined)).to.throw(errorMsg)
-        await expect(() => store.removeValues(null)).to.throw(errorMsg)
-        await expect(() => store.removeValues(0)).to.throw(errorMsg)
-        await expect(() => store.removeValues(false)).to.throw(errorMsg)
-        await expect(() => store.removeValues('')).to.throw(errorMsg)
-        await expect(() => store.removeValues(true)).to.throw(errorMsg)
-        await expect(() => store.removeValues(123)).to.throw(errorMsg)
-        await expect(() => store.removeValues(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.removeValues({})).to.throw(errorMsg)
+        await expect(() => store.deleteValues(undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(0)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(false)).to.throw(errorMsg)
+        await expect(() => store.deleteValues('')).to.throw(errorMsg)
+        await expect(() => store.deleteValues(true)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(123)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValues({})).to.throw(errorMsg)
       })
     })
 
@@ -1392,15 +1392,15 @@ describe('Hive - Sorted Set Store', function() {
       })
     })
 
-    describe('Remove values by Rank', async () => {
+    describe('Delete values by Rank', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValuesByRank(1, 2)
+        const result = await store.deleteValuesByRank(1, 2)
 
         expect(request).to.deep.include({
           method: 'DELETE',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-rank?startRank=1&stopRank=2`,
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/delete-by-rank?startRank=1&stopRank=2`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -1409,37 +1409,37 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when Start Rank is invalid', async () => {
         const errorMsg = 'Start Rank must be provided and must be a number.'
 
-        await expect(() => store.removeValuesByRank(null)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(false)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(true)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank('')).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank('foo')).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(NaN)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(false)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(true)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank('')).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank('foo')).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(NaN)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(() => undefined)).to.throw(errorMsg)
       })
 
       it('fails when Stop Rank is invalid', async () => {
         const errorMsg = 'Stop Rank must be provided and must be a number.'
 
-        await expect(() => store.removeValuesByRank(1, null)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(1, false)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(1, true)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(1, '')).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(1, 'foo')).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(1, NaN)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByRank(1, () => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(1, null)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(1, false)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(1, true)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(1, '')).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(1, 'foo')).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(1, NaN)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByRank(1, () => undefined)).to.throw(errorMsg)
       })
     })
 
-    describe('Remove values by Score', async () => {
+    describe('Delete values by Score', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValuesByScore()
+        const result = await store.deleteValuesByScore()
 
         expect(request).to.deep.include({
           method: 'DELETE',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score`,
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/delete-by-score`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -1448,7 +1448,7 @@ describe('Hive - Sorted Set Store', function() {
       it('success with options', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValuesByScore({
+        const result = await store.deleteValuesByScore({
           minScore: 1,
           maxScore: 2,
           minBound: 'Include',
@@ -1457,7 +1457,7 @@ describe('Hive - Sorted Set Store', function() {
 
         expect(request).to.deep.include({
           method: 'DELETE',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/remove-by-score?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude`,
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/delete-by-score?minScore=1&maxScore=2&minBound=Include&maxBound=Exclude`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -1466,77 +1466,77 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when options is invalid', async () => {
         const errorMsg = 'Options must be an object.'
 
-        await expect(() => store.removeValuesByScore(null)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore(NaN)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore('')).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore('123')).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore(123)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore(0)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore([])).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore(true)).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore(false)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore('')).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore('123')).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore(123)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore(0)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore([])).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore(true)).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore(false)).to.throw(errorMsg)
       })
 
       it('fails when Minimal Score is invalid', async () => {
         const errorMsg = 'Minimal Score must be a number.'
 
-        await expect(() => store.removeValuesByScore({ minScore: null })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: false })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: true })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: '' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: 'foo' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: NaN })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: [] })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: {} })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minScore: () => undefined })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: null })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: false })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: true })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: '' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: [] })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: {} })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minScore: () => undefined })).to.throw(errorMsg)
       })
 
       it('fails when Maximal Score is invalid', async () => {
         const errorMsg = 'Maximal Score must be a number.'
 
-        await expect(() => store.removeValuesByScore({ maxScore: null })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: false })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: true })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: '' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: 'foo' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: NaN })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: [] })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: {} })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxScore: () => undefined })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: null })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: false })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: true })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: '' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: NaN })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: [] })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: {} })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxScore: () => undefined })).to.throw(errorMsg)
 
       })
 
       it('fails when Minimal Bound is invalid', async () => {
         const errorMsg = 'Minimal bound must be one of this values: Include, Exclude, Infinity.'
 
-        await expect(() => store.removeValuesByScore({ minBound: null })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: '' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: 'foo' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: NaN })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: {} })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: 0 })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: 123 })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: [] })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: true })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: false })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ minBound: () => undefined })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: null })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: '' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: {} })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: [] })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: true })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: false })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ minBound: () => undefined })).to.throw(errorMsg)
       })
 
       it('fails when Maximal Bound is invalid', async () => {
         const errorMsg = 'Maximal bound must be one of this values: Include, Exclude, Infinity.'
 
-        await expect(() => store.removeValuesByScore({ maxBound: null })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: '' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: 'foo' })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: NaN })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: {} })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: 0 })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: 123 })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: [] })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: true })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: false })).to.throw(errorMsg)
-        await expect(() => store.removeValuesByScore({ maxBound: () => undefined })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: null })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: '' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: NaN })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: {} })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: 0 })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: 123 })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: [] })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: true })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: false })).to.throw(errorMsg)
+        await expect(() => store.deleteValuesByScore({ maxBound: () => undefined })).to.throw(errorMsg)
       })
     })
 

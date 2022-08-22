@@ -306,7 +306,7 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  removeValues(values) {
+  deleteValues(values) {
     if (!values || !(typeof values === 'string' || Array.isArray(values))) {
       throw new Error('Value(s) must be provided and must be a string or list of strings.')
     }
@@ -318,7 +318,7 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  removeValuesByRank(startRank, stopRank) {
+  deleteValuesByRank(startRank, stopRank) {
     if (isNaN(startRank) || typeof startRank !== 'number') {
       throw new Error('Start Rank must be provided and must be a number.')
     }
@@ -329,12 +329,12 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .delete({
-        url  : `${this.getBaseURL()}/remove-by-rank`,
+        url  : `${this.getBaseURL()}/delete-by-rank`,
         query: { startRank, stopRank },
       })
   }
 
-  removeValuesByScore(options) {
+  deleteValuesByScore(options) {
     if (options !== undefined) {
       if (!Utils.isObject(options)) {
         throw new Error('Options must be an object.')
@@ -361,7 +361,7 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .delete({
-        url  : `${this.getBaseURL()}/remove-by-score`,
+        url  : `${this.getBaseURL()}/delete-by-score`,
         query: { ...options },
       })
   }

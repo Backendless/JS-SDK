@@ -338,15 +338,15 @@ describe('Hive - Map Store', function() {
 
       })
 
-      describe('Remove Expiration', async () => {
+      describe('Delete Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeExpiration()
+          const result = await store.deleteExpiration()
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/remove-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/delete-expiration`,
           })
 
           expect(result).to.be.eql(fakeResult)

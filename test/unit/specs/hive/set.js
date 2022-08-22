@@ -338,15 +338,15 @@ describe('Hive - Set Store', function() {
 
       })
 
-      describe('Remove Expiration', async () => {
+      describe('Delete Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeExpiration()
+          const result = await store.deleteExpiration()
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/remove-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/delete-expiration`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -717,11 +717,11 @@ describe('Hive - Set Store', function() {
       })
     })
 
-    describe('Remove Values', async () => {
+    describe('Delete Values', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValues('value')
+        const result = await store.deleteValues('value')
 
         expect(request).to.deep.include({
           method: 'DELETE',
@@ -735,7 +735,7 @@ describe('Hive - Set Store', function() {
       it('success with array of values', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValues(['value1', 'value2'])
+        const result = await store.deleteValues(['value1', 'value2'])
 
         expect(request).to.deep.include({
           method: 'DELETE',
@@ -749,15 +749,15 @@ describe('Hive - Set Store', function() {
       it('fails with invalid value', async () => {
         const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
 
-        await expect(() => store.removeValues(undefined)).to.throw(errorMsg)
-        await expect(() => store.removeValues(null)).to.throw(errorMsg)
-        await expect(() => store.removeValues(false)).to.throw(errorMsg)
-        await expect(() => store.removeValues(0)).to.throw(errorMsg)
-        await expect(() => store.removeValues(123)).to.throw(errorMsg)
-        await expect(() => store.removeValues('')).to.throw(errorMsg)
-        await expect(() => store.removeValues({})).to.throw(errorMsg)
-        await expect(() => store.removeValues(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.removeValues(true)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(false)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(0)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(123)).to.throw(errorMsg)
+        await expect(() => store.deleteValues('')).to.throw(errorMsg)
+        await expect(() => store.deleteValues({})).to.throw(errorMsg)
+        await expect(() => store.deleteValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(true)).to.throw(errorMsg)
       })
     })
 

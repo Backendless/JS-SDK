@@ -339,15 +339,15 @@ describe('Hive - List Store', function() {
 
       })
 
-      describe('Remove Expiration', async () => {
+      describe('Delete Expiration', async () => {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.removeExpiration()
+          const result = await store.deleteExpiration()
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-expiration`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -692,11 +692,11 @@ describe('Hive - List Store', function() {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValue('value1')
+        const result = await store.deleteValue('value1')
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-value`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-value`,
           body  : {
             value: 'value1'
           }
@@ -708,11 +708,11 @@ describe('Hive - List Store', function() {
       it('success with count', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeValue('value1', 3)
+        const result = await store.deleteValue('value1', 3)
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/remove-value`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-value`,
           body  : {
             value: 'value1',
             count: 3,
@@ -725,29 +725,29 @@ describe('Hive - List Store', function() {
       it('fails with invalid value', async () => {
         const errorMsg = 'Value must be provided and must be a string.'
 
-        await expect(() => store.removeValue(undefined)).to.throw(errorMsg)
-        await expect(() => store.removeValue(null)).to.throw(errorMsg)
-        await expect(() => store.removeValue(false)).to.throw(errorMsg)
-        await expect(() => store.removeValue(true)).to.throw(errorMsg)
-        await expect(() => store.removeValue(0)).to.throw(errorMsg)
-        await expect(() => store.removeValue(123)).to.throw(errorMsg)
-        await expect(() => store.removeValue('')).to.throw(errorMsg)
-        await expect(() => store.removeValue({})).to.throw(errorMsg)
-        await expect(() => store.removeValue([])).to.throw(errorMsg)
-        await expect(() => store.removeValue(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(false)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(true)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(0)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(123)).to.throw(errorMsg)
+        await expect(() => store.deleteValue('')).to.throw(errorMsg)
+        await expect(() => store.deleteValue({})).to.throw(errorMsg)
+        await expect(() => store.deleteValue([])).to.throw(errorMsg)
+        await expect(() => store.deleteValue(() => undefined)).to.throw(errorMsg)
       })
 
       it('fails with invalid count', async () => {
         const errorMsg = 'Count must be a number.'
 
-        await expect(() => store.removeValue('v', null)).to.throw(errorMsg)
-        await expect(() => store.removeValue('v', NaN)).to.throw(errorMsg)
-        await expect(() => store.removeValue('v', false)).to.throw(errorMsg)
-        await expect(() => store.removeValue('v', '')).to.throw(errorMsg)
-        await expect(() => store.removeValue('v', 'qwe')).to.throw(errorMsg)
-        await expect(() => store.removeValue('v', true)).to.throw(errorMsg)
-        await expect(() => store.removeValue('v', () => undefined)).to.throw(errorMsg)
-        await expect(() => store.removeValue('v', {})).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', null)).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', NaN)).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', false)).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', '')).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', 'qwe')).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', true)).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValue('v', {})).to.throw(errorMsg)
       })
     })
 
@@ -839,15 +839,15 @@ describe('Hive - List Store', function() {
       })
     })
 
-    describe('Remove First', async () => {
+    describe('Delete First', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeFirst()
+        const result = await store.deleteFirst()
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-remove`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-delete`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -856,11 +856,11 @@ describe('Hive - List Store', function() {
       it('success with count', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeFirst(3)
+        const result = await store.deleteFirst(3)
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-remove?count=3`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-delete?count=3`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -869,26 +869,26 @@ describe('Hive - List Store', function() {
       it('fails with invalid count', async () => {
         const errorMsg = 'Count must be a number.'
 
-        await expect(() => store.removeFirst(null)).to.throw(errorMsg)
-        await expect(() => store.removeFirst(NaN)).to.throw(errorMsg)
-        await expect(() => store.removeFirst(false)).to.throw(errorMsg)
-        await expect(() => store.removeFirst('')).to.throw(errorMsg)
-        await expect(() => store.removeFirst('qwe')).to.throw(errorMsg)
-        await expect(() => store.removeFirst(true)).to.throw(errorMsg)
-        await expect(() => store.removeFirst(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.removeFirst({})).to.throw(errorMsg)
+        await expect(() => store.deleteFirst(null)).to.throw(errorMsg)
+        await expect(() => store.deleteFirst(NaN)).to.throw(errorMsg)
+        await expect(() => store.deleteFirst(false)).to.throw(errorMsg)
+        await expect(() => store.deleteFirst('')).to.throw(errorMsg)
+        await expect(() => store.deleteFirst('qwe')).to.throw(errorMsg)
+        await expect(() => store.deleteFirst(true)).to.throw(errorMsg)
+        await expect(() => store.deleteFirst(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteFirst({})).to.throw(errorMsg)
       })
     })
 
-    describe('Remove Last', async () => {
+    describe('Delete Last', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeLast()
+        const result = await store.deleteLast()
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-remove`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-delete`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -897,11 +897,11 @@ describe('Hive - List Store', function() {
       it('success with count', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.removeLast(3)
+        const result = await store.deleteLast(3)
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-remove?count=3`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-delete?count=3`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -910,14 +910,14 @@ describe('Hive - List Store', function() {
       it('fails with invalid count', async () => {
         const errorMsg = 'Count must be a number.'
 
-        await expect(() => store.removeLast(null)).to.throw(errorMsg)
-        await expect(() => store.removeLast(NaN)).to.throw(errorMsg)
-        await expect(() => store.removeLast(false)).to.throw(errorMsg)
-        await expect(() => store.removeLast('')).to.throw(errorMsg)
-        await expect(() => store.removeLast('qwe')).to.throw(errorMsg)
-        await expect(() => store.removeLast(true)).to.throw(errorMsg)
-        await expect(() => store.removeLast(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.removeLast({})).to.throw(errorMsg)
+        await expect(() => store.deleteLast(null)).to.throw(errorMsg)
+        await expect(() => store.deleteLast(NaN)).to.throw(errorMsg)
+        await expect(() => store.deleteLast(false)).to.throw(errorMsg)
+        await expect(() => store.deleteLast('')).to.throw(errorMsg)
+        await expect(() => store.deleteLast('qwe')).to.throw(errorMsg)
+        await expect(() => store.deleteLast(true)).to.throw(errorMsg)
+        await expect(() => store.deleteLast(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteLast({})).to.throw(errorMsg)
       })
     })
   })

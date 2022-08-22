@@ -99,7 +99,7 @@ export class SetStore extends HiveStore {
       })
   }
 
-  removeValues(values) {
+  deleteValues(values) {
     if (!values || !(typeof values === 'string' || Array.isArray(values))) {
       throw new Error('Value(s) must be provided and must be a string or list of strings.')
     }

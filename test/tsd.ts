@@ -751,7 +751,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).KeyValueStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).KeyValueStore(str).removeExpiration();
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).deleteExpiration();
 
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).touch();
 
@@ -800,7 +800,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).ListStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).ListStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).ListStore(str).removeExpiration();
+            promiseVoid = Backendless.Hive(str).ListStore(str).deleteExpiration();
 
             promiseVoid = Backendless.Hive(str).ListStore(str).touch();
 
@@ -824,14 +824,14 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).ListStore(str).addLast(str);
             promiseNumber = Backendless.Hive(str).ListStore(str).addLast(strArr);
 
-            promiseStringOrNull = Backendless.Hive(str).ListStore(str).removeFirst();
-            promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).removeFirst(num);
+            promiseStringOrNull = Backendless.Hive(str).ListStore(str).deleteFirst();
+            promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).deleteFirst(num);
 
-            promiseStringOrNull = Backendless.Hive(str).ListStore(str).removeLast();
-            promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).removeLast(num);
+            promiseStringOrNull = Backendless.Hive(str).ListStore(str).deleteLast();
+            promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).deleteLast(num);
 
-            promiseNumber = Backendless.Hive(str).ListStore(str).removeValue(str);
-            promiseNumber = Backendless.Hive(str).ListStore(str).removeValue(str, num);
+            promiseNumber = Backendless.Hive(str).ListStore(str).deleteValue(str);
+            promiseNumber = Backendless.Hive(str).ListStore(str).deleteValue(str, num);
         }
     }
 
@@ -857,7 +857,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).MapStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).MapStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).MapStore(str).removeExpiration();
+            promiseVoid = Backendless.Hive(str).MapStore(str).deleteExpiration();
 
             promiseVoid = Backendless.Hive(str).MapStore(str).touch();
 
@@ -918,7 +918,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).SetStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).SetStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).SetStore(str).removeExpiration();
+            promiseVoid = Backendless.Hive(str).SetStore(str).deleteExpiration();
 
             promiseVoid = Backendless.Hive(str).SetStore(str).touch();
 
@@ -946,8 +946,8 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).SetStore(str).add(str);
             promiseNumber = Backendless.Hive(str).SetStore(str).add(strArr);
 
-            promiseNumber = Backendless.Hive(str).SetStore(str).removeValues(str);
-            promiseNumber = Backendless.Hive(str).SetStore(str).removeValues(strArr);
+            promiseNumber = Backendless.Hive(str).SetStore(str).deleteValues(str);
+            promiseNumber = Backendless.Hive(str).SetStore(str).deleteValues(strArr);
 
             promiseBoolean = Backendless.Hive(str).SetStore(str).isMember(str);
         }
@@ -975,7 +975,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).SortedSetStore(str).removeExpiration();
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).deleteExpiration();
 
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).touch();
 
@@ -1048,12 +1048,12 @@ function testHiveStores() {
                 withScores: false
             })
 
-            promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValues(str)
-            promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValues(strArr)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValues(str)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValues(strArr)
 
-            promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValuesByRank(num, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValuesByRank(num, num)
 
-            promiseNumber = Backendless.Hive(str).SortedSetStore(str).removeValuesByScore({
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValuesByScore({
                 minScore: num,
                 maxScore: num,
                 minBound: bound,
