@@ -882,6 +882,9 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).MapStore(str).increment(str);
             promiseNumber = Backendless.Hive(str).MapStore(str).increment(str, num);
 
+            promiseNumber = Backendless.Hive(str).MapStore(str).decrement(str);
+            promiseNumber = Backendless.Hive(str).MapStore(str).decrement(str, num);
+
             promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(str);
             promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(strArr);
         }
@@ -988,6 +991,7 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList, itemOptions)
 
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(str, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).decrementScore(str, num)
 
             promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndRemoveMaxScore()
             promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndRemoveMaxScore(num)

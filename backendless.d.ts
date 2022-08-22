@@ -477,6 +477,8 @@ declare module Backendless {
 
             increment(key: string, count?: number): Promise<number>;
 
+            decrement(key: string, count?: number): Promise<number>;
+
             deleteKeys(key: string): Promise<number>;
 
             deleteKeys(keys: Array<string>): Promise<number>;
@@ -560,6 +562,8 @@ declare module Backendless {
             set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
 
             incrementScore(value: string, count: number): Promise<number>
+
+            decrementScore(value: string, count: number): Promise<number>
 
             getAndRemoveMaxScore(count?: number): Promise<Array<SortedSetItem>>
 

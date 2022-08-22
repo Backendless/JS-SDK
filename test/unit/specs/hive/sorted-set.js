@@ -857,7 +857,7 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when value is invalid', async () => {
         store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
 
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Member must be provided and must be a string.'
 
         await expect(() => store.incrementScore(undefined)).to.throw(errorMsg)
         await expect(() => store.incrementScore(null)).to.throw(errorMsg)
@@ -870,7 +870,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when increment count is invalid', async () => {
-        const errorMsg = 'Count must be provided and must be a number.'
+        const errorMsg = 'ScoreAmount must be provided and must be a number.'
 
         await expect(() => store.incrementScore('foo', undefined)).to.throw(errorMsg)
         await expect(() => store.incrementScore('foo', null)).to.throw(errorMsg)
@@ -881,6 +881,51 @@ describe('Hive - Sorted Set Store', function() {
         await expect(() => store.incrementScore('foo', true)).to.throw(errorMsg)
         await expect(() => store.incrementScore('foo', () => undefined)).to.throw(errorMsg)
         await expect(() => store.incrementScore('foo', {})).to.throw(errorMsg)
+      })
+    })
+
+    describe('Decrement Score', () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.decrementScore('foo', 10)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/decrement`,
+          body  : { member: 'foo', scoreAmount: 10 }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails when value is invalid', async () => {
+        store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
+
+        const errorMsg = 'Member must be provided and must be a string.'
+
+        await expect(() => store.decrementScore(undefined)).to.throw(errorMsg)
+        await expect(() => store.decrementScore(null)).to.throw(errorMsg)
+        await expect(() => store.decrementScore(false)).to.throw(errorMsg)
+        await expect(() => store.decrementScore('')).to.throw(errorMsg)
+        await expect(() => store.decrementScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.decrementScore(true)).to.throw(errorMsg)
+        await expect(() => store.decrementScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.decrementScore({})).to.throw(errorMsg)
+      })
+
+      it('fails when increment count is invalid', async () => {
+        const errorMsg = 'ScoreAmount must be provided and must be a number.'
+
+        await expect(() => store.decrementScore('foo', undefined)).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', null)).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', false)).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', '')).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', '123')).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', NaN)).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', true)).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.decrementScore('foo', {})).to.throw(errorMsg)
       })
     })
 

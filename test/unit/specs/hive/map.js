@@ -803,6 +803,70 @@ describe('Hive - Map Store', function() {
       })
     })
 
+    describe('Decrement', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.decrement('testKey')
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/decrement/testKey`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with count', async () => {
+        const request = prepareMockRequest(fakeResult)
+        const req2 = prepareMockRequest(fakeResult)
+
+        const result = await store.decrement('testKey', 3)
+        const result2 = await store.decrement('testKey', -3)
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/decrement/testKey?count=3`,
+        })
+
+        expect(req2).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/decrement/testKey?count=-3`,
+        })
+
+        expect(result).to.be.eql(fakeResult)
+        expect(result2).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid key', async () => {
+        const errorMsg = 'Key must be provided and must be a string.'
+
+        await expect(() => store.decrement(undefined)).to.throw(errorMsg)
+        await expect(() => store.decrement(null)).to.throw(errorMsg)
+        await expect(() => store.decrement(false)).to.throw(errorMsg)
+        await expect(() => store.decrement(true)).to.throw(errorMsg)
+        await expect(() => store.decrement(0)).to.throw(errorMsg)
+        await expect(() => store.decrement(123)).to.throw(errorMsg)
+        await expect(() => store.decrement('')).to.throw(errorMsg)
+        await expect(() => store.decrement({})).to.throw(errorMsg)
+        await expect(() => store.decrement([])).to.throw(errorMsg)
+        await expect(() => store.decrement(() => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails with invalid count', async () => {
+        const errorMsg = 'Count must be a number.'
+
+        await expect(() => store.decrement('v', null)).to.throw(errorMsg)
+        await expect(() => store.decrement('v', NaN)).to.throw(errorMsg)
+        await expect(() => store.decrement('v', false)).to.throw(errorMsg)
+        await expect(() => store.decrement('v', '')).to.throw(errorMsg)
+        await expect(() => store.decrement('v', 'qwe')).to.throw(errorMsg)
+        await expect(() => store.decrement('v', true)).to.throw(errorMsg)
+        await expect(() => store.decrement('v', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.decrement('v', {})).to.throw(errorMsg)
+      })
+    })
+
     describe('Delete Keys', () => {
       it('success with key', async () => {
         const request = prepareMockRequest(fakeResult)

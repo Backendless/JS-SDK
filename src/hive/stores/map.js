@@ -132,6 +132,22 @@ export class MapStore extends HiveStore {
       })
   }
 
+  decrement(key, count) {
+    if (!key || typeof key !== 'string') {
+      throw new Error('Key must be provided and must be a string.')
+    }
+
+    if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
+      throw new Error('Count must be a number.')
+    }
+
+    return this.app.request
+      .put({
+        url  : `${this.getBaseURL()}/decrement/${key}`,
+        query: { count }
+      })
+  }
+
   deleteKeys(keys) {
     if (!keys || !(typeof keys === 'string' || Array.isArray(keys))) {
       throw new Error('Key(s) must be provided and must be a string or list of strings.')
