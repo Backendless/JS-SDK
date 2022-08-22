@@ -265,7 +265,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       describe('Rename', async () => {
-        it('success', async () => {
+        it('rename without overwrite', async () => {
           const request = prepareMockRequest(fakeResult)
 
           const result = await store.rename('testKey2')
@@ -276,6 +276,45 @@ describe('Hive - Sorted Set Store', function() {
           })
 
           expect(result).to.be.eql(fakeResult)
+        })
+
+        it('rename with overwrite=true', async () => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.rename('testKey2', true)
+
+          expect(request).to.deep.include({
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/rename?newKey=testKey2&overwrite=true`,
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        })
+
+        it('rename with overwrite=false', async () => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.rename('testKey2', false)
+
+          expect(request).to.deep.include({
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/rename?newKey=testKey2&overwrite=false`,
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        })
+
+        it('fails when overwrite option is invalid', async () => {
+          const errorMsg = 'Overwrite must be a boolean.'
+
+          await expect(() => store.rename('v', null)).to.throw(errorMsg)
+          await expect(() => store.rename('v', '')).to.throw(errorMsg)
+          await expect(() => store.rename('v', 'foo')).to.throw(errorMsg)
+          await expect(() => store.rename('v', 0)).to.throw(errorMsg)
+          await expect(() => store.rename('v', 123)).to.throw(errorMsg)
+          await expect(() => store.rename('v', () => undefined)).to.throw(errorMsg)
+          await expect(() => store.rename('v', {})).to.throw(errorMsg)
+          await expect(() => store.rename('v', [])).to.throw(errorMsg)
         })
 
         it('fails when new key name is invalid', async () => {
@@ -290,36 +329,6 @@ describe('Hive - Sorted Set Store', function() {
           await expect(() => store.rename(() => undefined)).to.throw(errorMsg)
           await expect(() => store.rename({})).to.throw(errorMsg)
         })
-
-      })
-
-      describe('Rename If Not Exists', async () => {
-        it('success', async () => {
-          const request = prepareMockRequest(fakeResult)
-
-          const result = await store.renameIfNotExists('testKey2')
-
-          expect(request).to.deep.include({
-            method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/rename-if-not-exists?newKey=testKey2`,
-          })
-
-          expect(result).to.be.eql(fakeResult)
-        })
-
-        it('fails when new key name is invalid', async () => {
-          const errorMsg = 'New key name must be provided and must be a string.'
-
-          await expect(() => store.renameIfNotExists(undefined)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists(null)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists(false)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists(true)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists(0)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists(123)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists(() => undefined)).to.throw(errorMsg)
-          await expect(() => store.renameIfNotExists({})).to.throw(errorMsg)
-        })
-
       })
 
       describe('Get Expiration', async () => {

@@ -346,9 +346,7 @@ declare module Backendless {
 
             delete(): Promise<void>;
 
-            rename(newKeyName: string): Promise<void>;
-
-            renameIfNotExists(newKeyName: string): Promise<boolean>;
+            rename(newKeyName: string, overwrite?: boolean): Promise<void>;
 
             exists(): Promise<boolean>;
 

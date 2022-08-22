@@ -106,27 +106,19 @@ export class HiveStore {
     return !!result
   }
 
-  rename(newKey) {
+  rename(newKey, overwrite) {
     if (!newKey || typeof newKey !== 'string') {
       throw new Error('New key name must be provided and must be a string.')
+    }
+
+    if (overwrite !== undefined && typeof overwrite !== 'boolean') {
+      throw new Error('Overwrite must be a boolean.')
     }
 
     return this.app.request
       .put({
         url  : `${this.getBaseURL()}/rename`,
-        query: { newKey }
-      })
-  }
-
-  renameIfNotExists(newKey) {
-    if (!newKey || typeof newKey !== 'string') {
-      throw new Error('New key name must be provided and must be a string.')
-    }
-
-    return this.app.request
-      .put({
-        url  : `${this.getBaseURL()}/rename-if-not-exists`,
-        query: { newKey }
+        query: { newKey, overwrite }
       })
   }
 

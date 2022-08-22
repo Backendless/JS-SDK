@@ -747,7 +747,7 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).KeyValueStore(str).exists();
 
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).rename(str);
-            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).renameIfNotExists(str);
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).rename(str, bool);
 
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).expireAfter(num);
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).expireAt(num);
@@ -800,7 +800,7 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).ListStore(str).exists();
 
             promiseVoid = Backendless.Hive(str).ListStore(str).rename(str);
-            promiseBoolean = Backendless.Hive(str).ListStore(str).renameIfNotExists(str);
+            promiseVoid = Backendless.Hive(str).ListStore(str).rename(str, bool);
 
             promiseVoid = Backendless.Hive(str).ListStore(str).expireAfter(num);
             promiseVoid = Backendless.Hive(str).ListStore(str).expireAt(num);
@@ -857,7 +857,7 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).MapStore(str).exists();
 
             promiseVoid = Backendless.Hive(str).MapStore(str).rename(str);
-            promiseBoolean = Backendless.Hive(str).MapStore(str).renameIfNotExists(str);
+            promiseVoid = Backendless.Hive(str).MapStore(str).rename(str, bool);
 
             promiseVoid = Backendless.Hive(str).MapStore(str).expireAfter(num);
             promiseVoid = Backendless.Hive(str).MapStore(str).expireAt(num);
@@ -918,7 +918,7 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).SetStore(str).exists();
 
             promiseVoid = Backendless.Hive(str).SetStore(str).rename(str);
-            promiseBoolean = Backendless.Hive(str).SetStore(str).renameIfNotExists(str);
+            promiseVoid = Backendless.Hive(str).SetStore(str).rename(str, bool);
 
             promiseVoid = Backendless.Hive(str).SetStore(str).expireAfter(num);
             promiseVoid = Backendless.Hive(str).SetStore(str).expireAt(num);
@@ -975,7 +975,7 @@ function testHiveStores() {
             promiseBoolean = Backendless.Hive(str).SortedSetStore(str).exists();
 
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).rename(str);
-            promiseBoolean = Backendless.Hive(str).SortedSetStore(str).renameIfNotExists(str);
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).rename(str, bool);
 
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).expireAfter(num);
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).expireAt(num);
