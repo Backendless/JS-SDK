@@ -886,10 +886,12 @@ function testHiveStores() {
 
             promiseVoid = Backendless.Hive(str).MapStore(str).set(obj);
 
-            promiseVoid = Backendless.Hive(str).MapStore(str).add(obj);
+            promiseBoolean = Backendless.Hive(str).MapStore(str).set(str, str);
 
-            promiseBoolean = Backendless.Hive(str).MapStore(str).setValue(str, str);
-            promiseBoolean = Backendless.Hive(str).MapStore(str).setValue(str, str, bool);
+            promiseBoolean = Backendless.Hive(str).MapStore(str).setWithOverwrite(str, str);
+            promiseBoolean = Backendless.Hive(str).MapStore(str).setWithOverwrite(str, str, bool);
+
+            promiseVoid = Backendless.Hive(str).MapStore(str).add(obj);
 
             promiseNumber = Backendless.Hive(str).MapStore(str).increment(str);
             promiseNumber = Backendless.Hive(str).MapStore(str).increment(str, num);

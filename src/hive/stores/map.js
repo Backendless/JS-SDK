@@ -61,19 +61,60 @@ export class MapStore extends HiveStore {
       })
   }
 
-  set(data) {
-    if (!Utils.isObject(data)) {
-      throw new Error('Payload must be an object.')
+  set(key, value) {
+    if (!key) {
+      throw new Error('First argument must be provided and must be a string or an object.')
     }
 
-    if (!Object.keys(data).length) {
-      throw new Error('Provided object must have at least 1 key.')
+    if (Utils.isObject(key)) {
+      if (!Object.keys(key).length) {
+        throw new Error('Provided object must have at least 1 key.')
+      }
+
+      return this.app.request
+        .put({
+          url : this.getBaseURL(),
+          data: key,
+        })
+    }
+
+    if (typeof key !== 'string') {
+      throw new Error('Key must be a string.')
+    }
+
+    if (!value || typeof value !== 'string') {
+      throw new Error('Value must be provided and must be a string.')
     }
 
     return this.app.request
       .put({
-        url: this.getBaseURL(),
-        data,
+        url : `${this.getBaseURL()}/set/${key}`,
+        data: {
+          value,
+        },
+      })
+  }
+
+  setWithOverwrite(key, value, overwrite) {
+    if (!key || typeof key !== 'string') {
+      throw new Error('Key must be provided and must be a string.')
+    }
+
+    if (!value || typeof value !== 'string') {
+      throw new Error('Value must be provided and must be a string.')
+    }
+
+    if (overwrite !== undefined && typeof overwrite !== 'boolean') {
+      throw new Error('Overwrite must be a boolean.')
+    }
+
+    return this.app.request
+      .put({
+        url : `${this.getBaseURL()}/set-with-overwrite/${key}`,
+        data: {
+          value,
+          overwrite
+        },
       })
   }
 
@@ -90,29 +131,6 @@ export class MapStore extends HiveStore {
       .put({
         url: `${this.getBaseURL()}/add`,
         data,
-      })
-  }
-
-  setValue(key, value, overwrite) {
-    if (!key || typeof key !== 'string') {
-      throw new Error('Key must be provided and must be a string.')
-    }
-
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
-    }
-
-    if (overwrite !== undefined && typeof overwrite !== 'boolean') {
-      throw new Error('Overwrite must be a boolean.')
-    }
-
-    return this.app.request
-      .put({
-        url : `${this.getBaseURL()}/set/${key}`,
-        data: {
-          value,
-          overwrite
-        },
       })
   }
 

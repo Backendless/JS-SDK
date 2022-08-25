@@ -615,7 +615,7 @@ describe('Hive - Map Store', function() {
 
     })
 
-    describe('Set', async () => {
+    describe('Set Values', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
@@ -629,24 +629,150 @@ describe('Hive - Map Store', function() {
         expect(result).to.be.eql(fakeResult)
       })
 
-      it('fails with invalid payload', async () => {
-        const errorMsg = 'Payload must be an object.'
+      it('fails with invalid first argument', async () => {
+        const errorMsg = 'First argument must be provided and must be a string or an object.'
 
         await expect(() => store.set(null)).to.throw(errorMsg)
         await expect(() => store.set(NaN)).to.throw(errorMsg)
         await expect(() => store.set(false)).to.throw(errorMsg)
-        await expect(() => store.set(true)).to.throw(errorMsg)
         await expect(() => store.set(0)).to.throw(errorMsg)
-        await expect(() => store.set(123)).to.throw(errorMsg)
-        await expect(() => store.set(() => undefined)).to.throw(errorMsg)
         await expect(() => store.set('')).to.throw(errorMsg)
-        await expect(() => store.set('foo')).to.throw(errorMsg)
       })
 
       it('fails when payload object have no keys', async () => {
         const errorMsg = 'Provided object must have at least 1 key.'
 
         await expect(() => store.set({})).to.throw(errorMsg)
+      })
+    })
+
+    describe('Set Value', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.set('target', 'value1')
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
+          body  : {
+            value: 'value1'
+          }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid key', async () => {
+        const errorMsg = 'Key must be a string.'
+
+        await expect(() => store.set(true)).to.throw(errorMsg)
+        await expect(() => store.set(123)).to.throw(errorMsg)
+        await expect(() => store.set([])).to.throw(errorMsg)
+        await expect(() => store.set(() => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be a string.'
+
+        await expect(() => store.set('k', undefined)).to.throw(errorMsg)
+        await expect(() => store.set('k', null)).to.throw(errorMsg)
+        await expect(() => store.set('k', false)).to.throw(errorMsg)
+        await expect(() => store.set('k', 0)).to.throw(errorMsg)
+        await expect(() => store.set('k', '')).to.throw(errorMsg)
+        await expect(() => store.set('k', true)).to.throw(errorMsg)
+        await expect(() => store.set('k', 123)).to.throw(errorMsg)
+        await expect(() => store.set('k', {})).to.throw(errorMsg)
+        await expect(() => store.set('k', [])).to.throw(errorMsg)
+        await expect(() => store.set('k', () => undefined)).to.throw(errorMsg)
+      })
+    })
+
+    describe('Set With Overwrite', async () => {
+      it('success', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.setWithOverwrite('target', 'value1')
+
+        expect(request).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set-with-overwrite/target`,
+          body  : {
+            value: 'value1'
+          }
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with overwrite option', async () => {
+        const request1 = prepareMockRequest(fakeResult)
+        const request2 = prepareMockRequest(fakeResult)
+
+        const result1 = await store.setWithOverwrite('target1', 'value1', true)
+        const result2 = await store.setWithOverwrite('target2', 'value2', false)
+
+        expect(request1).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set-with-overwrite/target1`,
+          body  : {
+            value    : 'value1',
+            overwrite: true
+          }
+        })
+
+        expect(request2).to.deep.include({
+          method: 'PUT',
+          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set-with-overwrite/target2`,
+          body  : {
+            value    : 'value2',
+            overwrite: false
+          }
+        })
+
+        expect(result1).to.be.eql(fakeResult)
+        expect(result2).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid key', async () => {
+        const errorMsg = 'Key must be provided and must be a string.'
+
+        await expect(() => store.setWithOverwrite(null, 'v')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite(false, 'v')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite(true, 'v')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite(0, 'v')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite(123, 'v')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('', 'v')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite([], 'v')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite(() => undefined, 'v')).to.throw(errorMsg)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be a string.'
+
+        await expect(() => store.setWithOverwrite('k', undefined)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', null)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', false)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 0)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', '')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', true)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 123)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', {})).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', [])).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', () => undefined)).to.throw(errorMsg)
+      })
+
+      it('fails with invalid overwrite argument', async () => {
+        const errorMsg = 'Overwrite must be a boolean.'
+
+        await expect(() => store.setWithOverwrite('k', 'v', null)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 'v', {})).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 'v', [])).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 'v', 0)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 'v', 123)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 'v', '')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 'v', '123')).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 'v', () => undefined)).to.throw(errorMsg)
       })
     })
 
@@ -682,96 +808,6 @@ describe('Hive - Map Store', function() {
         const errorMsg = 'Provided object must have at least 1 key.'
 
         await expect(() => store.add({})).to.throw(errorMsg)
-      })
-    })
-
-    describe('Set Value', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
-
-        const result = await store.setValue('target', 'value1')
-
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
-          body  : {
-            value: 'value1'
-          }
-        })
-
-        expect(result).to.be.eql(fakeResult)
-      })
-
-      it('success with overwrite option', async () => {
-        const request1 = prepareMockRequest(fakeResult)
-        const request2 = prepareMockRequest(fakeResult)
-
-        const result1 = await store.setValue('target', 'value1', true)
-        const result2 = await store.setValue('target', 'value1', false)
-
-        expect(request1).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
-          body  : {
-            value    : 'value1',
-            overwrite: true
-          }
-        })
-
-        expect(request2).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
-          body  : {
-            value    : 'value1',
-            overwrite: false
-          }
-        })
-
-        expect(result1).to.be.eql(fakeResult)
-        expect(result2).to.be.eql(fakeResult)
-      })
-
-      it('fails with invalid key', async () => {
-        const errorMsg = 'Key must be provided and must be a string.'
-
-        await expect(() => store.setValue(undefined, 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue(null, 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue(false, 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue(true, 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue(0, 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue(123, 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue('', 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue({}, 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue([], 'v')).to.throw(errorMsg)
-        await expect(() => store.setValue(() => undefined, 'v')).to.throw(errorMsg)
-      })
-
-      it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
-
-        await expect(() => store.setValue('k', undefined)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', null)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', false)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 0)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', '')).to.throw(errorMsg)
-        await expect(() => store.setValue('k', true)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 123)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', {})).to.throw(errorMsg)
-        await expect(() => store.setValue('k', [])).to.throw(errorMsg)
-        await expect(() => store.setValue('k', () => undefined)).to.throw(errorMsg)
-      })
-
-      it('fails with invalid overwrite argument', async () => {
-        const errorMsg = 'Overwrite must be a boolean.'
-
-        await expect(() => store.setValue('k', 'v', null)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 'v', {})).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 'v', [])).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 'v', 0)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 'v', 123)).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 'v', '')).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 'v', '123')).to.throw(errorMsg)
-        await expect(() => store.setValue('k', 'v', () => undefined)).to.throw(errorMsg)
       })
     })
 
