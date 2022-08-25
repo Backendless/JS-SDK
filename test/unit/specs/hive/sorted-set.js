@@ -841,15 +841,19 @@ describe('Hive - Sorted Set Store', function() {
         const result = await store.getScore('testKey1')
 
         expect(request).to.deep.include({
-          method: 'GET',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score?value=testKey1`,
+          method : 'POST',
+          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            member: 'testKey1'
+          }
         })
 
         expect(result).to.be.eql(fakeResult)
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Member must be provided and must be a string.'
 
         await expect(() => store.getScore(undefined)).to.throw(errorMsg)
         await expect(() => store.getScore(null)).to.throw(errorMsg)
@@ -1044,8 +1048,12 @@ describe('Hive - Sorted Set Store', function() {
         const result = await store.getRank('foo')
 
         expect(request).to.deep.include({
-          method: 'GET',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank?value=foo`,
+          method : 'POST',
+          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            member: 'foo'
+          }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -1057,15 +1065,20 @@ describe('Hive - Sorted Set Store', function() {
         const result = await store.getRank('foo', true)
 
         expect(request).to.deep.include({
-          method: 'GET',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank?value=foo&reverse=true`,
+          method : 'POST',
+          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            member : 'foo',
+            reverse: true
+          }
         })
 
         expect(result).to.be.eql(fakeResult)
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Member must be provided and must be a string.'
 
         await expect(() => store.getRank(undefined)).to.throw(errorMsg)
         await expect(() => store.getRank(null)).to.throw(errorMsg)

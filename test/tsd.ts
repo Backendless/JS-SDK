@@ -955,7 +955,8 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).SetStore(str).deleteValues(str);
             promiseVoid = Backendless.Hive(str).SetStore(str).deleteValues(strArr);
 
-            promiseBoolean = Backendless.Hive(str).SetStore(str).isMember(str);
+            promiseListOfString = Backendless.Hive(str).SetStore(str).isMember(str);
+            promiseListOfString = Backendless.Hive(str).SetStore(str).isMember(strArr);
         }
     }
 

@@ -520,7 +520,7 @@ declare module Backendless {
 
             deleteValues(values: Array<string>): Promise<void>;
 
-            isMember(value: string): Promise<boolean>;
+            isMember(value: string | Array<string>): Promise<Array<string>>;
 
             length(): Promise<number>;
         }
@@ -573,9 +573,9 @@ declare module Backendless {
 
             getRandom<T = SortedSetItem | string>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
 
-            getScore(value: string): Promise<number>
+            getScore(member: string): Promise<number>
 
-            getRank(value: string, reverse?: boolean): Promise<number>
+            getRank(member: string, reverse?: boolean): Promise<number>
 
             getRangeByRank<T = SortedSetItem | string>(startRank: number, stopRank: number, options?: {
                 reverse?: boolean,

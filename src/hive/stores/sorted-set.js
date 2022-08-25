@@ -193,23 +193,23 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  getScore(value) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+  getScore(member) {
+    if (!member || typeof member !== 'string') {
+      throw new Error('Member must be provided and must be a string.')
     }
 
     return this.app.request
-      .get({
+      .post({
         url : `${this.getBaseURL()}/get-score`,
-        query: {
-          value
+        data: {
+          member
         },
       })
   }
 
-  getRank(value, reverse) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+  getRank(member, reverse) {
+    if (!member || typeof member !== 'string') {
+      throw new Error('Member must be provided and must be a string.')
     }
 
     if (reverse !== undefined && typeof reverse !== 'boolean') {
@@ -217,10 +217,10 @@ export class SortedSetStore extends HiveStore {
     }
 
     return this.app.request
-      .get({
+      .post({
         url  : `${this.getBaseURL()}/get-rank`,
-        query: {
-          value,
+        data: {
+          member,
           reverse
         },
       })

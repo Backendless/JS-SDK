@@ -112,16 +112,18 @@ export class SetStore extends HiveStore {
   }
 
   isMember(value) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (typeof value === 'string') {
+      value = [value]
+    }
+
+    if (!Array.isArray(value)) {
+      throw new Error('Value must be provided and must be a string or a list of strings.')
     }
 
     return this.app.request
-      .get({
-        url  : `${this.getBaseURL()}/contains`,
-        query: {
-          value
-        }
+      .post({
+        url : `${this.getBaseURL()}/contains`,
+        data: value
       })
   }
 

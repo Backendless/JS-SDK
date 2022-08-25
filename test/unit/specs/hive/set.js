@@ -441,8 +441,8 @@ describe('Hive - Set Store', function() {
           const result = await store.secondsSinceLastOperation()
 
           expect(request).to.deep.include({
-            method : 'GET',
-            path   : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/seconds-since-last-operation`,
+            method: 'GET',
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/seconds-since-last-operation`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -771,28 +771,44 @@ describe('Hive - Set Store', function() {
     })
 
     describe('Is Member', async () => {
-      it('success', async () => {
+      it('success for one key', async () => {
         const request = prepareMockRequest(fakeResult)
 
         const result = await store.isMember('testKey1')
 
         expect(request).to.deep.include({
-          method: 'GET',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains?value=testKey1`,
+          method : 'POST',
+          path   : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : ['testKey1']
+        })
+
+        expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success for many keys', async () => {
+        const request = prepareMockRequest(fakeResult)
+
+        const result = await store.isMember(['testKey1', 'testKey2'])
+
+        expect(request).to.deep.include({
+          method : 'POST',
+          path   : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : ['testKey1', 'testKey2']
         })
 
         expect(result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be a string or a list of strings.'
 
         await expect(() => store.isMember(undefined)).to.throw(errorMsg)
         await expect(() => store.isMember(null)).to.throw(errorMsg)
         await expect(() => store.isMember(false)).to.throw(errorMsg)
         await expect(() => store.isMember(0)).to.throw(errorMsg)
         await expect(() => store.isMember(123)).to.throw(errorMsg)
-        await expect(() => store.isMember('')).to.throw(errorMsg)
         await expect(() => store.isMember({})).to.throw(errorMsg)
         await expect(() => store.isMember(() => undefined)).to.throw(errorMsg)
         await expect(() => store.isMember(true)).to.throw(errorMsg)
