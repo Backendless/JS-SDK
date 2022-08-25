@@ -344,7 +344,7 @@ declare module Backendless {
          */
         interface hiveStore {
 
-            delete(): Promise<void>;
+            delete(): Promise<number>;
 
             rename(newKeyName: string, overwrite?: boolean): Promise<void>;
 
@@ -412,9 +412,9 @@ declare module Backendless {
 
             get(indexFrom: number, indexTo: number): Promise<Array<string>>;
 
-            set(values: Array<string>): Promise<void>;
+            set(values: Array<string>): Promise<number>;
 
-            set(value: string, index: number): Promise<void>;
+            set(value: string, index: number): Promise<number>;
 
             insertBefore(valueToInsert: string, anchorValue: string): Promise<number>;
 
@@ -469,21 +469,21 @@ declare module Backendless {
 
             values(): Promise<Array<string>>;
 
-            set(data: object): Promise<void>;
+            set(data: object): Promise<number>;
 
             set(key: string, value: string): Promise<boolean>;
 
             setWithOverwrite(key: string, value: string, overwrite?: boolean): Promise<boolean>;
 
-            add(data: object): Promise<void>;
+            add(data: object): Promise<number>;
 
             increment(key: string, count?: number): Promise<number>;
 
             decrement(key: string, count?: number): Promise<number>;
 
-            deleteKeys(key: string): Promise<void>;
+            deleteKeys(key: string): Promise<number>;
 
-            deleteKeys(keys: Array<string>): Promise<void>;
+            deleteKeys(keys: Array<string>): Promise<number>;
         }
 
         /**
@@ -510,17 +510,17 @@ declare module Backendless {
 
             getRandomAndDelete(count?: number): Promise<Array<string>>;
 
-            set(value: string): Promise<void>;
+            set(value: string): Promise<number>;
 
-            set(values: Array<string>): Promise<void>;
+            set(values: Array<string>): Promise<number>;
 
-            add(value: string): Promise<void>;
+            add(value: string): Promise<number>;
 
-            add(values: Array<string>): Promise<void>;
+            add(values: Array<string>): Promise<number>;
 
-            deleteValues(value: string): Promise<void>;
+            deleteValues(value: string): Promise<number>;
 
-            deleteValues(values: Array<string>): Promise<void>;
+            deleteValues(values: Array<string>): Promise<number>;
 
             isMember(value: string | Array<string>): Promise<Array<string>>;
 
@@ -595,13 +595,13 @@ declare module Backendless {
                 withScores?: boolean
             }): Promise<Array<T>>
 
-            deleteValues(value: string): Promise<void>;
+            deleteValues(value: string): Promise<number>;
 
-            deleteValues(values: Array<string>): Promise<void>;
+            deleteValues(values: Array<string>): Promise<number>;
 
-            deleteValuesByRank(startRank: number, stopRank: number): Promise<void>;
+            deleteValuesByRank(startRank: number, stopRank: number): Promise<number>;
 
-            deleteValuesByScore(options?: SortedSetFilterI): Promise<void>;
+            deleteValuesByScore(options?: SortedSetFilterI): Promise<number>;
 
             length(): Promise<number>;
 
