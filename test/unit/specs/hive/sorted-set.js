@@ -844,16 +844,14 @@ describe('Hive - Sorted Set Store', function() {
           method : 'POST',
           path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
           headers: { 'Content-Type': 'application/json' },
-          body   : {
-            member: 'testKey1'
-          }
+          body   : 'testKey1'
         })
 
         expect(result).to.be.eql(fakeResult)
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Member must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be a string.'
 
         await expect(() => store.getScore(undefined)).to.throw(errorMsg)
         await expect(() => store.getScore(null)).to.throw(errorMsg)
@@ -876,7 +874,7 @@ describe('Hive - Sorted Set Store', function() {
         expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/increment`,
-          body  : { member: 'foo', scoreValue: 10 }
+          body  : { value: 'foo', scoreValue: 10 }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -885,7 +883,7 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when value is invalid', async () => {
         store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
 
-        const errorMsg = 'Member must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be a string.'
 
         await expect(() => store.incrementScore(undefined)).to.throw(errorMsg)
         await expect(() => store.incrementScore(null)).to.throw(errorMsg)
@@ -921,7 +919,7 @@ describe('Hive - Sorted Set Store', function() {
         expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/decrement`,
-          body  : { member: 'foo', scoreValue: 10 }
+          body  : { value: 'foo', scoreValue: 10 }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -930,7 +928,7 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when value is invalid', async () => {
         store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
 
-        const errorMsg = 'Member must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be a string.'
 
         await expect(() => store.decrementScore(undefined)).to.throw(errorMsg)
         await expect(() => store.decrementScore(null)).to.throw(errorMsg)
@@ -1052,7 +1050,7 @@ describe('Hive - Sorted Set Store', function() {
           path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
           headers: { 'Content-Type': 'application/json' },
           body   : {
-            member: 'foo'
+            value: 'foo'
           }
         })
 
@@ -1069,7 +1067,7 @@ describe('Hive - Sorted Set Store', function() {
           path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
           headers: { 'Content-Type': 'application/json' },
           body   : {
-            member : 'foo',
+            value  : 'foo',
             reverse: true
           }
         })
@@ -1078,7 +1076,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Member must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be a string.'
 
         await expect(() => store.getRank(undefined)).to.throw(errorMsg)
         await expect(() => store.getRank(null)).to.throw(errorMsg)

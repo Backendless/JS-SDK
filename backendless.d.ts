@@ -563,9 +563,9 @@ declare module Backendless {
 
             set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
 
-            incrementScore(member: string, scoreValue: number): Promise<number>
+            incrementScore(value: string, scoreValue: number): Promise<number>
 
-            decrementScore(member: string, scoreValue: number): Promise<number>
+            decrementScore(value: string, scoreValue: number): Promise<number>
 
             getAndRemoveMaxScore(count?: number): Promise<Array<SortedSetItem>>
 
@@ -573,9 +573,9 @@ declare module Backendless {
 
             getRandom<T = SortedSetItem | string>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
 
-            getScore(member: string): Promise<number>
+            getScore(value: string): Promise<number>
 
-            getRank(member: string, reverse?: boolean): Promise<number>
+            getRank(value: string, reverse?: boolean): Promise<number>
 
             getRangeByRank<T = SortedSetItem | string>(startRank: number, stopRank: number, options?: {
                 reverse?: boolean,
