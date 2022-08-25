@@ -88,7 +88,7 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url : `${this.getBaseURL()}/insert/${before ? 'before' : 'after'}`,
+        url : `${this.getBaseURL()}/insert-${before ? 'before' : 'after'}`,
         data: {
           valueToInsert,
           anchorValue,

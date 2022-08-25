@@ -821,8 +821,8 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).ListStore(str).set([str, str]);
             promiseVoid = Backendless.Hive(str).ListStore(str).set(str, num);
 
-            promiseVoid = Backendless.Hive(str).ListStore(str).insertBefore(str, str);
-            promiseVoid = Backendless.Hive(str).ListStore(str).insertAfter(str, str);
+            promiseNumber = Backendless.Hive(str).ListStore(str).insertBefore(str, str);
+            promiseNumber = Backendless.Hive(str).ListStore(str).insertAfter(str, str);
 
             promiseNumber = Backendless.Hive(str).ListStore(str).addFirst(str);
             promiseNumber = Backendless.Hive(str).ListStore(str).addFirst(strArr);

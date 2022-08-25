@@ -605,7 +605,7 @@ describe('Hive - List Store', function() {
 
         expect(request).to.deep.include({
           method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert/before`,
+          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-before`,
           headers: { 'Content-Type': 'application/json' },
           body   : {
             valueToInsert: 'valueToInsert1',
@@ -655,7 +655,7 @@ describe('Hive - List Store', function() {
 
         expect(request).to.deep.include({
           method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert/after`,
+          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-after`,
           headers: { 'Content-Type': 'application/json' },
           body   : {
             valueToInsert: 'valueToInsert1',
