@@ -844,7 +844,9 @@ describe('Hive - Sorted Set Store', function() {
           method : 'POST',
           path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
           headers: { 'Content-Type': 'application/json' },
-          body   : 'testKey1'
+          body   : {
+            value: 'testKey1'
+          }
         })
 
         expect(result).to.be.eql(fakeResult)

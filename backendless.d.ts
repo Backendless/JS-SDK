@@ -379,7 +379,7 @@ declare module Backendless {
 
             set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<void>;
 
-            set(keysMap: object): Promise<'OK'>;
+            set(keysMap: object): Promise<void>;
         }
 
         /**
@@ -457,7 +457,7 @@ declare module Backendless {
 
             get(key: string): Promise<object>;
 
-            get(keys?: Array<string>): Promise<object>;
+            get(keys: Array<string>): Promise<object>;
 
             getValue(key: string): Promise<string | null>;
 

@@ -85,7 +85,10 @@ export class KeyValueStore extends HiveStore {
 
     return this.app.request
       .put({
-        url: `${this.getBaseURL()}/increment?value=${value}`
+        url  : `${this.getBaseURL()}/increment`,
+        query: {
+          value
+        }
       })
   }
 
@@ -96,7 +99,10 @@ export class KeyValueStore extends HiveStore {
 
     return this.app.request
       .put({
-        url: `${this.getBaseURL()}/decrement?value=${value}`,
+        url  : `${this.getBaseURL()}/decrement`,
+        query: {
+          value
+        }
       })
   }
 }

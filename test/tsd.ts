@@ -763,7 +763,7 @@ function testHiveStores() {
         function testStatic() {
             promiseObject = Backendless.Hive(str).KeyValueStore.get(strArr);
 
-            promiseString = Backendless.Hive(str).KeyValueStore.set(obj);
+            promiseVoid = Backendless.Hive(str).KeyValueStore.set(obj);
             promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str);
             promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, setKeyOptions);
             promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {});

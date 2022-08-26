@@ -200,10 +200,9 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .post({
-        url    : `${this.getBaseURL()}/get-score`,
-        data   : JSON.stringify(value),
-        headers: {
-          'Content-Type': 'application/json'
+        url : `${this.getBaseURL()}/get-score`,
+        data: {
+          value
         },
       })
   }
