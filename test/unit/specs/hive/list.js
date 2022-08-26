@@ -352,11 +352,11 @@ describe('Hive - List Store', function() {
         it('success', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await store.deleteExpiration()
+          const result = await store.clearExpiration()
 
           expect(request).to.deep.include({
             method: 'PUT',
-            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-expiration`,
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/clear-expiration`,
           })
 
           expect(result).to.be.eql(fakeResult)
@@ -856,7 +856,7 @@ describe('Hive - List Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-delete`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-with-max-score-and-delete`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -869,7 +869,7 @@ describe('Hive - List Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-first-and-delete?count=3`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-with-max-score-and-delete?count=3`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -897,7 +897,7 @@ describe('Hive - List Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-delete`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-with-min-score-and-delete`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -910,7 +910,7 @@ describe('Hive - List Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-last-and-delete?count=3`,
+          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/get-with-min-score-and-delete?count=3`,
         })
 
         expect(result).to.be.eql(fakeResult)

@@ -753,7 +753,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).KeyValueStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).KeyValueStore(str).deleteExpiration();
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).clearExpiration();
 
             promiseVoid = Backendless.Hive(str).KeyValueStore(str).touch();
 
@@ -806,7 +806,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).ListStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).ListStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).ListStore(str).deleteExpiration();
+            promiseVoid = Backendless.Hive(str).ListStore(str).clearExpiration();
 
             promiseVoid = Backendless.Hive(str).ListStore(str).touch();
 
@@ -863,7 +863,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).MapStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).MapStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).MapStore(str).deleteExpiration();
+            promiseVoid = Backendless.Hive(str).MapStore(str).clearExpiration();
 
             promiseVoid = Backendless.Hive(str).MapStore(str).touch();
 
@@ -926,7 +926,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).SetStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).SetStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).SetStore(str).deleteExpiration();
+            promiseVoid = Backendless.Hive(str).SetStore(str).clearExpiration();
 
             promiseVoid = Backendless.Hive(str).SetStore(str).touch();
 
@@ -984,7 +984,7 @@ function testHiveStores() {
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).expireAt(num);
 
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).getExpiration();
-            promiseVoid = Backendless.Hive(str).SortedSetStore(str).deleteExpiration();
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).clearExpiration();
 
             promiseVoid = Backendless.Hive(str).SortedSetStore(str).touch();
 
