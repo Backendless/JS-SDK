@@ -763,14 +763,14 @@ function testHiveStores() {
         function testStatic() {
             promiseObject = Backendless.Hive(str).KeyValueStore.get(strArr);
 
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(obj);
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str);
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, setKeyOptions);
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {});
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {ttl: 123});
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {expireAt: 123});
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'SetIfExists'});
-            promiseVoid = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'SetIfNotExists'});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(obj);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, setKeyOptions);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {ttl: 123});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {expireAt: 123});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'SetIfExists'});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'SetIfNotExists'});
         }
 
         function testInstance() {

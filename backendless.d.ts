@@ -377,9 +377,9 @@ declare module Backendless {
 
             get(keys: Array<string>): Promise<object>;
 
-            set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<void>;
+            set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<boolean>;
 
-            set(keysMap: object): Promise<void>;
+            set(keysMap: object): Promise<boolean>;
         }
 
         /**
