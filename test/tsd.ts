@@ -738,7 +738,7 @@ function testHiveStores() {
 
             promiseVoid = Backendless.Hive(str).KeyValueStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).KeyValueStore.exists(strArr);
-            promiseNumber = Backendless.Hive(str).KeyValueStore.touch(strArr);
+            promiseVoid = Backendless.Hive(str).KeyValueStore.touch(strArr);
         }
 
         function testGeneralInstance() {
@@ -791,7 +791,7 @@ function testHiveStores() {
 
             promiseVoid = Backendless.Hive(str).ListStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).ListStore.exists(strArr);
-            promiseNumber = Backendless.Hive(str).ListStore.touch(strArr);
+            promiseVoid = Backendless.Hive(str).ListStore.touch(strArr);
         }
 
         function testGeneralInstance() {
@@ -848,7 +848,7 @@ function testHiveStores() {
 
             promiseVoid = Backendless.Hive(str).MapStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).MapStore.exists(strArr);
-            promiseNumber = Backendless.Hive(str).MapStore.touch(strArr);
+            promiseVoid = Backendless.Hive(str).MapStore.touch(strArr);
         }
 
         function testGeneralInstance() {
@@ -911,7 +911,7 @@ function testHiveStores() {
 
             promiseVoid = Backendless.Hive(str).SetStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).SetStore.exists(strArr);
-            promiseNumber = Backendless.Hive(str).SetStore.touch(strArr);
+            promiseVoid = Backendless.Hive(str).SetStore.touch(strArr);
         }
 
         function testGeneralInstance() {
@@ -969,7 +969,7 @@ function testHiveStores() {
 
             promiseVoid = Backendless.Hive(str).SortedSetStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).SortedSetStore.exists(strArr);
-            promiseNumber = Backendless.Hive(str).SortedSetStore.touch(strArr);
+            promiseVoid = Backendless.Hive(str).SortedSetStore.touch(strArr);
         }
 
         function testGeneralInstance() {

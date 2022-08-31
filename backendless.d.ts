@@ -336,7 +336,7 @@ declare module Backendless {
 
             exists(keys: Array<string>): Promise<number>;
 
-            touch(keys: Array<string>): Promise<number>;
+            touch(keys: Array<string>): Promise<void>;
         }
 
         /**
