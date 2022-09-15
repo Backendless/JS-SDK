@@ -414,7 +414,7 @@ declare module Backendless {
 
             set(values: Array<string>): Promise<number>;
 
-            set(value: string, index: number): Promise<number>;
+            set(value: string, index: number): Promise<void>;
 
             insertBefore(valueToInsert: string, anchorValue: string): Promise<number>;
 
