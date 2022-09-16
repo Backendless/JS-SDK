@@ -270,7 +270,7 @@ describe('Hive - Key Value Store', function() {
           const result = await store.rename('testKey2')
 
           expect(request).to.deep.include({
-            method: 'POST',
+            method: 'PUT',
             path  : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}/rename?newKey=testKey2`,
           })
 
@@ -283,7 +283,7 @@ describe('Hive - Key Value Store', function() {
           const result = await store.rename('testKey2', true)
 
           expect(request).to.deep.include({
-            method: 'POST',
+            method: 'PUT',
             path  : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}/rename?newKey=testKey2&overwrite=true`,
           })
 
@@ -296,7 +296,7 @@ describe('Hive - Key Value Store', function() {
           const result = await store.rename('testKey2', false)
 
           expect(request).to.deep.include({
-            method: 'POST',
+            method: 'PUT',
             path  : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}/rename?newKey=testKey2&overwrite=false`,
           })
 

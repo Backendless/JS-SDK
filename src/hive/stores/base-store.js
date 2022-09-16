@@ -116,7 +116,7 @@ export class HiveStore {
     }
 
     return this.app.request
-      .post({
+      .put({
         url  : `${this.getBaseURL()}/rename`,
         query: { newKey, overwrite }
       })
