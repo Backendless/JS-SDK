@@ -507,7 +507,7 @@ describe('Hive - Key Value Store', function() {
         const result = await Store.set('testKey', 'testValue', {
           ttl      : 100,
           expireAt : 1234567890,
-          condition: 'SetIfExists'
+          condition: 'IfExists'
         })
 
         expect(request).to.deep.include({
@@ -518,7 +518,7 @@ describe('Hive - Key Value Store', function() {
             'value'  : 'testValue',
             ttl      : 100,
             expireAt : 1234567890,
-            condition: 'SetIfExists',
+            condition: 'IfExists',
           }
         })
 
@@ -602,7 +602,7 @@ describe('Hive - Key Value Store', function() {
       })
 
       it('fails when Condition is invalid', async () => {
-        const errorMsg = 'Condition must be one of this values: SetIfExists, SetIfNotExists.'
+        const errorMsg = 'Condition must be one of this values: [IfExists, IfNotExists, Always].'
 
         await expect(() => Store.set('k', 'v', { condition: null })).to.throw(errorMsg)
         await expect(() => Store.set('k', 'v', { condition: false })).to.throw(errorMsg)
@@ -648,13 +648,13 @@ describe('Hive - Key Value Store', function() {
         expect(result).to.be.eql(fakeResult)
       })
 
-      it('success with options', async () => {
+      it('success with all options', async () => {
         const request = prepareMockRequest(fakeResult)
 
         const result = await store.set('testValue', {
           ttl      : 100,
           expireAt : 1234567890,
-          condition: 'SetIfNotExists'
+          condition: 'IfNotExists'
         })
 
         expect(request).to.deep.include({
@@ -665,11 +665,55 @@ describe('Hive - Key Value Store', function() {
             'value'  : 'testValue',
             ttl      : 100,
             expireAt : 1234567890,
-            condition: 'SetIfNotExists',
+            condition: 'IfNotExists',
           }
         })
 
         expect(result).to.be.eql(fakeResult)
+      })
+
+      it('success with all conditions', async () => {
+        const request1 = prepareMockRequest(fakeResult)
+        const request2 = prepareMockRequest(fakeResult)
+        const request3 = prepareMockRequest(fakeResult)
+
+        const result1 = await store.set('testValue1', { condition: 'IfNotExists' })
+        const result2 = await store.set('testValue2', { condition: 'IfExists' })
+        const result3 = await store.set('testValue3', { condition: 'Always' })
+
+        expect(request1).to.deep.include({
+          method : 'PUT',
+          path   : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            'value'  : 'testValue1',
+            condition: 'IfNotExists',
+          }
+        })
+
+        expect(request2).to.deep.include({
+          method : 'PUT',
+          path   : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            'value'  : 'testValue2',
+            condition: 'IfExists',
+          }
+        })
+
+        expect(request3).to.deep.include({
+          method : 'PUT',
+          path   : `${APP_PATH}/hive/${hiveName}/key-value/${storeKey}`,
+          headers: { 'Content-Type': 'application/json' },
+          body   : {
+            'value'  : 'testValue3',
+            condition: 'Always',
+          }
+        })
+
+        expect(result1).to.be.eql(fakeResult)
+        expect(result2).to.be.eql(fakeResult)
+        expect(result3).to.be.eql(fakeResult)
       })
 
       it('fails when options is invalid', async () => {
@@ -712,7 +756,7 @@ describe('Hive - Key Value Store', function() {
       })
 
       it('fails when Condition is invalid', async () => {
-        const errorMsg = 'Condition must be one of this values: SetIfExists, SetIfNotExists.'
+        const errorMsg = 'Condition must be one of this values: [IfExists, IfNotExists, Always].'
 
         await expect(() => store.set('v', { condition: null })).to.throw(errorMsg)
         await expect(() => store.set('v', { condition: false })).to.throw(errorMsg)

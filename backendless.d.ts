@@ -366,7 +366,7 @@ declare module Backendless {
         interface KeyValueSetKeyOptionsI {
             ttl?: Number; // in seconds
             expireAt?: Number; // timestamp
-            condition?: 'SetIfExists' | 'SetIfNotExists'; //if not provided set anyway
+            condition?: 'IfExists' | 'IfNotExists' | 'Always'; //if not provided set anyway
         }
 
         /**

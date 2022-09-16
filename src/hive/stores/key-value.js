@@ -52,8 +52,8 @@ export class KeyValueStore extends HiveStore {
         throw new Error('ExpireAt timestamp must be a number.')
       }
 
-      if (condition !== undefined && !['SetIfExists', 'SetIfNotExists'].includes(condition)) {
-        throw new Error('Condition must be one of this values: SetIfExists, SetIfNotExists.')
+      if (condition !== undefined && !['IfExists', 'IfNotExists', 'Always'].includes(condition)) {
+        throw new Error('Condition must be one of this values: [IfExists, IfNotExists, Always].')
       }
     }
 
