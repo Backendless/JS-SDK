@@ -965,7 +965,7 @@ describe('Hive - Sorted Set Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-first-and-remove`,
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-with-max-score-and-delete`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -978,7 +978,7 @@ describe('Hive - Sorted Set Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-first-and-remove?count=3`,
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-with-max-score-and-delete?count=3`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -1007,7 +1007,7 @@ describe('Hive - Sorted Set Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-last-and-remove`,
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-with-min-score-and-delete`,
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -1020,7 +1020,7 @@ describe('Hive - Sorted Set Store', function() {
 
         expect(request).to.deep.include({
           method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-last-and-remove?count=3`,
+          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-with-min-score-and-delete?count=3`,
         })
 
         expect(result).to.be.eql(fakeResult)
