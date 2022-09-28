@@ -146,7 +146,7 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url  : `${this.getBaseURL()}/get-with-max-score-and-delete`,
+        url  : `${this.getBaseURL()}/get-first-and-delete`,
         query: { count },
       })
   }
@@ -158,7 +158,7 @@ export class ListStore extends HiveStore {
 
     return this.app.request
       .put({
-        url  : `${this.getBaseURL()}/get-with-min-score-and-delete`,
+        url  : `${this.getBaseURL()}/get-last-and-delete`,
         query: { count },
       })
   }

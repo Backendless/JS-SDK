@@ -152,7 +152,7 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .put({
-        url  : `${this.getBaseURL()}/get-first-and-remove`,
+        url  : `${this.getBaseURL()}/get-with-max-score-and-delete`,
         query: { count },
       })
   }
@@ -164,7 +164,7 @@ export class SortedSetStore extends HiveStore {
 
     return this.app.request
       .put({
-        url  : `${this.getBaseURL()}/get-last-and-remove`,
+        url  : `${this.getBaseURL()}/get-with-min-score-and-delete`,
         query: { count },
       })
   }
