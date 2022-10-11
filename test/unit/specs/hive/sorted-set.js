@@ -876,7 +876,7 @@ describe('Hive - Sorted Set Store', function() {
         expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/increment`,
-          body  : { value: 'foo', scoreAmount: 10 }
+          body  : { value: 'foo', scoreValue: 10 }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -898,7 +898,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when increment count is invalid', async () => {
-        const errorMsg = 'ScoreAmount must be provided and must be a number.'
+        const errorMsg = 'ScoreValue must be provided and must be a number.'
 
         await expect(() => store.incrementScore('foo', undefined)).to.throw(errorMsg)
         await expect(() => store.incrementScore('foo', null)).to.throw(errorMsg)
@@ -921,7 +921,7 @@ describe('Hive - Sorted Set Store', function() {
         expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/decrement`,
-          body  : { value: 'foo', scoreAmount: 10 }
+          body  : { value: 'foo', scoreValue: 10 }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -943,7 +943,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when increment count is invalid', async () => {
-        const errorMsg = 'ScoreAmount must be provided and must be a number.'
+        const errorMsg = 'ScoreValue must be provided and must be a number.'
 
         await expect(() => store.decrementScore('foo', undefined)).to.throw(errorMsg)
         await expect(() => store.decrementScore('foo', null)).to.throw(errorMsg)
