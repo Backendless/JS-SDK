@@ -107,45 +107,45 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  incrementScore(value, scoreValue) {
+  incrementScore(value, scoreAmount) {
     if (!value || typeof value !== 'string') {
       throw new Error('Value must be provided and must be a string.')
     }
 
-    if (isNaN(scoreValue) || typeof scoreValue !== 'number') {
-      throw new Error('ScoreValue must be provided and must be a number.')
+    if (isNaN(scoreAmount) || typeof scoreAmount !== 'number') {
+      throw new Error('ScoreAmount must be provided and must be a number.')
     }
 
     return this.app.request
       .put({
         url : `${this.getBaseURL()}/increment`,
         data: {
-          scoreValue,
+          scoreAmount,
           value,
         }
       })
   }
 
-  decrementScore(value, scoreValue) {
+  decrementScore(value, scoreAmount) {
     if (!value || typeof value !== 'string') {
       throw new Error('Value must be provided and must be a string.')
     }
 
-    if (isNaN(scoreValue) || typeof scoreValue !== 'number') {
-      throw new Error('ScoreValue must be provided and must be a number.')
+    if (isNaN(scoreAmount) || typeof scoreAmount !== 'number') {
+      throw new Error('ScoreAmount must be provided and must be a number.')
     }
 
     return this.app.request
       .put({
         url : `${this.getBaseURL()}/decrement`,
         data: {
-          scoreValue,
+          scoreAmount,
           value,
         }
       })
   }
 
-  getAndRemoveMaxScore(count) {
+  getAndDeleteMaxScore(count) {
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }
@@ -157,7 +157,7 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  getAndRemoveMinScore(count) {
+  getAndDeleteMinScore(count) {
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
       throw new Error('Count must be a number.')
     }

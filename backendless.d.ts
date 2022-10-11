@@ -565,13 +565,13 @@ declare module Backendless {
 
             set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
 
-            incrementScore(value: string, scoreValue: number): Promise<number>
+            incrementScore(value: string, scoreAmount: number): Promise<number>
 
-            decrementScore(value: string, scoreValue: number): Promise<number>
+            decrementScore(value: string, scoreAmount: number): Promise<number>
 
-            getAndRemoveMaxScore(count?: number): Promise<Array<SortedSetItem>>
+            getAndDeleteMaxScore(count?: number): Promise<Array<SortedSetItem>>
 
-            getAndRemoveMinScore(count?: number): Promise<Array<SortedSetItem>>
+            getAndDeleteMinScore(count?: number): Promise<Array<SortedSetItem>>
 
             getRandom<T = SortedSetItem | string>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
 

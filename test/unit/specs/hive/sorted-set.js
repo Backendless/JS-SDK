@@ -876,7 +876,7 @@ describe('Hive - Sorted Set Store', function() {
         expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/increment`,
-          body  : { value: 'foo', scoreValue: 10 }
+          body  : { value: 'foo', scoreAmount: 10 }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -898,7 +898,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when increment count is invalid', async () => {
-        const errorMsg = 'ScoreValue must be provided and must be a number.'
+        const errorMsg = 'ScoreAmount must be provided and must be a number.'
 
         await expect(() => store.incrementScore('foo', undefined)).to.throw(errorMsg)
         await expect(() => store.incrementScore('foo', null)).to.throw(errorMsg)
@@ -921,7 +921,7 @@ describe('Hive - Sorted Set Store', function() {
         expect(request).to.deep.include({
           method: 'PUT',
           path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/decrement`,
-          body  : { value: 'foo', scoreValue: 10 }
+          body  : { value: 'foo', scoreAmount: 10 }
         })
 
         expect(result).to.be.eql(fakeResult)
@@ -943,7 +943,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when increment count is invalid', async () => {
-        const errorMsg = 'ScoreValue must be provided and must be a number.'
+        const errorMsg = 'ScoreAmount must be provided and must be a number.'
 
         await expect(() => store.decrementScore('foo', undefined)).to.throw(errorMsg)
         await expect(() => store.decrementScore('foo', null)).to.throw(errorMsg)
@@ -961,7 +961,7 @@ describe('Hive - Sorted Set Store', function() {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.getAndRemoveMaxScore()
+        const result = await store.getAndDeleteMaxScore()
 
         expect(request).to.deep.include({
           method: 'PUT',
@@ -974,7 +974,7 @@ describe('Hive - Sorted Set Store', function() {
       it('success with count', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.getAndRemoveMaxScore(3)
+        const result = await store.getAndDeleteMaxScore(3)
 
         expect(request).to.deep.include({
           method: 'PUT',
@@ -987,15 +987,15 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when count is invalid', async () => {
         const errorMsg = 'Count must be a number.'
 
-        await expect(() => store.getAndRemoveMaxScore(null)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore(false)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore(true)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore('')).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore('foo')).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore(NaN)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore({})).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore([])).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMaxScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore(null)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore(false)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore(true)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore('')).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore('foo')).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore({})).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore([])).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMaxScore(() => undefined)).to.throw(errorMsg)
       })
     })
 
@@ -1003,7 +1003,7 @@ describe('Hive - Sorted Set Store', function() {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.getAndRemoveMinScore()
+        const result = await store.getAndDeleteMinScore()
 
         expect(request).to.deep.include({
           method: 'PUT',
@@ -1016,7 +1016,7 @@ describe('Hive - Sorted Set Store', function() {
       it('success with count', async () => {
         const request = prepareMockRequest(fakeResult)
 
-        const result = await store.getAndRemoveMinScore(3)
+        const result = await store.getAndDeleteMinScore(3)
 
         expect(request).to.deep.include({
           method: 'PUT',
@@ -1029,15 +1029,15 @@ describe('Hive - Sorted Set Store', function() {
       it('fails when count is invalid', async () => {
         const errorMsg = 'Count must be a number.'
 
-        await expect(() => store.getAndRemoveMinScore(null)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore(false)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore(true)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore('')).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore('foo')).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore(NaN)).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore({})).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore([])).to.throw(errorMsg)
-        await expect(() => store.getAndRemoveMinScore(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore(null)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore(false)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore(true)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore('')).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore('foo')).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore(NaN)).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore({})).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore([])).to.throw(errorMsg)
+        await expect(() => store.getAndDeleteMinScore(() => undefined)).to.throw(errorMsg)
       })
     })
 
