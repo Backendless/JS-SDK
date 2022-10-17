@@ -60,6 +60,10 @@ const Utils = {
 
     return `${chr8()}-${chr4()}-${chr4()}-${chr4()}-${chr12()}`
   },
+
+  isObject(obj) {
+    return obj != null && obj.constructor.name === 'Object'
+  }
 }
 
 function isBrowser() {

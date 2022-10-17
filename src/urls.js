@@ -165,7 +165,17 @@ export default class Urls {
     return `${this.root()}/transaction/unit-of-work`
   }
 
-  //messaging
+  dataHives() {
+    return `${this.root()}/hive`
+  }
+
+  dataHive(name) {
+    return `${this.dataHives()}/${name}`
+  }
+
+  hiveStore(name, storeType) {
+    return `${this.dataHive(name)}/${storeType}`
+  }
 
   messaging() {
     return `${this.root()}/messaging`

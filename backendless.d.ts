@@ -279,6 +279,338 @@ declare module Backendless {
 
     /**
      * @public
+     * @type: Function
+     **/
+    function Hive(hiveName: string): Backendless.Hive.DataHive;
+
+    /**
+     * @public
+     * @namespace Backendless.Hive
+     */
+    namespace Hive {
+        /**
+         * @public
+         * @type: Function
+         */
+        function getNames(): Array<string>
+
+        /**
+         * @public
+         * @class Backendless.Hive.DataHive
+         * @constructor
+         */
+        class DataHive {
+            constructor(hiveName: string, appContext: object);
+
+            create(): Promise<void>
+
+            delete(): Promise<void>
+
+            rename(newName: string): Promise<void>
+
+            KeyValueStore: KeyValueStore;
+            ListStore: ListStore;
+            MapStore: MapStore;
+            SetStore: SetStore;
+            SortedSetStore: SortedSetStore;
+        }
+
+        interface StoreKeysOptionsI {
+            filterPattern?: string;
+            cursor?: number;
+            pageSize?: number;
+        }
+
+        interface StoreKeysResultI {
+            keys: string[];
+            cursorId: string;
+        }
+
+        /**
+         * @private
+         */
+        interface HiveStore {
+            keys(options?: StoreKeysOptionsI): Promise<StoreKeysResultI>;
+
+            delete(keys: Array<string>): Promise<void>;
+
+            exists(keys: Array<string>): Promise<number>;
+
+            touch(keys: Array<string>): Promise<void>;
+        }
+
+        /**
+         * @private
+         */
+        interface hiveStore {
+
+            delete(): Promise<number>;
+
+            rename(newKeyName: string, overwrite?: boolean): Promise<void>;
+
+            exists(): Promise<boolean>;
+
+            getExpiration(): Promise<number>;
+
+            clearExpiration(): Promise<void>;
+
+            touch(): Promise<void>;
+
+            secondsSinceLastOperation(): Promise<number>;
+
+            expireAfter(ttl: number): Promise<void>;
+
+            expireAt(timestamp: number): Promise<void>;
+        }
+
+        interface KeyValueSetKeyOptionsI {
+            ttl?: Number; // in seconds
+            expireAt?: Number; // timestamp
+            condition?: 'IfExists' | 'IfNotExists' | 'Always'; //if not provided set anyway
+        }
+
+        /**
+         * @public
+         */
+        interface KeyValueStore extends HiveStore {
+            (keyName: string): keyValueStore
+
+            get(keys: Array<string>): Promise<object>;
+
+            set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<boolean>;
+
+            set(keysMap: object): Promise<boolean>;
+        }
+
+        /**
+         * @public
+         */
+        interface keyValueStore extends hiveStore {
+            get(): Promise<string | null>;
+
+            set(value: string, options?: KeyValueSetKeyOptionsI): Promise<void>;
+
+            increment(value: number): Promise<number>;
+
+            decrement(value: number): Promise<number>;
+        }
+
+        /**
+         * @public
+         */
+        interface ListStore extends HiveStore {
+            (keyName: string): listStore
+        }
+
+        /**
+         * @public
+         */
+        interface listStore extends hiveStore {
+            get(): Promise<Array<string>>;
+
+            get(index: number): Promise<string | null>;
+
+            get(indexFrom: number, indexTo: number): Promise<Array<string>>;
+
+            set(values: Array<string>): Promise<number>;
+
+            set(value: string, index: number): Promise<void>;
+
+            insertBefore(valueToInsert: string, anchorValue: string): Promise<number>;
+
+            insertAfter(valueToInsert: string, anchorValue: string): Promise<number>;
+
+            length(): Promise<number>;
+
+            addFirst(value: string): Promise<number>
+
+            addFirst(values: Array<string>): Promise<number>
+
+            addLast(value: string): Promise<number>
+
+            addLast(values: Array<string>): Promise<number>
+
+            deleteFirst(): Promise<string | null>
+
+            deleteFirst(count: number): Promise<Array<string> | null>
+
+            deleteLast(): Promise<string | null>
+
+            deleteLast(count: number): Promise<Array<string> | null>
+
+            deleteValue(value: string, count?: number): Promise<number>
+        }
+
+        /**
+         * @public
+         */
+        interface MapStore extends HiveStore {
+            (keyName: string): mapStore
+        }
+
+        /**
+         * @public
+         */
+        interface mapStore extends hiveStore {
+
+            get(): Promise<object>;
+
+            get(key: string): Promise<object>;
+
+            get(keys: Array<string>): Promise<object>;
+
+            getValue(key: string): Promise<string | null>;
+
+            keyExists(key: string): Promise<boolean>;
+
+            length(): Promise<number>;
+
+            keys(): Promise<Array<string>>;
+
+            values(): Promise<Array<string>>;
+
+            set(data: object): Promise<number>;
+
+            set(key: string, value: string): Promise<boolean>;
+
+            setWithOverwrite(key: string, value: string, overwrite?: boolean): Promise<boolean>;
+
+            add(data: object): Promise<number>;
+
+            increment(key: string, count?: number): Promise<number>;
+
+            decrement(key: string, count?: number): Promise<number>;
+
+            deleteKeys(key: string): Promise<number>;
+
+            deleteKeys(keys: Array<string>): Promise<number>;
+        }
+
+        /**
+         * @public
+         */
+        interface SetStore extends HiveStore {
+            (keyName: string): setStore;
+
+            difference(storeKeys: Array<string>): Promise<Array<string>>;
+
+            intersection(storeKeys: Array<string>): Promise<Array<string>>;
+
+            union(storeKeys: Array<string>): Promise<Array<string>>;
+        }
+
+        /**
+         * @public
+         */
+        interface setStore extends hiveStore {
+
+            get(): Promise<Array<string>>;
+
+            getRandom(count?: number): Promise<Array<string>>;
+
+            getRandomAndDelete(count?: number): Promise<Array<string>>;
+
+            set(value: string): Promise<number>;
+
+            set(values: Array<string>): Promise<number>;
+
+            add(value: string): Promise<number>;
+
+            add(values: Array<string>): Promise<number>;
+
+            deleteValues(value: string): Promise<number>;
+
+            deleteValues(values: Array<string>): Promise<number>;
+
+            isMember(value: string | Array<string>): Promise<Array<string>>;
+
+            length(): Promise<number>;
+        }
+
+        type SortedSetItem = [number, string]
+        type SortedSetBound = 'Include' | 'Exclude' | 'Infinity'
+
+        interface SortedSetItemOptionsI {
+            duplicateBehaviour?: 'OnlyUpdate' | 'AlwaysAdd';
+            scoreUpdateMode?: 'Greater' | 'Less';
+            resultType?: 'NewAdded' | 'TotalChanged';
+        }
+
+        interface SortedSetFilterI {
+            minScore?: number,
+            maxScore?: number,
+            minBound?: SortedSetBound,
+            maxBound?: SortedSetBound,
+        }
+
+        /**
+         * @public
+         */
+        interface SortedSetStore extends HiveStore {
+            (keyName: string): sortedSetStore
+
+            difference(storeKeys: Array<string>): Promise<Array<string>>;
+
+            intersection(storeKeys: Array<string>): Promise<Array<string>>;
+
+            union(storeKeys: Array<string>): Promise<Array<string>>;
+        }
+
+        /**
+         * @public
+         */
+        interface sortedSetStore extends hiveStore {
+
+            add(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
+
+            set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
+
+            incrementScore(value: string, scoreValue: number): Promise<number>
+
+            decrementScore(value: string, scoreValue: number): Promise<number>
+
+            getAndDeleteMaxScore(count?: number): Promise<Array<SortedSetItem>>
+
+            getAndDeleteMinScore(count?: number): Promise<Array<SortedSetItem>>
+
+            getRandom<T = SortedSetItem | string>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
+
+            getScore(value: string): Promise<number>
+
+            getRank(value: string, reverse?: boolean): Promise<number>
+
+            getRangeByRank<T = SortedSetItem | string>(startRank: number, stopRank: number, options?: {
+                reverse?: boolean,
+                withScores?: boolean
+            }): Promise<Array<T>>
+
+            getRangeByScore<T = SortedSetItem | string>(options?: {
+                minScore?: number,
+                maxScore?: number,
+                minBound?: SortedSetBound,
+                maxBound?: SortedSetBound,
+                offset?: number,
+                count?: number
+                reverse?: boolean,
+                withScores?: boolean
+            }): Promise<Array<T>>
+
+            deleteValues(value: string): Promise<number>;
+
+            deleteValues(values: Array<string>): Promise<number>;
+
+            deleteValuesByRank(startRank: number, stopRank: number): Promise<number>;
+
+            deleteValuesByScore(options?: SortedSetFilterI): Promise<number>;
+
+            length(): Promise<number>;
+
+            countBetweenScores(options?: SortedSetFilterI): Promise<number>;
+        }
+    }
+
+    /**
+     * @public
      * @namespace Backendless.UserService
      **/
     namespace UserService {

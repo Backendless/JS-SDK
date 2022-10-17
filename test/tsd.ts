@@ -34,7 +34,7 @@ function testMain() {
 function testLocalCache() {
     const key: string = 'key';
     const str: string = 'string';
-    const obj: Object = {};
+    const obj: object = {};
     const arr: any[] = [];
     const num: number = 1234;
     const bol: boolean = true;
@@ -411,13 +411,13 @@ function testGroupQueryBuilder() {
 }
 
 function testDataStoreClass() {
-    const item: Object = {};
+    const item: object = {};
     const dataStore: Backendless.DataStore = Backendless.Data.of('str');
     const dataStore2: Backendless.DataStore = Backendless.Data.of({});
     const dataStore3: Backendless.DataStore = Backendless.Data.of(function () {
     });
 
-    const model: Function | Object = dataStore.model;
+    const model: Function | object = dataStore.model;
     const className: string = dataStore.className;
     const restUrl: string = dataStore.restUrl;
 
@@ -434,11 +434,11 @@ function testDataStoreClass() {
 
     const person = new Person()
 
-    let resultObj: Object;
+    let resultObj: object;
     let resultNum: number;
     let promisePerson: Promise<Person>;
     let promisePersons: Promise<Person[]>;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
     let promiseNum: Promise<number>;
 
     const dataQueryObject = {
@@ -539,10 +539,11 @@ function testDataStoreClass() {
 }
 
 function testPersistence() {
-    let resultObj: Object;
+    let resultObj: object;
     let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
+    let promiseString: Promise<string>;
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
@@ -563,7 +564,7 @@ function testPersistence() {
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
 
-    promiseObject = Backendless.Data.getTableNameById('str');
+    promiseString = Backendless.Data.getTableNameById('str');
 
     Backendless.Data.mapTableToClass(Model);
     Backendless.Data.mapTableToClass('ClassName', Model);
@@ -649,10 +650,10 @@ function testDataPolygon() {
 }
 
 function testData() {
-    let resultObj: Object;
+    let resultObj: object;
     let dataStore: Backendless.DataStore = Backendless.Data.of('str');
     let Model: Function;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
@@ -672,6 +673,413 @@ function testData() {
     promiseObject = Backendless.Data.describe(Model);
     promiseObject = Backendless.Data.describe('str');
     promiseObject = Backendless.Data.describe({});
+}
+
+function testHive() {
+    let dataHive: Backendless.Hive.DataHive = Backendless.Hive('hiveName');
+    let baseStore: Backendless.Hive.hiveStore;
+    let keyValueStore: Backendless.Hive.keyValueStore;
+    let listStore: Backendless.Hive.listStore;
+    let mapStore: Backendless.Hive.mapStore;
+    let setStore: Backendless.Hive.setStore;
+    let sortedSetStore: Backendless.Hive.sortedSetStore;
+    let promiseVoid: Promise<void>;
+    let promiseNumber: Promise<number>;
+
+    let hiveNames: Array<string> = Backendless.Hive.getNames();
+
+    promiseVoid = dataHive.create()
+    promiseVoid = dataHive.rename('newHiveName')
+    promiseVoid = dataHive.delete()
+
+    baseStore = dataHive.KeyValueStore('storeName')
+    keyValueStore = dataHive.KeyValueStore('storeName')
+
+    baseStore = dataHive.ListStore('storeName')
+    listStore = dataHive.ListStore('storeName')
+
+    baseStore = dataHive.MapStore('storeName')
+    mapStore = dataHive.MapStore('storeName')
+
+    baseStore = dataHive.SetStore('storeName')
+    setStore = dataHive.SetStore('storeName')
+
+    baseStore = dataHive.SortedSetStore('storeName')
+    sortedSetStore = dataHive.SortedSetStore('storeName')
+}
+
+function testHiveStores() {
+    const str: string = 'str';
+    const num: number = 123;
+    const bool: boolean = false;
+    const strArr: Array<string> = ['str1', 'str2'];
+    const obj: object = {x: 1, y: 2};
+
+    let promiseVoid: Promise<void>;
+    let promiseObject: Promise<object>;
+    let promiseNumber: Promise<number>;
+    let promiseString: Promise<string>;
+    let promiseBoolean: Promise<boolean>;
+
+    let promiseListOfString: Promise<string[]>;
+    let promiseListOfStringOrNull: Promise<string[] | null>;
+
+    let promiseStringOrNull: Promise<string | null>;
+
+    let storeKeysOptions: Backendless.Hive.StoreKeysOptionsI;
+    let promiseStoreKeysResult: Promise<Backendless.Hive.StoreKeysResultI>;
+
+    function testKeyValueStore() {
+        let setKeyOptions: Backendless.Hive.KeyValueSetKeyOptionsI;
+
+        function testGeneralStatic() {
+            promiseStoreKeysResult = Backendless.Hive(str).KeyValueStore.keys();
+            promiseStoreKeysResult = Backendless.Hive(str).KeyValueStore.keys(storeKeysOptions);
+
+            promiseVoid = Backendless.Hive(str).KeyValueStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).KeyValueStore.exists(strArr);
+            promiseVoid = Backendless.Hive(str).KeyValueStore.touch(strArr);
+        }
+
+        function testGeneralInstance() {
+            promiseNumber = Backendless.Hive(str).KeyValueStore(str).delete();
+
+            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).exists();
+
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).rename(str);
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).rename(str, bool);
+
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).expireAfter(num);
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).expireAt(num);
+
+            promiseNumber = Backendless.Hive(str).KeyValueStore(str).getExpiration();
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).clearExpiration();
+
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).KeyValueStore(str).secondsSinceLastOperation();
+        }
+
+        function testStatic() {
+            promiseObject = Backendless.Hive(str).KeyValueStore.get(strArr);
+
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(obj);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, setKeyOptions);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {ttl: 123});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {expireAt: 123});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'IfExists'});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'IfNotExists'});
+            promiseBoolean = Backendless.Hive(str).KeyValueStore.set(str, str, {condition: 'Always'});
+        }
+
+        function testInstance() {
+            promiseStringOrNull = Backendless.Hive(str).KeyValueStore(str).get();
+
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).set(str);
+            promiseVoid = Backendless.Hive(str).KeyValueStore(str).set(str, setKeyOptions);
+
+            promiseNumber = Backendless.Hive(str).KeyValueStore(str).increment(num);
+            promiseNumber = Backendless.Hive(str).KeyValueStore(str).decrement(num);
+        }
+    }
+
+    function testListStore() {
+        function testGeneralStatic() {
+            promiseStoreKeysResult = Backendless.Hive(str).ListStore.keys();
+            promiseStoreKeysResult = Backendless.Hive(str).ListStore.keys(storeKeysOptions);
+
+            promiseVoid = Backendless.Hive(str).ListStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).ListStore.exists(strArr);
+            promiseVoid = Backendless.Hive(str).ListStore.touch(strArr);
+        }
+
+        function testGeneralInstance() {
+            promiseNumber = Backendless.Hive(str).ListStore(str).delete();
+
+            promiseBoolean = Backendless.Hive(str).ListStore(str).exists();
+
+            promiseVoid = Backendless.Hive(str).ListStore(str).rename(str);
+            promiseVoid = Backendless.Hive(str).ListStore(str).rename(str, bool);
+
+            promiseVoid = Backendless.Hive(str).ListStore(str).expireAfter(num);
+            promiseVoid = Backendless.Hive(str).ListStore(str).expireAt(num);
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).getExpiration();
+            promiseVoid = Backendless.Hive(str).ListStore(str).clearExpiration();
+
+            promiseVoid = Backendless.Hive(str).ListStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).secondsSinceLastOperation();
+        }
+
+        function testInstance() {
+            promiseListOfString = Backendless.Hive(str).ListStore(str).get();
+            promiseStringOrNull = Backendless.Hive(str).ListStore(str).get(num);
+            promiseListOfString = Backendless.Hive(str).ListStore(str).get(num, num);
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).set([str, str]);
+            promiseVoid = Backendless.Hive(str).ListStore(str).set(str, num);
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).insertBefore(str, str);
+            promiseNumber = Backendless.Hive(str).ListStore(str).insertAfter(str, str);
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).addFirst(str);
+            promiseNumber = Backendless.Hive(str).ListStore(str).addFirst(strArr);
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).addLast(str);
+            promiseNumber = Backendless.Hive(str).ListStore(str).addLast(strArr);
+
+            promiseStringOrNull = Backendless.Hive(str).ListStore(str).deleteFirst();
+            promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).deleteFirst(num);
+
+            promiseStringOrNull = Backendless.Hive(str).ListStore(str).deleteLast();
+            promiseListOfStringOrNull = Backendless.Hive(str).ListStore(str).deleteLast(num);
+
+            promiseNumber = Backendless.Hive(str).ListStore(str).deleteValue(str);
+            promiseNumber = Backendless.Hive(str).ListStore(str).deleteValue(str, num);
+        }
+    }
+
+    function testMapStore() {
+        function testGeneralStatic() {
+            promiseStoreKeysResult = Backendless.Hive(str).MapStore.keys();
+            promiseStoreKeysResult = Backendless.Hive(str).MapStore.keys(storeKeysOptions);
+
+            promiseVoid = Backendless.Hive(str).MapStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).MapStore.exists(strArr);
+            promiseVoid = Backendless.Hive(str).MapStore.touch(strArr);
+        }
+
+        function testGeneralInstance() {
+            promiseNumber = Backendless.Hive(str).MapStore(str).delete();
+
+            promiseBoolean = Backendless.Hive(str).MapStore(str).exists();
+
+            promiseVoid = Backendless.Hive(str).MapStore(str).rename(str);
+            promiseVoid = Backendless.Hive(str).MapStore(str).rename(str, bool);
+
+            promiseVoid = Backendless.Hive(str).MapStore(str).expireAfter(num);
+            promiseVoid = Backendless.Hive(str).MapStore(str).expireAt(num);
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).getExpiration();
+            promiseVoid = Backendless.Hive(str).MapStore(str).clearExpiration();
+
+            promiseVoid = Backendless.Hive(str).MapStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).secondsSinceLastOperation();
+        }
+
+        function testInstance() {
+            promiseObject = Backendless.Hive(str).MapStore(str).get();
+            promiseObject = Backendless.Hive(str).MapStore(str).get(str);
+            promiseObject = Backendless.Hive(str).MapStore(str).get(strArr);
+
+            promiseStringOrNull = Backendless.Hive(str).MapStore(str).getValue(str);
+
+            promiseBoolean = Backendless.Hive(str).MapStore(str).keyExists(str);
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).length();
+
+            promiseListOfString = Backendless.Hive(str).MapStore(str).keys();
+            promiseListOfString = Backendless.Hive(str).MapStore(str).values();
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).set(obj);
+
+            promiseBoolean = Backendless.Hive(str).MapStore(str).set(str, str);
+
+            promiseBoolean = Backendless.Hive(str).MapStore(str).setWithOverwrite(str, str);
+            promiseBoolean = Backendless.Hive(str).MapStore(str).setWithOverwrite(str, str, bool);
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).add(obj);
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).increment(str);
+            promiseNumber = Backendless.Hive(str).MapStore(str).increment(str, num);
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).decrement(str);
+            promiseNumber = Backendless.Hive(str).MapStore(str).decrement(str, num);
+
+            promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(str);
+            promiseNumber = Backendless.Hive(str).MapStore(str).deleteKeys(strArr);
+        }
+    }
+
+    function testSetStore() {
+        function testGeneralStatic() {
+            promiseStoreKeysResult = Backendless.Hive(str).SetStore.keys();
+            promiseStoreKeysResult = Backendless.Hive(str).SetStore.keys(storeKeysOptions);
+
+            promiseVoid = Backendless.Hive(str).SetStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).SetStore.exists(strArr);
+            promiseVoid = Backendless.Hive(str).SetStore.touch(strArr);
+        }
+
+        function testGeneralInstance() {
+            promiseNumber = Backendless.Hive(str).SetStore(str).delete();
+
+            promiseBoolean = Backendless.Hive(str).SetStore(str).exists();
+
+            promiseVoid = Backendless.Hive(str).SetStore(str).rename(str);
+            promiseVoid = Backendless.Hive(str).SetStore(str).rename(str, bool);
+
+            promiseVoid = Backendless.Hive(str).SetStore(str).expireAfter(num);
+            promiseVoid = Backendless.Hive(str).SetStore(str).expireAt(num);
+
+            promiseNumber = Backendless.Hive(str).SetStore(str).getExpiration();
+            promiseVoid = Backendless.Hive(str).SetStore(str).clearExpiration();
+
+            promiseVoid = Backendless.Hive(str).SetStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).SetStore(str).secondsSinceLastOperation();
+        }
+
+        function testStatic() {
+            promiseListOfString = Backendless.Hive(str).SetStore.difference(strArr);
+            promiseListOfString = Backendless.Hive(str).SetStore.intersection(strArr);
+            promiseListOfString = Backendless.Hive(str).SetStore.union(strArr);
+        }
+
+        function testInstance() {
+            promiseListOfString = Backendless.Hive(str).SetStore(str).get();
+
+            promiseListOfString = Backendless.Hive(str).SetStore(str).getRandom();
+            promiseListOfString = Backendless.Hive(str).SetStore(str).getRandom(num);
+
+            promiseListOfString = Backendless.Hive(str).SetStore(str).getRandomAndDelete();
+            promiseListOfString = Backendless.Hive(str).SetStore(str).getRandomAndDelete(num);
+
+            promiseNumber = Backendless.Hive(str).SetStore(str).set(str);
+            promiseNumber = Backendless.Hive(str).SetStore(str).set(strArr);
+
+            promiseNumber = Backendless.Hive(str).SetStore(str).add(str);
+            promiseNumber = Backendless.Hive(str).SetStore(str).add(strArr);
+
+            promiseNumber = Backendless.Hive(str).SetStore(str).deleteValues(str);
+            promiseNumber = Backendless.Hive(str).SetStore(str).deleteValues(strArr);
+
+            promiseListOfString = Backendless.Hive(str).SetStore(str).isMember(str);
+            promiseListOfString = Backendless.Hive(str).SetStore(str).isMember(strArr);
+        }
+    }
+
+    function testSortedSetStore() {
+        function testGeneralStatic() {
+            promiseStoreKeysResult = Backendless.Hive(str).SortedSetStore.keys();
+            promiseStoreKeysResult = Backendless.Hive(str).SortedSetStore.keys(storeKeysOptions);
+
+            promiseVoid = Backendless.Hive(str).SortedSetStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).SortedSetStore.exists(strArr);
+            promiseVoid = Backendless.Hive(str).SortedSetStore.touch(strArr);
+        }
+
+        function testGeneralInstance() {
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).delete();
+
+            promiseBoolean = Backendless.Hive(str).SortedSetStore(str).exists();
+
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).rename(str);
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).rename(str, bool);
+
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).expireAfter(num);
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).expireAt(num);
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).getExpiration();
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).clearExpiration();
+
+            promiseVoid = Backendless.Hive(str).SortedSetStore(str).touch();
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).secondsSinceLastOperation();
+        }
+
+        function testStatic() {
+            promiseListOfString = Backendless.Hive(str).SortedSetStore.difference(strArr);
+            promiseListOfString = Backendless.Hive(str).SortedSetStore.intersection(strArr);
+            promiseListOfString = Backendless.Hive(str).SortedSetStore.union(strArr);
+        }
+
+        function testInstance() {
+            let itemOptions: Backendless.Hive.SortedSetItemOptionsI;
+            let itemsList: [Backendless.Hive.SortedSetItem]
+            let promiseItemsList: Promise<Array<Backendless.Hive.SortedSetItem>>
+            let bound: Backendless.Hive.SortedSetBound
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).add(itemsList)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).add(itemsList, itemOptions)
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList, itemOptions)
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(str, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).decrementScore(str, num)
+
+            promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndDeleteMaxScore()
+            promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndDeleteMaxScore(num)
+
+            promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndDeleteMinScore()
+            promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndDeleteMinScore(num)
+
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRandom()
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRandom({count: num, withScores: bool})
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRandom({withScores: false})
+            promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRandom({withScores: true})
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).getScore(str)
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).getRank(str)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).getRank(str, true)
+
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num)
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num, {
+                withScores: bool,
+                reverse: bool
+            })
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num, {
+                withScores: false,
+            })
+            promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRangeByRank(num, num, {
+                withScores: true,
+            })
+
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore({
+                minScore: num,
+                maxScore: num,
+                minBound: bound,
+                maxBound: bound,
+                offset: num,
+                count: num,
+                reverse: bool,
+                withScores: bool
+            })
+            promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getRangeByScore({
+                withScores: true
+            })
+            promiseListOfString = Backendless.Hive(str).SortedSetStore(str).getRangeByScore({
+                withScores: false
+            })
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValues(str)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValues(strArr)
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValuesByRank(num, num)
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).deleteValuesByScore({
+                minScore: num,
+                maxScore: num,
+                minBound: bound,
+                maxBound: bound
+            })
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).length()
+
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).countBetweenScores({
+                minScore: num,
+                maxScore: num,
+                minBound: bound,
+                maxBound: bound
+            })
+        }
+    }
 }
 
 function testBulkOperations() {
@@ -700,7 +1108,7 @@ function testDataPermissions() {
     const roleName: string = 'myRole';
     const dataObj: Backendless.ExistDataItemI = {___class: 'myClass', objectId: 'myId'};
     let resultObj: Backendless.ExistDataItemI;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
 
     promiseObject = Backendless.Data.Permissions.FIND.grantUser(userId, dataObj);
     promiseObject = Backendless.Data.Permissions.FIND.grantRole(roleName, dataObj);
@@ -770,7 +1178,7 @@ function testUserService() {
     let newUser: Backendless.User = new Backendless.User();
     let guestUser: Backendless.User = new Backendless.User();
     let resultStr: string;
-    let resultObj: Object;
+    let resultObj: object;
     let resultVoid: void;
     let resultNull: null;
     let resultUndefined: null;
@@ -987,11 +1395,12 @@ function testMessaging() {
     const deviceToken: string = 'str';
     const subject: string = 'str';
     const messageId: string = 'str';
-    const message: string | Object = 'str';
-    let promiseObject: Promise<Object>;
+    const message: string | object = 'str';
+    let promiseObject: Promise<object>;
+    let promiseBoolean: Promise<boolean>;
     const bodyParts: Backendless.Bodyparts = new Backendless.Bodyparts();
     const envelopeObject: Backendless.EmailEnvelope = new Backendless.EmailEnvelope();
-    const templateValues: Object | Backendless.EmailEnvelope = {};
+    const templateValues: object | Backendless.EmailEnvelope = {};
     const templateName: string = 'str';
     const recipients: string[] = ['str'];
     const attachments: string[] = ['str'];
@@ -1001,7 +1410,7 @@ function testMessaging() {
     const deliveryOptions: Backendless.DeliveryOptions = new Backendless.DeliveryOptions();
 
     let channel: Backendless.ChannelClass;
-    const subscriptionCallback = function (data: Object): void {
+    const subscriptionCallback = function (data: object): void {
         const messagesArray: Array<String> = data["messages"];
     };
 
@@ -1019,7 +1428,7 @@ function testMessaging() {
 
     promiseObject = Backendless.Messaging.sendEmailFromTemplate(templateName, envelopeObject);
 
-    promiseObject = Backendless.Messaging.cancel(messageId);
+    promiseBoolean = Backendless.Messaging.cancel(messageId);
 
     promiseObject = Backendless.Messaging.registerDevice(deviceToken, channels, expiration);
 
@@ -1064,7 +1473,7 @@ async function testFilesService() {
 
     let resultStr: string;
     let resultBool: boolean;
-    let resultObj: Object;
+    let resultObj: object;
     let resultNumber: number;
     let promiseString: Promise<string>;
     let promiseObject: Promise<object>;
@@ -1193,8 +1602,8 @@ function testCommerce() {
     const subscriptionId: string = 'str';
 
     let resultStr: string;
-    let resultObj: Object;
-    let promiseObject: Promise<Object>;
+    let resultObj: object;
+    let promiseObject: Promise<object>;
 
     resultStr = Backendless.Commerce.restUrl;
 
@@ -1207,11 +1616,11 @@ function testCommerce() {
 
 function testEvents() {
     const eventName: string = 'str';
-    const eventArgs: Object = {};
+    const eventArgs: object = {};
 
     let resultStr: string;
-    let resultObj: Object;
-    let promiseObject: Promise<Object>;
+    let resultObj: object;
+    let promiseObject: Promise<object>;
 
     resultStr = Backendless.Events.restUrl;
 
@@ -1229,8 +1638,8 @@ function testCache() {
     const seconds: number = 123;
     const date: Date = new Date();
 
-    let resultObj: Object;
-    let promiseObject: Promise<Object>;
+    let resultObj: object;
+    let promiseObject: Promise<object>;
 
     promiseObject = Backendless.Cache.put(key, value);
     promiseObject = Backendless.Cache.put(key, value, timeToLive);
@@ -1253,7 +1662,8 @@ function testCounters() {
     const counterName: string = 'str';
     const expected: number = 123;
     const updated: number = 123;
-    let promiseObject: Promise<Object>;
+    let promiseObject: Promise<object>;
+    let promiseNumber: Promise<number>;
     let promiseStrings: Promise<string[]>;
 
     //'implementMethod', 'get', 'implementMethodWithValue', 'compareAndSet'
@@ -1262,43 +1672,43 @@ function testCounters() {
     promiseStrings = Backendless.Counters.list();
     promiseStrings = Backendless.Counters.list('*');
 
-    promiseObject = Backendless.Counters.get(counterName);
+    promiseNumber = Backendless.Counters.get(counterName);
 
-    promiseObject = Backendless.Counters.getAndIncrement(counterName);
+    promiseNumber = Backendless.Counters.getAndIncrement(counterName);
 
-    promiseObject = Backendless.Counters.incrementAndGet(counterName);
+    promiseNumber = Backendless.Counters.incrementAndGet(counterName);
 
-    promiseObject = Backendless.Counters.getAndDecrement(counterName);
+    promiseNumber = Backendless.Counters.getAndDecrement(counterName);
 
-    promiseObject = Backendless.Counters.decrementAndGet(counterName);
+    promiseNumber = Backendless.Counters.decrementAndGet(counterName);
 
-    promiseObject = Backendless.Counters.addAndGet(counterName, value);
+    promiseNumber = Backendless.Counters.addAndGet(counterName, value);
 
-    promiseObject = Backendless.Counters.getAndAdd(counterName, value);
+    promiseNumber = Backendless.Counters.getAndAdd(counterName, value);
 
-    promiseObject = Backendless.Counters.compareAndSet(counterName, expected, updated);
+    promiseNumber = Backendless.Counters.compareAndSet(counterName, expected, updated);
 
-    promiseObject = Backendless.Counters.reset(counterName);
+    promiseNumber = Backendless.Counters.reset(counterName);
 
     const counter: Counter = Backendless.Counters.of(counterName);
 
-    promiseObject = counter.get();
+    promiseNumber = counter.get();
 
-    promiseObject = counter.getAndIncrement();
+    promiseNumber = counter.getAndIncrement();
 
-    promiseObject = counter.incrementAndGet();
+    promiseNumber = counter.incrementAndGet();
 
-    promiseObject = counter.getAndDecrement();
+    promiseNumber = counter.getAndDecrement();
 
-    promiseObject = counter.decrementAndGet();
+    promiseNumber = counter.decrementAndGet();
 
-    promiseObject = counter.addAndGet(value);
+    promiseNumber = counter.addAndGet(value);
 
-    promiseObject = counter.getAndAdd(value);
+    promiseNumber = counter.getAndAdd(value);
 
-    promiseObject = counter.compareAndSet(expected, updated);
+    promiseNumber = counter.compareAndSet(expected, updated);
 
-    promiseObject = counter.reset();
+    promiseNumber = counter.reset();
 }
 
 function testCustomServices() {
@@ -1347,8 +1757,8 @@ function testLogging() {
     const exception: string = 'str';
 
     const restUrl: string = Backendless.Logging.restUrl;
-    const loggers: Object = Backendless.Logging.loggers;
-    const logInfo: Object[] = Backendless.Logging.logInfo;
+    const loggers: object = Backendless.Logging.loggers;
+    const logInfo: object[] = Backendless.Logging.logInfo;
     const messagesCount: number = Backendless.Logging.messagesCount;
     const numOfMessages: number = Backendless.Logging.numOfMessages;
     const timeFrequency: number = Backendless.Logging.timeFrequency;
@@ -1424,10 +1834,10 @@ function RTData() {
 
 
     eventHandler
-        .addCreateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addCreateListener('whereClause', (obj: Object) => undefined)
-        .addCreateListener((obj: Object) => undefined)
-        .addCreateListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener('whereClause', (obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addCreateListener('whereClause', (obj: object) => undefined)
+        .addCreateListener((obj: object) => undefined)
+        .addCreateListener((obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addCreateListener('whereClause', (obj: { bar: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addCreateListener('whereClause', (obj: { bar: string }) => undefined)
         .addCreateListener((obj: { bar: string }) => undefined)
@@ -1448,10 +1858,10 @@ function RTData() {
         .removeCreateListener<Person>((obj: { foo: string }) => undefined)
 
     eventHandler
-        .addUpdateListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addUpdateListener('whereClause', (obj: Object) => undefined)
-        .addUpdateListener((obj: Object) => undefined)
-        .addUpdateListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener('whereClause', (obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addUpdateListener('whereClause', (obj: object) => undefined)
+        .addUpdateListener((obj: object) => undefined)
+        .addUpdateListener((obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addUpdateListener('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addUpdateListener('whereClause', (obj: { foo: string }) => undefined)
         .addUpdateListener((obj: { foo: string }) => undefined)
@@ -1471,10 +1881,10 @@ function RTData() {
         .removeUpdateListener<Person>((obj: Person) => undefined)
 
     eventHandler
-        .addDeleteListener('whereClause', (obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
-        .addDeleteListener('whereClause', (obj: Object) => undefined)
-        .addDeleteListener((obj: Object) => undefined)
-        .addDeleteListener((obj: Object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener('whereClause', (obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
+        .addDeleteListener('whereClause', (obj: object) => undefined)
+        .addDeleteListener((obj: object) => undefined)
+        .addDeleteListener((obj: object) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addDeleteListener('whereClause', (obj: { foo: string }) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addDeleteListener('whereClause', (obj: { foo: string }) => undefined)
         .addDeleteListener((obj: { foo: string }) => undefined)
@@ -1590,7 +2000,7 @@ function RTData() {
 
     eventHandler
         .removeAllListeners()
-        .addDeleteListener('whereClause', (obj: Object) => undefined)
+        .addDeleteListener('whereClause', (obj: object) => undefined)
 }
 
 function RTChannel() {

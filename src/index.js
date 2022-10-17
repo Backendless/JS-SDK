@@ -79,6 +79,7 @@ const SERVICES = {
   'Users'       : () => require('./users').default,
   'BL'          : () => require('./bl').default,
   'Data'        : () => require('./data').default,
+  'Hive'        : () => require('./hive').default,
   'Messaging'   : () => require('./messaging').default,
   'Files'       : () => require('./files').default,
   'RT'          : () => require('./rt').default,
@@ -391,6 +392,10 @@ class Backendless {
 
   get Data() {
     return this.__getService('Data')
+  }
+
+  get Hive() {
+    return this.__getService('Hive')
   }
 
   get Messaging() {
