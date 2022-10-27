@@ -617,33 +617,17 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided and must be a string.'
+        const errorMsg = 'ValueToInsert must be provided.'
 
         await expect(() => store.insertBefore(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertBefore(null, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(false, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(true, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(0, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(123, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore('', 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore({}, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore([], 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(() => undefined, 'v')).to.throw(errorMsg)
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided and must be a string.'
+        const errorMsg = 'AnchorValue must be provided.'
 
         await expect(() => store.insertBefore('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertBefore('v', null)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', false)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', 0)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', '')).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', true)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', 123)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', {})).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', [])).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', () => undefined)).to.throw(errorMsg)
       })
     })
 
@@ -667,33 +651,17 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided and must be a string.'
+        const errorMsg = 'ValueToInsert must be provided.'
 
         await expect(() => store.insertAfter(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertAfter(null, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(false, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(true, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(0, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(123, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter('', 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter({}, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter([], 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(() => undefined, 'v')).to.throw(errorMsg)
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided and must be a string.'
+        const errorMsg = 'AnchorValue must be provided.'
 
         await expect(() => store.insertAfter('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertAfter('v', null)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', false)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', 0)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', '')).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', true)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', 123)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', {})).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', [])).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', () => undefined)).to.throw(errorMsg)
       })
     })
 
@@ -732,18 +700,10 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided.'
 
         await expect(() => store.deleteValue(undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValue(null)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(false)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(true)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(0)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(123)).to.throw(errorMsg)
-        await expect(() => store.deleteValue('')).to.throw(errorMsg)
-        await expect(() => store.deleteValue({})).to.throw(errorMsg)
-        await expect(() => store.deleteValue([])).to.throw(errorMsg)
-        await expect(() => store.deleteValue(() => undefined)).to.throw(errorMsg)
       })
 
       it('fails with invalid count', async () => {

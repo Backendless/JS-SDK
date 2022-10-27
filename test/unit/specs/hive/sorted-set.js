@@ -853,17 +853,10 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided.'
 
         await expect(() => store.getScore(undefined)).to.throw(errorMsg)
         await expect(() => store.getScore(null)).to.throw(errorMsg)
-        await expect(() => store.getScore(0)).to.throw(errorMsg)
-        await expect(() => store.getScore(false)).to.throw(errorMsg)
-        await expect(() => store.getScore('')).to.throw(errorMsg)
-        await expect(() => store.getScore(true)).to.throw(errorMsg)
-        await expect(() => store.getScore(123)).to.throw(errorMsg)
-        await expect(() => store.getScore(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.getScore({})).to.throw(errorMsg)
       })
     })
 
@@ -1078,17 +1071,10 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided.'
 
         await expect(() => store.getRank(undefined)).to.throw(errorMsg)
         await expect(() => store.getRank(null)).to.throw(errorMsg)
-        await expect(() => store.getRank(0)).to.throw(errorMsg)
-        await expect(() => store.getRank(false)).to.throw(errorMsg)
-        await expect(() => store.getRank('')).to.throw(errorMsg)
-        await expect(() => store.getRank(true)).to.throw(errorMsg)
-        await expect(() => store.getRank(123)).to.throw(errorMsg)
-        await expect(() => store.getRank(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.getRank({})).to.throw(errorMsg)
       })
 
       it('fails when Reverse argument is invalid', async () => {

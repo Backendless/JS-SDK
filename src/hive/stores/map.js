@@ -82,8 +82,8 @@ export class MapStore extends HiveStore {
       throw new Error('Key must be a string.')
     }
 
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (value == null) {
+      throw new Error('Value must be provided.')
     }
 
     return this.app.request
@@ -100,8 +100,8 @@ export class MapStore extends HiveStore {
       throw new Error('Key must be provided and must be a string.')
     }
 
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (value == null) {
+      throw new Error('Value must be provided.')
     }
 
     if (overwrite !== undefined && typeof overwrite !== 'boolean') {

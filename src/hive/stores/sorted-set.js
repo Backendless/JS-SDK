@@ -194,8 +194,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   getScore(value) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (value == null) {
+      throw new Error('Value must be provided.')
     }
 
     return this.app.request
@@ -208,8 +208,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   getRank(value, reverse) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (value == null) {
+      throw new Error('Value must be provided.')
     }
 
     if (reverse !== undefined && typeof reverse !== 'boolean') {

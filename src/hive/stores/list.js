@@ -78,12 +78,12 @@ export class ListStore extends HiveStore {
   }
 
   insert(valueToInsert, anchorValue, before) {
-    if (!valueToInsert || typeof valueToInsert !== 'string') {
-      throw new Error('ValueToInsert must be provided and must be a string.')
+    if (valueToInsert == null) {
+      throw new Error('ValueToInsert must be provided.')
     }
 
-    if (!anchorValue || typeof anchorValue !== 'string') {
-      throw new Error('AnchorValue must be provided and must be a string.')
+    if (anchorValue == null) {
+      throw new Error('AnchorValue must be provided.')
     }
 
     return this.app.request
@@ -97,8 +97,8 @@ export class ListStore extends HiveStore {
   }
 
   deleteValue(value, count) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (value == null) {
+      throw new Error('Value must be provided.')
     }
 
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {

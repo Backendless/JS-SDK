@@ -673,18 +673,10 @@ describe('Hive - Map Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided.'
 
         await expect(() => store.set('k', undefined)).to.throw(errorMsg)
         await expect(() => store.set('k', null)).to.throw(errorMsg)
-        await expect(() => store.set('k', false)).to.throw(errorMsg)
-        await expect(() => store.set('k', 0)).to.throw(errorMsg)
-        await expect(() => store.set('k', '')).to.throw(errorMsg)
-        await expect(() => store.set('k', true)).to.throw(errorMsg)
-        await expect(() => store.set('k', 123)).to.throw(errorMsg)
-        await expect(() => store.set('k', {})).to.throw(errorMsg)
-        await expect(() => store.set('k', [])).to.throw(errorMsg)
-        await expect(() => store.set('k', () => undefined)).to.throw(errorMsg)
       })
     })
 
@@ -748,18 +740,10 @@ describe('Hive - Map Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided.'
 
         await expect(() => store.setWithOverwrite('k', undefined)).to.throw(errorMsg)
         await expect(() => store.setWithOverwrite('k', null)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', false)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', 0)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', '')).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', true)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', 123)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', {})).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', [])).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', () => undefined)).to.throw(errorMsg)
       })
 
       it('fails with invalid overwrite argument', async () => {
