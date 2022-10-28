@@ -668,7 +668,7 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'AnchorValue must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertBefore('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertBefore('v', null)).to.throw(errorMsg)
@@ -750,7 +750,7 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'AnchorValue must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertAfter('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertAfter('v', null)).to.throw(errorMsg)
@@ -807,7 +807,7 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.deleteValue(undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValue(null)).to.throw(errorMsg)

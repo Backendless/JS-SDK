@@ -84,7 +84,7 @@ export class MapStore extends HiveStore {
     }
 
     if (!isHiveValueValid(value)) {
-      throw new Error('Value must be provided and must be on of types: string, number, boolean, object, array.')
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
@@ -102,7 +102,7 @@ export class MapStore extends HiveStore {
     }
 
     if (!isHiveValueValid(value)) {
-      throw new Error('Value must be provided and must be on of types: string, number, boolean, object, array.')
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (overwrite !== undefined && typeof overwrite !== 'boolean') {

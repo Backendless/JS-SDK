@@ -684,7 +684,7 @@ describe('Hive - Map Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.set('k', undefined)).to.throw(errorMsg)
         await expect(() => store.set('k', null)).to.throw(errorMsg)
@@ -766,7 +766,7 @@ describe('Hive - Map Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.set('k', undefined)).to.throw(errorMsg)
         await expect(() => store.set('k', null)).to.throw(errorMsg)

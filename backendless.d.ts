@@ -596,9 +596,9 @@ declare module Backendless {
                 withScores?: boolean
             }): Promise<Array<T>>
 
-            deleteValues(value: string): Promise<number>;
+            deleteValue(value: HiveValue | Array<HiveValue>): Promise<number>;
 
-            deleteValues(values: Array<string>): Promise<number>;
+            deleteValues(values: Array<HiveValue | Array<HiveValue>>): Promise<number>;
 
             deleteValuesByRank(startRank: number, stopRank: number): Promise<number>;
 

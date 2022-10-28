@@ -864,7 +864,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.getScore(undefined)).to.throw(errorMsg)
         await expect(() => store.getScore(null)).to.throw(errorMsg)
@@ -1097,7 +1097,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.getRank(undefined)).to.throw(errorMsg)
         await expect(() => store.getRank(null)).to.throw(errorMsg)
@@ -1120,23 +1120,47 @@ describe('Hive - Sorted Set Store', function() {
       })
     })
 
-    describe('Delete Values', () => {
-      it('success with single key', async () => {
-        const request = prepareMockRequest(fakeResult)
+    describe('Delete Value', () => {
+      it('success values', async () => {
+        async function testValidValue(value) {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.deleteValues('testKey')
+          const result = await store.deleteValue(value)
 
-        expect(request).to.deep.include({
-          method : 'DELETE',
-          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/values`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : ['testKey']
-        })
+          expect(request).to.deep.include({
+            method : 'DELETE',
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/values`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [value]
+          })
 
-        expect(result).to.be.eql(fakeResult)
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
       })
 
-      it('success with multi keys', async () => {
+      it('fails when value is invalid', async () => {
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
+
+        await expect(() => store.deleteValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(10n)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.deleteValue([10n])).to.throw(errorMsg)
+      })
+    })
+
+    describe('Delete Values', () => {
+      it('success value', async () => {
         const request = prepareMockRequest(fakeResult)
 
         const result = await store.deleteValues(['testKey1', 'testKey2'])
@@ -1152,10 +1176,13 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+        const errorMsg = 'Value must be provided and must be a list of one of types: number, boolean, object, array.'
 
         await expect(() => store.deleteValues(undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValues(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValues([])).to.throw(errorMsg)
+        await expect(() => store.deleteValues('string')).to.throw(errorMsg)
+        await expect(() => store.deleteValues('')).to.throw(errorMsg)
         await expect(() => store.deleteValues(0)).to.throw(errorMsg)
         await expect(() => store.deleteValues(false)).to.throw(errorMsg)
         await expect(() => store.deleteValues('')).to.throw(errorMsg)
@@ -1163,6 +1190,9 @@ describe('Hive - Sorted Set Store', function() {
         await expect(() => store.deleteValues(123)).to.throw(errorMsg)
         await expect(() => store.deleteValues(() => undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValues({})).to.throw(errorMsg)
+        await expect(() => store.deleteValues(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.deleteValues(10n)).to.throw(errorMsg)
+        await expect(() => store.deleteValues([10n])).to.throw(errorMsg)
       })
     })
 

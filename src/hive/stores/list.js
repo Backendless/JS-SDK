@@ -84,7 +84,7 @@ export class ListStore extends HiveStore {
     }
 
     if (!isHiveValueValid(anchorValue)) {
-      throw new Error('AnchorValue must be provided and must be on of types: string, number, boolean, object, array.')
+      throw new Error('AnchorValue must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
@@ -99,7 +99,7 @@ export class ListStore extends HiveStore {
 
   deleteValue(value, count) {
     if (!isHiveValueValid(value)) {
-      throw new Error('Value must be provided and must be on of types: string, number, boolean, object, array.')
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {
