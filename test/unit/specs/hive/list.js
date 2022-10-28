@@ -598,88 +598,195 @@ describe('Hive - List Store', function() {
     })
 
     describe('Insert Before', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success valueToInsert', async () => {
+        async function testValidValue(valueToInsert) {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.insertBefore('valueToInsert1', 'anchorValue1')
+          const result = await store.insertBefore(valueToInsert, 'anchorValue1')
 
-        expect(request).to.deep.include({
-          method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-before`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : {
-            valueToInsert: 'valueToInsert1',
-            anchorValue  : 'anchorValue1',
-          }
-        })
+          expect(request).to.deep.include({
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-before`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: valueToInsert,
+              anchorValue  : 'anchorValue1',
+            }
+          })
 
-        expect(result).to.be.eql(fakeResult)
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
+      })
+
+      it('success anchorValue', async () => {
+        async function testValidValue(anchorValue) {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.insertBefore('valueToInsert1', anchorValue)
+
+          expect(request).to.deep.include({
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-before`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: 'valueToInsert1',
+              anchorValue  : anchorValue,
+            }
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided.'
+        const errorMsg = 'ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertBefore(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertBefore(null, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(() => true, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(10n, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(Symbol('id'), 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore([10n], 'v')).to.throw(errorMsg)
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided.'
+        const errorMsg = 'AnchorValue must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertBefore('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertBefore('v', null)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', () => true)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', 10n)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', [10n])).to.throw(errorMsg)
       })
     })
 
     describe('Insert After', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success valueToInsert', async () => {
+        async function testValidValue(valueToInsert) {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.insertAfter('valueToInsert1', 'anchorValue1')
+          const result = await store.insertAfter(valueToInsert, 'anchorValue1')
 
-        expect(request).to.deep.include({
-          method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-after`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : {
-            valueToInsert: 'valueToInsert1',
-            anchorValue  : 'anchorValue1',
-          }
-        })
+          expect(request).to.deep.include({
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-after`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: valueToInsert,
+              anchorValue  : 'anchorValue1',
+            }
+          })
 
-        expect(result).to.be.eql(fakeResult)
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
+      })
+
+      it('success anchorValue', async () => {
+        async function testValidValue(anchorValue) {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.insertAfter('valueToInsert1', anchorValue)
+
+          expect(request).to.deep.include({
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-after`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: 'valueToInsert1',
+              anchorValue  : anchorValue,
+            }
+          })
+
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided.'
+        const errorMsg = 'ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertAfter(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertAfter(null, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(() => true, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(10n, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(Symbol('id'), 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter([10n], 'v')).to.throw(errorMsg)
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided.'
+        const errorMsg = 'AnchorValue must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertAfter('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertAfter('v', null)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', () => true)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', 10n)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', [10n])).to.throw(errorMsg)
       })
     })
 
     describe('Remove Value', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success values', async () => {
+        async function testValidValue(value) {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.deleteValue('value1')
+          const result = await store.deleteValue(value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-value`,
-          body  : {
-            value: 'value1'
-          }
-        })
+          expect(request).to.deep.include({
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-value`,
+            body  : {
+              value: value
+            }
+          })
 
-        expect(result).to.be.eql(fakeResult)
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
       })
 
       it('success with count', async () => {
@@ -700,10 +807,14 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided.'
+        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.deleteValue(undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValue(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(10n)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.deleteValue([10n])).to.throw(errorMsg)
       })
 
       it('fails with invalid count', async () => {

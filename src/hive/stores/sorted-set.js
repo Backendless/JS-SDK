@@ -1,8 +1,8 @@
 import { HiveStore } from './base-store'
 import { HiveTypes } from '../constants'
 import Utils from '../../utils'
-
 import { SetStore } from './set'
+import { isHiveValueValid } from '../utils'
 
 export class SortedSetStore extends HiveStore {
 
@@ -194,8 +194,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   getScore(value) {
-    if (value == null) {
-      throw new Error('Value must be provided.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be on of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
@@ -208,8 +208,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   getRank(value, reverse) {
-    if (value == null) {
-      throw new Error('Value must be provided.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be on of types: string, number, boolean, object, array.')
     }
 
     if (reverse !== undefined && typeof reverse !== 'boolean') {

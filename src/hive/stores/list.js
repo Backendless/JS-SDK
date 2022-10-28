@@ -1,6 +1,7 @@
 import { HiveTypes } from '../constants'
 import { HiveStore } from './base-store'
 import Utils from '../../utils'
+import { isHiveValueValid } from '../utils'
 
 export class ListStore extends HiveStore {
 
@@ -78,12 +79,12 @@ export class ListStore extends HiveStore {
   }
 
   insert(valueToInsert, anchorValue, before) {
-    if (valueToInsert == null) {
-      throw new Error('ValueToInsert must be provided.')
+    if (!isHiveValueValid(valueToInsert)) {
+      throw new Error('ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.')
     }
 
-    if (anchorValue == null) {
-      throw new Error('AnchorValue must be provided.')
+    if (!isHiveValueValid(anchorValue)) {
+      throw new Error('AnchorValue must be provided and must be on of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
@@ -97,8 +98,8 @@ export class ListStore extends HiveStore {
   }
 
   deleteValue(value, count) {
-    if (value == null) {
-      throw new Error('Value must be provided.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be on of types: string, number, boolean, object, array.')
     }
 
     if (count !== undefined && (isNaN(count) || typeof count !== 'number')) {

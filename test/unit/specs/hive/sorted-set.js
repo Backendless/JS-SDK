@@ -835,28 +835,43 @@ describe('Hive - Sorted Set Store', function() {
     })
 
     describe('Get Score', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success keys', async () => {
+        async function testValidValue(value) {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.getScore('testKey1')
+          const result = await store.getScore(value)
 
-        expect(request).to.deep.include({
-          method : 'POST',
-          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : {
-            value: 'testKey1'
-          }
-        })
+          expect(request).to.deep.include({
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              value: value
+            }
+          })
 
-        expect(result).to.be.eql(fakeResult)
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided.'
+        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.getScore(undefined)).to.throw(errorMsg)
         await expect(() => store.getScore(null)).to.throw(errorMsg)
+        await expect(() => store.getScore(() => true)).to.throw(errorMsg)
+        await expect(() => store.getScore(10n)).to.throw(errorMsg)
+        await expect(() => store.getScore(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.getScore([10n])).to.throw(errorMsg)
       })
     })
 
@@ -1036,20 +1051,31 @@ describe('Hive - Sorted Set Store', function() {
 
     describe('Get Rank', () => {
       it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+        async function testValidValue(value) {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.getRank('foo')
+          const result = await store.getRank(value)
 
-        expect(request).to.deep.include({
-          method : 'POST',
-          path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : {
-            value: 'foo'
-          }
-        })
+          expect(request).to.deep.include({
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              value: value
+            }
+          })
 
-        expect(result).to.be.eql(fakeResult)
+          expect(result).to.be.eql(fakeResult)
+        }
+
+        await testValidValue('string')
+        await testValidValue('')
+        await testValidValue(false)
+        await testValidValue(true)
+        await testValidValue([])
+        await testValidValue(123)
+        await testValidValue(0)
+        await testValidValue({ a: 1 })
       })
 
       it('success with reverse', async () => {
@@ -1071,10 +1097,14 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided.'
+        const errorMsg = 'Value must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.getRank(undefined)).to.throw(errorMsg)
         await expect(() => store.getRank(null)).to.throw(errorMsg)
+        await expect(() => store.getRank(() => true)).to.throw(errorMsg)
+        await expect(() => store.getRank(10n)).to.throw(errorMsg)
+        await expect(() => store.getRank(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.getRank([10n])).to.throw(errorMsg)
       })
 
       it('fails when Reverse argument is invalid', async () => {

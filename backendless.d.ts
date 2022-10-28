@@ -288,6 +288,7 @@ declare module Backendless {
      * @namespace Backendless.Hive
      */
     namespace Hive {
+        type HiveValue = [string, number, boolean, object]
         /**
          * @public
          * @type: Function
@@ -416,9 +417,9 @@ declare module Backendless {
 
             set(value: string, index: number): Promise<void>;
 
-            insertBefore(valueToInsert: string, anchorValue: string): Promise<number>;
+            insertBefore(valueToInsert: HiveValue | Array<HiveValue>, anchorValue: HiveValue | Array<HiveValue>): Promise<number>;
 
-            insertAfter(valueToInsert: string, anchorValue: string): Promise<number>;
+            insertAfter(valueToInsert: HiveValue | Array<HiveValue>, anchorValue: HiveValue | Array<HiveValue>): Promise<number>;
 
             length(): Promise<number>;
 
@@ -438,7 +439,7 @@ declare module Backendless {
 
             deleteLast(count: number): Promise<Array<string> | null>
 
-            deleteValue(value: string, count?: number): Promise<number>
+            deleteValue(value: HiveValue | Array<HiveValue>, count?: number): Promise<number>
         }
 
         /**
@@ -471,9 +472,9 @@ declare module Backendless {
 
             set(data: object): Promise<number>;
 
-            set(key: string, value: string): Promise<boolean>;
+            set(key: string, value: HiveValue | Array<HiveValue>): Promise<boolean>;
 
-            setWithOverwrite(key: string, value: string, overwrite?: boolean): Promise<boolean>;
+            setWithOverwrite(key: string, value: HiveValue | Array<HiveValue>, overwrite?: boolean): Promise<boolean>;
 
             add(data: object): Promise<number>;
 
@@ -575,9 +576,9 @@ declare module Backendless {
 
             getRandom<T = SortedSetItem | string>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
 
-            getScore(value: string): Promise<number>
+            getScore(value: HiveValue | Array<HiveValue>): Promise<number>
 
-            getRank(value: string, reverse?: boolean): Promise<number>
+            getRank(value: HiveValue | Array<HiveValue>, reverse?: boolean): Promise<number>
 
             getRangeByRank<T = SortedSetItem | string>(startRank: number, stopRank: number, options?: {
                 reverse?: boolean,
