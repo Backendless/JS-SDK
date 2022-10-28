@@ -512,19 +512,21 @@ declare module Backendless {
 
             getRandomAndDelete(count?: number): Promise<Array<string>>;
 
-            set(value: string): Promise<number>;
+            setValue(value: JSONValue): Promise<number>;
 
-            set(values: Array<string>): Promise<number>;
+            setValues(values: Array<JSONValue>): Promise<number>;
 
-            add(value: string): Promise<number>;
+            addValue(value: JSONValue): Promise<number>;
 
-            add(values: Array<string>): Promise<number>;
+            addValues(values: Array<JSONValue>): Promise<number>;
 
-            deleteValues(value: string): Promise<number>;
+            deleteValue(value: JSONValue): Promise<number>;
 
-            deleteValues(values: Array<string>): Promise<number>;
+            deleteValues(values: Array<JSONValue>): Promise<number>;
 
-            isMember(value: string | Array<string>): Promise<Array<string>>;
+            isValueMember(value: JSONValue): Promise<Array<string>>;
+
+            isValuesMembers(values: Array<JSONValue>): Promise<Array<string>>;
 
             length(): Promise<number>;
         }
