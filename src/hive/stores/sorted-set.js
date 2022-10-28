@@ -320,7 +320,7 @@ export class SortedSetStore extends HiveStore {
 
   deleteValues(values) {
     if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
-      throw new Error('Value must be provided and must be a list of one of types: number, boolean, object, array.')
+      throw new Error('Value must be provided and must be a list of JSON items.')
     }
 
     return this.app.request

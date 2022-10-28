@@ -1,6 +1,5 @@
 import { HiveTypes } from '../constants'
 import { HiveStore } from './base-store'
-import Utils from '../../utils'
 import { isHiveValueValid } from '../utils'
 
 export class ListStore extends HiveStore {
@@ -116,27 +115,51 @@ export class ListStore extends HiveStore {
       })
   }
 
-  addFirst(value) {
-    if (!value || !(typeof value === 'string' || Array.isArray(value))) {
-      throw new Error('Value(s) must be provided and must be a string or list of strings.')
+  addFirstValue(value) {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
       .put({
         url : `${this.getBaseURL()}/add-first`,
-        data: Utils.castArray(value)
+        data: [value]
       })
   }
 
-  addLast(value) {
-    if (!value || !(typeof value === 'string' || Array.isArray(value))) {
-      throw new Error('Value(s) must be provided and must be a string or list of strings.')
+  addFirstValues(values) {
+    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
+      throw new Error('Value must be provided and must be a list of valid JSON items.')
+    }
+
+    return this.app.request
+      .put({
+        url : `${this.getBaseURL()}/add-first`,
+        data: values
+      })
+  }
+
+  addLastValue(value) {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
       .put({
         url : `${this.getBaseURL()}/add-last`,
-        data: Utils.castArray(value)
+        data: [value]
+      })
+  }
+
+  addLastValues(values) {
+    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
+      throw new Error('Value must be provided and must be a list of valid JSON items.')
+    }
+
+    return this.app.request
+      .put({
+        url : `${this.getBaseURL()}/add-last`,
+        data: values
       })
   }
 

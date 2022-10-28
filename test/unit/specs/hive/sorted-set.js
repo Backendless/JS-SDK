@@ -1176,7 +1176,7 @@ describe('Hive - Sorted Set Store', function() {
       })
 
       it('fails when values is invalid', async () => {
-        const errorMsg = 'Value must be provided and must be a list of one of types: number, boolean, object, array.'
+        const errorMsg = 'Value must be provided and must be a list of JSON items.'
 
         await expect(() => store.deleteValues(undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValues(null)).to.throw(errorMsg)

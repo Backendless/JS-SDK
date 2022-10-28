@@ -3,6 +3,8 @@
  * @namespace Backendless
  */
 declare module Backendless {
+    type JSONValue = | string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
+
     let debugMode: boolean;
     let useTableClassesFromGlobalScope: boolean;
     let serverURL: string;
@@ -288,7 +290,6 @@ declare module Backendless {
      * @namespace Backendless.Hive
      */
     namespace Hive {
-        type HiveValue = [string, number, boolean, object]
         /**
          * @public
          * @type: Function
@@ -417,19 +418,19 @@ declare module Backendless {
 
             set(value: string, index: number): Promise<void>;
 
-            insertBefore(valueToInsert: HiveValue | Array<HiveValue>, anchorValue: HiveValue | Array<HiveValue>): Promise<number>;
+            insertBefore(valueToInsert: JSONValue, anchorValue: JSONValue): Promise<number>;
 
-            insertAfter(valueToInsert: HiveValue | Array<HiveValue>, anchorValue: HiveValue | Array<HiveValue>): Promise<number>;
+            insertAfter(valueToInsert: JSONValue, anchorValue: JSONValue): Promise<number>;
 
             length(): Promise<number>;
 
-            addFirst(value: string): Promise<number>
+            addFirstValue(value: JSONValue): Promise<number>
 
-            addFirst(values: Array<string>): Promise<number>
+            addFirstValues(values: Array<JSONValue>): Promise<number>
 
-            addLast(value: string): Promise<number>
+            addLastValue(value: JSONValue): Promise<number>
 
-            addLast(values: Array<string>): Promise<number>
+            addLastValues(values: Array<JSONValue>): Promise<number>
 
             deleteFirst(): Promise<string | null>
 
@@ -439,7 +440,7 @@ declare module Backendless {
 
             deleteLast(count: number): Promise<Array<string> | null>
 
-            deleteValue(value: HiveValue | Array<HiveValue>, count?: number): Promise<number>
+            deleteValue(value: JSONValue, count?: number): Promise<number>
         }
 
         /**
@@ -472,9 +473,9 @@ declare module Backendless {
 
             set(data: object): Promise<number>;
 
-            set(key: string, value: HiveValue | Array<HiveValue>): Promise<boolean>;
+            set(key: string, value:JSONValue): Promise<boolean>;
 
-            setWithOverwrite(key: string, value: HiveValue | Array<HiveValue>, overwrite?: boolean): Promise<boolean>;
+            setWithOverwrite(key: string, JSONValue, overwrite?: boolean): Promise<boolean>;
 
             add(data: object): Promise<number>;
 
@@ -576,9 +577,9 @@ declare module Backendless {
 
             getRandom<T = SortedSetItem | string>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
 
-            getScore(value: HiveValue | Array<HiveValue>): Promise<number>
+            getScore(value: JSONValue): Promise<number>
 
-            getRank(value: HiveValue | Array<HiveValue>, reverse?: boolean): Promise<number>
+            getRank(value: JSONValue, reverse?: boolean): Promise<number>
 
             getRangeByRank<T = SortedSetItem | string>(startRank: number, stopRank: number, options?: {
                 reverse?: boolean,
@@ -596,9 +597,9 @@ declare module Backendless {
                 withScores?: boolean
             }): Promise<Array<T>>
 
-            deleteValue(value: HiveValue | Array<HiveValue>): Promise<number>;
+            deleteValue(value: JSONValue): Promise<number>;
 
-            deleteValues(values: Array<HiveValue | Array<HiveValue>>): Promise<number>;
+            deleteValues(values: Array<JSONValue>): Promise<number>;
 
             deleteValuesByRank(startRank: number, stopRank: number): Promise<number>;
 
