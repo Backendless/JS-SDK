@@ -473,9 +473,9 @@ declare module Backendless {
 
             set(data: object): Promise<number>;
 
-            set(key: string, value:JSONValue): Promise<boolean>;
+            set(key: string, value: JSONValue): Promise<boolean>;
 
-            setWithOverwrite(key: string, JSONValue, overwrite?: boolean): Promise<boolean>;
+            setWithOverwrite(key: string, value: JSONValue, overwrite?: boolean): Promise<boolean>;
 
             add(data: object): Promise<number>;
 
