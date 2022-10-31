@@ -715,7 +715,7 @@ function testHiveStores() {
     const str: string = 'str';
     const num: number = 123;
     const bool: boolean = false;
-    const obj: TestObjType = { x: 1, y: 2 };
+    const obj: TestObjType = {x: 1, y: 2};
     const strArr: Array<string> = ['str1', 'str2'];
     const numArr: Array<number> = [1, 2];
     const boolArr: Array<boolean> = [true, false];
