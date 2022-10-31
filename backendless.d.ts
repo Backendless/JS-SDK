@@ -579,9 +579,9 @@ declare module Backendless {
 
             getRandom<T = SortedSetItem | JSONValue>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
 
-            getScore(value: JSONValue): Promise<number>
+            getScore(value: JSONValue): Promise<number | null>
 
-            getRank(value: JSONValue, reverse?: boolean): Promise<number>
+            getRank(value: JSONValue, reverse?: boolean): Promise<number | null>
 
             getRangeByRank<T = SortedSetItem | JSONValue>(startRank: number, stopRank: number, options?: {
                 reverse?: boolean,

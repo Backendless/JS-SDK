@@ -1,6 +1,7 @@
 import { HiveTypes } from '../constants'
 import { HiveStore } from './base-store'
 import Utils from '../../utils'
+import { isHiveValueValid } from '../utils'
 
 export class KeyValueStore extends HiveStore {
 
@@ -55,6 +56,10 @@ export class KeyValueStore extends HiveStore {
       if (condition !== undefined && !['IfExists', 'IfNotExists', 'Always'].includes(condition)) {
         throw new Error('Condition must be one of this values: [IfExists, IfNotExists, Always].')
       }
+    }
+
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
