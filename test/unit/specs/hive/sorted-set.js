@@ -836,31 +836,49 @@ describe('Hive - Sorted Set Store', function() {
 
     describe('Get Score', async () => {
       it('success keys', async () => {
-        async function testValidValue(value) {
+        const composeRequest = async value => {
           const request = prepareMockRequest(fakeResult)
 
           const result = await store.getScore(value)
 
-          expect(request).to.deep.include({
+          const payload = {
             method : 'POST',
             path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-score`,
             headers: { 'Content-Type': 'application/json' },
             body   : {
               value: value
             }
-          })
+          }
 
-          expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
         }
 
-        await testValidValue('string')
-        await testValidValue('')
-        await testValidValue(false)
-        await testValidValue(true)
-        await testValidValue([])
-        await testValidValue(123)
-        await testValidValue(0)
-        await testValidValue({ a: 1 })
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails when values is invalid', async () => {
@@ -1051,31 +1069,49 @@ describe('Hive - Sorted Set Store', function() {
 
     describe('Get Rank', () => {
       it('success', async () => {
-        async function testValidValue(value) {
+        const composeRequest = async value => {
           const request = prepareMockRequest(fakeResult)
 
           const result = await store.getRank(value)
 
-          expect(request).to.deep.include({
+          const payload = {
             method : 'POST',
             path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/get-rank`,
             headers: { 'Content-Type': 'application/json' },
             body   : {
               value: value
             }
-          })
+          }
 
-          expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
         }
 
-        await testValidValue('string')
-        await testValidValue('')
-        await testValidValue(false)
-        await testValidValue(true)
-        await testValidValue([])
-        await testValidValue(123)
-        await testValidValue(0)
-        await testValidValue({ a: 1 })
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('success with reverse', async () => {
@@ -1122,29 +1158,47 @@ describe('Hive - Sorted Set Store', function() {
 
     describe('Delete Value', () => {
       it('success values', async () => {
-        async function testValidValue(value) {
+        const composeRequest = async value => {
           const request = prepareMockRequest(fakeResult)
 
           const result = await store.deleteValue(value)
 
-          expect(request).to.deep.include({
+          const payload = {
             method : 'DELETE',
             path   : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/values`,
             headers: { 'Content-Type': 'application/json' },
             body   : [value]
-          })
+          }
 
-          expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
         }
 
-        await testValidValue('string')
-        await testValidValue('')
-        await testValidValue(false)
-        await testValidValue(true)
-        await testValidValue([])
-        await testValidValue(123)
-        await testValidValue(0)
-        await testValidValue({ a: 1 })
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails when value is invalid', async () => {
