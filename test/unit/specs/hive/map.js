@@ -768,12 +768,12 @@ describe('Hive - Map Store', function() {
       it('fails with invalid value', async () => {
         const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
-        await expect(() => store.set('k', undefined)).to.throw(errorMsg)
-        await expect(() => store.set('k', null)).to.throw(errorMsg)
-        await expect(() => store.set('k', () => true)).to.throw(errorMsg)
-        await expect(() => store.set('k', 10n)).to.throw(errorMsg)
-        await expect(() => store.set('k', Symbol('id'))).to.throw(errorMsg)
-        await expect(() => store.set('k', [10n])).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', undefined)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', null)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', () => true)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 10n)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', [10n])).to.throw(errorMsg)
       })
 
       it('fails with invalid overwrite argument', async () => {
