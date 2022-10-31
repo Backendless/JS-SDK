@@ -3,7 +3,7 @@
  * @namespace Backendless
  */
 declare module Backendless {
-    type JSONValue = | string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
+    type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
 
     let debugMode: boolean;
     let useTableClassesFromGlobalScope: boolean;
