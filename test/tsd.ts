@@ -789,8 +789,13 @@ function testHiveStores() {
         function testInstance() {
             promiseJSONValueOrNull = Backendless.Hive(str).KeyValueStore(str).get();
 
-            promiseVoid = Backendless.Hive(str).KeyValueStore(str).set(str);
-            promiseVoid = Backendless.Hive(str).KeyValueStore(str).set(str, setKeyOptions);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).set(str);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).set(num);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).set(bool);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).set(obj);
+            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).set(strArr);
+
+            promiseBoolean = Backendless.Hive(str).KeyValueStore(str).set(str, setKeyOptions);
 
             promiseNumber = Backendless.Hive(str).KeyValueStore(str).increment(num);
             promiseNumber = Backendless.Hive(str).KeyValueStore(str).decrement(num);

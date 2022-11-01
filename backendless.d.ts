@@ -390,7 +390,7 @@ declare module Backendless {
         interface keyValueStore extends hiveStore {
             get(): Promise<JSONValue | null>;
 
-            set(value: string, options?: KeyValueSetKeyOptionsI): Promise<void>;
+            set(value: JSONValue, options?: KeyValueSetKeyOptionsI): Promise<boolean>;
 
             increment(value: number): Promise<number>;
 
