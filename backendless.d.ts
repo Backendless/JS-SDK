@@ -3,6 +3,8 @@
  * @namespace Backendless
  */
 declare module Backendless {
+    type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
+
     let debugMode: boolean;
     let useTableClassesFromGlobalScope: boolean;
     let serverURL: string;
@@ -377,7 +379,7 @@ declare module Backendless {
 
             get(keys: Array<string>): Promise<object>;
 
-            set(key: string, value: string, options?: KeyValueSetKeyOptionsI): Promise<boolean>;
+            set(key: string, value: JSONValue, options?: KeyValueSetKeyOptionsI): Promise<boolean>;
 
             set(keysMap: object): Promise<boolean>;
         }
@@ -386,7 +388,7 @@ declare module Backendless {
          * @public
          */
         interface keyValueStore extends hiveStore {
-            get(): Promise<string | null>;
+            get(): Promise<JSONValue | null>;
 
             set(value: string, options?: KeyValueSetKeyOptionsI): Promise<void>;
 
@@ -406,39 +408,39 @@ declare module Backendless {
          * @public
          */
         interface listStore extends hiveStore {
-            get(): Promise<Array<string>>;
+            get(): Promise<Array<JSONValue>>
 
-            get(index: number): Promise<string | null>;
+            get(index: number): Promise<JSONValue | null>
 
-            get(indexFrom: number, indexTo: number): Promise<Array<string>>;
+            get(indexFrom: number, indexTo: number): Promise<Array<JSONValue>>
 
             set(values: Array<string>): Promise<number>;
 
             set(value: string, index: number): Promise<void>;
 
-            insertBefore(valueToInsert: string, anchorValue: string): Promise<number>;
+            insertBefore(valueToInsert: JSONValue, anchorValue: JSONValue): Promise<number>;
 
-            insertAfter(valueToInsert: string, anchorValue: string): Promise<number>;
+            insertAfter(valueToInsert: JSONValue, anchorValue: JSONValue): Promise<number>;
 
             length(): Promise<number>;
 
-            addFirst(value: string): Promise<number>
+            addFirstValue(value: JSONValue): Promise<number>
 
-            addFirst(values: Array<string>): Promise<number>
+            addFirstValues(values: Array<JSONValue>): Promise<number>
 
-            addLast(value: string): Promise<number>
+            addLastValue(value: JSONValue): Promise<number>
 
-            addLast(values: Array<string>): Promise<number>
+            addLastValues(values: Array<JSONValue>): Promise<number>
 
-            deleteFirst(): Promise<string | null>
+            deleteFirst(): Promise<Array<JSONValue>>
 
-            deleteFirst(count: number): Promise<Array<string> | null>
+            deleteFirst(count: number): Promise<Array<JSONValue>>
 
-            deleteLast(): Promise<string | null>
+            deleteLast(): Promise<Array<JSONValue>>
 
-            deleteLast(count: number): Promise<Array<string> | null>
+            deleteLast(count: number): Promise<Array<JSONValue>>
 
-            deleteValue(value: string, count?: number): Promise<number>
+            deleteValue(value: JSONValue, count?: number): Promise<number>
         }
 
         /**
@@ -459,7 +461,7 @@ declare module Backendless {
 
             get(keys: Array<string>): Promise<object>;
 
-            getValue(key: string): Promise<string | null>;
+            getValue(key: string): Promise<JSONValue | null>;
 
             keyExists(key: string): Promise<boolean>;
 
@@ -467,13 +469,13 @@ declare module Backendless {
 
             keys(): Promise<Array<string>>;
 
-            values(): Promise<Array<string>>;
+            values(): Promise<Array<JSONValue>>;
 
             set(data: object): Promise<number>;
 
-            set(key: string, value: string): Promise<boolean>;
+            set(key: string, value: JSONValue): Promise<boolean>;
 
-            setWithOverwrite(key: string, value: string, overwrite?: boolean): Promise<boolean>;
+            setWithOverwrite(key: string, value: JSONValue, overwrite?: boolean): Promise<boolean>;
 
             add(data: object): Promise<number>;
 
@@ -492,11 +494,11 @@ declare module Backendless {
         interface SetStore extends HiveStore {
             (keyName: string): setStore;
 
-            difference(storeKeys: Array<string>): Promise<Array<string>>;
+            difference(storeKeys: Array<string>): Promise<Array<JSONValue>>;
 
-            intersection(storeKeys: Array<string>): Promise<Array<string>>;
+            intersection(storeKeys: Array<string>): Promise<Array<JSONValue>>;
 
-            union(storeKeys: Array<string>): Promise<Array<string>>;
+            union(storeKeys: Array<string>): Promise<Array<JSONValue>>;
         }
 
         /**
@@ -504,30 +506,32 @@ declare module Backendless {
          */
         interface setStore extends hiveStore {
 
-            get(): Promise<Array<string>>;
+            get(): Promise<Array<JSONValue>>;
 
-            getRandom(count?: number): Promise<Array<string>>;
+            getRandom(count?: number): Promise<Array<JSONValue>>;
 
-            getRandomAndDelete(count?: number): Promise<Array<string>>;
+            getRandomAndDelete(count?: number): Promise<Array<JSONValue>>;
 
-            set(value: string): Promise<number>;
+            setValue(value: JSONValue): Promise<number>;
 
-            set(values: Array<string>): Promise<number>;
+            setValues(values: Array<JSONValue>): Promise<number>;
 
-            add(value: string): Promise<number>;
+            addValue(value: JSONValue): Promise<number>;
 
-            add(values: Array<string>): Promise<number>;
+            addValues(values: Array<JSONValue>): Promise<number>;
 
-            deleteValues(value: string): Promise<number>;
+            deleteValue(value: JSONValue): Promise<number>;
 
-            deleteValues(values: Array<string>): Promise<number>;
+            deleteValues(values: Array<JSONValue>): Promise<number>;
 
-            isMember(value: string | Array<string>): Promise<Array<string>>;
+            isValueMember(value: JSONValue): Promise<Array<boolean>>;
+
+            isValuesMembers(values: Array<JSONValue>): Promise<Array<boolean>>;
 
             length(): Promise<number>;
         }
 
-        type SortedSetItem = [number, string]
+        type SortedSetItem = [number, JSONValue]
         type SortedSetBound = 'Include' | 'Exclude' | 'Infinity'
 
         interface SortedSetItemOptionsI {
@@ -549,11 +553,11 @@ declare module Backendless {
         interface SortedSetStore extends HiveStore {
             (keyName: string): sortedSetStore
 
-            difference(storeKeys: Array<string>): Promise<Array<string>>;
+            difference(storeKeys: Array<string>): Promise<Array<JSONValue>>;
 
-            intersection(storeKeys: Array<string>): Promise<Array<string>>;
+            intersection(storeKeys: Array<string>): Promise<Array<JSONValue>>;
 
-            union(storeKeys: Array<string>): Promise<Array<string>>;
+            union(storeKeys: Array<string>): Promise<Array<JSONValue>>;
         }
 
         /**
@@ -565,26 +569,26 @@ declare module Backendless {
 
             set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
 
-            incrementScore(value: string, scoreValue: number): Promise<number>
+            incrementScore(value: JSONValue, scoreValue: number): Promise<number>
 
-            decrementScore(value: string, scoreValue: number): Promise<number>
+            decrementScore(value: JSONValue, scoreValue: number): Promise<number>
 
             getAndDeleteMaxScore(count?: number): Promise<Array<SortedSetItem>>
 
             getAndDeleteMinScore(count?: number): Promise<Array<SortedSetItem>>
 
-            getRandom<T = SortedSetItem | string>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
+            getRandom<T = SortedSetItem | JSONValue>(options?: { count?: number, withScores?: boolean }): Promise<Array<T>>
 
-            getScore(value: string): Promise<number>
+            getScore(value: JSONValue): Promise<number | null>
 
-            getRank(value: string, reverse?: boolean): Promise<number>
+            getRank(value: JSONValue, reverse?: boolean): Promise<number | null>
 
-            getRangeByRank<T = SortedSetItem | string>(startRank: number, stopRank: number, options?: {
+            getRangeByRank<T = SortedSetItem | JSONValue>(startRank: number, stopRank: number, options?: {
                 reverse?: boolean,
                 withScores?: boolean
             }): Promise<Array<T>>
 
-            getRangeByScore<T = SortedSetItem | string>(options?: {
+            getRangeByScore<T = SortedSetItem | JSONValue>(options?: {
                 minScore?: number,
                 maxScore?: number,
                 minBound?: SortedSetBound,
@@ -595,9 +599,9 @@ declare module Backendless {
                 withScores?: boolean
             }): Promise<Array<T>>
 
-            deleteValues(value: string): Promise<number>;
+            deleteValue(value: JSONValue): Promise<number>;
 
-            deleteValues(values: Array<string>): Promise<number>;
+            deleteValues(values: Array<JSONValue>): Promise<number>;
 
             deleteValuesByRank(startRank: number, stopRank: number): Promise<number>;
 

@@ -598,120 +598,285 @@ describe('Hive - List Store', function() {
     })
 
     describe('Insert Before', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success valueToInsert', async () => {
+        const composeRequest = async valueToInsert => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.insertBefore('valueToInsert1', 'anchorValue1')
+          const result = await store.insertBefore(valueToInsert, 'anchorValue1')
 
-        expect(request).to.deep.include({
-          method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-before`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : {
-            valueToInsert: 'valueToInsert1',
-            anchorValue  : 'anchorValue1',
+          const payload = {
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-before`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: valueToInsert,
+              anchorValue  : 'anchorValue1',
+            }
           }
-        })
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
+      })
+
+      it('success anchorValue', async () => {
+        const composeRequest = async anchorValue => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.insertBefore('valueToInsert1', anchorValue)
+
+          const payload = {
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-before`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: 'valueToInsert1',
+              anchorValue  : anchorValue,
+            }
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided and must be a string.'
+        const errorMsg = 'ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertBefore(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertBefore(null, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(false, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(true, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(0, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(123, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore('', 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore({}, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore([], 'v')).to.throw(errorMsg)
-        await expect(() => store.insertBefore(() => undefined, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(() => true, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(10n, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore(Symbol('id'), 'v')).to.throw(errorMsg)
+        await expect(() => store.insertBefore([10n], 'v')).to.throw(errorMsg)
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided and must be a string.'
+        const errorMsg = 'AnchorValue must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertBefore('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertBefore('v', null)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', false)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', 0)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', '')).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', true)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', 123)).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', {})).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', [])).to.throw(errorMsg)
-        await expect(() => store.insertBefore('v', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', () => true)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', 10n)).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.insertBefore('v', [10n])).to.throw(errorMsg)
       })
     })
 
     describe('Insert After', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success valueToInsert', async () => {
+        const composeRequest = async valueToInsert => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.insertAfter('valueToInsert1', 'anchorValue1')
+          const result = await store.insertAfter(valueToInsert, 'anchorValue1')
 
-        expect(request).to.deep.include({
-          method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-after`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : {
-            valueToInsert: 'valueToInsert1',
-            anchorValue  : 'anchorValue1',
+          const payload = {
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-after`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: valueToInsert,
+              anchorValue  : 'anchorValue1',
+            }
           }
-        })
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
+      })
+
+      it('success anchorValue', async () => {
+        const composeRequest = async anchorValue => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.insertAfter('valueToInsert1', anchorValue)
+
+          const payload = {
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/insert-after`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              valueToInsert: 'valueToInsert1',
+              anchorValue  : anchorValue,
+            }
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided and must be a string.'
+        const errorMsg = 'ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertAfter(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertAfter(null, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(false, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(true, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(0, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(123, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter('', 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter({}, 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter([], 'v')).to.throw(errorMsg)
-        await expect(() => store.insertAfter(() => undefined, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(() => true, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(10n, 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter(Symbol('id'), 'v')).to.throw(errorMsg)
+        await expect(() => store.insertAfter([10n], 'v')).to.throw(errorMsg)
       })
 
       it('fails with invalid AnchorValue', async () => {
-        const errorMsg = 'AnchorValue must be provided and must be a string.'
+        const errorMsg = 'AnchorValue must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertAfter('v', undefined)).to.throw(errorMsg)
         await expect(() => store.insertAfter('v', null)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', false)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', 0)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', '')).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', true)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', 123)).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', {})).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', [])).to.throw(errorMsg)
-        await expect(() => store.insertAfter('v', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', () => true)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', 10n)).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.insertAfter('v', [10n])).to.throw(errorMsg)
       })
     })
 
     describe('Remove Value', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.deleteValue('value1')
+          const result = await store.deleteValue(value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-value`,
-          body  : {
-            value: 'value1'
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/delete-value`,
+            body  : {
+              value: value
+            }
           }
-        })
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('success with count', async () => {
@@ -732,18 +897,14 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.deleteValue(undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValue(null)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(false)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(true)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(0)).to.throw(errorMsg)
-        await expect(() => store.deleteValue(123)).to.throw(errorMsg)
-        await expect(() => store.deleteValue('')).to.throw(errorMsg)
-        await expect(() => store.deleteValue({})).to.throw(errorMsg)
-        await expect(() => store.deleteValue([])).to.throw(errorMsg)
-        await expect(() => store.deleteValue(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(10n)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.deleteValue([10n])).to.throw(errorMsg)
       })
 
       it('fails with invalid count', async () => {
@@ -760,91 +921,241 @@ describe('Hive - List Store', function() {
       })
     })
 
-    describe('Add First', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+    describe('Add First Value', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.addFirst('value')
+          const result = await store.addFirstValue(value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
-          body  : ['value']
-        })
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
+            body  : [value]
+          }
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
-      it('success with array of values', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('fails with invalid values', async () => {
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
-        const result = await store.addFirst(['value1', 'value2'])
-
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
-          body  : ['value1', 'value2']
-        })
-
-        expect(result).to.be.eql(fakeResult)
-      })
-
-      it('fails with invalid value', async () => {
-        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
-
-        await expect(() => store.addFirst(undefined)).to.throw(errorMsg)
-        await expect(() => store.addFirst(null)).to.throw(errorMsg)
-        await expect(() => store.addFirst(false)).to.throw(errorMsg)
-        await expect(() => store.addFirst(0)).to.throw(errorMsg)
-        await expect(() => store.addFirst(123)).to.throw(errorMsg)
-        await expect(() => store.addFirst('')).to.throw(errorMsg)
-        await expect(() => store.addFirst({})).to.throw(errorMsg)
-        await expect(() => store.addFirst(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.addFirst(true)).to.throw(errorMsg)
+        await expect(() => store.addFirstValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.addFirstValue(null)).to.throw(errorMsg)
+        await expect(() => store.addFirstValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.addFirstValue(10n)).to.throw(errorMsg)
+        await expect(() => store.addFirstValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.addFirstValue([10n])).to.throw(errorMsg)
       })
     })
 
-    describe('Add Last', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+    describe('Add First Values', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.addLast('value')
+          const result = await store.addFirstValues(value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
-          body  : ['value']
-        })
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-first`,
+            body  : value
+          }
 
-        expect(result).to.be.eql(fakeResult)
-      })
+          return { request, result, payload }
+        }
 
-      it('success with array of values', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const request1 = await composeRequest(['string'])
+        const request2 = await composeRequest([''])
+        const request3 = await composeRequest([false])
+        const request4 = await composeRequest([true])
+        const request5 = await composeRequest([[]])
+        const request6 = await composeRequest([123])
+        const request7 = await composeRequest([{ a: 1 }])
 
-        const result = await store.addLast(['value1', 'value2'])
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
-          body  : ['value1', 'value2']
-        })
-
-        expect(result).to.be.eql(fakeResult)
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+        const errorMsg = 'Value must be provided and must be a list of valid JSON items.'
 
-        await expect(() => store.addLast(undefined)).to.throw(errorMsg)
-        await expect(() => store.addLast(null)).to.throw(errorMsg)
-        await expect(() => store.addLast(false)).to.throw(errorMsg)
-        await expect(() => store.addLast(0)).to.throw(errorMsg)
-        await expect(() => store.addLast(123)).to.throw(errorMsg)
-        await expect(() => store.addLast('')).to.throw(errorMsg)
-        await expect(() => store.addLast({})).to.throw(errorMsg)
-        await expect(() => store.addLast(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.addLast(true)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(undefined)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(null)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues([])).to.throw(errorMsg)
+        await expect(() => store.addFirstValues('string')).to.throw(errorMsg)
+        await expect(() => store.addFirstValues('')).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(0)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(false)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues('')).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(true)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(123)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues({})).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.addFirstValues(10n)).to.throw(errorMsg)
+        await expect(() => store.addFirstValues([])).to.throw(errorMsg)
+        await expect(() => store.addFirstValues([10n])).to.throw(errorMsg)
+      })
+    })
+
+    describe('Add Last Value', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.addLastValue(value)
+
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
+            body  : [value]
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid values', async () => {
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
+
+        await expect(() => store.addLastValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.addLastValue(null)).to.throw(errorMsg)
+        await expect(() => store.addLastValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.addLastValue(10n)).to.throw(errorMsg)
+        await expect(() => store.addLastValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.addLastValue([10n])).to.throw(errorMsg)
+      })
+    })
+
+    describe('Add Last Values', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.addLastValues(value)
+
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/add-last`,
+            body  : value
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest(['string'])
+        const request2 = await composeRequest([''])
+        const request3 = await composeRequest([false])
+        const request4 = await composeRequest([true])
+        const request5 = await composeRequest([[]])
+        const request6 = await composeRequest([123])
+        const request7 = await composeRequest([{ a: 1 }])
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be a list of valid JSON items.'
+
+        await expect(() => store.addLastValues(undefined)).to.throw(errorMsg)
+        await expect(() => store.addLastValues(null)).to.throw(errorMsg)
+        await expect(() => store.addLastValues([])).to.throw(errorMsg)
+        await expect(() => store.addLastValues('string')).to.throw(errorMsg)
+        await expect(() => store.addLastValues('')).to.throw(errorMsg)
+        await expect(() => store.addLastValues(0)).to.throw(errorMsg)
+        await expect(() => store.addLastValues(false)).to.throw(errorMsg)
+        await expect(() => store.addLastValues('')).to.throw(errorMsg)
+        await expect(() => store.addLastValues(true)).to.throw(errorMsg)
+        await expect(() => store.addLastValues(123)).to.throw(errorMsg)
+        await expect(() => store.addLastValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.addLastValues({})).to.throw(errorMsg)
+        await expect(() => store.addLastValues(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.addLastValues(10n)).to.throw(errorMsg)
+        await expect(() => store.addLastValues([])).to.throw(errorMsg)
+        await expect(() => store.addLastValues([10n])).to.throw(errorMsg)
       })
     })
 

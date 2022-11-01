@@ -1,6 +1,7 @@
 import { HiveTypes } from '../constants'
 import { HiveStore } from './base-store'
 import Utils from '../../utils'
+import { isHiveValueValid } from '../utils'
 
 export class MapStore extends HiveStore {
 
@@ -82,8 +83,8 @@ export class MapStore extends HiveStore {
       throw new Error('Key must be a string.')
     }
 
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
@@ -100,8 +101,8 @@ export class MapStore extends HiveStore {
       throw new Error('Key must be provided and must be a string.')
     }
 
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (overwrite !== undefined && typeof overwrite !== 'boolean') {

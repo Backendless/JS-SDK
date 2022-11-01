@@ -487,18 +487,47 @@ describe('Hive - Key Value Store', function() {
     describe('Set', async () => {
 
       it('success with single key', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await Store.set('testKey', 'testValue')
+          const result = await Store.set('testKey', value)
 
-        expect(request).to.deep.include({
-          method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/key-value/testKey`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : { value: 'testValue' }
-        })
+          const payload = {
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/key-value/testKey`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : { value }
+          }
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('success with options', async () => {
@@ -526,21 +555,41 @@ describe('Hive - Key Value Store', function() {
       })
 
       it('success with multi keys', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const composeRequest = async (value1, value2) => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await Store.set({ 'testKey1': 'testValue1', 'testKey2': 'testValue2' })
+          const result = await Store.set({ 'testKey1': value1, 'testKey2': value2 })
 
-        expect(request).to.deep.include({
-          method : 'PUT',
-          path   : `${APP_PATH}/hive/${hiveName}/key-value`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : {
-            'testKey1': 'testValue1',
-            'testKey2': 'testValue2',
+          const payload = {
+            method : 'PUT',
+            path   : `${APP_PATH}/hive/${hiveName}/key-value`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : {
+              'testKey1': value1,
+              'testKey2': value2,
+            }
           }
-        })
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string', '')
+        const request2 = await composeRequest(false, true)
+        const request3 = await composeRequest([], [1,2,3])
+        const request4 = await composeRequest(123, 0)
+        const request5 = await composeRequest({ a: 1 }, {})
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
       })
 
       it('fails when key is invalid', async () => {
@@ -554,6 +603,17 @@ describe('Hive - Key Value Store', function() {
         await expect(() => Store.set(0, 'testValue')).to.throw(errorMsg)
         await expect(() => Store.set(123, 'testValue')).to.throw(errorMsg)
         await expect(() => Store.set(() => undefined), 'testValue').to.throw(errorMsg)
+      })
+
+      it('fails when value is invalid', async () => {
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
+
+        await expect(() => Store.set('key', undefined)).to.throw(errorMsg)
+        await expect(() => Store.set('key', null)).to.throw(errorMsg)
+        await expect(() => Store.set('key', () => true)).to.throw(errorMsg)
+        await expect(() => Store.set('key', 10n)).to.throw(errorMsg)
+        await expect(() => Store.set('key', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => Store.set('key', [10n])).to.throw(errorMsg)
       })
 
       it('fails when object is empty', async () => {

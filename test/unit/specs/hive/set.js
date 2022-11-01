@@ -638,180 +638,481 @@ describe('Hive - Set Store', function() {
       })
     })
 
-    describe('Set', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+    describe('Set Value', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.set('value')
+          const result = await store.setValue(value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}`,
-          body  : ['value']
-        })
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}`,
+            body  : [value]
+          }
 
-        expect(result).to.be.eql(fakeResult)
-      })
+          return { request, result, payload }
+        }
 
-      it('success with array of values', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
 
-        const result = await store.set(['value1', 'value2'])
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}`,
-          body  : ['value1', 'value2']
-        })
-
-        expect(result).to.be.eql(fakeResult)
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
-        await expect(() => store.set(undefined)).to.throw(errorMsg)
-        await expect(() => store.set(null)).to.throw(errorMsg)
-        await expect(() => store.set(false)).to.throw(errorMsg)
-        await expect(() => store.set(0)).to.throw(errorMsg)
-        await expect(() => store.set(123)).to.throw(errorMsg)
-        await expect(() => store.set('')).to.throw(errorMsg)
-        await expect(() => store.set({})).to.throw(errorMsg)
-        await expect(() => store.set(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.set(true)).to.throw(errorMsg)
+        await expect(() => store.setValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.setValue(null)).to.throw(errorMsg)
+        await expect(() => store.setValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.setValue(10n)).to.throw(errorMsg)
+        await expect(() => store.setValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.setValue([10n])).to.throw(errorMsg)
       })
     })
 
-    describe('Add', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+    describe('Set Values', async () => {
+      it('success values', async () => {
+        const composeRequest = async values => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.add('value')
+          const result = await store.setValues(values)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/add`,
-          body  : ['value']
-        })
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}`,
+            body  : values
+          }
 
-        expect(result).to.be.eql(fakeResult)
-      })
+          return { request, result, payload }
+        }
 
-      it('success with array of values', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const request1 = await composeRequest(['string'])
+        const request2 = await composeRequest([''])
+        const request3 = await composeRequest([false])
+        const request4 = await composeRequest([true])
+        const request5 = await composeRequest([[]])
+        const request6 = await composeRequest([123])
+        const request7 = await composeRequest([{ a: 1 }])
 
-        const result = await store.add(['value1', 'value2'])
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/add`,
-          body  : ['value1', 'value2']
-        })
-
-        expect(result).to.be.eql(fakeResult)
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+        const errorMsg = 'Value must be provided and must be a list of valid JSON items.'
 
-        await expect(() => store.add(undefined)).to.throw(errorMsg)
-        await expect(() => store.add(null)).to.throw(errorMsg)
-        await expect(() => store.add(false)).to.throw(errorMsg)
-        await expect(() => store.add(0)).to.throw(errorMsg)
-        await expect(() => store.add(123)).to.throw(errorMsg)
-        await expect(() => store.add('')).to.throw(errorMsg)
-        await expect(() => store.add({})).to.throw(errorMsg)
-        await expect(() => store.add(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.add(true)).to.throw(errorMsg)
+        await expect(() => store.setValues(undefined)).to.throw(errorMsg)
+        await expect(() => store.setValues(null)).to.throw(errorMsg)
+        await expect(() => store.setValues([])).to.throw(errorMsg)
+        await expect(() => store.setValues('string')).to.throw(errorMsg)
+        await expect(() => store.setValues('')).to.throw(errorMsg)
+        await expect(() => store.setValues(0)).to.throw(errorMsg)
+        await expect(() => store.setValues(false)).to.throw(errorMsg)
+        await expect(() => store.setValues('')).to.throw(errorMsg)
+        await expect(() => store.setValues(true)).to.throw(errorMsg)
+        await expect(() => store.setValues(123)).to.throw(errorMsg)
+        await expect(() => store.setValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.setValues({})).to.throw(errorMsg)
+        await expect(() => store.setValues(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.setValues(10n)).to.throw(errorMsg)
+        await expect(() => store.setValues([])).to.throw(errorMsg)
+        await expect(() => store.setValues([10n])).to.throw(errorMsg)
+      })
+    })
+
+    describe('Add Value', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.addValue(value)
+
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/add`,
+            body  : [value]
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
+
+        await expect(() => store.setValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.setValue(null)).to.throw(errorMsg)
+        await expect(() => store.setValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.setValue(10n)).to.throw(errorMsg)
+        await expect(() => store.setValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.setValue([10n])).to.throw(errorMsg)
+      })
+    })
+
+    describe('Add Values', async () => {
+      it('success values', async () => {
+        const composeRequest = async values => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.addValues(values)
+
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/add`,
+            body  : values
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest(['string'])
+        const request2 = await composeRequest([''])
+        const request3 = await composeRequest([false])
+        const request4 = await composeRequest([true])
+        const request5 = await composeRequest([[]])
+        const request6 = await composeRequest([123])
+        const request7 = await composeRequest([{ a: 1 }])
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be a list of valid JSON items.'
+
+        await expect(() => store.addValues(undefined)).to.throw(errorMsg)
+        await expect(() => store.addValues(null)).to.throw(errorMsg)
+        await expect(() => store.addValues([])).to.throw(errorMsg)
+        await expect(() => store.addValues('string')).to.throw(errorMsg)
+        await expect(() => store.addValues('')).to.throw(errorMsg)
+        await expect(() => store.addValues(0)).to.throw(errorMsg)
+        await expect(() => store.addValues(false)).to.throw(errorMsg)
+        await expect(() => store.addValues('')).to.throw(errorMsg)
+        await expect(() => store.addValues(true)).to.throw(errorMsg)
+        await expect(() => store.addValues(123)).to.throw(errorMsg)
+        await expect(() => store.addValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.addValues({})).to.throw(errorMsg)
+        await expect(() => store.addValues(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.addValues(10n)).to.throw(errorMsg)
+        await expect(() => store.addValues([])).to.throw(errorMsg)
+        await expect(() => store.addValues([10n])).to.throw(errorMsg)
+      })
+    })
+
+    describe('Delete Value', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.deleteValue(value)
+
+          const payload = {
+            method: 'DELETE',
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/values`,
+            body  : [value]
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
+
+        await expect(() => store.deleteValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(null)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(10n)).to.throw(errorMsg)
+        await expect(() => store.deleteValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.deleteValue([10n])).to.throw(errorMsg)
       })
     })
 
     describe('Delete Values', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success values', async () => {
+        const composeRequest = async values => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.deleteValues('value')
+          const result = await store.deleteValues(values)
 
-        expect(request).to.deep.include({
-          method: 'DELETE',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/values`,
-          body  : ['value']
-        })
+          const payload = {
+            method: 'DELETE',
+            path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/values`,
+            body  : values
+          }
 
-        expect(result).to.be.eql(fakeResult)
-      })
+          return { request, result, payload }
+        }
 
-      it('success with array of values', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const request1 = await composeRequest(['string'])
+        const request2 = await composeRequest([''])
+        const request3 = await composeRequest([false])
+        const request4 = await composeRequest([true])
+        const request5 = await composeRequest([[]])
+        const request6 = await composeRequest([123])
+        const request7 = await composeRequest([{ a: 1 }])
 
-        const result = await store.deleteValues(['value1', 'value2'])
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
 
-        expect(request).to.deep.include({
-          method: 'DELETE',
-          path  : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/values`,
-          body  : ['value1', 'value2']
-        })
-
-        expect(result).to.be.eql(fakeResult)
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value(s) must be provided and must be a string or list of strings.'
+        const errorMsg = 'Value must be provided and must be a list of valid JSON items.'
 
         await expect(() => store.deleteValues(undefined)).to.throw(errorMsg)
         await expect(() => store.deleteValues(null)).to.throw(errorMsg)
-        await expect(() => store.deleteValues(false)).to.throw(errorMsg)
-        await expect(() => store.deleteValues(0)).to.throw(errorMsg)
-        await expect(() => store.deleteValues(123)).to.throw(errorMsg)
+        await expect(() => store.deleteValues([])).to.throw(errorMsg)
+        await expect(() => store.deleteValues('string')).to.throw(errorMsg)
         await expect(() => store.deleteValues('')).to.throw(errorMsg)
-        await expect(() => store.deleteValues({})).to.throw(errorMsg)
-        await expect(() => store.deleteValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(0)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(false)).to.throw(errorMsg)
+        await expect(() => store.deleteValues('')).to.throw(errorMsg)
         await expect(() => store.deleteValues(true)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(123)).to.throw(errorMsg)
+        await expect(() => store.deleteValues(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.deleteValues({})).to.throw(errorMsg)
+        await expect(() => store.deleteValues(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.deleteValues(10n)).to.throw(errorMsg)
+        await expect(() => store.deleteValues([])).to.throw(errorMsg)
+        await expect(() => store.deleteValues([10n])).to.throw(errorMsg)
       })
     })
 
-    describe('Is Member', async () => {
-      it('success for one key', async () => {
-        const request = prepareMockRequest(fakeResult)
+    describe('Is Value Member', async () => {
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.isMember('testKey1')
+          const result = await store.isValueMember(value)
 
-        expect(request).to.deep.include({
-          method : 'POST',
-          path   : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : ['testKey1']
-        })
+          const payload = {
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : [value]
+          }
 
-        expect(result).to.be.eql(fakeResult)
-      })
+          return { request, result, payload }
+        }
 
-      it('success for many keys', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
 
-        const result = await store.isMember(['testKey1', 'testKey2'])
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
 
-        expect(request).to.deep.include({
-          method : 'POST',
-          path   : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains`,
-          headers: { 'Content-Type': 'application/json' },
-          body   : ['testKey1', 'testKey2']
-        })
-
-        expect(result).to.be.eql(fakeResult)
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string or a list of strings.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
-        await expect(() => store.isMember(undefined)).to.throw(errorMsg)
-        await expect(() => store.isMember(null)).to.throw(errorMsg)
-        await expect(() => store.isMember(false)).to.throw(errorMsg)
-        await expect(() => store.isMember(0)).to.throw(errorMsg)
-        await expect(() => store.isMember(123)).to.throw(errorMsg)
-        await expect(() => store.isMember({})).to.throw(errorMsg)
-        await expect(() => store.isMember(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.isMember(true)).to.throw(errorMsg)
+        await expect(() => store.isValueMember(undefined)).to.throw(errorMsg)
+        await expect(() => store.isValueMember(null)).to.throw(errorMsg)
+        await expect(() => store.isValueMember(() => true)).to.throw(errorMsg)
+        await expect(() => store.isValueMember(10n)).to.throw(errorMsg)
+        await expect(() => store.isValueMember(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.isValueMember([10n])).to.throw(errorMsg)
+      })
+    })
+
+    describe('Is Values Members', async () => {
+      it('success values', async () => {
+        const composeRequest = async values => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.isValuesMembers(values)
+
+          const payload = {
+            method : 'POST',
+            path   : `${APP_PATH}/hive/${hiveName}/set/${storeKey}/contains`,
+            headers: { 'Content-Type': 'application/json' },
+            body   : values
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest(['string'])
+        const request2 = await composeRequest([''])
+        const request3 = await composeRequest([false])
+        const request4 = await composeRequest([true])
+        const request5 = await composeRequest([[]])
+        const request6 = await composeRequest([123])
+        const request7 = await composeRequest([{ a: 1 }])
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        const errorMsg = 'Value must be provided and must be a list of valid JSON items.'
+
+        await expect(() => store.isValuesMembers(undefined)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(null)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers([])).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers('string')).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers('')).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(0)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(false)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers('')).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(true)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(123)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers({})).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers(10n)).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers([])).to.throw(errorMsg)
+        await expect(() => store.isValuesMembers([10n])).to.throw(errorMsg)
       })
     })
 

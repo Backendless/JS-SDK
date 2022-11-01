@@ -647,20 +647,92 @@ describe('Hive - Map Store', function() {
     })
 
     describe('Set Value', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success with single key', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.set('target', 'value1')
+          const result = await store.set('target', value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
-          body  : {
-            value: 'value1'
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set/target`,
+            body  : {
+              value: value
+            }
           }
-        })
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
+      })
+
+      it('success with multi keys', async () => {
+        const composeRequest = async (value1, value2) => {
+          const request = prepareMockRequest(fakeResult)
+
+          const result = await store.set({ 'testKey1': value1, 'testKey2': value2 })
+
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}`,
+            body  : {
+              'testKey1': value1,
+              'testKey2': value2,
+            }
+          }
+
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string', '')
+        const request2 = await composeRequest(false, true)
+        const request3 = await composeRequest([], [1,2,3])
+        const request4 = await composeRequest(123, 0)
+        const request5 = await composeRequest({ a: 1 }, {})
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with no args', async () => {
+        const errorMsg = 'First argument must be provided and must be a string or an object.'
+
+        await expect(() => store.set()).to.throw(errorMsg)
       })
 
       it('fails with invalid key', async () => {
@@ -673,36 +745,67 @@ describe('Hive - Map Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.set('k', undefined)).to.throw(errorMsg)
         await expect(() => store.set('k', null)).to.throw(errorMsg)
-        await expect(() => store.set('k', false)).to.throw(errorMsg)
-        await expect(() => store.set('k', 0)).to.throw(errorMsg)
-        await expect(() => store.set('k', '')).to.throw(errorMsg)
-        await expect(() => store.set('k', true)).to.throw(errorMsg)
-        await expect(() => store.set('k', 123)).to.throw(errorMsg)
-        await expect(() => store.set('k', {})).to.throw(errorMsg)
-        await expect(() => store.set('k', [])).to.throw(errorMsg)
-        await expect(() => store.set('k', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.set('k', () => true)).to.throw(errorMsg)
+        await expect(() => store.set('k', 10n)).to.throw(errorMsg)
+        await expect(() => store.set('k', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.set('k', [10n])).to.throw(errorMsg)
+      })
+
+      it('fails when object is empty', async () => {
+        const errorMsg = 'Provided object must have at least 1 key.'
+
+        await expect(() => store.set({})).to.throw(errorMsg)
       })
     })
 
     describe('Set With Overwrite', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.setWithOverwrite('target', 'value1')
+          const result = await store.setWithOverwrite('target', value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set-with-overwrite/target`,
-          body  : {
-            value: 'value1'
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/set-with-overwrite/target`,
+            body  : {
+              value: value
+            }
           }
-        })
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('success with overwrite option', async () => {
@@ -748,18 +851,14 @@ describe('Hive - Map Store', function() {
       })
 
       it('fails with invalid value', async () => {
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.setWithOverwrite('k', undefined)).to.throw(errorMsg)
         await expect(() => store.setWithOverwrite('k', null)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', false)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', 0)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', '')).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', true)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', 123)).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', {})).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', [])).to.throw(errorMsg)
-        await expect(() => store.setWithOverwrite('k', () => undefined)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', () => true)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', 10n)).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.setWithOverwrite('k', [10n])).to.throw(errorMsg)
       })
 
       it('fails with invalid overwrite argument', async () => {

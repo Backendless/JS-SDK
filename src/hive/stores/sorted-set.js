@@ -1,8 +1,8 @@
 import { HiveStore } from './base-store'
 import { HiveTypes } from '../constants'
 import Utils from '../../utils'
-
 import { SetStore } from './set'
+import { isHiveValueValid } from '../utils'
 
 export class SortedSetStore extends HiveStore {
 
@@ -108,8 +108,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   incrementScore(value, scoreValue) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (isNaN(scoreValue) || typeof scoreValue !== 'number') {
@@ -127,8 +127,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   decrementScore(value, scoreValue) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (isNaN(scoreValue) || typeof scoreValue !== 'number') {
@@ -194,8 +194,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   getScore(value) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
@@ -208,8 +208,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   getRank(value, reverse) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (reverse !== undefined && typeof reverse !== 'boolean') {
@@ -306,15 +306,27 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  deleteValues(values) {
-    if (!values || !(typeof values === 'string' || Array.isArray(values))) {
-      throw new Error('Value(s) must be provided and must be a string or list of strings.')
+  deleteValue(value) {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
       .delete({
         url : `${this.getBaseURL()}/values`,
-        data: Utils.castArray(values)
+        data: [value]
+      })
+  }
+
+  deleteValues(values) {
+    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
+      throw new Error('Value must be provided and must be a list of JSON items.')
+    }
+
+    return this.app.request
+      .delete({
+        url : `${this.getBaseURL()}/values`,
+        data: values
       })
   }
 

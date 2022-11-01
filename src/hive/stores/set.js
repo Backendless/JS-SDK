@@ -1,6 +1,6 @@
 import { HiveStore } from './base-store'
 import { HiveTypes } from '../constants'
-import Utils from '../../utils'
+import { isHiveValueValid } from '../utils'
 
 export class SetStore extends HiveStore {
 
@@ -75,55 +75,99 @@ export class SetStore extends HiveStore {
       })
   }
 
-  set(values) {
-    if (!values || (typeof values !== 'string' && !Array.isArray(values))) {
-      throw new Error('Value(s) must be provided and must be a string or list of strings.')
+  setValue(value) {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
       .put({
         url : this.getBaseURL(),
-        data: Utils.castArray(values)
+        data: [value]
       })
   }
 
-  add(values) {
-    if (!values || !(typeof values === 'string' || Array.isArray(values))) {
-      throw new Error('Value(s) must be provided and must be a string or list of strings.')
+  setValues(values) {
+    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
+      throw new Error('Value must be provided and must be a list of valid JSON items.')
+    }
+
+    return this.app.request
+      .put({
+        url : this.getBaseURL(),
+        data: values
+      })
+  }
+
+  addValue(value) {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
       .put({
         url : `${this.getBaseURL()}/add`,
-        data: Utils.castArray(values)
+        data: [value]
       })
   }
 
-  deleteValues(values) {
-    if (!values || !(typeof values === 'string' || Array.isArray(values))) {
-      throw new Error('Value(s) must be provided and must be a string or list of strings.')
+  addValues(values) {
+    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
+      throw new Error('Value must be provided and must be a list of valid JSON items.')
+    }
+
+    return this.app.request
+      .put({
+        url : `${this.getBaseURL()}/add`,
+        data: values
+      })
+  }
+
+  deleteValue(value) {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
       .delete({
         url : `${this.getBaseURL()}/values`,
-        data: Utils.castArray(values)
+        data: [value]
       })
   }
 
-  isMember(value) {
-    if (typeof value === 'string') {
-      value = [value]
+  deleteValues(values) {
+    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
+      throw new Error('Value must be provided and must be a list of valid JSON items.')
     }
 
-    if (!Array.isArray(value)) {
-      throw new Error('Value must be provided and must be a string or a list of strings.')
+    return this.app.request
+      .delete({
+        url : `${this.getBaseURL()}/values`,
+        data: values
+      })
+  }
+
+  isValueMember(value) {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     return this.app.request
       .post({
         url : `${this.getBaseURL()}/contains`,
-        data: value
+        data: [value]
+      })
+  }
+
+  isValuesMembers(values) {
+    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
+      throw new Error('Value must be provided and must be a list of valid JSON items.')
+    }
+
+    return this.app.request
+      .post({
+        url : `${this.getBaseURL()}/contains`,
+        data: values
       })
   }
 
