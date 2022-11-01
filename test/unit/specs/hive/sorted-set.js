@@ -894,33 +894,60 @@ describe('Hive - Sorted Set Store', function() {
     })
 
     describe('Increment Score', () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.incrementScore('foo', 10)
+          const result = await store.incrementScore(value, 10)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/increment`,
-          body  : { value: 'foo', scoreValue: 10 }
-        })
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/increment`,
+            body  : { value, scoreValue: 10 }
+          }
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails when value is invalid', async () => {
         store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
 
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.incrementScore(undefined)).to.throw(errorMsg)
         await expect(() => store.incrementScore(null)).to.throw(errorMsg)
-        await expect(() => store.incrementScore(false)).to.throw(errorMsg)
-        await expect(() => store.incrementScore('')).to.throw(errorMsg)
-        await expect(() => store.incrementScore(NaN)).to.throw(errorMsg)
-        await expect(() => store.incrementScore(true)).to.throw(errorMsg)
-        await expect(() => store.incrementScore(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.incrementScore({})).to.throw(errorMsg)
+        await expect(() => store.incrementScore(() => true)).to.throw(errorMsg)
+        await expect(() => store.incrementScore(10n)).to.throw(errorMsg)
+        await expect(() => store.incrementScore(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.incrementScore([10n])).to.throw(errorMsg)
       })
 
       it('fails when increment count is invalid', async () => {
@@ -939,33 +966,60 @@ describe('Hive - Sorted Set Store', function() {
     })
 
     describe('Decrement Score', () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success values', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.decrementScore('foo', 10)
+          const result = await store.decrementScore(value, 10)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/decrement`,
-          body  : { value: 'foo', scoreValue: 10 }
-        })
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/sorted-set/${storeKey}/decrement`,
+            body  : { value, scoreValue: 10 }
+          }
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
       })
 
       it('fails when value is invalid', async () => {
         store = Backendless.Hive(hiveName).SortedSetStore(storeKey)
 
-        const errorMsg = 'Value must be provided and must be a string.'
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.decrementScore(undefined)).to.throw(errorMsg)
         await expect(() => store.decrementScore(null)).to.throw(errorMsg)
-        await expect(() => store.decrementScore(false)).to.throw(errorMsg)
-        await expect(() => store.decrementScore('')).to.throw(errorMsg)
-        await expect(() => store.decrementScore(NaN)).to.throw(errorMsg)
-        await expect(() => store.decrementScore(true)).to.throw(errorMsg)
-        await expect(() => store.decrementScore(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.decrementScore({})).to.throw(errorMsg)
+        await expect(() => store.decrementScore(() => true)).to.throw(errorMsg)
+        await expect(() => store.decrementScore(10n)).to.throw(errorMsg)
+        await expect(() => store.decrementScore(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.decrementScore([10n])).to.throw(errorMsg)
       })
 
       it('fails when increment count is invalid', async () => {

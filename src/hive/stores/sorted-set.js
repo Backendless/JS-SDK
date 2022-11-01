@@ -108,8 +108,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   incrementScore(value, scoreValue) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (isNaN(scoreValue) || typeof scoreValue !== 'number') {
@@ -127,8 +127,8 @@ export class SortedSetStore extends HiveStore {
   }
 
   decrementScore(value, scoreValue) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('Value must be provided and must be a string.')
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
     }
 
     if (isNaN(scoreValue) || typeof scoreValue !== 'number') {

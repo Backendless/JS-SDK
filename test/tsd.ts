@@ -1093,7 +1093,16 @@ function testHiveStores() {
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList, itemOptions)
 
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(str, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(num, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(bool, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(obj, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(strArr, num)
+
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).decrementScore(str, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).decrementScore(num, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).decrementScore(bool, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).decrementScore(obj, num)
+            promiseNumber = Backendless.Hive(str).SortedSetStore(str).decrementScore(strArr, num)
 
             promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndDeleteMaxScore()
             promiseItemsList = Backendless.Hive(str).SortedSetStore(str).getAndDeleteMaxScore(num)
