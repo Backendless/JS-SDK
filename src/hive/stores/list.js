@@ -40,8 +40,14 @@ export class ListStore extends HiveStore {
       })
   }
 
-  set(value, index) {
-    if (Array.isArray(value)) {
+  set(...args) {
+    const [value, index] = args
+
+    if (args.length === 1) {
+      if (!value || !Array.isArray(value) || !value.length || !isHiveValueValid(value)) {
+        throw new Error('Value must be provided and must be a list of valid JSON items.')
+      }
+
       return this.app.request
         .put({
           url : this.getBaseURL(),
@@ -49,7 +55,11 @@ export class ListStore extends HiveStore {
         })
     }
 
-    if (isNaN(index) || typeof index !== 'number') {
+    if (!isHiveValueValid(value)) {
+      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
+    }
+
+    if (typeof index !== 'number' || isNaN(index)) {
       throw new Error('Index must be a number.')
     }
 
@@ -79,7 +89,7 @@ export class ListStore extends HiveStore {
 
   insert(valueToInsert, anchorValue, before) {
     if (!isHiveValueValid(valueToInsert)) {
-      throw new Error('ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.')
+      throw new Error('ValueToInsert must be provided and must one on of types: string, number, boolean, object, array.')
     }
 
     if (!isHiveValueValid(anchorValue)) {

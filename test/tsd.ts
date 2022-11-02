@@ -837,7 +837,16 @@ function testHiveStores() {
             promiseListOfJSONValue = Backendless.Hive(str).ListStore(str).get(num, num);
 
             promiseNumber = Backendless.Hive(str).ListStore(str).set([str, str]);
+            promiseNumber = Backendless.Hive(str).ListStore(str).set([num, str]);
+            promiseNumber = Backendless.Hive(str).ListStore(str).set([bool, str]);
+            promiseNumber = Backendless.Hive(str).ListStore(str).set([obj, str]);
+            promiseNumber = Backendless.Hive(str).ListStore(str).set([strArr, str]);
+
             promiseVoid = Backendless.Hive(str).ListStore(str).set(str, num);
+            promiseVoid = Backendless.Hive(str).ListStore(str).set(num, num);
+            promiseVoid = Backendless.Hive(str).ListStore(str).set(bool, num);
+            promiseVoid = Backendless.Hive(str).ListStore(str).set(obj, num);
+            promiseVoid = Backendless.Hive(str).ListStore(str).set(strArr, num);
 
             promiseNumber = Backendless.Hive(str).ListStore(str).insertBefore(str, str);
             promiseNumber = Backendless.Hive(str).ListStore(str).insertBefore(num, num);
