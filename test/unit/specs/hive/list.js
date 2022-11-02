@@ -536,18 +536,6 @@ describe('Hive - List Store', function() {
 
     describe('Set', async () => {
       it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
-
-        const result = await store.set(['value1', 'value2'])
-
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}`,
-          body  : ['value1', 'value2']
-        })
-
-        expect(result).to.be.eql(fakeResult)
-
         const composeRequest = async value => {
           const request = prepareMockRequest(fakeResult)
 

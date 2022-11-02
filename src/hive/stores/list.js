@@ -89,7 +89,9 @@ export class ListStore extends HiveStore {
 
   insert(valueToInsert, anchorValue, before) {
     if (!isHiveValueValid(valueToInsert)) {
-      throw new Error('ValueToInsert must be provided and must one on of types: string, number, boolean, object, array.')
+      throw new Error(
+        'ValueToInsert must be provided and must be one of types: string, number, boolean, object, array.'
+      )
     }
 
     if (!isHiveValueValid(anchorValue)) {
