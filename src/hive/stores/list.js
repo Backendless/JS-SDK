@@ -40,10 +40,8 @@ export class ListStore extends HiveStore {
       })
   }
 
-  set(...args) {
-    const [value, index] = args
-
-    if (args.length === 1) {
+  set(value, index) {
+    if (typeof index === undefined) {
       if (!value || !Array.isArray(value) || !value.length || !isHiveValueValid(value)) {
         throw new Error('Value must be provided and must be a list of valid JSON items.')
       }

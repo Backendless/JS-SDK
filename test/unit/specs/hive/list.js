@@ -660,7 +660,6 @@ describe('Hive - List Store', function() {
 
         const errorMsg = 'Index must be a number.'
 
-        await expect(() => store.set('v', undefined)).to.throw(errorMsg)
         await expect(() => store.set('v', null)).to.throw(errorMsg)
         await expect(() => store.set('v', NaN)).to.throw(errorMsg)
         await expect(() => store.set('v', false)).to.throw(errorMsg)
