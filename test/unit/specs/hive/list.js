@@ -536,33 +536,123 @@ describe('Hive - List Store', function() {
 
     describe('Set', async () => {
       it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.set(['value1', 'value2'])
+          const result = await store.set(value)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}`,
-          body  : ['value1', 'value2']
-        })
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}`,
+            body  : value
+          }
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest(['string'])
+        const request2 = await composeRequest([''])
+        const request3 = await composeRequest([false])
+        const request4 = await composeRequest([true])
+        const request5 = await composeRequest([[]])
+        const request6 = await composeRequest([123])
+        const request7 = await composeRequest([{ a: 1 }])
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
       })
 
-      it('success with index', async () => {
-        const request = prepareMockRequest(fakeResult)
+      it('success values with index', async () => {
+        const composeRequest = async value => {
+          const request = prepareMockRequest(fakeResult)
 
-        const result = await store.set('value1', 0)
+          const result = await store.set(value, 0)
 
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/0`,
-          body  : {
-            value: 'value1'
+          const payload = {
+            method: 'PUT',
+            path  : `${APP_PATH}/hive/${hiveName}/list/${storeKey}/0`,
+            body  : {
+              value: value
+            }
           }
-        })
 
-        expect(result).to.be.eql(fakeResult)
+          return { request, result, payload }
+        }
+
+        const request1 = await composeRequest('string')
+        const request2 = await composeRequest('')
+        const request3 = await composeRequest(false)
+        const request4 = await composeRequest(true)
+        const request5 = await composeRequest([])
+        const request6 = await composeRequest(123)
+        const request7 = await composeRequest(0)
+        const request8 = await composeRequest({ a: 1 })
+
+        expect(request1.request).to.deep.include(request1.payload)
+        expect(request2.request).to.deep.include(request2.payload)
+        expect(request3.request).to.deep.include(request3.payload)
+        expect(request4.request).to.deep.include(request4.payload)
+        expect(request5.request).to.deep.include(request5.payload)
+        expect(request6.request).to.deep.include(request6.payload)
+        expect(request7.request).to.deep.include(request7.payload)
+        expect(request8.request).to.deep.include(request8.payload)
+
+        expect(request1.result).to.be.eql(fakeResult)
+        expect(request2.result).to.be.eql(fakeResult)
+        expect(request3.result).to.be.eql(fakeResult)
+        expect(request4.result).to.be.eql(fakeResult)
+        expect(request5.result).to.be.eql(fakeResult)
+        expect(request6.result).to.be.eql(fakeResult)
+        expect(request7.result).to.be.eql(fakeResult)
+        expect(request8.result).to.be.eql(fakeResult)
+      })
+
+      it('fails with invalid value', async () => {
+        store = Backendless.Hive(hiveName).ListStore(storeKey)
+
+        const errorMsg = 'Value must be provided and must be a list of valid JSON items.'
+
+        await expect(() => store.set(undefined)).to.throw(errorMsg)
+        await expect(() => store.set(null)).to.throw(errorMsg)
+        await expect(() => store.set([])).to.throw(errorMsg)
+        await expect(() => store.set('string')).to.throw(errorMsg)
+        await expect(() => store.set('')).to.throw(errorMsg)
+        await expect(() => store.set(0)).to.throw(errorMsg)
+        await expect(() => store.set(false)).to.throw(errorMsg)
+        await expect(() => store.set('')).to.throw(errorMsg)
+        await expect(() => store.set(true)).to.throw(errorMsg)
+        await expect(() => store.set(123)).to.throw(errorMsg)
+        await expect(() => store.set(() => undefined)).to.throw(errorMsg)
+        await expect(() => store.set({})).to.throw(errorMsg)
+        await expect(() => store.set(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.set(10n)).to.throw(errorMsg)
+        await expect(() => store.set([10n])).to.throw(errorMsg)
+      })
+
+      it('fails with index', async () => {
+        store = Backendless.Hive(hiveName).ListStore(storeKey)
+
+        const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
+
+        await expect(() => store.set(undefined, 0)).to.throw(errorMsg)
+        await expect(() => store.set(null, 0)).to.throw(errorMsg)
+        await expect(() => store.set(() => true, 0)).to.throw(errorMsg)
+        await expect(() => store.set(10n, 0)).to.throw(errorMsg)
+        await expect(() => store.set(Symbol('id'), 0)).to.throw(errorMsg)
+        await expect(() => store.set([10n], 0)).to.throw(errorMsg)
       })
 
       it('fails with invalid index', async () => {
@@ -573,11 +663,14 @@ describe('Hive - List Store', function() {
         await expect(() => store.set('v', null)).to.throw(errorMsg)
         await expect(() => store.set('v', NaN)).to.throw(errorMsg)
         await expect(() => store.set('v', false)).to.throw(errorMsg)
+        await expect(() => store.set('v', true)).to.throw(errorMsg)
         await expect(() => store.set('v', '')).to.throw(errorMsg)
         await expect(() => store.set('v', 'qwe')).to.throw(errorMsg)
-        await expect(() => store.set('v', true)).to.throw(errorMsg)
+        await expect(() => store.set('v', 10n)).to.throw(errorMsg)
+        await expect(() => store.set('v', Symbol('id'))).to.throw(errorMsg)
         await expect(() => store.set('v', () => undefined)).to.throw(errorMsg)
         await expect(() => store.set('v', {})).to.throw(errorMsg)
+        await expect(() => store.set('v', [])).to.throw(errorMsg)
       })
     })
 
@@ -693,7 +786,7 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'ValueToInsert must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertBefore(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertBefore(null, 'v')).to.throw(errorMsg)
@@ -811,7 +904,7 @@ describe('Hive - List Store', function() {
       })
 
       it('fails with invalid ValueToInsert', async () => {
-        const errorMsg = 'ValueToInsert must be provided and must be on of types: string, number, boolean, object, array.'
+        const errorMsg = 'ValueToInsert must be provided and must be one of types: string, number, boolean, object, array.'
 
         await expect(() => store.insertAfter(undefined, 'v')).to.throw(errorMsg)
         await expect(() => store.insertAfter(null, 'v')).to.throw(errorMsg)
@@ -1035,7 +1128,6 @@ describe('Hive - List Store', function() {
         await expect(() => store.addFirstValues({})).to.throw(errorMsg)
         await expect(() => store.addFirstValues(Symbol('id'))).to.throw(errorMsg)
         await expect(() => store.addFirstValues(10n)).to.throw(errorMsg)
-        await expect(() => store.addFirstValues([])).to.throw(errorMsg)
         await expect(() => store.addFirstValues([10n])).to.throw(errorMsg)
       })
     })

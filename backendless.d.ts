@@ -414,9 +414,9 @@ declare module Backendless {
 
             get(indexFrom: number, indexTo: number): Promise<Array<JSONValue>>
 
-            set(values: Array<string>): Promise<number>;
+            set(values: Array<JSONValue>): Promise<number>;
 
-            set(value: string, index: number): Promise<void>;
+            set(value: JSONValue, index: number): Promise<void>;
 
             insertBefore(valueToInsert: JSONValue, anchorValue: JSONValue): Promise<number>;
 
