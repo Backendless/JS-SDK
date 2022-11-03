@@ -140,11 +140,11 @@ describe('Hive - Set Store', function() {
         it('success with multi keys', async () => {
           const request = prepareMockRequest(fakeResult)
 
-          const result = await Store.exists(['testKey1', 'testKey1'])
+          const result = await Store.exist(['testKey1', 'testKey1'])
 
           expect(request).to.deep.include({
             method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/set/action/exists`,
+            path   : `${APP_PATH}/hive/${hiveName}/set/action/exist`,
             headers: { 'Content-Type': 'application/json' },
             body   : ['testKey1', 'testKey1']
           })
@@ -155,16 +155,16 @@ describe('Hive - Set Store', function() {
         it('fails when key(s) is invalid', async () => {
           const errorMsg = 'Keys must be provided and must be a list of strings.'
 
-          await expect(() => Store.exists(undefined)).to.throw(errorMsg)
-          await expect(() => Store.exists(null)).to.throw(errorMsg)
-          await expect(() => Store.exists(false)).to.throw(errorMsg)
-          await expect(() => Store.exists(true)).to.throw(errorMsg)
-          await expect(() => Store.exists('')).to.throw(errorMsg)
-          await expect(() => Store.exists('key')).to.throw(errorMsg)
-          await expect(() => Store.exists(0)).to.throw(errorMsg)
-          await expect(() => Store.exists(123)).to.throw(errorMsg)
-          await expect(() => Store.exists(() => undefined)).to.throw(errorMsg)
-          await expect(() => Store.exists({})).to.throw(errorMsg)
+          await expect(() => Store.exist(undefined)).to.throw(errorMsg)
+          await expect(() => Store.exist(null)).to.throw(errorMsg)
+          await expect(() => Store.exist(false)).to.throw(errorMsg)
+          await expect(() => Store.exist(true)).to.throw(errorMsg)
+          await expect(() => Store.exist('')).to.throw(errorMsg)
+          await expect(() => Store.exist('key')).to.throw(errorMsg)
+          await expect(() => Store.exist(0)).to.throw(errorMsg)
+          await expect(() => Store.exist(123)).to.throw(errorMsg)
+          await expect(() => Store.exist(() => undefined)).to.throw(errorMsg)
+          await expect(() => Store.exist({})).to.throw(errorMsg)
         })
       })
 
@@ -242,19 +242,19 @@ describe('Hive - Set Store', function() {
           const req1 = prepareMockRequest(1)
           const req2 = prepareMockRequest(0)
 
-          const result1 = await store.exists(storeKey)
-          const result2 = await store.exists(storeKey)
+          const result1 = await store.exist(storeKey)
+          const result2 = await store.exist(storeKey)
 
           expect(req1).to.deep.include({
             method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/set/action/exists`,
+            path   : `${APP_PATH}/hive/${hiveName}/set/action/exist`,
             headers: { 'Content-Type': 'application/json' },
             body   : [storeKey]
           })
 
           expect(req2).to.deep.include({
             method : 'POST',
-            path   : `${APP_PATH}/hive/${hiveName}/set/action/exists`,
+            path   : `${APP_PATH}/hive/${hiveName}/set/action/exist`,
             headers: { 'Content-Type': 'application/json' },
             body   : [storeKey]
           })

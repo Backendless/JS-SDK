@@ -2,7 +2,7 @@ import Utils from '../../utils'
 
 export class HiveStore {
 
-  static STATIC_METHODS = ['keys', 'delete', 'exists', 'touch']
+  static STATIC_METHODS = ['keys', 'delete', 'exist', 'touch']
 
   static registerType(hive) {
     const context = { ...this, app: hive.app, hiveName: hive.hiveName }
@@ -68,14 +68,14 @@ export class HiveStore {
       })
   }
 
-  static exists(keys) {
+  static exist(keys) {
     if (!Array.isArray(keys)) {
       throw new Error('Keys must be provided and must be a list of strings.')
     }
 
     return this.app.request
       .post({
-        url : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/action/exists`,
+        url : `${this.app.urls.hiveStore(this.hiveName, this.TYPE)}/action/exist`,
         data: keys
       })
   }
@@ -100,8 +100,8 @@ export class HiveStore {
     return this.constructor.delete.call({ ...this, ...this.constructor }, [this.storeKey])
   }
 
-  async exists() {
-    const result = await this.constructor.exists.call({ ...this, ...this.constructor }, [this.storeKey])
+  async exist() {
+    const result = await this.constructor.exist.call({ ...this, ...this.constructor }, [this.storeKey])
 
     return !!result
   }

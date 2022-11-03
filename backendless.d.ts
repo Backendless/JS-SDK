@@ -336,7 +336,7 @@ declare module Backendless {
 
             delete(keys: Array<string>): Promise<void>;
 
-            exists(keys: Array<string>): Promise<number>;
+            exist(keys: Array<string>): Promise<number>;
 
             touch(keys: Array<string>): Promise<void>;
         }
@@ -350,7 +350,7 @@ declare module Backendless {
 
             rename(newKeyName: string, overwrite?: boolean): Promise<void>;
 
-            exists(): Promise<boolean>;
+            exist(): Promise<boolean>;
 
             getExpiration(): Promise<number>;
 
