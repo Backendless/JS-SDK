@@ -804,12 +804,12 @@ describe('Hive - Set Store', function() {
       it('fails with invalid value', async () => {
         const errorMsg = 'Value must be provided and must be one of types: string, number, boolean, object, array.'
 
-        await expect(() => store.setValue(undefined)).to.throw(errorMsg)
-        await expect(() => store.setValue(null)).to.throw(errorMsg)
-        await expect(() => store.setValue(() => true)).to.throw(errorMsg)
-        await expect(() => store.setValue(10n)).to.throw(errorMsg)
-        await expect(() => store.setValue(Symbol('id'))).to.throw(errorMsg)
-        await expect(() => store.setValue([10n])).to.throw(errorMsg)
+        await expect(() => store.addValue(undefined)).to.throw(errorMsg)
+        await expect(() => store.addValue(null)).to.throw(errorMsg)
+        await expect(() => store.addValue(() => true)).to.throw(errorMsg)
+        await expect(() => store.addValue(10n)).to.throw(errorMsg)
+        await expect(() => store.addValue(Symbol('id'))).to.throw(errorMsg)
+        await expect(() => store.addValue([10n])).to.throw(errorMsg)
       })
     })
 
