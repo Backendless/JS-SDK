@@ -316,8 +316,8 @@ export default class Urls {
     return `${this.users()}/userclassprops`
   }
 
-  userRestorePassword(email) {
-    return `${this.users()}/restorepassword/${encodeURIComponent(email)}`
+  userRestorePassword(identity) {
+    return `${this.users()}/restorepassword/${encodeURIComponent(identity)}`
   }
 
   userTokenCheck(token) {
