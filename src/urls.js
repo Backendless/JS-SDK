@@ -126,7 +126,7 @@ export default class Urls {
   }
 
   dataTableObject(tableName, objectId) {
-    return `${this.dataTable(tableName)}/${objectId}`
+    return `${this.dataTable(tableName)}/${encodeURIComponent(objectId)}`
   }
 
   dataTableObjectRelation(tableName, objectId, columnName) {

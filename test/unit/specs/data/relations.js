@@ -197,6 +197,49 @@ describe('<Data> Relations', function() {
       expect(result3).to.be.eql(fakeResult)
     })
 
+    it('with specific symbols in parent id', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+      const req2 = prepareMockRequest(fakeResult)
+      const req3 = prepareMockRequest(fakeResult)
+      const req4 = prepareMockRequest(fakeResult)
+      const req5 = prepareMockRequest(fakeResult)
+      const req6 = prepareMockRequest(fakeResult)
+      const req7 = prepareMockRequest(fakeResult)
+
+      const result1 = await dataStore.loadRelations('foo bar', { relationName })
+      const result2 = await dataStore.loadRelations('foo:bar', { relationName })
+      const result3 = await dataStore.loadRelations('foo@bar', { relationName })
+      const result4 = await dataStore.loadRelations('foo/bar', { relationName })
+      const result5 = await dataStore.loadRelations('foo%bar', { relationName })
+      const result6 = await dataStore.loadRelations('foo"bar', { relationName })
+      const result7 = await dataStore.loadRelations('foo_абв_bar', { relationName })
+
+      function buildPayload(objectIdInPath) {
+        return {
+          method : 'GET',
+          path   : `${APP_PATH}/data/${tableName}/${objectIdInPath}/${relationName}`,
+          headers: {},
+          body   : undefined
+        }
+      }
+
+      expect(req1).to.deep.include(buildPayload('foo%20bar'))
+      expect(req2).to.deep.include(buildPayload('foo%3Abar'))
+      expect(req3).to.deep.include(buildPayload('foo%40bar'))
+      expect(req4).to.deep.include(buildPayload('foo%2Fbar'))
+      expect(req5).to.deep.include(buildPayload('foo%25bar'))
+      expect(req6).to.deep.include(buildPayload('foo%22bar'))
+      expect(req7).to.deep.include(buildPayload('foo_%D0%B0%D0%B1%D0%B2_bar'))
+
+      expect(result1).to.be.eql(fakeResult)
+      expect(result2).to.be.eql(fakeResult)
+      expect(result3).to.be.eql(fakeResult)
+      expect(result4).to.be.eql(fakeResult)
+      expect(result5).to.be.eql(fakeResult)
+      expect(result6).to.be.eql(fakeResult)
+      expect(result7).to.be.eql(fakeResult)
+    })
+
     it('fails when parentObjectId is invalid', async () => {
       const errorMsg = 'Parent Object Id must be provided and must be a string.'
 
