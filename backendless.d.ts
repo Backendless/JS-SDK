@@ -512,10 +512,6 @@ declare module Backendless {
 
             getRandomAndDelete(count?: number): Promise<Array<JSONValue>>;
 
-            setValue(value: JSONValue): Promise<number>;
-
-            setValues(values: Array<JSONValue>): Promise<number>;
-
             addValue(value: JSONValue): Promise<number>;
 
             addValues(values: Array<JSONValue>): Promise<number>;
@@ -566,8 +562,6 @@ declare module Backendless {
         interface sortedSetStore extends hiveStore {
 
             add(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
-
-            set(items: Array<SortedSetItem>, options?: SortedSetItemOptionsI): Promise<number>
 
             incrementScore(value: JSONValue, scoreValue: number): Promise<number>
 

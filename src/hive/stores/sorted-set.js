@@ -71,42 +71,6 @@ export class SortedSetStore extends HiveStore {
       })
   }
 
-  set(items, options) {
-    if (!items || !Array.isArray(items)) {
-      throw new Error('Items must be provided and must be an array.')
-    }
-
-    if (options !== undefined) {
-      if (!Utils.isObject(options)) {
-        throw new Error('Options must be an object.')
-      }
-
-      const { duplicateBehaviour, scoreUpdateMode, resultType } = options
-
-      if (duplicateBehaviour !== undefined && !['OnlyUpdate', 'AlwaysAdd'].includes(duplicateBehaviour)) {
-        throw new Error('Duplicate Behaviour argument must be one of this values: OnlyUpdate, AlwaysAdd.')
-      }
-
-      if (scoreUpdateMode !== undefined && !['Greater', 'Less'].includes(scoreUpdateMode)) {
-        throw new Error('Score Update Mode argument must be one of this values: Greater, Less.')
-      }
-
-      if (resultType !== undefined && !['NewAdded', 'TotalChanged'].includes(resultType)) {
-        throw new Error('Result Type must be one of this values: NewAdded, TotalChanged.')
-      }
-    }
-
-    //TODO: Waining for BKNDLSS-28543
-    return this.app.request
-      .put({
-        url : this.getBaseURL(),
-        data: {
-          items,
-          ...options
-        }
-      })
-  }
-
   incrementScore(value, scoreValue) {
     if (!isHiveValueValid(value)) {
       throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')

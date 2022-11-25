@@ -1013,17 +1013,6 @@ function testHiveStores() {
             promiseListOfJSONValue = Backendless.Hive(str).SetStore(str).getRandomAndDelete();
             promiseListOfJSONValue = Backendless.Hive(str).SetStore(str).getRandomAndDelete(num);
 
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValue(str);
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValue(num);
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValue(bool);
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValue(obj);
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValue(strArr);
-
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValues(strArr);
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValues(numArr);
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValues(boolArr);
-            promiseNumber = Backendless.Hive(str).SetStore(str).setValues(objArr);
-
             promiseNumber = Backendless.Hive(str).SetStore(str).addValue(str);
             promiseNumber = Backendless.Hive(str).SetStore(str).addValue(num);
             promiseNumber = Backendless.Hive(str).SetStore(str).addValue(bool);
@@ -1102,9 +1091,6 @@ function testHiveStores() {
 
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).add(itemsList)
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).add(itemsList, itemOptions)
-
-            promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList)
-            promiseNumber = Backendless.Hive(str).SortedSetStore(str).set(itemsList, itemOptions)
 
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(str, num)
             promiseNumber = Backendless.Hive(str).SortedSetStore(str).incrementScore(num, num)

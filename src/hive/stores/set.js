@@ -75,30 +75,6 @@ export class SetStore extends HiveStore {
       })
   }
 
-  setValue(value) {
-    if (!isHiveValueValid(value)) {
-      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
-    }
-
-    return this.app.request
-      .put({
-        url : this.getBaseURL(),
-        data: [value]
-      })
-  }
-
-  setValues(values) {
-    if (!values || !Array.isArray(values) || !values.length || !isHiveValueValid(values)) {
-      throw new Error('Value must be provided and must be a list of valid JSON items.')
-    }
-
-    return this.app.request
-      .put({
-        url : this.getBaseURL(),
-        data: values
-      })
-  }
-
   addValue(value) {
     if (!isHiveValueValid(value)) {
       throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
