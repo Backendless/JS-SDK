@@ -875,41 +875,6 @@ describe('Hive - Map Store', function() {
       })
     })
 
-    describe('Add', async () => {
-      it('success', async () => {
-        const request = prepareMockRequest(fakeResult)
-
-        const result = await store.add({ foo: 123 })
-
-        expect(request).to.deep.include({
-          method: 'PUT',
-          path  : `${APP_PATH}/hive/${hiveName}/map/${storeKey}/add`,
-        })
-
-        expect(result).to.be.eql(fakeResult)
-      })
-
-      it('fails when payload object is invalid', async () => {
-        const errorMsg = 'Payload must be an object.'
-
-        await expect(() => store.add(null)).to.throw(errorMsg)
-        await expect(() => store.add(NaN)).to.throw(errorMsg)
-        await expect(() => store.add(false)).to.throw(errorMsg)
-        await expect(() => store.add(true)).to.throw(errorMsg)
-        await expect(() => store.add(0)).to.throw(errorMsg)
-        await expect(() => store.add(123)).to.throw(errorMsg)
-        await expect(() => store.add(() => undefined)).to.throw(errorMsg)
-        await expect(() => store.add('')).to.throw(errorMsg)
-        await expect(() => store.add('foo')).to.throw(errorMsg)
-      })
-
-      it('fails when payload object ha invalid argument', async () => {
-        const errorMsg = 'Provided object must have at least 1 key.'
-
-        await expect(() => store.add({})).to.throw(errorMsg)
-      })
-    })
-
     describe('Increment', async () => {
       it('success', async () => {
         const request = prepareMockRequest(fakeResult)

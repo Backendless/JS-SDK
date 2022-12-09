@@ -414,10 +414,6 @@ declare module Backendless {
 
             get(indexFrom: number, indexTo: number): Promise<Array<JSONValue>>
 
-            set(values: Array<JSONValue>): Promise<number>;
-
-            set(value: JSONValue, index: number): Promise<void>;
-
             insertBefore(valueToInsert: JSONValue, anchorValue: JSONValue): Promise<number>;
 
             insertAfter(valueToInsert: JSONValue, anchorValue: JSONValue): Promise<number>;
@@ -476,8 +472,6 @@ declare module Backendless {
             set(key: string, value: JSONValue): Promise<boolean>;
 
             setWithOverwrite(key: string, value: JSONValue, overwrite?: boolean): Promise<boolean>;
-
-            add(data: object): Promise<number>;
 
             increment(key: string, count?: number): Promise<number>;
 

@@ -40,36 +40,6 @@ export class ListStore extends HiveStore {
       })
   }
 
-  set(value, index) {
-    if (typeof index === 'undefined') {
-      if (!value || !Array.isArray(value) || !value.length || !isHiveValueValid(value)) {
-        throw new Error('Value must be provided and must be a list of valid JSON items.')
-      }
-
-      return this.app.request
-        .put({
-          url : this.getBaseURL(),
-          data: value
-        })
-    }
-
-    if (!isHiveValueValid(value)) {
-      throw new Error('Value must be provided and must be one of types: string, number, boolean, object, array.')
-    }
-
-    if (typeof index !== 'number' || isNaN(index)) {
-      throw new Error('Index must be a number.')
-    }
-
-    return this.app.request
-      .put({
-        url : `${this.getBaseURL()}/${index}`,
-        data: {
-          value
-        }
-      })
-  }
-
   length() {
     return this.app.request
       .get({
