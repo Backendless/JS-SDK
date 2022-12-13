@@ -582,7 +582,7 @@ declare module Backendless {
                 minBound?: SortedSetBound,
                 maxBound?: SortedSetBound,
                 offset?: number,
-                count?: number
+                pageSize?: number
                 reverse?: boolean,
                 withScores?: boolean
             }): Promise<Array<T>>

@@ -1407,18 +1407,18 @@ describe('Hive - Sorted Set Store', function() {
         await expect(() => store.getRangeByScore({ maxBound: () => undefined })).to.throw(errorMsg)
       })
 
-      it('fails when Count is invalid', async () => {
-        const errorMsg = 'Count must be a number.'
+      it('fails when PageSize is invalid', async () => {
+        const errorMsg = 'Page Size must be a number.'
 
-        await expect(() => store.getRangeByScore({ count: null })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: '' })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: 'foo' })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: NaN })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: {} })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: [] })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: true })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: false })).to.throw(errorMsg)
-        await expect(() => store.getRangeByScore({ count: () => undefined })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: null })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: '' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: 'foo' })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: NaN })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: {} })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: [] })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: true })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: false })).to.throw(errorMsg)
+        await expect(() => store.getRangeByScore({ pageSize: () => undefined })).to.throw(errorMsg)
       })
 
       it('fails when Offset is invalid', async () => {

@@ -1133,7 +1133,7 @@ function testHiveStores() {
                 minBound: bound,
                 maxBound: bound,
                 offset: num,
-                count: num,
+                pageSize: num,
                 reverse: bool,
                 withScores: bool
             })

@@ -228,7 +228,7 @@ export class SortedSetStore extends HiveStore {
         throw new Error('Options must be an object.')
       }
 
-      const { minScore, maxScore, minBound, maxBound, offset, count, withScores, reverse } = options
+      const { minScore, maxScore, minBound, maxBound, offset, pageSize, withScores, reverse } = options
 
       if (minScore !== undefined && (isNaN(minScore) || typeof minScore !== 'number')) {
         throw new Error('Minimal Score must be a number.')
@@ -250,8 +250,8 @@ export class SortedSetStore extends HiveStore {
         throw new Error('Offset must be a number.')
       }
 
-      if (count !== undefined && (typeof count !== 'number' || isNaN(count))) {
-        throw new Error('Count must be a number.')
+      if (pageSize !== undefined && (typeof pageSize !== 'number' || isNaN(pageSize))) {
+        throw new Error('Page Size must be a number.')
       }
 
       if (withScores !== undefined && typeof withScores !== 'boolean') {
