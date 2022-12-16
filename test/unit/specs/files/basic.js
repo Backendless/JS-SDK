@@ -679,6 +679,50 @@ describe('<Files> Basic', function() {
 
   })
 
+  describe('Create Directory', () => {
+    it('creates a directory by a relative path', async () => {
+      const req1 = prepareMockRequest()
+      const req2 = prepareMockRequest()
+
+      const result1 = await Backendless.Files.createDirectory(dirPath)
+      const result2 = await Backendless.Files.createDirectory(filePathWithSlash)
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/files/test/path/`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql(undefined)
+      expect(result2).to.be.eql(undefined)
+    })
+
+    it('fails when directoryPath is invalid', async () => {
+      const errorMsg = 'Directory "path" must be provided and must be a string.'
+
+      await expect(Backendless.Files.createDirectory()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory(undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Files.createDirectory(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+  })
+
   describe('Remove Directory', () => {
     it('removes a directory by a relative path', async () => {
       const req1 = prepareMockRequest({ resultFileURL })

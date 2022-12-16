@@ -279,18 +279,6 @@ export default class Files {
     })
   }
 
-  async removeDirectory(directoryPath) {
-    if (!directoryPath || typeof directoryPath !== 'string') {
-      throw new Error('Directory "path" must be provided and must be a string.')
-    }
-
-    directoryPath = FilesUtils.trimSlashesInPath(directoryPath)
-
-    return this.app.request.delete({
-      url: this.app.urls.filePath(directoryPath),
-    })
-  }
-
   async getFileCount(filesPath, pattern, sub, countDirectories) {
     if (!filesPath || typeof filesPath !== 'string') {
       throw new Error('"filesPath" must be provided and must be a string.')
@@ -313,5 +301,28 @@ export default class Files {
     })
   }
 
+  async createDirectory(directoryPath) {
+    if (!directoryPath || typeof directoryPath !== 'string') {
+      throw new Error('Directory "path" must be provided and must be a string.')
+    }
+
+    directoryPath = FilesUtils.trimSlashesInPath(directoryPath)
+
+    return this.app.request.post({
+      url: this.app.urls.directoryPath(directoryPath)
+    })
+  }
+
+  async removeDirectory(directoryPath) {
+    if (!directoryPath || typeof directoryPath !== 'string') {
+      throw new Error('Directory "path" must be provided and must be a string.')
+    }
+
+    directoryPath = FilesUtils.trimSlashesInPath(directoryPath)
+
+    return this.app.request.delete({
+      url: this.app.urls.filePath(directoryPath),
+    })
+  }
 }
 
