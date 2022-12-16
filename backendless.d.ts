@@ -334,7 +334,7 @@ declare module Backendless {
         interface HiveStore {
             keys(options?: StoreKeysOptionsI): Promise<StoreKeysResultI>;
 
-            delete(keys: Array<string>): Promise<void>;
+            delete(keys: Array<string>): Promise<number>;
 
             exist(keys: Array<string>): Promise<number>;
 

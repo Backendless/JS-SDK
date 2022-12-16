@@ -743,7 +743,7 @@ function testHiveStores() {
             promiseStoreKeysResult = Backendless.Hive(str).KeyValueStore.keys();
             promiseStoreKeysResult = Backendless.Hive(str).KeyValueStore.keys(storeKeysOptions);
 
-            promiseVoid = Backendless.Hive(str).KeyValueStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).KeyValueStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).KeyValueStore.exist(strArr);
             promiseVoid = Backendless.Hive(str).KeyValueStore.touch(strArr);
         }
@@ -807,7 +807,7 @@ function testHiveStores() {
             promiseStoreKeysResult = Backendless.Hive(str).ListStore.keys();
             promiseStoreKeysResult = Backendless.Hive(str).ListStore.keys(storeKeysOptions);
 
-            promiseVoid = Backendless.Hive(str).ListStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).ListStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).ListStore.exist(strArr);
             promiseVoid = Backendless.Hive(str).ListStore.touch(strArr);
         }
@@ -890,7 +890,7 @@ function testHiveStores() {
             promiseStoreKeysResult = Backendless.Hive(str).MapStore.keys();
             promiseStoreKeysResult = Backendless.Hive(str).MapStore.keys(storeKeysOptions);
 
-            promiseVoid = Backendless.Hive(str).MapStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).MapStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).MapStore.exist(strArr);
             promiseVoid = Backendless.Hive(str).MapStore.touch(strArr);
         }
@@ -960,7 +960,7 @@ function testHiveStores() {
             promiseStoreKeysResult = Backendless.Hive(str).SetStore.keys();
             promiseStoreKeysResult = Backendless.Hive(str).SetStore.keys(storeKeysOptions);
 
-            promiseVoid = Backendless.Hive(str).SetStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).SetStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).SetStore.exist(strArr);
             promiseVoid = Backendless.Hive(str).SetStore.touch(strArr);
         }
@@ -1039,7 +1039,7 @@ function testHiveStores() {
             promiseStoreKeysResult = Backendless.Hive(str).SortedSetStore.keys();
             promiseStoreKeysResult = Backendless.Hive(str).SortedSetStore.keys(storeKeysOptions);
 
-            promiseVoid = Backendless.Hive(str).SortedSetStore.delete(strArr);
+            promiseNumber = Backendless.Hive(str).SortedSetStore.delete(strArr);
             promiseNumber = Backendless.Hive(str).SortedSetStore.exist(strArr);
             promiseVoid = Backendless.Hive(str).SortedSetStore.touch(strArr);
         }
