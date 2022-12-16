@@ -12,7 +12,7 @@ Follow the steps below to get started with Backendless:
   * **Create Developer Account**. An account is required in order to create and manage your Backendless application. Registration form is available at [https://develop.backendless.com/registration][registration]
   * **Login**. Login to your account using Backendless Console at [https://develop.backendless.com/login][login]
   * **Locate Application ID and API Key**. The console is where you can manage the applications, their configuration settings and data. Before you start using any of the APIs, make sure to select an application in the console and open the “Manage” section. The “App Settings” screen contains the application ID and API keys, which you will need to use in your code.
-  * **Examples**. The SDK includes several examples demonstrating some of the Backendless functionality. Each example must be configured with the application ID and API key generated for your application. Make sure to copy/paste these values into the following source code files:
+  * **Examples**. The SDK includes several examples demonstrating some Backendless functionality. Each example must be configured with the application ID and API key generated for your application. Make sure to copy/paste these values into the following source code files:
   
     - User Service Register/Login Demo: `examples/user-service/simple-register-login/js/user-example.js`
     - User Service Social Login Demo: `examples/user-service/social-login/js/main.js`
@@ -56,6 +56,7 @@ Below are a few links to help with the development:
 * [YouTube Channel][youtube]
 * [Facebook][facebook]
 * [Twitter][twitter]
+* [Telegram][telegram]
 
 We would love to hear from you. Please let us know about your experiences using Backendless. 
 You can reach us through the [support page][support] or email: [support@backendless.com](mailto:support@backendless.com)
@@ -63,9 +64,10 @@ You can reach us through the [support page][support] or email: [support@backendl
 Thank you and endlessly happy coding!  
 The Backendless Team
 
-[documentation]: https://backendless.com/products/documentation/
+[documentation]: https://backendless.com/docs/js/
 [support]: https://support.backendless.com
 [slack]: https://slack.backendless.com
+[telegram]: https://t.me/backendless_chat
 [blog]: https://backendless.com/blog
 [youtube]: https://youtube.com/backendless
 [facebook]: https://facebook.com/backendless
