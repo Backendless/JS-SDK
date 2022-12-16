@@ -809,6 +809,8 @@ declare module Backendless {
 
         function exists(path: string): Promise<Object>;
 
+        function createDirectory(path: string): Promise<void>;
+
         function removeDirectory(path: string): Promise<number>;
     }
 

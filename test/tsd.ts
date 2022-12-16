@@ -1573,6 +1573,7 @@ async function testFilesService() {
     let promiseObject: Promise<object>;
     let promiseBoolean: Promise<boolean>;
     let promiseNumber: Promise<number>;
+    let promiseVoid: Promise<void>;
 
     interface IFileUploadResult {
         fileURL: string
@@ -1643,6 +1644,7 @@ async function testFilesService() {
 
     promiseObject = Backendless.Files.exists(path);
 
+    promiseVoid = Backendless.Files.createDirectory(path);
     promiseNumber = Backendless.Files.removeDirectory(path);
 
     promiseBoolean = Backendless.Files.Permissions.READ.grantUser(userid, url);

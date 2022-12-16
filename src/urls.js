@@ -247,6 +247,10 @@ export default class Urls {
     return `${this.files()}/${path}`
   }
 
+  directoryPath(path) {
+    return `${this.files()}/${path}/`
+  }
+
   fileCopy() {
     return `${this.files()}/copy`
   }
