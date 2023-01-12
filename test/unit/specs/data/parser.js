@@ -2794,78 +2794,12 @@ describe('<Data> Parser', function() {
     expect(result2[1]).to.be.instanceof(FooClass)
   })
 
-  it('uses classes from global by default for data store object with inner instances', async () => {
-    // eslint-disable-next-line no-console
-    const _nativeConsoleWarn = console.warn
-
-    // eslint-disable-next-line no-console
-    const spyConsoleWarn = console.warn = chai.spy()
-
-    global.FooClass = class FooClass {
-    }
-
-    global.BarFun = function BarFun() {
-    }
-
-    dataStore = Backendless.Data.of(tableName)
-
-    const result1 = dataStore.parseResponse({
-      foo: { ___class: 'FooClass', value: 1, },
-      bar: { ___class: 'BarFun', value: 2, }
-    })
-
-    const result2 = dataStore.parseResponse([
-      { foo: { ___class: 'FooClass', value: 3, }, bar: { ___class: 'BarFun', value: 5, } },
-      { foo: { ___class: 'FooClass', value: 4, }, bar: { ___class: 'BarFun', value: 6, } }
-    ])
-
-    expect(result1).to.be.eql({
-      foo: { ___class: 'FooClass', value: 1, },
-      bar: { ___class: 'BarFun', value: 2, }
-    })
-
-    expect(result1.foo).to.be.instanceof(FooClass)
-    expect(result1.bar).to.be.instanceof(BarFun)
-
-    expect(result2).to.be.eql([
-      { foo: { ___class: 'FooClass', value: 3, }, bar: { ___class: 'BarFun', value: 5, } },
-      { foo: { ___class: 'FooClass', value: 4, }, bar: { ___class: 'BarFun', value: 6, } }
-    ])
-
-    expect(result2[0].foo).to.be.instanceof(FooClass)
-    expect(result2[0].bar).to.be.instanceof(BarFun)
-
-    expect(result2[1].foo).to.be.instanceof(FooClass)
-    expect(result2[1].bar).to.be.instanceof(BarFun)
-
-    expect(spyConsoleWarn).to.have.been.called.exactly(6)
-
-    const warningMsg = (
-      'Resolving DataTable classes from the global scope is deprecated ' +
-      'and it won\'t be supported in the nearest future. ' +
-      'Instead, you should register your DataTable classes ' +
-      'using the following method Backendless.Data.mapTableToClass'
-    )
-
-    expect(spyConsoleWarn).on.nth(1).be.called.with(warningMsg)
-    expect(spyConsoleWarn).on.nth(2).be.called.with(warningMsg)
-    expect(spyConsoleWarn).on.nth(3).be.called.with(warningMsg)
-    expect(spyConsoleWarn).on.nth(4).be.called.with(warningMsg)
-    expect(spyConsoleWarn).on.nth(5).be.called.with(warningMsg)
-    expect(spyConsoleWarn).on.nth(6).be.called.with(warningMsg)
-
-    // eslint-disable-next-line no-console
-    console.warn = _nativeConsoleWarn
-  })
-
   it('does not use classes from global for data store object with inner instances', async () => {
     // eslint-disable-next-line no-console
     const _nativeConsoleWarn = console.warn
 
     // eslint-disable-next-line no-console
     const spyConsoleWarn = console.warn = chai.spy()
-
-    Backendless.useTableClassesFromGlobalScope = false
 
     global.FooClass = class FooClass {
     }

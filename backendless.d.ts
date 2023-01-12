@@ -6,7 +6,6 @@ declare module Backendless {
     type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
 
     let debugMode: boolean;
-    let useTableClassesFromGlobalScope: boolean;
     let serverURL: string;
     let appId: string;
     let apiKey: string;
@@ -39,7 +38,6 @@ declare module Backendless {
         domain?: string;
         debugMode?: boolean;
         XMLHttpRequest?: XMLHttpRequest;
-        useTableClassesFromGlobalScope?: boolean;
     }
 
     /**
