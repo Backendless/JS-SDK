@@ -749,6 +749,31 @@ describe('<Data> Find', function() {
       expect(result3).to.be.equal(4)
     })
 
+    it('with groupBy ', async () => {
+      const req = prepareMockRequest(2)
+
+      const query = Backendless.Data.QueryBuilder.create()
+
+      query.setGroupBy('objectId')
+      query.setWhereClause('foo>123')
+
+      const result = await dataStore.getObjectCount(query)
+
+      expect(req).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/count`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body   : {
+          where   : 'foo>123',
+          groupBy: ['objectId']
+        }
+      })
+
+      expect(result).to.be.equal(2)
+    })
+
     it('fails when at least one item is invalid', async () => {
       const errorMsg = 'Condition must be a string or an instance of DataQueryBuilder.'
 

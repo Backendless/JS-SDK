@@ -166,10 +166,12 @@ export default class DataStore {
 
   async getObjectCount(condition) {
     let distinct = undefined
+    let groupBy = undefined
 
     if (condition) {
       if (condition instanceof DataQueryBuilder) {
         distinct = condition.getDistinct() || undefined
+        groupBy = condition.getGroupBy() || undefined
         condition = condition.getWhereClause() || undefined
       } else if (typeof condition !== 'string') {
         throw new Error('Condition must be a string or an instance of DataQueryBuilder.')
@@ -178,7 +180,7 @@ export default class DataStore {
 
     return this.app.request.post({
       url : this.app.urls.dataTableCount(this.className),
-      data: { where: condition, distinct },
+      data: { where: condition, distinct, groupBy },
     })
   }
 
