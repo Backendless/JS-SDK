@@ -440,6 +440,7 @@ function testDataStoreClass() {
     let promisePersons: Promise<Person[]>;
     let promiseObject: Promise<object>;
     let promiseNum: Promise<number>;
+    let promiseString: Promise<string>;
 
     const dataQueryObject = {
         pageSize: 123,
@@ -472,6 +473,7 @@ function testDataStoreClass() {
     promiseObject = dataStore.deepSave(item);
     promisePerson = dataStore.deepSave<Person>(person);
 
+    promiseObject = dataStore.remove(123);
     promiseObject = dataStore.remove('str');
     promiseObject = dataStore.remove(item);
 
@@ -485,6 +487,7 @@ function testDataStoreClass() {
     promisePersons = dataStore.find<Person>(dataQueryObject);
     promisePersons = dataStore.find<Person>({pageSize: 123, offset: 0});
 
+    promiseObject = dataStore.findById(123);
     promiseObject = dataStore.findById('myId');
     promiseObject = dataStore.findById('myId', dataQueryBuilder);
     promiseObject = dataStore.findById('myId', dataQueryObject);
@@ -493,6 +496,7 @@ function testDataStoreClass() {
     promiseObject = dataStore.findById({foo: 'myId'}, dataQueryBuilder);
     promiseObject = dataStore.findById({foo: 'myId'}, {properties: ['foo']});
 
+    promisePerson = dataStore.findById<Person>(123);
     promisePerson = dataStore.findById<Person>('myId');
     promisePerson = dataStore.findById<Person>('myId', dataQueryBuilder);
     promisePerson = dataStore.findById<Person>('myId', dataQueryObject);
@@ -522,20 +526,48 @@ function testDataStoreClass() {
     promisePerson = dataStore.findLast<Person>(dataQueryObject);
     promisePerson = dataStore.findLast<Person>({pageSize: 123});
 
+    promiseObject = dataStore.loadRelations(123, loadRelationsQueryBuilder);
     promiseObject = dataStore.loadRelations(parentTableName, loadRelationsQueryBuilder);
     promiseObject = dataStore.loadRelations(parentTableName, relationsDataQueryObject);
     promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1'});
     promiseObject = dataStore.loadRelations(parentTableName, {relationName: 'rel1', relationModel: Person});
 
+    promisePersons = dataStore.loadRelations<Person>(123, loadRelationsQueryBuilder);
     promisePersons = dataStore.loadRelations<Person>(parentTableName, loadRelationsQueryBuilder);
     promisePersons = dataStore.loadRelations<Person>(parentTableName, relationsDataQueryObject);
     promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1'});
     promisePersons = dataStore.loadRelations<Person>(parentTableName, {relationName: 'rel1', relationModel: Person});
 
+    promiseString = dataStore.setRelation('parentId', 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.setRelation(123, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.setRelation({objectId: 'abc'}, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.setRelation({objectId: 123}, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.setRelation('parentId', 'columnName', 'where-str');
+    promiseString = dataStore.setRelation(123, 'columnName', 'where-str');
+    promiseString = dataStore.setRelation({objectId: 'abc'}, 'columnName', 'where-str');
+    promiseString = dataStore.setRelation({objectId: 123}, 'columnName', 'where-str');
+
+    promiseString = dataStore.addRelation('parentId', 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.addRelation(123, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.addRelation({objectId: 'abc'}, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.addRelation({objectId: 123}, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.addRelation('parentId', 'columnName', 'where-str');
+    promiseString = dataStore.addRelation(123, 'columnName', 'where-str');
+    promiseString = dataStore.addRelation({objectId: 'abc'}, 'columnName', 'where-str');
+    promiseString = dataStore.addRelation({objectId: 123}, 'columnName', 'where-str');
+
+    promiseString = dataStore.deleteRelation('parentId', 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.deleteRelation(123, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.deleteRelation({objectId: 'abc'}, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.deleteRelation({objectId: 123}, 'columnName', ['abc', 123, {objectId: 'abc'}, {objectId: 123}]);
+    promiseString = dataStore.deleteRelation('parentId', 'columnName', 'where-str');
+    promiseString = dataStore.deleteRelation(123, 'columnName', 'where-str');
+    promiseString = dataStore.deleteRelation({objectId: 'abc'}, 'columnName', 'where-str');
+    promiseString = dataStore.deleteRelation({objectId: 123}, 'columnName', 'where-str');
+
     promiseNum = dataStore.getObjectCount();
     promiseNum = dataStore.getObjectCount('foo=123');
     promiseNum = dataStore.getObjectCount(dataQueryBuilder);
-
 }
 
 function testPersistence() {
@@ -1191,7 +1223,8 @@ function testBulkOperations() {
     resultPromiseString = dataStore.bulkUpdate('where clause string', {foo: 'bar'});
 
     resultPromiseString = dataStore.bulkDelete('where clause string');
-    resultPromiseString = dataStore.bulkDelete(['objectId1', 'objectId2', 'objectId3']);
+    resultPromiseString = dataStore.bulkDelete(['objectId1', {objectId: 'objectId1'}, 123]);
+    resultPromiseString = dataStore.bulkDelete([{objectId: 123}, 123]);
     resultPromiseString = dataStore.bulkDelete([{objectId: 'objectId1'}]);
     resultPromiseString = dataStore.bulkDelete([{objectId: 'objectId1', foo: 'bar'}]);
 }
@@ -1417,8 +1450,10 @@ function testUserService() {
     promiseObject = Backendless.UserService.createEmailConfirmationURL('email');
     promiseObject = Backendless.UserService.createEmailConfirmationURL(1234);
 
+    promiseVoid = Backendless.UserService.enableUser(123);
     promiseVoid = Backendless.UserService.enableUser(userId);
 
+    promiseVoid = Backendless.UserService.disableUser(123);
     promiseVoid = Backendless.UserService.disableUser(userId);
 
     promiseString = Backendless.UserService.getAuthorizationUrlLink('google', {email: 'userEmail'}, 'email;photo', false, 'https://foo', 'foo.bar');

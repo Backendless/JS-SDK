@@ -46,6 +46,31 @@ describe('<Data> Relations', function() {
       expect(result2).to.be.eql([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
     })
 
+    it('loads children for parent where id is number', async () => {
+      const req1 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
+      const req2 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
+
+      const result1 = await dataStore.loadRelations({ objectId: 111 }, { relationName })
+      const result2 = await dataStore.loadRelations(222, { relationName })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/111/${relationName}`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req2).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/222/${relationName}`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
+      expect(result2).to.be.eql([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
+    })
+
     it('loads instances', async () => {
       const req1 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
       const req2 = prepareMockRequest([{ foo: 1 }, { foo: 2 }, { foo: 3 }])
@@ -241,7 +266,7 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when parentObjectId is invalid', async () => {
-      const errorMsg = 'Parent Object Id must be provided and must be a string.'
+      const errorMsg = 'Parent Object Id must be provided and must be a string or number.'
 
       await expect(dataStore.loadRelations()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.loadRelations('')).to.eventually.be.rejectedWith(errorMsg)
@@ -249,8 +274,6 @@ describe('<Data> Relations', function() {
       await expect(dataStore.loadRelations(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.loadRelations(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.loadRelations(undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.loadRelations(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.loadRelations(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.loadRelations({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.loadRelations(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
@@ -293,6 +316,31 @@ describe('<Data> Relations', function() {
   })
 
   describe('Set Relations', () => {
+    it('parent id is number', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+      const req2 = prepareMockRequest(fakeResult)
+
+      const result1 = await dataStore.setRelation(111, relationName, 'foo>123')
+      const result2 = await dataStore.setRelation({ objectId: 222 }, relationName, 'foo>123')
+
+      expect(req1).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/111/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req2).to.deep.include({
+        method : 'POST',
+        path   : `${APP_PATH}/data/${tableName}/222/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.equal(fakeResult)
+      expect(result2).to.be.equal(fakeResult)
+    })
+
     it('children as condition', async () => {
       const req1 = prepareMockRequest(fakeResult)
 
@@ -326,20 +374,20 @@ describe('<Data> Relations', function() {
     it('children as object ids', async () => {
       const req1 = prepareMockRequest(fakeResult)
 
-      const result1 = await dataStore.setRelation(parent, relationName, ['id-1', { objectId: 'id-2' }, 'id-3'])
+      const result1 = await dataStore.setRelation(parent, relationName, ['id-1', { objectId: 'id-2' }, 111, { objectId: 222 }])
 
       expect(req1).to.deep.include({
         method : 'POST',
         path   : `${APP_PATH}/data/${tableName}/parent-id/${relationName}`,
         headers: { 'Content-Type': 'application/json' },
-        body   : ['id-1', 'id-2', 'id-3']
+        body   : ['id-1', 'id-2', 111, 222]
       })
 
       expect(result1).to.be.equal(fakeResult)
     })
 
     it('fails when parentId is invalid', async () => {
-      const errorMsg = 'Relation Parent must be provided and must be a string or an object with objectId property.'
+      const errorMsg = 'Relation Parent must be provided and must be a string or number or an object with objectId property.'
 
       await expect(dataStore.setRelation()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation('')).to.eventually.be.rejectedWith(errorMsg)
@@ -347,8 +395,6 @@ describe('<Data> Relations', function() {
       await expect(dataStore.setRelation(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.setRelation(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.setRelation(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
@@ -386,30 +432,26 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when at least one item is invalid', async () => {
-      const errorMsg = 'Child Id must be provided and must be a string.'
+      const errorMsg = 'Child Id must be provided and must be a string or number.'
 
       await expect(dataStore.setRelation(parent, relationName, [''])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [false])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [true])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [null])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [undefined])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.setRelation(parent, relationName, [0])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.setRelation(parent, relationName, [123])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{}])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [[]])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [() => ({})])).to.eventually.be.rejectedWith(errorMsg)
     })
 
     it('fails when at least one item has invalid objectId', async () => {
-      const errorMsg = 'Child Id must be provided and must be a string.'
+      const errorMsg = 'Child Id must be provided and must be a string or number.'
 
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: '' }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: false }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: true }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: null }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: undefined }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: 0 }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: 123 }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: {} }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: [] }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.setRelation(parent, relationName, [{ objectId: 'o' }, { objectId: () => ({}) }])).to.eventually.be.rejectedWith(errorMsg)
@@ -420,8 +462,14 @@ describe('<Data> Relations', function() {
   describe('Add Relations', () => {
     it('children as condition', async () => {
       const req1 = prepareMockRequest(fakeResult)
+      const req2 = prepareMockRequest(fakeResult)
+      const req3 = prepareMockRequest(fakeResult)
+      const req4 = prepareMockRequest(fakeResult)
 
       const result1 = await dataStore.addRelation(parent, relationName, 'foo>123')
+      const result2 = await dataStore.addRelation(parent.objectId, relationName, 'foo>123')
+      const result3 = await dataStore.addRelation(111, relationName, 'foo>123')
+      const result4 = await dataStore.addRelation({ objectId: 222 }, relationName, 'foo>123')
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -430,7 +478,31 @@ describe('<Data> Relations', function() {
         body   : undefined
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}/parent-id/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req3).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}/111/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req4).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}/222/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
       expect(result1).to.be.equal(fakeResult)
+      expect(result2).to.be.equal(fakeResult)
+      expect(result3).to.be.equal(fakeResult)
+      expect(result4).to.be.equal(fakeResult)
     })
 
     it('children as objects', async () => {
@@ -464,7 +536,7 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when parentId is invalid', async () => {
-      const errorMsg = 'Relation Parent must be provided and must be a string or an object with objectId property.'
+      const errorMsg = 'Relation Parent must be provided and must be a string or number or an object with objectId property.'
 
       await expect(dataStore.addRelation()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation('')).to.eventually.be.rejectedWith(errorMsg)
@@ -472,8 +544,6 @@ describe('<Data> Relations', function() {
       await expect(dataStore.addRelation(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.addRelation(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.addRelation(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
@@ -511,30 +581,26 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when at least one item is invalid', async () => {
-      const errorMsg = 'Child Id must be provided and must be a string.'
+      const errorMsg = 'Child Id must be provided and must be a string or number.'
 
       await expect(dataStore.addRelation(parent, relationName, [''])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [false])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [true])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [null])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [undefined])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.addRelation(parent, relationName, [0])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.addRelation(parent, relationName, [123])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{}])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [[]])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [() => ({})])).to.eventually.be.rejectedWith(errorMsg)
     })
 
     it('fails when at least one item has invalid objectId', async () => {
-      const errorMsg = 'Child Id must be provided and must be a string.'
+      const errorMsg = 'Child Id must be provided and must be a string or number.'
 
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: '' }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: false }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: true }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: null }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: undefined }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: 0 }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: 123 }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: {} }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: [] }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.addRelation(parent, relationName, [{ objectId: 'o' }, { objectId: () => ({}) }])).to.eventually.be.rejectedWith(errorMsg)
@@ -545,8 +611,14 @@ describe('<Data> Relations', function() {
   describe('Delete Relations', () => {
     it('children as condition', async () => {
       const req1 = prepareMockRequest(fakeResult)
+      const req2 = prepareMockRequest(fakeResult)
+      const req3 = prepareMockRequest(fakeResult)
+      const req4 = prepareMockRequest(fakeResult)
 
       const result1 = await dataStore.deleteRelation(parent, relationName, 'foo>123')
+      const result2 = await dataStore.deleteRelation(parent.objectId, relationName, 'foo>123')
+      const result3 = await dataStore.deleteRelation({ objectId: 111 }, relationName, 'foo>123')
+      const result4 = await dataStore.deleteRelation(222, relationName, 'foo>123')
 
       expect(req1).to.deep.include({
         method : 'DELETE',
@@ -555,7 +627,31 @@ describe('<Data> Relations', function() {
         body   : undefined
       })
 
+      expect(req2).to.deep.include({
+        method : 'DELETE',
+        path   : `${APP_PATH}/data/${tableName}/parent-id/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req3).to.deep.include({
+        method : 'DELETE',
+        path   : `${APP_PATH}/data/${tableName}/111/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(req4).to.deep.include({
+        method : 'DELETE',
+        path   : `${APP_PATH}/data/${tableName}/222/${relationName}?whereClause=foo%3E123`,
+        headers: {},
+        body   : undefined
+      })
+
       expect(result1).to.be.equal(fakeResult)
+      expect(result2).to.be.equal(fakeResult)
+      expect(result3).to.be.equal(fakeResult)
+      expect(result4).to.be.equal(fakeResult)
     })
 
     it('children as objects', async () => {
@@ -576,20 +672,20 @@ describe('<Data> Relations', function() {
     it('children as object ids', async () => {
       const req1 = prepareMockRequest(fakeResult)
 
-      const result1 = await dataStore.deleteRelation(parent, relationName, ['id-1', { objectId: 'id-2' }, 'id-3'])
+      const result1 = await dataStore.deleteRelation(parent, relationName, ['id-1', { objectId: 'id-2' }, 111, { objectId: 222 }])
 
       expect(req1).to.deep.include({
         method : 'DELETE',
         path   : `${APP_PATH}/data/${tableName}/parent-id/${relationName}`,
         headers: { 'Content-Type': 'application/json' },
-        body   : ['id-1', 'id-2', 'id-3']
+        body   : ['id-1', 'id-2', 111, 222]
       })
 
       expect(result1).to.be.equal(fakeResult)
     })
 
     it('fails when parentId is invalid', async () => {
-      const errorMsg = 'Relation Parent must be provided and must be a string or an object with objectId property.'
+      const errorMsg = 'Relation Parent must be provided and must be a string or number or an object with objectId property.'
 
       await expect(dataStore.deleteRelation()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation('')).to.eventually.be.rejectedWith(errorMsg)
@@ -597,8 +693,6 @@ describe('<Data> Relations', function() {
       await expect(dataStore.deleteRelation(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.deleteRelation(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.deleteRelation(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
@@ -636,30 +730,26 @@ describe('<Data> Relations', function() {
     })
 
     it('fails when at least one item is invalid', async () => {
-      const errorMsg = 'Child Id must be provided and must be a string.'
+      const errorMsg = 'Child Id must be provided and must be a string or number.'
 
       await expect(dataStore.deleteRelation(parent, relationName, [''])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [false])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [true])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [null])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [undefined])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.deleteRelation(parent, relationName, [0])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.deleteRelation(parent, relationName, [123])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{}])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [[]])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [() => ({})])).to.eventually.be.rejectedWith(errorMsg)
     })
 
     it('fails when at least one item has invalid objectId', async () => {
-      const errorMsg = 'Child Id must be provided and must be a string.'
+      const errorMsg = 'Child Id must be provided and must be a string or number.'
 
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: '' }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: false }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: true }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: null }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: undefined }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: 0 }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: 123 }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: {} }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: [] }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.deleteRelation(parent, relationName, [{ objectId: 'o' }, { objectId: () => ({}) }])).to.eventually.be.rejectedWith(errorMsg)

@@ -187,14 +187,14 @@ describe('<Data> Bulk Operations', function() {
     it('deletes objects with object ids', async () => {
       const req1 = prepareMockRequest(fakeResult)
 
-      const result1 = await dataStore.bulkDelete([{ objectId: 'object-1' }, 'object-2', { objectId: 'object-3' }])
+      const result1 = await dataStore.bulkDelete([{ objectId: 'object-1' }, 'object-2', { objectId: 111 }, 222])
 
       expect(req1).to.deep.include({
         method : 'POST',
         path   : `${APP_PATH}/data/bulk/${tableName}/delete`,
         headers: { 'Content-Type': 'application/json' },
         body   : {
-          where: 'objectId in (\'object-1\',\'object-2\',\'object-3\')'
+          where: 'objectId in (\'object-1\',\'object-2\',\'111\',\'222\')'
         }
       })
 
@@ -219,7 +219,7 @@ describe('<Data> Bulk Operations', function() {
     it('fails when at least on objectId is invalid', async () => {
       const errorMsg = (
         'Can not transform "objects" to "whereClause". ' +
-        'Item must be a string or an object with property "objectId" as string.'
+        'Item must be a string or number or an object with property "objectId" as string.'
       )
 
       await expect(dataStore.bulkDelete(['object-id', ''])).to.eventually.be.rejectedWith(errorMsg)
@@ -227,8 +227,6 @@ describe('<Data> Bulk Operations', function() {
       await expect(dataStore.bulkDelete(['object-id', true])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', null])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', undefined])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.bulkDelete(['object-id', 0])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.bulkDelete(['object-id', 123])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', {}])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', []])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', () => ({})])).to.eventually.be.rejectedWith(errorMsg)
@@ -238,8 +236,6 @@ describe('<Data> Bulk Operations', function() {
       await expect(dataStore.bulkDelete(['object-id', { objectId: true }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', { objectId: null }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', { objectId: undefined }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.bulkDelete(['object-id', { objectId: 0 }])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.bulkDelete(['object-id', { objectId: 123 }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', { objectId: {} }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', { objectId: [] }])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.bulkDelete(['object-id', { objectId: () => ({}) }])).to.eventually.be.rejectedWith(errorMsg)

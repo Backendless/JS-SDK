@@ -73,8 +73,8 @@ export default class DataStore {
   async remove(object) {
     const objectId = object && object.objectId || object
 
-    if (!objectId || typeof objectId !== 'string') {
-      throw new Error('Object Id must be provided and must be a string.')
+    if (!objectId || (typeof objectId !== 'string' && typeof objectId !== 'number')) {
+      throw new Error('Object Id must be provided and must be a string or number.')
     }
 
     return this.app.request.delete({
@@ -127,8 +127,8 @@ export default class DataStore {
       })
 
     } else {
-      if (!objectId || typeof objectId !== 'string') {
-        throw new Error('Object Id must be provided and must be a string or an object of primary keys.')
+      if (!objectId || (typeof objectId !== 'string' && typeof objectId !== 'number')) {
+        throw new Error('Object Id must be provided and must be a string or number or an object of primary keys.')
       }
 
       if (query) {
@@ -185,8 +185,8 @@ export default class DataStore {
   async loadRelations(parent, queryBuilder) {
     const parentObjectId = parent && parent.objectId || parent
 
-    if (!parentObjectId || typeof parentObjectId !== 'string') {
-      throw new Error('Parent Object Id must be provided and must be a string.')
+    if (!parentObjectId || (typeof parentObjectId !== 'string' && typeof parentObjectId !== 'number')) {
+      throw new Error('Parent Object Id must be provided and must be a string or number.')
     }
 
     const { relationName, relationModel, ...query } = queryBuilder instanceof LoadRelationsQueryBuilder
@@ -289,10 +289,10 @@ export default class DataStore {
       const objectIds = condition.map(object => {
         const objectId = object && object.objectId || object
 
-        if (!objectId || typeof objectId !== 'string') {
+        if (!objectId || (typeof objectId !== 'string' && typeof objectId !== 'number')) {
           throw new Error(
             'Can not transform "objects" to "whereClause". ' +
-            'Item must be a string or an object with property "objectId" as string.'
+            'Item must be a string or number or an object with property "objectId" as string.'
           )
         }
 
@@ -328,8 +328,10 @@ export default class DataStore {
   changeRelation(method, parent, columnName, children) {
     const parentId = parent && parent.objectId || parent
 
-    if (!parentId || typeof parentId !== 'string') {
-      throw new Error('Relation Parent must be provided and must be a string or an object with objectId property.')
+    if (!parentId || (typeof parentId !== 'string' && typeof parentId !== 'number')) {
+      throw new Error(
+        'Relation Parent must be provided and must be a string or number or an object with objectId property.'
+      )
     }
 
     if (!columnName || typeof columnName !== 'string') {
@@ -349,8 +351,8 @@ export default class DataStore {
       condition.childrenIds = children.map(child => {
         const childId = child && child.objectId || child
 
-        if (!childId || typeof childId !== 'string') {
-          throw new Error('Child Id must be provided and must be a string.')
+        if (!childId || (typeof childId !== 'string' && typeof childId !== 'number')) {
+          throw new Error('Child Id must be provided and must be a string or number.')
         }
 
         return childId

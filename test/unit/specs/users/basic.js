@@ -102,8 +102,10 @@ describe('<Users> Basic', function() {
 
     it('should enable user', async () => {
       const req1 = prepareMockRequest(fakeResult)
+      const req2 = prepareMockRequest(fakeResult)
 
       const result1 = await Backendless.UserService.enableUser(testUserId)
+      const result2 = await Backendless.UserService.enableUser(123)
 
       expect(req1).to.deep.include({
         method : 'PUT',
@@ -114,19 +116,27 @@ describe('<Users> Basic', function() {
         }
       })
 
+      expect(req2).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/users/123/status`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          userStatus: 'ENABLED'
+        }
+      })
+
       expect(result1).to.be.eql(fakeResult)
+      expect(result2).to.be.eql(fakeResult)
     })
 
     it('should fail if userId is invalid', async () => {
-      const errorMsg = 'User objectId must be non empty string'
+      const errorMsg = 'User objectId must be non empty string/number'
 
       await expect(Backendless.UserService.disableUser()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser(false)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser('')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.UserService.disableUser(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.UserService.disableUser(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.disableUser(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
@@ -136,8 +146,6 @@ describe('<Users> Basic', function() {
       await expect(Backendless.UserService.enableUser(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.enableUser(false)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.enableUser('')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.UserService.enableUser(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.UserService.enableUser(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.enableUser({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.enableUser([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.UserService.enableUser(() => ({}))).to.eventually.be.rejectedWith(errorMsg)

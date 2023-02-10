@@ -295,8 +295,8 @@ export default class Users {
   }
 
   async updateUserStatus(userId, userStatus) {
-    if (!userId || typeof userId !== 'string') {
-      throw new Error('User objectId must be non empty string')
+    if (!userId || (typeof userId !== 'string' && typeof userId !== 'number')) {
+      throw new Error('User objectId must be non empty string/number')
     }
 
     if (!userStatus || typeof userStatus !== 'string') {

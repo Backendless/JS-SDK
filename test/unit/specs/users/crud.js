@@ -160,8 +160,23 @@ describe('<Users> CRUD', function() {
       expect(result1).to.be.equal(fakeResult)
     })
 
+    it('removes object by its id (number)', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await Backendless.Data.of(tableName).remove(123)
+
+      expect(req1).to.deep.include({
+        method : 'DELETE',
+        path   : `${APP_PATH}/data/${tableName}/123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.equal(fakeResult)
+    })
+
     it('fails when objectId is invalid', async () => {
-      const errorMsg = 'Object Id must be provided and must be a string.'
+      const errorMsg = 'Object Id must be provided and must be a string or number.'
 
       const dataStore = Backendless.Data.of(tableName)
 
@@ -171,8 +186,6 @@ describe('<Users> CRUD', function() {
       await expect(dataStore.remove(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.remove(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.remove(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove({})).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.remove(() => ({}))).to.eventually.be.rejectedWith(errorMsg)

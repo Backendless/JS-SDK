@@ -680,9 +680,9 @@ declare module Backendless {
 
         function createEmailConfirmationURL(identity: string | number): Promise<object>;
 
-        function enableUser(userId: string): Promise<void>;
+        function enableUser(userId: string | number): Promise<void>;
 
-        function disableUser(userId: string): Promise<void>;
+        function disableUser(userId: string | number): Promise<void>;
 
         function getAuthorizationUrlLink(providerCode: string, fieldsMapping?: object, scope?: string, redirect?: boolean, redirectAfterLoginUrl?: string, callbackUrlDomain?: string): Promise<string>;
     }
@@ -1433,7 +1433,7 @@ declare module Backendless {
 
         deepSave<T = object>(obj: T | object): Promise<T>;
 
-        remove(id: object | string): Promise<object>;
+        remove(id: object | string | number): Promise<object>;
 
         find<T = object>(obj?: Backendless.DataQueryBuilder | DataQueryI): Promise<Array<T>>;
 
@@ -1441,25 +1441,25 @@ declare module Backendless {
 
         countInGroup(obj?: Backendless.GroupQueryBuilder | GroupQueryI): Promise<number>;
 
-        findById<T = object>(objectId: string, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
+        findById<T = object>(objectId: string | number, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
         findById<T = object>(primaryKeys: object, query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
         findFirst<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
         findLast<T = object>(query?: Backendless.DataQueryBuilder | DataQueryI): Promise<T>;
 
-        loadRelations<T = object>(parent: string | object, query: Backendless.LoadRelationsQueryBuilder | RelationsQueryI): Promise<Array<T>>;
+        loadRelations<T = object>(parent: string | number | object, query: Backendless.LoadRelationsQueryBuilder | RelationsQueryI): Promise<Array<T>>;
 
         getObjectCount(query?: Backendless.DataQueryBuilder | string): Promise<number>
 
-        setRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
-        setRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
+        setRelation(parent: object | string | number, columnName: string, children: Array<object | string | number>): Promise<string>;
+        setRelation(parent: object | string | number, columnName: string, whereClause: string): Promise<string>;
 
-        addRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
-        addRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
+        addRelation(parent: object | string | number, columnName: string, children: Array<object | string | number>): Promise<string>;
+        addRelation(parent: object | string | number, columnName: string, whereClause: string): Promise<string>;
 
-        deleteRelation(parent: object, columnName: string, children: Array<object | string>): Promise<string>;
-        deleteRelation(parent: object, columnName: string, whereClause: string): Promise<string>;
+        deleteRelation(parent: object | string | number, columnName: string, children: Array<object | string | number>): Promise<string>;
+        deleteRelation(parent: object | string | number, columnName: string, whereClause: string): Promise<string>;
 
         bulkCreate(objects: Array<object>): Promise<Array<string>>;
 
@@ -1467,7 +1467,7 @@ declare module Backendless {
 
         bulkUpdate(whereClause: string, changes: object): Promise<string>;
 
-        bulkDelete(where: string | Array<string> | Array<{ objectId: string, [key: string]: any }>): Promise<string>;
+        bulkDelete(where: string | Array<string | number | { objectId: string | number, [key: string]: any }>): Promise<string>;
 
         rt(): EventHandler;
     }

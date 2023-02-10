@@ -191,7 +191,7 @@ describe('<Data> Find', function() {
       const result6 = await dataStore.findById('foo"bar')
       const result7 = await dataStore.findById('foo_абв_bar')
 
-      function buildPayload(objectIdInPath){
+      function buildPayload(objectIdInPath) {
         return {
           method : 'GET',
           path   : `${APP_PATH}/data/${tableName}/${objectIdInPath}`,
@@ -225,6 +225,36 @@ describe('<Data> Find', function() {
       expect(req1).to.deep.include({
         method : 'GET',
         path   : `${APP_PATH}/data/${tableName}/pk?objectId=${objectId}`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql(fakeResult)
+    })
+
+    it('with object with number', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await dataStore.findById({ objectId: 123 })
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/pk?objectId=123`,
+        headers: {},
+        body   : undefined
+      })
+
+      expect(result1).to.be.eql(fakeResult)
+    })
+
+    it('with number', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await dataStore.findById(123)
+
+      expect(req1).to.deep.include({
+        method : 'GET',
+        path   : `${APP_PATH}/data/${tableName}/123`,
         headers: {},
         body   : undefined
       })
@@ -323,15 +353,13 @@ describe('<Data> Find', function() {
     })
 
     it('fails when objectId is invalid', async () => {
-      const errorMsg = 'Object Id must be provided and must be a string or an object of primary keys.'
+      const errorMsg = 'Object Id must be provided and must be a string or number or an object of primary keys.'
 
       await expect(dataStore.findById()).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById(undefined)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById(null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById(true)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById(false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(dataStore.findById(123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById('')).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById([])).to.eventually.be.rejectedWith(errorMsg)
       await expect(dataStore.findById(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
