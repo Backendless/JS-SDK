@@ -10,9 +10,10 @@ export default class Logging {
 
   reset() {
     this.loggers = {}
-    this.pool = []
+    this.messages = []
     this.numOfMessages = 10
     this.timeFrequency = 1
+    this.messagesLimit = 100
   }
 
   getLogger(loggerName) {
@@ -28,19 +29,26 @@ export default class Logging {
   }
 
   async flush() {
-    if (!this.flushRequest && this.pool.length) {
+    if (!this.flushRequest && this.messages.length) {
       this.stopFlushInterval()
+
+      const messages = [...this.messages]
+
+      this.messages = []
 
       this.flushRequest = this.app.request
         .put({
           url : this.app.urls.logging(),
-          data: this.pool
+          data: messages
         })
-        .then(() => {
-          delete this.flushRequest
-        })
+        .catch(error => {
+          this.messages = [...messages, ...this.messages]
 
-      this.pool = []
+          this.checkMessagesLimit()
+
+          throw error
+        })
+        .finally(() => delete this.flushRequest)
     }
 
     return this.flushRequest
@@ -51,14 +59,21 @@ export default class Logging {
       throw new Error('"message" must be a string')
     }
 
-    this.pool.push({ logger, message, exception, 'log-level': logLevel, timestamp: Date.now() })
+    this.messages.push({ logger, message, exception, 'log-level': logLevel, timestamp: Date.now() })
 
+    this.checkMessagesLimit()
     this.checkMessagesLen()
   }
 
   checkMessagesLen() {
-    if (this.pool.length >= this.numOfMessages) {
+    if (this.messages.length >= this.numOfMessages) {
       this.startFlushInterval()
+    }
+  }
+
+  checkMessagesLimit() {
+    if (this.messages.length > this.messagesLimit) {
+      this.messages = this.messages.slice(this.messages.length - this.messagesLimit)
     }
   }
 
@@ -81,10 +96,20 @@ export default class Logging {
       this.stopFlushInterval()
     }
 
+    if (numOfMessages > this.messagesLimit) {
+      this.messagesLimit = numOfMessages
+    }
+
     this.numOfMessages = numOfMessages
     this.timeFrequency = timeFrequency
 
     this.checkMessagesLen()
+  }
+
+  setMessagesLimit(messagesLimit) {
+    this.messagesLimit = messagesLimit
+
+    this.checkMessagesLimit()
   }
 
 }

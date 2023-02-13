@@ -211,6 +211,170 @@ describe('<Logging>', function() {
     })
   })
 
+  it('should try to send next time if it was failed', async () => {
+    const req1 = prepareMockRequest(() => {
+      throw new Error('Test Error')
+    })
+
+    const req2 = prepareMockRequest()
+
+    Backendless.Logging.setLogReportingPolicy(1, 0.5)
+
+    logger.debug('debug message - 1')
+    logger.debug('debug message - 2')
+
+    await Utils.wait(1000)
+
+    expect(req1).to.deep.include({
+      method : 'PUT',
+      path   : `${APP_PATH}/log`,
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    expect(req1.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 1', timestamp: req1.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req1.body[1].timestamp }
+    ])
+
+    logger.debug('debug message - 3')
+
+    await Utils.wait(1000)
+
+    expect(req2.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 1', timestamp: req1.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req1.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req2.body[2].timestamp }
+    ])
+  })
+
+  it('should keep messages if they were not sent #1', async () => {
+    const req1 = prepareMockRequest(() => {
+      throw new Error('Test Error1')
+    })
+    const req2 = prepareMockRequest(() => {
+      throw new Error('Test Error2')
+    })
+    const req3 = prepareMockRequest()
+
+    Backendless.Logging.setLogReportingPolicy(2, 0.5)
+    Backendless.Logging.setMessagesLimit(5)
+
+    logger.debug('debug message - 1')
+    logger.debug('debug message - 2')
+
+    await Utils.wait(1000)
+
+    logger.debug('debug message - 3')
+    logger.debug('debug message - 4')
+
+    await Utils.wait(1000)
+
+    logger.debug('debug message - 5')
+    logger.debug('debug message - 6')
+
+    await Utils.wait(1000)
+
+    expect(req1.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 1', timestamp: req1.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req1.body[1].timestamp },
+    ])
+
+    expect(req2.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 1', timestamp: req2.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req2.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req2.body[2].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req2.body[3].timestamp },
+    ])
+
+    expect(req3.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req3.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req3.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req3.body[2].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req3.body[3].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req3.body[4].timestamp },
+    ])
+  })
+
+  it('should keep messages if they were not sent #2', async () => {
+    const req1 = prepareMockRequest(() => {
+      throw new Error('Test Error1')
+    })
+    const req2 = prepareMockRequest(() => {
+      throw new Error('Test Error2')
+    })
+    const req3 = prepareMockRequest()
+
+    Backendless.Logging.setLogReportingPolicy(2, 0.5)
+    Backendless.Logging.setMessagesLimit(5)
+
+    logger.debug('debug message - 1')
+    logger.debug('debug message - 2')
+    logger.debug('debug message - 3')
+
+    await Utils.wait(1000)
+
+    logger.debug('debug message - 4')
+    logger.debug('debug message - 5')
+    logger.debug('debug message - 6')
+
+    await Utils.wait(1000)
+
+    logger.debug('debug message - 7')
+    logger.debug('debug message - 8')
+
+    await Utils.wait(1000)
+
+    expect(req1.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 1', timestamp: req1.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req1.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req1.body[2].timestamp },
+    ])
+
+    expect(req2.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req2.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req2.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req2.body[2].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req2.body[3].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req2.body[4].timestamp },
+    ])
+
+    expect(req3.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req3.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req3.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req3.body[2].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 7', timestamp: req3.body[3].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 8', timestamp: req3.body[4].timestamp },
+    ])
+  })
+
+  it('should send 100 messages by default', async () => {
+    const req1 = prepareMockRequest()
+
+    Backendless.Logging.setLogReportingPolicy(2, 0.5)
+
+    for (let i = 1; i <= 100; i++) {
+      logger.debug(`debug message - ${i}`)
+    }
+
+    await Utils.wait(1000)
+
+    expect(req1.body).to.have.length(100)
+  })
+
+  it('should change max limit when setting numOfMessages', async () => {
+    const req1 = prepareMockRequest()
+
+    Backendless.Logging.setLogReportingPolicy(200, 0.5)
+
+    for (let i = 1; i <= 200; i++) {
+      logger.debug(`debug message - ${i}`)
+    }
+
+    await Utils.wait(1000)
+
+    expect(req1.body).to.have.length(200)
+  })
+
   it('should return the same request promise', async () => {
     prepareMockRequest(() => ({ delay: 2000 }))
 

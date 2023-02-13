@@ -944,6 +944,8 @@ declare module Backendless {
 
         function setLogReportingPolicy(numOfMessages: number, timeFrequencySec: number): void;
 
+        function setMessagesLimit(limit: number): void;
+
         function getLogger(name: string): Backendless.Logger;
     }
 

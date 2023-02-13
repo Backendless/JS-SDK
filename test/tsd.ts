@@ -1885,6 +1885,7 @@ function testLogging() {
     let logger: Backendless.Logger;
     const message: string = 'str';
     const exception: string = 'str';
+    let resultVoid: void;
 
     const restUrl: string = Backendless.Logging.restUrl;
     const loggers: object = Backendless.Logging.loggers;
@@ -1893,7 +1894,8 @@ function testLogging() {
     const numOfMessages: number = Backendless.Logging.numOfMessages;
     const timeFrequency: number = Backendless.Logging.timeFrequency;
 
-    Backendless.Logging.setLogReportingPolicy(numOfMessagesValue, timeFrequencySecValue);
+    resultVoid = Backendless.Logging.setLogReportingPolicy(numOfMessagesValue, timeFrequencySecValue);
+    resultVoid = Backendless.Logging.setMessagesLimit(123);
 
     logger = Backendless.Logging.getLogger(loggerName);
     logger.debug(message);
