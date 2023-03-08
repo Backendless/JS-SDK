@@ -732,10 +732,13 @@ declare module Backendless {
 
         /**
          * @public
+         * @interface Backendless.Management.Data
          */
         interface Data {
-            createTable (name: string, columns: Array<object>): Promise<void>;
+            createTable(name: string, columns: Array<object>): Promise<void>;
         }
+
+        const Data: Data
     }
 
     /**

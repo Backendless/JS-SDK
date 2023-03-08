@@ -1,6 +1,6 @@
 export default class Data {
-  constructor(managementService) {
-    this.app = managementService.app
+  constructor(app) {
+    this.app = app
   }
 
   createTable(name, columns) {
