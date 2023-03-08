@@ -726,6 +726,20 @@ declare module Backendless {
 
     /**
      * @public
+     * @namespace Backendless.Management
+     **/
+    namespace Management {
+
+        /**
+         * @public
+         */
+        interface Data {
+            createTable (name: string, columns: Array<object>): Promise<void>;
+        }
+    }
+
+    /**
+     * @public
      * @namespace Backendless.Files
      **/
     namespace Files {

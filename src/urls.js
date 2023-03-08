@@ -367,4 +367,17 @@ export default class Urls {
   userStatus(userId) {
     return `${this.userObject(userId)}/status`
   }
+
+  //management
+  management() {
+    return `${this.root()}/management`
+  }
+
+  managementData() {
+    return `${this.management()}/data`
+  }
+
+  managementDataTable() {
+    return `${this.managementData()}/table`
+  }
 }

@@ -82,6 +82,7 @@ const SERVICES = {
   'SharedObject': () => require('./rso').default,
   'LocalCache'  : () => require('./local-cache').default,
   'UnitOfWork'  : () => require('./unit-of-work').default,
+  'Management'  : () => require('./management').default,
 }
 
 class Backendless {
@@ -414,6 +415,10 @@ class Backendless {
 
   get UnitOfWork() {
     return this.__getService('UnitOfWork')
+  }
+
+  get Management() {
+    return this.__getService('Management')
   }
 
   ///-------------- SERVICES -------------///
