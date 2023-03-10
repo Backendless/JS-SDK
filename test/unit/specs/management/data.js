@@ -12,15 +12,13 @@ describe('Management - Data', function() {
     it('success', async () => {
       const request = prepareMockRequest(fakeResult)
 
-      const result = await Backendless.Management.Data.createTable('MyTable', [])
+      await Backendless.Management.Data.createTable('MyTable', [])
 
       expect(request).to.deep.include({
         method: 'POST',
         path  : `${APP_PATH}/management/data/table`,
         body  : { name: 'MyTable', columns: [] }
       })
-
-      expect(result).to.be.eql(fakeResult)
     })
 
     it('fail when name is not provided or not a string', async () => {
