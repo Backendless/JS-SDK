@@ -1909,6 +1909,15 @@ function testLogging() {
     logger.trace(message);
 }
 
+function testManagementData() {
+    const str: string = 'str';
+    const arr: any[] = [];
+
+    let promiseVoid: Promise<void>;
+
+    promiseVoid = Backendless.Management.Data.createTable(str, arr);
+}
+
 ////// ------ RT ------- ///////
 
 function RTClient() {
