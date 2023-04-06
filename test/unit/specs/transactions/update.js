@@ -64,6 +64,47 @@ describe('<Transactions> Update Operation', function() {
     expect(opResult.result).to.equal(opResult.getResult()).to.equal(results.updatePerson1.result)
   })
 
+  it('updates one map-object with expression', async () => {
+    const obj = {
+      objectId: 'test-objectId',
+      name    : 'p-name',
+      age     : new Backendless.Expression('age + 1')
+    }
+
+    const results = {
+      updatePerson1: {
+        operationType: 'UPDATE',
+        result       : obj
+      }
+    }
+
+    const req1 = prepareSuccessResponse(results)
+
+    const opResult = uow.update(PERSONS_TABLE_NAME, obj)
+
+    await uow.execute()
+
+    expect(req1.body).to.deep.include({
+      operations: [
+        {
+          opResultId   : 'updatePerson1',
+          operationType: 'UPDATE',
+          table        : 'Person',
+          payload      : {
+            objectId: 'test-objectId',
+            name    : 'p-name',
+            age     : {
+              ___class: 'BackendlessExpression',
+              value   : 'age + 1',
+            }
+          },
+        }
+      ]
+    })
+
+    expect(opResult.result).to.equal(opResult.getResult()).to.equal(results.updatePerson1.result)
+  })
+
   it('updates one instance-object', async () => {
     const obj = new Person({ objectId: 'test-objectId', name: 'p-name' })
 

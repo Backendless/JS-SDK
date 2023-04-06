@@ -3,6 +3,7 @@ import Request from 'backendless-request'
 import APIRequest from './request'
 import Urls from './urls'
 import Utils from './utils'
+import Expression from './expression'
 
 const DEFAULT_PROPS = {
   appId         : null,
@@ -501,6 +502,10 @@ class Backendless {
 
   get EmailEnvelope() {
     return this.Messaging.EmailEnvelope
+  }
+
+  get Expression() {
+    return Expression
   }
 
   ///--------BACKWARD COMPATIBILITY-------///

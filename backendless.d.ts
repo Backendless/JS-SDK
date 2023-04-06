@@ -1643,6 +1643,7 @@ declare module Backendless {
         update(opResult: OpResult | OpResultValueReference, changes: object): OpResult;
         update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: OpResultValueReference): OpResult;
         update(opResult: OpResult | OpResultValueReference, propertyName: string, propertyValue: number | string | boolean): OpResult;
+        update(opResult: OpResult | OpResultValueReference, propertyName: string, expression: Expression): OpResult;
 
         delete(opResult: OpResult | OpResultValueReference): OpResult;
         delete(object: object): OpResult;
@@ -1802,6 +1803,10 @@ declare module Backendless {
         deleteRelation(tableName: string, parentObjectId: string, columnName: string, children: OpResultValueReference[]): OpResult;
 
         execute(): Promise<UnitOfWorkResult>
+    }
+
+    class Expression {
+        constructor(value: string);
     }
 }
 

@@ -389,4 +389,29 @@ describe('Namespace', function() {
     })
 
   })
+
+  describe('Expressions', () => {
+
+    it('converts to JSON', () => {
+      const expression = new Backendless.Expression('age + 1')
+
+      expect(JSON.stringify(expression)).to.equal('{"___class":"BackendlessExpression","value":"age + 1"}')
+    })
+
+    it('should fail if value is invalid', () => {
+      const errorMsg = 'The Backendless.Expression class can be initialized with non empty string value only'
+
+      expect(() => new Backendless.Expression()).to.throw(errorMsg)
+      expect(() => new Backendless.Expression('')).to.throw(errorMsg)
+      expect(() => new Backendless.Expression(123)).to.throw(errorMsg)
+      expect(() => new Backendless.Expression(0)).to.throw(errorMsg)
+      expect(() => new Backendless.Expression(null)).to.throw(errorMsg)
+      expect(() => new Backendless.Expression(true)).to.throw(errorMsg)
+      expect(() => new Backendless.Expression(false)).to.throw(errorMsg)
+      expect(() => new Backendless.Expression({})).to.throw(errorMsg)
+      expect(() => new Backendless.Expression([])).to.throw(errorMsg)
+      expect(() => new Backendless.Expression(_ => _)).to.throw(errorMsg)
+    })
+  })
+
 })

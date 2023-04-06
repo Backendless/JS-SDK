@@ -1,4 +1,5 @@
 import Utils from '../utils'
+import Expression from '../expression'
 import RTHandlers from './rt-handlers'
 import DataQueryBuilder from './data-query-builder'
 import LoadRelationsQueryBuilder from './load-relations-query-builder'
@@ -393,7 +394,8 @@ const convertToServerRecord = (() => {
       } else if (
         source[prop] && typeof source[prop] === 'object'
         && !(source[prop] instanceof Geometry)
-        && !(source[prop] instanceof JSONUpdateBuilder)) {
+        && !(source[prop] instanceof JSONUpdateBuilder)
+        && !(source[prop] instanceof Expression)) {
 
         if (source[prop] instanceof Date) {
           target[prop] = source[prop].getTime()

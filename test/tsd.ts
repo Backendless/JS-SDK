@@ -464,6 +464,7 @@ function testDataStoreClass() {
     }
 
     promiseObject = dataStore.save(item);
+    promiseObject = dataStore.save({age: new Backendless.Expression('age + 1')});
     promiseObject = dataStore.save(item, true);
     promiseObject = dataStore.save(item, false);
     promisePerson = dataStore.save<Person>(person);
@@ -579,6 +580,7 @@ function testPersistence() {
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
+    promiseObject = Backendless.Data.save(dataStore, {age: new Backendless.Expression('age + 1')});
 
     promiseObject = Backendless.Data.deepSave('model', {});
     promiseObject = Backendless.Data.deepSave(dataStore, {});
@@ -689,6 +691,7 @@ function testData() {
 
     promiseObject = Backendless.Data.save('model', {});
     promiseObject = Backendless.Data.save(dataStore, {});
+    promiseObject = Backendless.Data.save(dataStore, {age: new Backendless.Expression('age + 1')});
 
     promiseObject = Backendless.Data.deepSave('model', {});
     promiseObject = Backendless.Data.deepSave(dataStore, {});
@@ -1221,6 +1224,7 @@ function testBulkOperations() {
     resultPromiseListOfString = dataStore.bulkUpsert([{}, {}, {}]);
 
     resultPromiseString = dataStore.bulkUpdate('where clause string', {foo: 'bar'});
+    resultPromiseString = dataStore.bulkUpdate('where clause string', {age: new Backendless.Expression('age + 1')});
 
     resultPromiseString = dataStore.bulkDelete('where clause string');
     resultPromiseString = dataStore.bulkDelete(['objectId1', {objectId: 'objectId1'}, 123]);
@@ -2245,12 +2249,14 @@ async function testBaseTransactions() {
     opResult = uow.update(personInst);
     opResult = uow.update(personClassName, personObj);
     opResult = uow.update(opResult, personObj);
+    opResult = uow.update(opResult, {age: new Backendless.Expression('age + 1')});
     opResult = uow.update(opResult, propertyName, propertyValueObj);
     opResult = uow.update(opResultValueReference, changesObj);
     opResult = uow.update(opResultValueReference, propertyName, opResultValueReference);
     opResult = uow.update(opResultValueReference, propertyName, 123);
     opResult = uow.update(opResultValueReference, propertyName, 'str');
     opResult = uow.update(opResultValueReference, propertyName, true);
+    opResult = uow.update(opResultValueReference, propertyName, new Backendless.Expression('age + 1'));
     ///
     opResult = uow.delete(opResult);
     opResult = uow.delete(opResultValueReference);
@@ -2268,6 +2274,7 @@ async function testBaseTransactions() {
     opResult = uow.bulkUpdate(personClassName, [personObj, personObj, personObj], changesObj);
     opResult = uow.bulkUpdate(personClassName, [personInst, personInst, personInst], changesObj);
     opResult = uow.bulkUpdate(opResult, changesObj);
+    opResult = uow.bulkUpdate(opResult, {age: new Backendless.Expression('age + 1')});
     ///
     opResult = uow.bulkDelete(personClassName, [changesObj, changesObj, changesObj]);
     opResult = uow.bulkDelete([personInst, personInst, personInst]);

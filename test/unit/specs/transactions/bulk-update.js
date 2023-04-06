@@ -82,6 +82,59 @@ describe('<Transactions> Bulk Update Operation', function() {
       expect(bulkUpdateOpResult.result).to.equal(bulkUpdateOpResult.getResult()).to.equal(results.update_bulkPerson1.result)
     })
 
+    it('bulkUpdate(opResult: OpResult, changes: object): OpResult with expression', async () => {
+      const results = {
+        findPerson1       : {
+          result: {}
+        },
+        update_bulkPerson1: {
+          result: {}
+        }
+      }
+
+      const req1 = prepareSuccessResponse(results)
+
+      const findOpResult = uow.find(PERSONS_TABLE_NAME)
+      const bulkUpdateOpResult = uow.bulkUpdate(findOpResult, {
+        foo: 333,
+        age: new Backendless.Expression('age + 1')
+      })
+
+      await uow.execute()
+
+      expect(req1.body.operations).to.have.length(2)
+
+      expect(req1.body.operations[0]).to.deep.include({
+        opResultId   : 'findPerson1',
+        operationType: 'FIND',
+        table        : 'Person',
+        payload      : {
+          queryOptions: {}
+        }
+      })
+
+      expect(req1.body.operations[1]).to.deep.include({
+        opResultId   : 'update_bulkPerson1',
+        operationType: 'UPDATE_BULK',
+        table        : 'Person',
+        payload      : {
+          changes      : {
+            foo: 333,
+            age: {
+              ___class: 'BackendlessExpression',
+              value   : 'age + 1',
+            },
+          },
+          unconditional: {
+            ___ref    : true,
+            opResultId: 'findPerson1'
+          }
+        }
+      })
+
+      expect(bulkUpdateOpResult.result).to.equal(bulkUpdateOpResult.getResult()).to.equal(results.update_bulkPerson1.result)
+    })
+
     it('bulkUpdate(whereClause: string, changes: object): OpResult', async () => {
       const results = {
         update_bulkPerson1: {
@@ -133,6 +186,68 @@ describe('<Transactions> Bulk Update Operation', function() {
       expect(opResult2.result).to.equal(opResult2.getResult()).to.equal(results.update_bulkPerson2.result)
     })
 
+    it('bulkUpdate(whereClause: string, changes: object): OpResult with expression', async () => {
+      const results = {
+        update_bulkPerson1: {
+          result: {}
+        },
+        update_bulkPerson2: {
+          result: {}
+        }
+      }
+
+      const req1 = prepareSuccessResponse(results)
+
+      const obj1 = { ___class: PERSONS_TABLE_NAME, name: 'p-name-1' }
+      const obj2 = new Person({ name: 'p-name-2' })
+
+      obj1.age = new Backendless.Expression('age + 1')
+      obj2.age = new Backendless.Expression('age + 2')
+
+      const opResult1 = uow.bulkUpdate('foo > 123', obj1)
+      const opResult2 = uow.bulkUpdate('foo > 123', obj2)
+
+      await uow.execute()
+
+      expect(req1.body.operations).to.have.length(2)
+
+      expect(req1.body.operations[0]).to.deep.include({
+        opResultId   : 'update_bulkPerson1',
+        operationType: 'UPDATE_BULK',
+        table        : 'Person',
+        payload      : {
+          conditional: 'foo > 123',
+          changes    : {
+            ___class: 'Person',
+            name    : 'p-name-1',
+            age     : {
+              ___class: 'BackendlessExpression',
+              value   : 'age + 1',
+            }
+          }
+        }
+      })
+
+      expect(req1.body.operations[1]).to.deep.include({
+        opResultId   : 'update_bulkPerson2',
+        operationType: 'UPDATE_BULK',
+        table        : 'Person',
+        payload      : {
+          conditional: 'foo > 123',
+          changes    : {
+            name: 'p-name-2',
+            age : {
+              ___class: 'BackendlessExpression',
+              value   : 'age + 2',
+            }
+          }
+        }
+      })
+
+      expect(opResult1.result).to.equal(opResult1.getResult()).to.equal(results.update_bulkPerson1.result)
+      expect(opResult2.result).to.equal(opResult2.getResult()).to.equal(results.update_bulkPerson2.result)
+    })
+
     it('bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult', async () => {
       const results = {
         update_bulkPerson1: {
@@ -156,6 +271,43 @@ describe('<Transactions> Bulk Update Operation', function() {
           conditional: 'foo > 123',
           changes    : {
             foo: 222,
+          }
+        }
+      })
+
+      expect(opResult1.result).to.equal(opResult1.getResult()).to.equal(results.update_bulkPerson1.result)
+    })
+
+    it('bulkUpdate(tableName: string, whereClause: string, changes: object): OpResult with expression', async () => {
+      const results = {
+        update_bulkPerson1: {
+          result: {}
+        }
+      }
+
+      const req1 = prepareSuccessResponse(results)
+
+      const opResult1 = uow.bulkUpdate(PERSONS_TABLE_NAME, 'foo > 123', {
+        foo: 222,
+        age: new Backendless.Expression('age + 1')
+      })
+
+      await uow.execute()
+
+      expect(req1.body.operations).to.have.length(1)
+
+      expect(req1.body.operations[0]).to.deep.include({
+        opResultId   : 'update_bulkPerson1',
+        operationType: 'UPDATE_BULK',
+        table        : 'Person',
+        payload      : {
+          conditional: 'foo > 123',
+          changes    : {
+            foo: 222,
+            age: {
+              ___class: 'BackendlessExpression',
+              value   : 'age + 1',
+            }
           }
         }
       })
@@ -193,6 +345,43 @@ describe('<Transactions> Bulk Update Operation', function() {
       expect(opResult1.result).to.equal(opResult1.getResult()).to.equal(results.update_bulkPerson1.result)
     })
 
+    it('bulkUpdate(tableName: string, objectIds: string[], changes: object): OpResult with expression', async () => {
+      const results = {
+        update_bulkPerson1: {
+          result: {}
+        }
+      }
+
+      const req1 = prepareSuccessResponse(results)
+
+      const opResult1 = uow.bulkUpdate(PERSONS_TABLE_NAME, ['objectId-1', 'objectId-2'], {
+        foo: 111,
+        age: new Backendless.Expression('age + 1')
+      })
+
+      await uow.execute()
+
+      expect(req1.body.operations).to.have.length(1)
+
+      expect(req1.body.operations[0]).to.deep.include({
+        opResultId   : 'update_bulkPerson1',
+        operationType: 'UPDATE_BULK',
+        table        : 'Person',
+        payload      : {
+          unconditional: ['objectId-1', 'objectId-2'],
+          changes      : {
+            foo: 111,
+            age: {
+              ___class: 'BackendlessExpression',
+              value   : 'age + 1',
+            }
+          },
+        }
+      })
+
+      expect(opResult1.result).to.equal(opResult1.getResult()).to.equal(results.update_bulkPerson1.result)
+    })
+
     it('bulkUpdate(tableName: string, objects: object[], changes: object): OpResult', async () => {
       const results = {
         update_bulkPerson1: {
@@ -216,6 +405,43 @@ describe('<Transactions> Bulk Update Operation', function() {
           unconditional: ['objectId-1', 'objectId-2'],
           changes      : {
             foo: 111
+          },
+        }
+      })
+
+      expect(opResult1.result).to.equal(opResult1.getResult()).to.equal(results.update_bulkPerson1.result)
+    })
+
+    it('bulkUpdate(tableName: string, objects: object[], changes: object): OpResult with expression', async () => {
+      const results = {
+        update_bulkPerson1: {
+          result: {}
+        }
+      }
+
+      const req1 = prepareSuccessResponse(results)
+
+      const opResult1 = uow.bulkUpdate(PERSONS_TABLE_NAME, [{ objectId: 'objectId-1' }, { objectId: 'objectId-2' }], {
+        foo: 111,
+        age: new Backendless.Expression('age + 1')
+      })
+
+      await uow.execute()
+
+      expect(req1.body.operations).to.have.length(1)
+
+      expect(req1.body.operations[0]).to.deep.include({
+        opResultId   : 'update_bulkPerson1',
+        operationType: 'UPDATE_BULK',
+        table        : 'Person',
+        payload      : {
+          unconditional: ['objectId-1', 'objectId-2'],
+          changes      : {
+            foo: 111,
+            age: {
+              ___class: 'BackendlessExpression',
+              value   : 'age + 1',
+            }
           },
         }
       })

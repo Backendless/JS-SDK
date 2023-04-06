@@ -330,6 +330,31 @@ describe('<Data> CRUD', function() {
       expect(result1).to.not.equal(savedObject)
     })
 
+    it('updates object with expression', async () => {
+      const savedObject = getTestObjectWithId()
+      savedObject.updatedProp = 'new-value'
+
+      const req1 = prepareMockRequest({ ...savedObject })
+
+      const result1 = await Backendless.Data.of(tableName).save({
+        ...savedObject,
+        age: new Backendless.Expression('age + 1')
+      })
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/${tableName}`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...savedObject,
+          age: { ___class: 'BackendlessExpression', value: 'age + 1' },
+        }
+      })
+
+      expect(result1).to.be.eql(savedObject)
+      expect(result1).to.not.equal(savedObject)
+    })
+
     it('creates object instance', async () => {
       const savedObject = getTestObjectWithId()
       savedObject.updatedProp = 'new-value'
@@ -343,6 +368,32 @@ describe('<Data> CRUD', function() {
         path   : `${APP_PATH}/data/ClassPerson`,
         headers: { 'Content-Type': 'application/json' },
         body   : savedObject
+      })
+
+      expect(result1).to.be.eql(savedObject)
+      expect(result1).to.be.instanceof(ClassPerson)
+      expect(result1).to.not.equal(savedObject)
+    })
+
+    it('creates object instance with expression', async () => {
+      const savedObject = getTestObjectWithId()
+      savedObject.updatedProp = 'new-value'
+
+      const req1 = prepareMockRequest({ ...savedObject })
+
+      const result1 = await Backendless.Data.of(ClassPerson).save({
+        ...savedObject,
+        age: new Backendless.Expression('age + 1')
+      })
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/ClassPerson`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...savedObject,
+          age: { ___class: 'BackendlessExpression', value: 'age + 1' },
+        }
       })
 
       expect(result1).to.be.eql(savedObject)
@@ -365,6 +416,32 @@ describe('<Data> CRUD', function() {
         path   : `${APP_PATH}/data/ClassPerson/upsert`,
         headers: { 'Content-Type': 'application/json' },
         body   : savedObject
+      })
+
+      expect(result1).to.be.eql(savedObject)
+      expect(result1).to.be.instanceof(ClassPerson)
+      expect(result1).to.not.equal(savedObject)
+    })
+
+    it('updates object with expression', async () => {
+      const savedObject = getTestObjectWithId()
+      savedObject.updatedProp = 'new-value'
+
+      const req1 = prepareMockRequest({ ...savedObject })
+
+      const result1 = await Backendless.Data.of(ClassPerson).save({
+        ...savedObject,
+        age: new Backendless.Expression('age + 1')
+      }, true)
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/ClassPerson/upsert`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : {
+          ...savedObject,
+          age: { ___class: 'BackendlessExpression', value: 'age + 1' },
+        }
       })
 
       expect(result1).to.be.eql(savedObject)

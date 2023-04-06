@@ -85,6 +85,21 @@ describe('<Data> Bulk Operations', function() {
       expect(result1).to.be.equal(fakeResult)
     })
 
+    it('updates objects with expression', async () => {
+      const req1 = prepareMockRequest(fakeResult)
+
+      const result1 = await dataStore.bulkUpdate('foo>123', { foo: 333, age: new Backendless.Expression('age + 1') })
+
+      expect(req1).to.deep.include({
+        method : 'PUT',
+        path   : `${APP_PATH}/data/bulk/${tableName}?where=foo%3E123`,
+        headers: { 'Content-Type': 'application/json' },
+        body   : { foo: 333, age: { ___class: 'BackendlessExpression', value: 'age + 1' } }
+      })
+
+      expect(result1).to.be.equal(fakeResult)
+    })
+
     it('fails when condition is invalid', async () => {
       const errorMsg = 'Condition must be provided and must be a string.'
 
