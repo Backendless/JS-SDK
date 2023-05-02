@@ -18,9 +18,11 @@ module.exports = {
     'bundle': './src/index.js'
   },
 
-  node: {
-    Buffer: false,
-    fs    : 'empty'
+  resolve: {
+    fallback: {
+      Buffer: false,
+      fs    : false,
+    }
   },
 
   module: {
