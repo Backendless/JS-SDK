@@ -67,7 +67,7 @@ const FilesUtils = {
   },
 
   async toBase64(content) {
-    if (typeof Blob !== 'undefined') {
+    if (typeof Blob !== 'undefined' && typeof FileReader !== 'undefined') {
       if (!(content instanceof Blob)) {
         content = new Blob([content], { type: '' })
       }
