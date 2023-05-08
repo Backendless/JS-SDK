@@ -27,6 +27,10 @@ export default class Urls {
     return `${this.root()}/log`
   }
 
+  loggingLevels() {
+    return `${this.logging()}/logger`
+  }
+
   //cache
 
   cache() {
