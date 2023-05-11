@@ -1,3 +1,14 @@
+const LogLevelPriorities = {
+  off  : 0,
+  fatal: 1,
+  error: 2,
+  warn : 3,
+  info : 4,
+  debug: 5,
+  trace: 6,
+  all  : 6,
+}
+
 export default class Logger {
 
   constructor(name, logging) {
@@ -6,26 +17,44 @@ export default class Logger {
   }
 
   debug(message) {
-    return this.logging.push(this.name, 'DEBUG', message)
+    return this.log('DEBUG', message)
   }
 
   info(message) {
-    return this.logging.push(this.name, 'INFO', message)
+    return this.log('INFO', message)
   }
 
   warn(message, exception) {
-    return this.logging.push(this.name, 'WARN', message, exception)
+    return this.log('WARN', message, exception)
   }
 
   error(message, exception) {
-    return this.logging.push(this.name, 'ERROR', message, exception)
+    return this.log('ERROR', message, exception)
   }
 
   fatal(message, exception) {
-    return this.logging.push(this.name, 'FATAL', message, exception)
+    return this.log('FATAL', message, exception)
   }
 
   trace(message) {
-    return this.logging.push(this.name, 'TRACE', message)
+    return this.log('TRACE', message)
+  }
+
+  log(level, message, exception) {
+    if (this.min(level)) {
+      return this.logging.push(this.name, level, message, exception)
+    }
+  }
+
+  min(level) {
+    const configuredLevel = this.logging.config.levels[this.name]
+
+    if (!configuredLevel) {
+      const { defaultLevel } = this.logging.config
+
+      return LogLevelPriorities[defaultLevel.toLowerCase()] >= LogLevelPriorities[level.toLowerCase()]
+    }
+
+    return LogLevelPriorities[configuredLevel.toLowerCase()] >= LogLevelPriorities[level.toLowerCase()]
   }
 }

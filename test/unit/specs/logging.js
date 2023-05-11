@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { forSuite, prepareMockRequest, APP_PATH, Utils } from '../helpers/sandbox'
+import Backendless, { API_KEY, APP_ID, forSuite, prepareMockRequest, APP_PATH, Utils } from '../helpers/sandbox'
 
 describe('<Logging>', function() {
 
@@ -429,5 +429,86 @@ describe('<Logging>', function() {
       'logger'   : loggerName,
       'message'  : 'debug message - 2',
     })
+  })
+
+  it('should apply default logging config', async () => {
+    logger.fatal('fatal message')
+    logger.error('error message')
+    logger.warn('warn message')
+    logger.info('info message')
+    logger.debug('debug message')
+    logger.trace('trace message')
+
+    const req = prepareMockRequest()
+
+    await Backendless.Logging.flush()
+
+    expect(req.body).to.deep.equal([
+      { 'log-level': 'FATAL', 'logger': loggerName, 'message': 'fatal message', timestamp: req.body[0].timestamp },
+      { 'log-level': 'ERROR', 'logger': loggerName, 'message': 'error message', timestamp: req.body[1].timestamp },
+      { 'log-level': 'WARN', 'logger': loggerName, 'message': 'warn message', timestamp: req.body[2].timestamp },
+      { 'log-level': 'INFO', 'logger': loggerName, 'message': 'info message', timestamp: req.body[3].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message', timestamp: req.body[4].timestamp },
+      { 'log-level': 'TRACE', 'logger': loggerName, 'message': 'trace message', timestamp: req.body[5].timestamp },
+    ])
+  })
+
+  it('should apply log levels to logging config', async () => {
+    prepareMockRequest([
+      {
+        name : loggerName,
+        level: 'FATAL'
+      }
+    ])
+
+    Backendless.initApp({
+      appId  : APP_ID,
+      apiKey : API_KEY,
+      logging: {
+        defaultLevel: 'info',
+        levels      : {
+          [loggerName]: 'warn'
+        }
+      }
+    })
+
+    const req = prepareMockRequest()
+
+    logger.debug('debug message')
+    logger.info('info message')
+    logger.fatal('fatal message')
+    logger.trace('trace message')
+
+    await Backendless.Logging.flush()
+
+    expect(req.body).to.deep.equal([
+      { 'log-level': 'FATAL', 'logger': loggerName, 'message': 'fatal message', timestamp: req.body[0].timestamp },
+    ])
+  })
+
+  it('should not load log levels', async () => {
+    Backendless.initApp({
+      appId  : APP_ID,
+      apiKey : API_KEY,
+      logging: {
+        loadLevels: false,
+      }
+    })
+
+    const req = prepareMockRequest()
+
+    logger.debug('debug message')
+    logger.info('info message')
+    logger.fatal('fatal message')
+    logger.trace('trace message')
+
+    await Backendless.Logging.flush()
+
+    expect(req.body).to.deep.equal([
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message', timestamp: req.body[0].timestamp },
+      { 'log-level': 'INFO', 'logger': loggerName, 'message': 'info message', timestamp: req.body[1].timestamp },
+      { 'log-level': 'FATAL', 'logger': loggerName, 'message': 'fatal message', timestamp: req.body[2].timestamp },
+      { 'log-level': 'TRACE', 'logger': loggerName, 'message': 'trace message', timestamp: req.body[3].timestamp },
+    ])
   })
 })

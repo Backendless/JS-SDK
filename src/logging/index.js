@@ -6,6 +6,16 @@ export default class Logging {
     this.app = app
 
     this.reset()
+
+    this.setConfig(app.loggingConfig)
+  }
+
+  setConfig(config) {
+    this.config = config
+
+    if (config.loadLevels) {
+      this.loadLoggingLevels()
+    }
   }
 
   reset() {
@@ -14,6 +24,20 @@ export default class Logging {
     this.numOfMessages = 10
     this.timeFrequency = 1
     this.messagesLimit = 100
+  }
+
+  loadLoggingLevels() {
+    this.app.request
+      .get({ url: this.app.urls.loggingLevels() })
+      .then(loggers => {
+        loggers.forEach(logger => {
+          this.config.levels[logger.name] = logger.level
+        })
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error('Could not load logging levels: ', error)
+      })
   }
 
   getLogger(loggerName) {

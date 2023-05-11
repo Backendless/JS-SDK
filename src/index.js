@@ -146,8 +146,11 @@ class Backendless {
 
     app.__removeService('LocalCache')
 
+    const loggingConfig = Object.assign({ loadLevels: true, defaultLevel: 'all', levels: {} }, config.logging)
+
     if (app.__hasService('Logging')) {
       app.Logging.reset()
+      app.Logging.setConfig(loggingConfig)
     }
 
     if (app.__hasService('Users')) {
@@ -155,6 +158,8 @@ class Backendless {
     }
 
     delete this.__device
+
+    app.loggingConfig = loggingConfig
 
     return app
   }
