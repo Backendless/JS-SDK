@@ -1337,6 +1337,7 @@ declare module Backendless {
         removeUpsertListeners(): Backendless.EventHandler;
 
         removeUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+        removeUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
 
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
@@ -1370,9 +1371,12 @@ declare module Backendless {
 
         addBulkUpsertListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+        addBulkUpsertListener(whereClause: string, callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkUpsertListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
 
         removeBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
-
+        removeBulkUpsertListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
+        removeBulkUpsertListeners(whereClause: string): Backendless.EventHandler;
         removeBulkUpsertListeners(): Backendless.EventHandler;
 
         addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
