@@ -1381,10 +1381,14 @@ declare module Backendless {
 
         addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
+        addBulkCreateListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
+        addBulkCreateListener(whereClause: string, callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
 
+        removeBulkCreateListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
         removeBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
 
         removeBulkCreateListeners(): Backendless.EventHandler;
+        removeBulkCreateListeners(whereClause: string): Backendless.EventHandler;
 
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;
