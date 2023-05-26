@@ -458,6 +458,10 @@ describe('<Logging>', function() {
       {
         name : loggerName,
         level: 'FATAL'
+      },
+      {
+        name: 'Global logger',
+        level: 'ERROR'
       }
     ])
 
@@ -472,6 +476,8 @@ describe('<Logging>', function() {
       }
     })
 
+    await Utils.wait(1000)
+
     const req = prepareMockRequest()
 
     logger.debug('debug message')
@@ -479,10 +485,16 @@ describe('<Logging>', function() {
     logger.fatal('fatal message')
     logger.trace('trace message')
 
+    const unregisteredLogger = Backendless.Logging.getLogger('unregistered')
+
+    unregisteredLogger.info('should not be flushed')
+    unregisteredLogger.error('should be flushed')
+
     await Backendless.Logging.flush()
 
     expect(req.body).to.deep.equal([
       { 'log-level': 'FATAL', 'logger': loggerName, 'message': 'fatal message', timestamp: req.body[0].timestamp },
+      { 'log-level': 'ERROR', 'logger': 'unregistered', 'message': 'should be flushed', timestamp: req.body[1].timestamp },
     ])
   })
 
