@@ -1,5 +1,7 @@
 import Logger from './logger'
 
+const GLOBAL_LOGGER_NAME = 'Global logger'
+
 export default class Logging {
 
   constructor(app) {
@@ -33,6 +35,8 @@ export default class Logging {
         loggers.forEach(logger => {
           this.config.levels[logger.name] = logger.level
         })
+
+        this.config.defaultLevel = this.config.levels[GLOBAL_LOGGER_NAME] || this.config.defaultLevel
       })
       .catch(error => {
         // eslint-disable-next-line no-console
