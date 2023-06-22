@@ -47,13 +47,7 @@ export default class Logger {
   }
 
   min(level) {
-    const configuredLevel = this.logging.config.levels[this.name]
-
-    if (!configuredLevel) {
-      const { defaultLevel } = this.logging.config
-
-      return LogLevelPriorities[defaultLevel.toLowerCase()] >= LogLevelPriorities[level.toLowerCase()]
-    }
+    const configuredLevel = this.logging.levels[this.name] || this.logging.defaultLevel
 
     return LogLevelPriorities[configuredLevel.toLowerCase()] >= LogLevelPriorities[level.toLowerCase()]
   }
