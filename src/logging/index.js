@@ -35,7 +35,7 @@ export default class Logging {
     this.messages = []
     this.numOfMessages = 10
     this.timeFrequency = 1
-    this.messagesLimit = 100
+    this.messagesLimit = 1000
   }
 
   loadLoggingLevels() {
@@ -99,7 +99,6 @@ export default class Logging {
 
     this.messages.push({ logger, message, exception, 'log-level': logLevel, timestamp: Date.now() })
 
-    this.checkMessagesLimit()
     this.checkMessagesLen()
   }
 

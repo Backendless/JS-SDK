@@ -144,7 +144,7 @@ const createSandboxFor = each => context => {
 
   beforeHook(() => {
     Backendless.serverURL = SERVER_URL
-    Backendless.initApp(APP_ID, API_KEY)
+    Backendless.initApp({ appId: APP_ID, apiKey: API_KEY, logging: { loadLevels: false } })
   })
 }
 

@@ -44,6 +44,37 @@ describe('<Logging>', function() {
     expect(logger === logger2).to.equal(true)
   })
 
+  it('send many sync messages more than limit', async () => {
+    const req1 = prepareMockRequest()
+
+    Backendless.Logging.setMessagesLimit(100)
+
+    for (let i = 1; i <= 200; i++) {
+      logger.debug(`m-${i}`)
+    }
+
+    await Backendless.Logging.flush()
+
+    expect(req1.body.map(b => b.message)).to.deep.equal([
+      'm-1', 'm-2', 'm-3', 'm-4', 'm-5', 'm-6', 'm-7', 'm-8', 'm-9', 'm-10', 'm-11', 'm-12', 'm-13', 'm-14', 'm-15',
+      'm-16', 'm-17', 'm-18', 'm-19', 'm-20', 'm-21', 'm-22', 'm-23', 'm-24', 'm-25', 'm-26', 'm-27', 'm-28', 'm-29',
+      'm-30', 'm-31', 'm-32', 'm-33', 'm-34', 'm-35', 'm-36', 'm-37', 'm-38', 'm-39', 'm-40', 'm-41', 'm-42', 'm-43',
+      'm-44', 'm-45', 'm-46', 'm-47', 'm-48', 'm-49', 'm-50', 'm-51', 'm-52', 'm-53', 'm-54', 'm-55', 'm-56', 'm-57',
+      'm-58', 'm-59', 'm-60', 'm-61', 'm-62', 'm-63', 'm-64', 'm-65', 'm-66', 'm-67', 'm-68', 'm-69', 'm-70', 'm-71',
+      'm-72', 'm-73', 'm-74', 'm-75', 'm-76', 'm-77', 'm-78', 'm-79', 'm-80', 'm-81', 'm-82', 'm-83', 'm-84', 'm-85',
+      'm-86', 'm-87', 'm-88', 'm-89', 'm-90', 'm-91', 'm-92', 'm-93', 'm-94', 'm-95', 'm-96', 'm-97', 'm-98', 'm-99',
+      'm-100', 'm-101', 'm-102', 'm-103', 'm-104', 'm-105', 'm-106', 'm-107', 'm-108', 'm-109', 'm-110', 'm-111',
+      'm-112', 'm-113', 'm-114', 'm-115', 'm-116', 'm-117', 'm-118', 'm-119', 'm-120', 'm-121', 'm-122', 'm-123',
+      'm-124', 'm-125', 'm-126', 'm-127', 'm-128', 'm-129', 'm-130', 'm-131', 'm-132', 'm-133', 'm-134', 'm-135',
+      'm-136', 'm-137', 'm-138', 'm-139', 'm-140', 'm-141', 'm-142', 'm-143', 'm-144', 'm-145', 'm-146', 'm-147',
+      'm-148', 'm-149', 'm-150', 'm-151', 'm-152', 'm-153', 'm-154', 'm-155', 'm-156', 'm-157', 'm-158', 'm-159',
+      'm-160', 'm-161', 'm-162', 'm-163', 'm-164', 'm-165', 'm-166', 'm-167', 'm-168', 'm-169', 'm-170', 'm-171',
+      'm-172', 'm-173', 'm-174', 'm-175', 'm-176', 'm-177', 'm-178', 'm-179', 'm-180', 'm-181', 'm-182', 'm-183',
+      'm-184', 'm-185', 'm-186', 'm-187', 'm-188', 'm-189', 'm-190', 'm-191', 'm-192', 'm-193', 'm-194', 'm-195',
+      'm-196', 'm-197', 'm-198', 'm-199', 'm-200',
+    ])
+  })
+
   it('send messages pool', async () => {
     const req1 = prepareMockRequest()
 
@@ -287,11 +318,12 @@ describe('<Logging>', function() {
     ])
 
     expect(req3.body).to.deep.equal([
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req3.body[0].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req3.body[1].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req3.body[2].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req3.body[3].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req3.body[4].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 1', timestamp: req3.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req3.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req3.body[2].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req3.body[3].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req3.body[4].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req3.body[5].timestamp },
     ])
   })
 
@@ -331,19 +363,22 @@ describe('<Logging>', function() {
     ])
 
     expect(req2.body).to.deep.equal([
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req2.body[0].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req2.body[1].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req2.body[2].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req2.body[3].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req2.body[4].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 1', timestamp: req2.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req2.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req2.body[2].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req2.body[3].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req2.body[4].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req2.body[5].timestamp },
     ])
 
     expect(req3.body).to.deep.equal([
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req3.body[0].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req3.body[1].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req3.body[2].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 7', timestamp: req3.body[3].timestamp },
-      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 8', timestamp: req3.body[4].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req3.body[0].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req3.body[1].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 4', timestamp: req3.body[2].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req3.body[3].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req3.body[4].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 7', timestamp: req3.body[5].timestamp },
+      { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 8', timestamp: req3.body[6].timestamp },
     ])
   })
 
@@ -460,7 +495,7 @@ describe('<Logging>', function() {
         level: 'FATAL'
       },
       {
-        name: 'Global logger',
+        name : 'Global logger',
         level: 'ERROR'
       }
     ])
@@ -494,7 +529,12 @@ describe('<Logging>', function() {
 
     expect(req.body).to.deep.equal([
       { 'log-level': 'FATAL', 'logger': loggerName, 'message': 'fatal message', timestamp: req.body[0].timestamp },
-      { 'log-level': 'ERROR', 'logger': 'unregistered', 'message': 'should be flushed', timestamp: req.body[1].timestamp },
+      {
+        'log-level': 'ERROR',
+        'logger'   : 'unregistered',
+        'message'  : 'should be flushed',
+        timestamp  : req.body[1].timestamp
+      },
     ])
   })
 
