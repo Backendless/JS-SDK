@@ -103,9 +103,17 @@ export default class Logging {
   }
 
   checkMessagesLen() {
-    if (this.messages.length >= this.numOfMessages) {
-      this.startFlushInterval()
+    if (this.checkMessagesLenTimer) {
+      clearTimeout(this.checkMessagesLenTimer)
     }
+
+    this.checkMessagesLenTimer = setTimeout(() => {
+      if (this.messages.length >= this.numOfMessages) {
+        this.flush()
+      } else {
+        this.startFlushInterval()
+      }
+    }, 0)
   }
 
   checkMessagesLimit() {

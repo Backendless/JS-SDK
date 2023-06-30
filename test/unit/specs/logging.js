@@ -44,6 +44,59 @@ describe('<Logging>', function() {
     expect(logger === logger2).to.equal(true)
   })
 
+  it('flush by time (default is 1 second)', async () => {
+    const req = prepareMockRequest({})
+
+    logger.debug('debug message')
+
+    await Utils.wait(1100)
+
+    expect(req).to.deep.include({
+      method : 'PUT',
+      path   : `${APP_PATH}/log`,
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    expect(req.body).to.deep.equal([
+      {
+        'log-level': 'DEBUG',
+        'logger'   : 'MY_LOGGER_NAME',
+        'message'  : 'debug message',
+        'timestamp': req.body[0].timestamp,
+      }
+    ])
+  })
+
+  it('flush by messages count (default is 10 messages)', async () => {
+    const req = prepareMockRequest({})
+
+    for (let i = 1; i <= 11; i++) {
+      logger.debug(`debug ${i}`)
+    }
+
+    await Utils.wait(100)
+
+    expect(req).to.deep.include({
+      method : 'PUT',
+      path   : `${APP_PATH}/log`,
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    expect(req.body.map(b => b.message)).to.deep.equal([
+      'debug 1',
+      'debug 2',
+      'debug 3',
+      'debug 4',
+      'debug 5',
+      'debug 6',
+      'debug 7',
+      'debug 8',
+      'debug 9',
+      'debug 10',
+      'debug 11',
+    ])
+  })
+
   it('send many sync messages more than limit', async () => {
     const req1 = prepareMockRequest()
 
@@ -53,7 +106,7 @@ describe('<Logging>', function() {
       logger.debug(`m-${i}`)
     }
 
-    await Backendless.Logging.flush()
+    await Utils.wait(100)
 
     expect(req1.body.map(b => b.message)).to.deep.equal([
       'm-1', 'm-2', 'm-3', 'm-4', 'm-5', 'm-6', 'm-7', 'm-8', 'm-9', 'm-10', 'm-11', 'm-12', 'm-13', 'm-14', 'm-15',
@@ -75,7 +128,7 @@ describe('<Logging>', function() {
     ])
   })
 
-  it('send messages pool', async () => {
+  it('flush messages pool', async () => {
     const req1 = prepareMockRequest()
 
     Backendless.Logging.setLogReportingPolicy(100, 100)
