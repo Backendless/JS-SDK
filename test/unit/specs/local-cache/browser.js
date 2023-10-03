@@ -10,7 +10,7 @@ describe('<LocalCache> Browser', function() {
   let cleanupDom
 
   beforeEach(() => {
-    cleanupDom = require('jsdom-global')('', { url: 'http://localhost' })
+    cleanupDom = require('global-jsdom')('', { url: 'http://localhost' })
 
     global.localStorage = window.localStorage
 

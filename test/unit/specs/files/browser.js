@@ -18,10 +18,15 @@ describe('<Files> Browser', function() {
 
   let cleanupDom
 
-  beforeEach(() => {
-    cleanupDom = require('jsdom-global')()
+  let BrowserFormData = null
 
-    FormData.toString = () => 'function FormData'
+  beforeEach(() => {
+    cleanupDom = require('global-jsdom')()
+
+    BrowserFormData = window.FormData
+    BrowserFormData.toString = () => 'function FormData'
+
+    Backendless.Request.FormData = BrowserFormData
 
     global.FileReader = class FileReader {
       readAsDataURL(content) {
@@ -42,6 +47,9 @@ describe('<Files> Browser', function() {
     cleanupDom()
 
     delete global.FileReader
+
+    BrowserFormData = null
+    Backendless.Request.FormData = null
   })
 
   describe('Save', () => {
@@ -116,10 +124,10 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req1.body.get('file')).to.be.equal(file)
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file')).to.be.equal(file)
     })
 
@@ -144,10 +152,10 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req1.body.get('file')).to.be.equal(file)
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file')).to.be.equal(file)
     })
 
@@ -172,10 +180,10 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req1.body.get('file')).to.be.equal(file)
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file')).to.be.equal(file)
     })
 
@@ -183,7 +191,7 @@ describe('<Files> Browser', function() {
       const req1 = prepareMockRequest({ resultFileURL })
       const req2 = prepareMockRequest({ resultFileURL })
 
-      const file = new Blob(Buffer.from('test-content'), { type: 'test-type' })
+      const file = new window.Blob(Buffer.from('test-content'), { type: 'test-type' })
 
       await Backendless.Files.upload(file, `${directoryPath}/test-name.txt`)
       await Backendless.Files.upload(file, `${directoryPathWithSlash}/test-name.txt`)
@@ -200,10 +208,10 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req1.body.get('file').type).to.be.equal('test-type')
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file').type).to.be.equal('test-type')
     })
 
@@ -221,7 +229,7 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req1.body.get('file')).to.be.equal(file)
     })
 
@@ -388,16 +396,16 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req1.body.get('file')).to.be.equal(file)
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file')).to.be.equal(file)
 
-      expect(req3.body).to.be.instanceof(FormData)
+      expect(req3.body).to.be.instanceof(BrowserFormData)
       expect(req3.body.get('file')).to.be.equal(file)
 
-      expect(req4.body).to.be.instanceof(FormData)
+      expect(req4.body).to.be.instanceof(BrowserFormData)
       expect(req4.body.get('file')).to.be.equal(file)
     })
 
@@ -422,10 +430,10 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req1.body.get('file')).to.be.equal(file)
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file')).to.be.equal(file)
     })
 
@@ -439,35 +447,35 @@ describe('<Files> Browser', function() {
 
       const result1 = await Backendless.Files.append('/test1/path1/', 'test1.txt', file)
       const result2 = await Backendless.Files.append('test2/path2/', 'test2.txt', file)
-      const result3= await Backendless.Files.append('/test3/path3', 'test3.txt', file)
+      const result3 = await Backendless.Files.append('/test3/path3', 'test3.txt', file)
       const result4 = await Backendless.Files.append('test4/path4', 'test4.txt', file)
 
       expect(req1).to.deep.include({
         method : 'PUT',
         path   : `${APP_PATH}/files/append/binary/test1/path1/test1.txt`,
         headers: { 'Content-Type': 'text/plain' },
-        body:'dGVzdC1jb250ZW50',
+        body   : 'dGVzdC1jb250ZW50',
       })
 
       expect(req2).to.deep.include({
         method : 'PUT',
         path   : `${APP_PATH}/files/append/binary/test2/path2/test2.txt`,
         headers: { 'Content-Type': 'text/plain' },
-        body:'dGVzdC1jb250ZW50',
+        body   : 'dGVzdC1jb250ZW50',
       })
 
       expect(req3).to.deep.include({
         method : 'PUT',
         path   : `${APP_PATH}/files/append/binary/test3/path3/test3.txt`,
         headers: { 'Content-Type': 'text/plain' },
-        body:'dGVzdC1jb250ZW50',
+        body   : 'dGVzdC1jb250ZW50',
       })
 
       expect(req4).to.deep.include({
         method : 'PUT',
         path   : `${APP_PATH}/files/append/binary/test4/path4/test4.txt`,
         headers: { 'Content-Type': 'text/plain' },
-        body:'dGVzdC1jb250ZW50',
+        body   : 'dGVzdC1jb250ZW50',
       })
 
       expect(result1).to.be.equal(resultFileURL)
@@ -489,14 +497,14 @@ describe('<Files> Browser', function() {
         method : 'PUT',
         path   : `${APP_PATH}/files/append/binary/test1/path1/test1.txt`,
         headers: { 'Content-Type': 'text/plain' },
-        body:'dGVzdC1jb250ZW50',
+        body   : 'dGVzdC1jb250ZW50',
       })
 
       expect(req2).to.deep.include({
         method : 'PUT',
         path   : `${APP_PATH}/files/append/binary/test2/path2/test2.txt`,
         headers: { 'Content-Type': 'text/plain' },
-        body:'dGVzdC1jb250ZW50',
+        body   : 'dGVzdC1jb250ZW50',
       })
 
       expect(result1).to.be.equal(resultFileURL)
@@ -509,7 +517,7 @@ describe('<Files> Browser', function() {
       const req3 = prepareMockRequest(resultFileURL)
       const req4 = prepareMockRequest(resultFileURL)
 
-      const file = new Blob(Buffer.from('test-content'), { type: 'test-type' })
+      const file = new window.Blob(Buffer.from('test-content'), { type: 'test-type' })
 
       await Backendless.Files.append('/test1/path1/', 'test1.txt', file)
       await Backendless.Files.append('test2/path2/', 'test2.txt', file)
@@ -540,16 +548,16 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file').type).to.be.equal('test-type')
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file').type).to.be.equal('test-type')
 
-      expect(req3.body).to.be.instanceof(FormData)
+      expect(req3.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file').type).to.be.equal('test-type')
 
-      expect(req4.body).to.be.instanceof(FormData)
+      expect(req4.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file').type).to.be.equal('test-type')
     })
 
@@ -557,7 +565,7 @@ describe('<Files> Browser', function() {
       const req1 = prepareMockRequest(resultFileURL)
       const req2 = prepareMockRequest(resultFileURL)
 
-      const file = new Blob(Buffer.from('test-content'), { type: 'test-type' })
+      const file = new window.Blob(Buffer.from('test-content'), { type: 'test-type' })
 
       await Backendless.Files.append('/test1/path1/test1.txt', file)
       await Backendless.Files.append('test2/path2/test2.txt', file)
@@ -574,10 +582,10 @@ describe('<Files> Browser', function() {
         headers: {},
       })
 
-      expect(req1.body).to.be.instanceof(FormData)
+      expect(req1.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file').type).to.be.equal('test-type')
 
-      expect(req2.body).to.be.instanceof(FormData)
+      expect(req2.body).to.be.instanceof(BrowserFormData)
       expect(req2.body.get('file').type).to.be.equal('test-type')
     })
 

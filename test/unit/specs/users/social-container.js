@@ -31,12 +31,12 @@ describe('<Users> Social Login with Container', function() {
     objectId = Utils.objectId()
     userToken = Utils.uid()
 
-    cleanupDom = require('jsdom-global')()
+    cleanupDom = require('global-jsdom')()
 
     openNewWindowWithError = null
 
     dispatchLoginEvent = (timeout, fault, origin) => setTimeout(() => {
-      const event = new Event('message')
+      const event = new window.Event('message')
 
       event.origin = origin || Backendless.serverURL
       event.data = JSON.stringify(fault ? { fault } : {
@@ -44,7 +44,6 @@ describe('<Users> Social Login with Container', function() {
         objectId,
         'user-token': userToken,
       })
-
       window.dispatchEvent(event)
     }, timeout || 200)
 

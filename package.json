@@ -75,8 +75,8 @@
     "cross-env": "^7.0.3",
     "eslint": "^7.28.0",
     "express": "^4.17.1",
-    "jsdom": "^16.6.0",
-    "jsdom-global": "^3.0.2",
+    "global-jsdom": "^9.1.0",
+    "jsdom": "^22.1.0",
     "mocha": "^8.4.0",
     "nyc": "^15.1.0",
     "request": "^2.88.2",
@@ -91,7 +91,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.21.5",
-    "backendless-request": "^0.5.2",
+    "backendless-request": "^0.7.1",
     "backendless-rt-client": "0.2.0"
   }
 }
