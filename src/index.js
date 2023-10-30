@@ -146,7 +146,7 @@ class Backendless {
 
     app.__removeService('LocalCache')
 
-    const loggingConfig = Object.assign({ loadLevels: true, defaultLevel: 'all', levels: {} }, config.logging)
+    const loggingConfig = Object.assign({ loadLevels: true, globalLevel: 'all', levels: {} }, config.logging)
 
     if (app.__hasService('Logging')) {
       app.Logging.reset()

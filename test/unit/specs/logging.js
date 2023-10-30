@@ -557,8 +557,8 @@ describe('<Logging>', function() {
       appId  : APP_ID,
       apiKey : API_KEY,
       logging: {
-        defaultLevel: 'info',
-        levels      : {
+        globalLevel: 'info',
+        levels     : {
           [loggerName]: 'warn'
         }
       }
@@ -589,6 +589,44 @@ describe('<Logging>', function() {
         timestamp  : req.body[1].timestamp
       },
     ])
+  })
+
+  it('should ignore all logs when global is OFF', async () => {
+    prepareMockRequest([
+      {
+        name : loggerName,
+        level: 'INFO'
+      },
+      {
+        name : 'Global logger',
+        level: 'OFF'
+      }
+    ])
+
+    Backendless.initApp({
+      appId  : APP_ID,
+      apiKey : API_KEY,
+      logging: {
+        globalLevel: 'info',
+        levels     : {
+          [loggerName]: 'warn'
+        }
+      }
+    })
+
+    await Utils.wait(1000)
+
+    logger.debug('debug message')
+    logger.info('info message')
+    logger.fatal('fatal message')
+    logger.trace('trace message')
+
+    const unregisteredLogger = Backendless.Logging.getLogger('unregistered')
+
+    unregisteredLogger.info('should not be flushed')
+    unregisteredLogger.error('should be flushed')
+
+    await Backendless.Logging.flush() // it won't send any request
   })
 
   it('should not load log levels', async () => {

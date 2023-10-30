@@ -19,8 +19,8 @@ export default class Logging {
       this.levels = config.levels
     }
 
-    if (config.defaultLevel) {
-      this.defaultLevel = config.defaultLevel
+    if (config.globalLevel) {
+      this.globalLevel = config.globalLevel
     }
 
     if (config.loadLevels) {
@@ -30,7 +30,7 @@ export default class Logging {
 
   reset() {
     this.levels = {}
-    this.defaultLevel = 'all'
+    this.globalLevel = 'all'
     this.loggers = {}
     this.messages = []
     this.numOfMessages = 10
@@ -41,12 +41,16 @@ export default class Logging {
   loadLoggingLevels() {
     this.app.request
       .get({ url: this.app.urls.loggingLevels() })
-      .then(loggers => {
-        loggers.forEach(logger => {
-          this.levels[logger.name] = logger.level
+      .then(loggersList => {
+        const loggers = {}
+
+        loggersList.forEach(logger => {
+          loggers[logger.name] = logger.level
         })
 
-        this.defaultLevel = this.levels[GLOBAL_LOGGER_NAME] || this.defaultLevel
+        const globalLevel = loggers[GLOBAL_LOGGER_NAME]
+
+        this.setConfig({ loggers, globalLevel })
       })
       .catch(error => {
         // eslint-disable-next-line no-console
