@@ -1522,6 +1522,15 @@ function testEmailEnvelope() {
     uniqueEmails = envelopeObject.getUniqueEmails();
 }
 
+function testAutomations() {
+    type TestObjType = { [x: string]: number }
+    const obj: TestObjType = {x: 1, y: 2};
+    const flowName: string = 'str';
+    let promiseObject: Promise<void>;
+
+    promiseObject = Backendless.Automations.activateFlowByName(flowName, obj);
+}
+
 function testMessaging() {
     const channelName: string = 'str';
     const deviceToken: string = 'str';
