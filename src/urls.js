@@ -9,8 +9,16 @@ export default class Urls {
 
   //automations
 
+  automation() {
+    return `${this.root()}/automation`
+  }
+
   automationFlow() {
-    return `${this.root()}/flow`
+    return `${this.automation()}/flow`
+  }
+
+  automationFlowTrigger(flowId, triggerId) {
+    return `${this.automationFlow()}/${flowId}/trigger/${triggerId}`
   }
 
   //bl

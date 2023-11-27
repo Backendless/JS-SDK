@@ -22,4 +22,23 @@ export default class Automations {
       }
     })
   }
+
+  async activateFlowTrigger(flowId, triggerId, data) {
+    if (!flowId || typeof flowId !== 'string') {
+      throw new Error('Flow ID must be provided and must be a string.')
+    }
+
+    if (!triggerId || typeof triggerId !== 'string') {
+      throw new Error('Trigger ID must be provided and must be a string.')
+    }
+
+    if (data !== undefined && !Utils.isObject(data)) {
+      throw new Error('Data must be object with arbitrary structure.')
+    }
+
+    return this.app.request.post({
+      url : `${this.app.urls.automationFlowTrigger(flowId, triggerId)}/activate`,
+      data,
+    })
+  }
 }
