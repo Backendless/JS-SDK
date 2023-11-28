@@ -7,11 +7,11 @@ export default class Automations {
 
   async activateFlowByName(flowName, initialData) {
     if (!flowName || typeof flowName !== 'string') {
-      throw new Error('Flow Name must be provided and must be a string.')
+      throw new Error('The "flowName" argument must be provided and must be a string.')
     }
 
     if (initialData !== undefined && !Utils.isObject(initialData)) {
-      throw new Error('Initial data must be object with arbitrary structure.')
+      throw new Error('The "initialData" argument must be an object with an arbitrary structure.')
     }
 
     return this.app.request.post({
@@ -25,15 +25,15 @@ export default class Automations {
 
   async activateFlowTrigger(flowId, triggerId, data) {
     if (!flowId || typeof flowId !== 'string') {
-      throw new Error('Flow ID must be provided and must be a string.')
+      throw new Error('The "flowId" argument must be provided and must be a string.')
     }
 
     if (!triggerId || typeof triggerId !== 'string') {
-      throw new Error('Trigger ID must be provided and must be a string.')
+      throw new Error('The "triggerId" argument must be provided and must be a string.')
     }
 
     if (data !== undefined && !Utils.isObject(data)) {
-      throw new Error('Data must be object with arbitrary structure.')
+      throw new Error('The "data" argument must be an object with an arbitrary structure.')
     }
 
     return this.app.request.post({

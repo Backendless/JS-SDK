@@ -39,7 +39,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when flow name is invalid', async () => {
-      const errorMsg = 'Flow Name must be provided and must be a string.'
+      const errorMsg = 'The "flowName" argument must be provided and must be a string.'
 
       await expect(Backendless.Automations.activateFlowByName()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowByName(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -55,7 +55,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when initial data is invalid', async () => {
-      const errorMsg = 'Initial data must be object with arbitrary structure.'
+      const errorMsg = 'The "initialData" argument must be an object with an arbitrary structure.'
 
       await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, true)).to.eventually.be.rejectedWith(errorMsg)
@@ -92,7 +92,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when flow ID is invalid', async () => {
-      const errorMsg = 'Flow ID must be provided and must be a string.'
+      const errorMsg = 'The "flowId" argument must be provided and must be a string.'
 
       await expect(Backendless.Automations.activateFlowTrigger()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTrigger(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -108,7 +108,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when trigger ID is invalid', async () => {
-      const errorMsg = 'Trigger ID must be provided and must be a string.'
+      const errorMsg = 'The "triggerId" argument must be provided and must be a string.'
 
       await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, )).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -124,7 +124,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when initial data is invalid', async () => {
-      const errorMsg = 'Data must be object with arbitrary structure.'
+      const errorMsg = 'The "data" argument must be an object with an arbitrary structure.'
 
       await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, true)).to.eventually.be.rejectedWith(errorMsg)
