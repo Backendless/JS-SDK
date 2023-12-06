@@ -610,6 +610,7 @@ declare module Backendless {
          */
 
         function activateFlow(flowName: string, initialData?: object): Promise<void>
+        function activateFlowTrigger(flowName: string, triggerName: string, data?: object): Promise<void>
     }
 
     /**
