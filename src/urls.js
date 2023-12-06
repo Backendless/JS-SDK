@@ -7,6 +7,20 @@ export default class Urls {
     return this.app.appPath
   }
 
+  //automations
+
+  automation() {
+    return `${this.root()}/automation`
+  }
+
+  automationFlow() {
+    return `${this.automation()}/flow`
+  }
+
+  automationFlowTrigger() {
+    return `${this.automationFlow()}/trigger`
+  }
+
   //bl
 
   blServices() {

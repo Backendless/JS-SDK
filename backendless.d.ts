@@ -601,6 +601,20 @@ declare module Backendless {
 
     /**
      * @public
+     * @namespace Backendless.Automations
+     */
+    namespace Automations {
+        /**
+         * @public
+         * @type: Function
+         */
+
+        function activateFlow(flowName: string, initialData?: object): Promise<void>
+        function activateFlowTrigger(flowName: string, triggerName: string, data?: object): Promise<void>
+    }
+
+    /**
+     * @public
      * @namespace Backendless.UserService
      **/
     namespace UserService {

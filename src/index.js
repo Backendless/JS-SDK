@@ -84,6 +84,7 @@ const SERVICES = {
   'LocalCache'  : () => require('./local-cache').default,
   'UnitOfWork'  : () => require('./unit-of-work').default,
   'Management'  : () => require('./management').default,
+  'Automations' : () => require('./automations').default,
 }
 
 class Backendless {
@@ -425,6 +426,10 @@ class Backendless {
 
   get Management() {
     return this.__getService('Management')
+  }
+
+  get Automations() {
+    return this.__getService('Automations')
   }
 
   ///-------------- SERVICES -------------///
