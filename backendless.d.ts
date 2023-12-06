@@ -609,7 +609,7 @@ declare module Backendless {
          * @type: Function
          */
 
-        function activateFlowByName(flowName: string, initialData?: object): Promise<void>
+        function activateFlow(flowName: string, initialData?: object): Promise<void>
     }
 
     /**

@@ -7,15 +7,14 @@ describe('<Automations> Basic', function() {
   forTest(this)
 
   const FLOW_NAME = 'FlowName'
-  const FLOW_ID = 'FlowID'
-  const TRIGGER_ID = 'FlowID'
+  const TRIGGER_NAME = 'TriggerName'
 
   describe('activate flow by name', function() {
     it('success', async () => {
       const req1 = prepareMockRequest()
       const req2 = prepareMockRequest()
-      await Backendless.Automations.activateFlowByName(FLOW_NAME)
-      await Backendless.Automations.activateFlowByName(FLOW_NAME, { name: 'Nick' })
+      await Backendless.Automations.activateFlow(FLOW_NAME)
+      await Backendless.Automations.activateFlow(FLOW_NAME, { name: 'Nick' })
 
       expect(req1).to.deep.include({
         method: 'POST',
@@ -41,31 +40,31 @@ describe('<Automations> Basic', function() {
     it('fails when flow name is invalid', async () => {
       const errorMsg = 'The "flowName" argument must be provided and must be a string.'
 
-      await expect(Backendless.Automations.activateFlowByName()).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(null)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName('')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName({})).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName([])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow()).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
     it('fails when initial data is invalid', async () => {
       const errorMsg = 'The "initialData" argument must be an object with an arbitrary structure.'
 
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, null)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, 0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, 123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, 'asd')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, '')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, [])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowByName(FLOW_NAME, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, 'asd')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlow(FLOW_NAME, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 
@@ -73,17 +72,17 @@ describe('<Automations> Basic', function() {
     it('success', async () => {
       const req1 = prepareMockRequest()
       const req2 = prepareMockRequest()
-      await Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID)
-      await Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, { name: 'Nick' })
+      await Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME)
+      await Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, { name: 'Nick' })
 
       expect(req1).to.deep.include({
         method: 'POST',
-        path  : `${APP_PATH}/automation/flow/${FLOW_ID}/trigger/${TRIGGER_ID}/activate`,
+        path  : `${APP_PATH}/automation/flow/trigger/activate-by-name?flowName=${FLOW_NAME}&triggerName=${TRIGGER_NAME}`,
       })
 
       expect(req2).to.deep.include({
         method: 'POST',
-        path  : `${APP_PATH}/automation/flow/${FLOW_ID}/trigger/${TRIGGER_ID}/activate`,
+        path  : `${APP_PATH}/automation/flow/trigger/activate-by-name?flowName=${FLOW_NAME}&triggerName=${TRIGGER_NAME}`,
         body  : {
           name: 'Nick',
         }
@@ -91,8 +90,8 @@ describe('<Automations> Basic', function() {
 
     })
 
-    it('fails when flow ID is invalid', async () => {
-      const errorMsg = 'The "flowId" argument must be provided and must be a string.'
+    it('fails when flow name is invalid', async () => {
+      const errorMsg = 'The "flowName" argument must be provided and must be a string.'
 
       await expect(Backendless.Automations.activateFlowTrigger()).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTrigger(undefined)).to.eventually.be.rejectedWith(errorMsg)
@@ -107,34 +106,34 @@ describe('<Automations> Basic', function() {
       await expect(Backendless.Automations.activateFlowTrigger(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    it('fails when trigger ID is invalid', async () => {
-      const errorMsg = 'The "triggerId" argument must be provided and must be a string.'
+    it('fails when trigger name is invalid', async () => {
+      const errorMsg = 'The "triggerName" argument must be provided and must be a string.'
 
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, )).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, undefined)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID,null)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, 0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, 123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, '')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, {})).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, [])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, )).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME,null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, {})).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
 
-    it('fails when initial data is invalid', async () => {
+    it('fails when data is invalid', async () => {
       const errorMsg = 'The "data" argument must be an object with an arbitrary structure.'
 
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, null)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, true)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, false)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, 0)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, 123)).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, 'asd')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, '')).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, [])).to.eventually.be.rejectedWith(errorMsg)
-      await expect(Backendless.Automations.activateFlowTrigger(FLOW_ID, TRIGGER_ID, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, 'asd')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, '')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 

@@ -17,8 +17,8 @@ export default class Urls {
     return `${this.automation()}/flow`
   }
 
-  automationFlowTrigger(flowId, triggerId) {
-    return `${this.automationFlow()}/${flowId}/trigger/${triggerId}`
+  automationFlowTrigger() {
+    return `${this.automationFlow()}/trigger`
   }
 
   //bl

@@ -5,7 +5,7 @@ export default class Automations {
     this.app = app
   }
 
-  async activateFlowByName(flowName, initialData) {
+  async activateFlow(flowName, initialData) {
     if (!flowName || typeof flowName !== 'string') {
       throw new Error('The "flowName" argument must be provided and must be a string.')
     }
@@ -23,13 +23,13 @@ export default class Automations {
     })
   }
 
-  async activateFlowTrigger(flowId, triggerId, data) {
-    if (!flowId || typeof flowId !== 'string') {
-      throw new Error('The "flowId" argument must be provided and must be a string.')
+  async activateFlowTrigger(flowName, triggerName, data) {
+    if (!flowName || typeof flowName !== 'string') {
+      throw new Error('The "flowName" argument must be provided and must be a string.')
     }
 
-    if (!triggerId || typeof triggerId !== 'string') {
-      throw new Error('The "triggerId" argument must be provided and must be a string.')
+    if (!triggerName || typeof triggerName !== 'string') {
+      throw new Error('The "triggerName" argument must be provided and must be a string.')
     }
 
     if (data !== undefined && !Utils.isObject(data)) {
@@ -37,7 +37,8 @@ export default class Automations {
     }
 
     return this.app.request.post({
-      url : `${this.app.urls.automationFlowTrigger(flowId, triggerId)}/activate`,
+      url : `${this.app.urls.automationFlowTrigger()}/activate-by-name`,
+      query: { flowName, triggerName },
       data,
     })
   }
