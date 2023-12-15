@@ -37,9 +37,9 @@ export default class Automations {
     }
 
     return this.app.request.post({
-      url : `${this.app.urls.automationFlowTrigger()}/activate-by-name`,
+      url  : `${this.app.urls.automationFlowTrigger()}/activate-by-name`,
       query: { flowName, triggerName },
-      data,
+      data : data || {},
     })
   }
 }

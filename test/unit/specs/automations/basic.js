@@ -78,6 +78,7 @@ describe('<Automations> Basic', function() {
       expect(req1).to.deep.include({
         method: 'POST',
         path  : `${APP_PATH}/automation/flow/trigger/activate-by-name?flowName=${FLOW_NAME}&triggerName=${TRIGGER_NAME}`,
+        body  : {},
       })
 
       expect(req2).to.deep.include({
