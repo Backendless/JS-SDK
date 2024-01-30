@@ -10,13 +10,14 @@ export function prepareSuccessResponse(results) {
   }))
 }
 
-export function prepareErrorResponse(message, operation) {
+export function prepareErrorResponse(message, operation, code) {
   return prepareMockRequest(() => ({
     body: {
       success: false,
       results: null,
       error  : {
         message,
+        code,
         operation
       },
     }

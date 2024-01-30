@@ -7,9 +7,10 @@ import { OpResult } from './op-result'
 import { OpResultValueReference } from './op-result-value-reference'
 
 class TransactionOperationError extends Error {
-  constructor(message, operation) {
-    super(message)
+  constructor(error, operation) {
+    super(error.message)
 
+    this.code = error.code
     this.operation = operation
   }
 
@@ -143,7 +144,7 @@ class UnitOfWork {
         return result.error.operation.opResultId === op.meta.opResult.getOpResultId()
       })
 
-      result.error = new TransactionOperationError(result.error.message, operation.meta.opResult)
+      result.error = new TransactionOperationError(result.error, operation.meta.opResult)
 
       operation.meta.opResult.setError(result.error)
     }

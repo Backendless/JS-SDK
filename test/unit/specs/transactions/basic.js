@@ -63,7 +63,7 @@ describe('<Transactions> Basic', function() {
       opResultId   : 'createPerson1',
       operationType: 'CREATE',
       payload      : obj,
-    })
+    }, 1234)
 
     const createOpResult = uow.create(PERSONS_TABLE_NAME, obj)
 
@@ -78,6 +78,7 @@ describe('<Transactions> Basic', function() {
     expect(createOpResult.error).to.equal(createOpResult.getError())
 
     expect(uowResult.error.operation).to.equal(createOpResult)
+    expect(uowResult.error.code).to.equal(1234)
   })
 
   it('converts a TransactionOperationError to JSON', async () => {
