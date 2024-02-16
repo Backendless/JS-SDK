@@ -1987,6 +1987,7 @@ function RTData() {
         .removeUpsertListeners()
         .removeUpsertListener<Person>((obj: Person) => undefined)
         .removeUpsertListener<Person>((obj: { foo: string }) => undefined)
+        .removeUpsertListener('whereClause', (obj: { foo: string }) => undefined)
 
 
     eventHandler
@@ -2062,9 +2063,13 @@ function RTData() {
     eventHandler
         .addBulkUpsertListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addBulkUpsertListener((list: string[]) => undefined)
+        .addBulkUpsertListener('whereClause', (list: string[]) => undefined)
+        .addBulkUpsertListener('whereClause', (list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
 
     eventHandler
         .removeBulkUpsertListener((list: string[]) => undefined)
+        .removeBulkUpsertListener('whereClause', (list: string[]) => undefined)
+        .removeBulkUpsertListeners('whereClause')
         .removeBulkUpsertListeners()
 
     eventHandler
