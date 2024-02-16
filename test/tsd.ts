@@ -1559,6 +1559,8 @@ function testMessaging() {
 
     channel = Backendless.Messaging.subscribe(channelName);
 
+    promiseObject = Backendless.Messaging.deleteChannel(channelName);
+
     promiseObject = Backendless.Messaging.publish(channelName, message, publishOptions, deliveryOptions);
 
     promiseObject = Backendless.Messaging.sendEmail(subject, bodyParts, recipients, attachments);

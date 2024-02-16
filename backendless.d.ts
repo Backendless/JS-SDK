@@ -711,6 +711,8 @@ declare module Backendless {
 
         function subscribe(channelName: string): ChannelClass;
 
+        function deleteChannel(channelName: string): Promise<object>;
+
         function publish(channelName: string, message: string | Object, publishOptions?: Backendless.PublishOptions, deliveryOptions?: Backendless.DeliveryOptions): Promise<Object>;
 
         function sendEmail(subject: string, bodyParts: Backendless.Bodyparts, recipients: string[], attachments?: string[]): Promise<object>;
