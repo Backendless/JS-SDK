@@ -97,11 +97,13 @@ export default class Logging {
   }
 
   push(logger, logLevel, message, exception) {
-    if (typeof message !== 'string') {
-      message = this.convertMessageToString(message)
-    }
-
-    this.messages.push({ logger, message, exception, 'log-level': logLevel, timestamp: Date.now() })
+    this.messages.push({
+      logger,
+      message: this.convertMessageToString(message),
+      exception,
+      'log-level': logLevel,
+      timestamp: Date.now()
+    })
 
     this.checkMessagesLen()
   }
@@ -168,5 +170,4 @@ export default class Logging {
 
     return message
   }
-
 }
