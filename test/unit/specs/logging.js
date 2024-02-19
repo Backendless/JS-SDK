@@ -246,7 +246,7 @@ describe('<Logging>', function() {
     logger.debug({foo: 'bar'})
     logger.debug(['foo', 123, true, false, null, undefined, { bar: 123 }])
 
-    await Utils.wait(1100)
+    await Backendless.Logging.flush()
 
     expect(req.body.map(b => b.message)).to.deep.equal([
       '0',
