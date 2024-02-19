@@ -212,19 +212,17 @@ describe('<Logging>', function() {
     expect(req1.body[4].exception).to.include('fatal exception')
   })
 
-  it('throws an error when message is not string', async () => {
-    const errorMsg = '"message" must be a string'
-
+  it('doesnt throw an error if the message is not a string', async () => {
     async function check(method) {
-      expect(() => logger[method](0)).to.throw(errorMsg)
-      expect(() => logger[method](123)).to.throw(errorMsg)
-      expect(() => logger[method](true)).to.throw(errorMsg)
-      expect(() => logger[method](false)).to.throw(errorMsg)
-      expect(() => logger[method](null)).to.throw(errorMsg)
-      expect(() => logger[method](undefined)).to.throw(errorMsg)
-      expect(() => logger[method](_ => _)).to.throw(errorMsg)
-      expect(() => logger[method]({ bar: 123 })).to.throw(errorMsg)
-      expect(() => logger[method](['foo', 123, true, false, null, undefined, { bar: 123 }])).to.throw(errorMsg)
+      expect(() => logger[method](0)).to.not.throw()
+      expect(() => logger[method](123)).to.not.throw()
+      expect(() => logger[method](true)).to.not.throw()
+      expect(() => logger[method](false)).to.not.throw()
+      expect(() => logger[method](null)).to.not.throw()
+      expect(() => logger[method](undefined)).to.not.throw()
+      expect(() => logger[method](_ => _)).to.not.throw()
+      expect(() => logger[method]({ bar: 123 })).to.not.throw()
+      expect(() => logger[method](['foo', 123, true, false, null, undefined, { bar: 123 }])).to.not.throw()
     }
 
     await check('debug')
@@ -233,6 +231,34 @@ describe('<Logging>', function() {
     await check('error')
     await check('fatal')
     await check('trace')
+  })
+
+  it('converts non-string values to strings', async () => {
+    const req = prepareMockRequest({})
+
+    logger.debug(0)
+    logger.debug(123)
+    logger.debug(true)
+    logger.debug(false)
+    logger.debug(null)
+    logger.debug(undefined)
+    logger.debug(_ => _)
+    logger.debug({foo: 'bar'})
+    logger.debug(['foo', 123, true, false, null, undefined, { bar: 123 }])
+
+    await Utils.wait(1100)
+
+    expect(req.body.map(b => b.message)).to.deep.equal([
+      '0',
+      '123',
+      "true",
+      "false",
+      "null",
+      undefined,
+      undefined,
+      "{\"foo\":\"bar\"}",
+      "[\"foo\",123,true,false,null,null,{\"bar\":123}]"
+    ])
   })
 
   it('send messages pool by timer', async () => {
