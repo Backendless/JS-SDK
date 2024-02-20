@@ -99,10 +99,10 @@ export default class Logging {
   push(logger, logLevel, message, exception) {
     this.messages.push({
       logger,
-      message: this.convertMessageToString(message),
+      message    : convertMessageToString(message),
       exception,
       'log-level': logLevel,
-      timestamp: Date.now()
+      timestamp  : Date.now()
     })
 
     this.checkMessagesLen()
@@ -162,12 +162,12 @@ export default class Logging {
 
     this.checkMessagesLimit()
   }
+}
 
-  convertMessageToString(message) {
-    if(typeof message !== 'string') {
-      message = JSON.stringify(message)
-    }
-
-    return message
+function convertMessageToString(message) {
+  if (typeof message !== 'string') {
+    return JSON.stringify(message)
   }
+
+  return message
 }
