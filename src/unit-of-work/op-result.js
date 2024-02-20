@@ -47,7 +47,11 @@ export class OpResult {
   }
 
   isObjectRef() {
-    return this.operationType === OperationType.CREATE || this.operationType === OperationType.UPDATE
+    return (
+      this.operationType === OperationType.CREATE ||
+      this.operationType === OperationType.UPDATE ||
+      this.operationType === OperationType.UPSERT
+    )
   }
 
   setOpResultId(opResultId) {
