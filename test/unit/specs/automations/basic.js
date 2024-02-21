@@ -56,7 +56,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when initial data is invalid', async () => {
-      const errorMsg = 'The "initialData" argument must be an object with an arbitrary structure.'
+      const errorMsg = 'The "initialData" argument must be an object.'
 
       await expect(Backendless.Automations.activateFlow(FLOW_NAME, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlow(FLOW_NAME, true)).to.eventually.be.rejectedWith(errorMsg)
@@ -110,7 +110,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when initial data is invalid', async () => {
-      const errorMsg = 'The "initialData" argument must be an object with an arbitrary structure.'
+      const errorMsg = 'The "initialData" argument must be an object.'
 
       await expect(Backendless.Automations.activateFlowById(FLOW_ID, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowById(FLOW_ID, true)).to.eventually.be.rejectedWith(errorMsg)
@@ -180,7 +180,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when data is invalid', async () => {
-      const errorMsg = 'The "data" argument must be an object with an arbitrary structure.'
+      const errorMsg = 'The "data" argument must be an object.'
 
       await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTrigger(FLOW_NAME, TRIGGER_NAME, true)).to.eventually.be.rejectedWith(errorMsg)
@@ -250,7 +250,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when data is invalid', async () => {
-      const errorMsg = 'The "data" argument must be an object with an arbitrary structure.'
+      const errorMsg = 'The "data" argument must be an object.'
 
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, true)).to.eventually.be.rejectedWith(errorMsg)
