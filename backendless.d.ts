@@ -610,7 +610,9 @@ declare module Backendless {
          */
 
         function activateFlow(flowName: string, initialData?: object): Promise<void>
+        function activateFlowById(flowId: string, initialData?: object): Promise<void>
         function activateFlowTrigger(flowName: string, triggerName: string, data?: object): Promise<void>
+        function activateFlowTriggerById(flowId: string, triggerId: string, data?: object): Promise<void>
     }
 
     /**
@@ -1353,6 +1355,7 @@ declare module Backendless {
         removeUpsertListeners(): Backendless.EventHandler;
 
         removeUpsertListener<T = object>(callback: (obj: T) => void): Backendless.EventHandler;
+        removeUpsertListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
 
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addCreateListener<T = object>(whereClause: string, callback: (obj: T) => void): Backendless.EventHandler;
@@ -1386,17 +1389,24 @@ declare module Backendless {
 
         addBulkUpsertListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
+        addBulkUpsertListener(whereClause: string, callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
+        addBulkUpsertListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
 
         removeBulkUpsertListener(callback: (list: string[]) => void): Backendless.EventHandler;
-
+        removeBulkUpsertListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
+        removeBulkUpsertListeners(whereClause: string): Backendless.EventHandler;
         removeBulkUpsertListeners(): Backendless.EventHandler;
 
         addBulkCreateListener(callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
+        addBulkCreateListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
+        addBulkCreateListener(whereClause: string, callback: (list: string[]) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
 
+        removeBulkCreateListener(whereClause: string, callback: (list: string[]) => void): Backendless.EventHandler;
         removeBulkCreateListener(callback: (list: string[]) => void): Backendless.EventHandler;
 
         removeBulkCreateListeners(): Backendless.EventHandler;
+        removeBulkCreateListeners(whereClause: string): Backendless.EventHandler;
 
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void, onError: (error: RTSubscriptionError) => void): Backendless.EventHandler;
         addBulkUpdateListener(whereClause: string, callback: (obj: RTBulkChangesSubscriptionResult) => void): Backendless.EventHandler;

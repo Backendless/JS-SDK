@@ -1526,11 +1526,15 @@ function testAutomations() {
     type TestObjType = { [x: string]: number }
     const obj: TestObjType = {x: 1, y: 2};
     const flowName: string = 'str';
+    const flowId: string = 'id';
     const triggerName: string = 'str';
+    const triggerId: string = 'id';
     let promiseObject: Promise<void>;
 
     promiseObject = Backendless.Automations.activateFlow(flowName, obj);
+    promiseObject = Backendless.Automations.activateFlowById(flowId, obj);
     promiseObject = Backendless.Automations.activateFlowTrigger(flowName, triggerName, obj);
+    promiseObject = Backendless.Automations.activateFlowTriggerById(flowId, triggerId, obj);
 }
 
 function testMessaging() {
@@ -1989,6 +1993,7 @@ function RTData() {
         .removeUpsertListeners()
         .removeUpsertListener<Person>((obj: Person) => undefined)
         .removeUpsertListener<Person>((obj: { foo: string }) => undefined)
+        .removeUpsertListener('whereClause', (obj: { foo: string }) => undefined)
 
 
     eventHandler
@@ -2064,9 +2069,13 @@ function RTData() {
     eventHandler
         .addBulkUpsertListener((list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
         .addBulkUpsertListener((list: string[]) => undefined)
+        .addBulkUpsertListener('whereClause', (list: string[]) => undefined)
+        .addBulkUpsertListener('whereClause', (list: string[]) => undefined, (error: Backendless.RTSubscriptionError) => undefined)
 
     eventHandler
         .removeBulkUpsertListener((list: string[]) => undefined)
+        .removeBulkUpsertListener('whereClause', (list: string[]) => undefined)
+        .removeBulkUpsertListeners('whereClause')
         .removeBulkUpsertListeners()
 
     eventHandler
