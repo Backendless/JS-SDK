@@ -58,7 +58,7 @@ export default class Messaging {
     validateChannelName(channelName)
 
     return this.app.request.delete({
-      url : this.app.urls.messagingChannelName(channelName),
+      url: this.app.urls.messagingChannelName(channelName),
     })
   }
 
