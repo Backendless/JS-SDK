@@ -11,7 +11,7 @@ export default class Automations {
     }
 
     if (initialData !== undefined && !Utils.isObject(initialData)) {
-      throw new Error('The "initialData" argument must be an object with an arbitrary structure.')
+      throw new Error('The "initialData" argument must be an object.')
     }
 
     return this.app.request.post({
@@ -20,6 +20,21 @@ export default class Automations {
         name: flowName,
         initialData,
       }
+    })
+  }
+
+  async activateFlowById(flowId, initialData) {
+    if (!flowId || typeof flowId !== 'string') {
+      throw new Error('The "flowId" argument must be provided and must be a string.')
+    }
+
+    if (initialData !== undefined && !Utils.isObject(initialData)) {
+      throw new Error('The "initialData" argument must be an object.')
+    }
+
+    return this.app.request.post({
+      url : `${this.app.urls.automationFlow()}/${flowId}/activate`,
+      data: initialData || {}
     })
   }
 
@@ -33,13 +48,32 @@ export default class Automations {
     }
 
     if (data !== undefined && !Utils.isObject(data)) {
-      throw new Error('The "data" argument must be an object with an arbitrary structure.')
+      throw new Error('The "data" argument must be an object.')
     }
 
     return this.app.request.post({
       url  : `${this.app.urls.automationFlowTrigger()}/activate-by-name`,
       query: { flowName, triggerName },
       data : data || {},
+    })
+  }
+
+  async activateFlowTriggerById(flowId, triggerId, data) {
+    if (!flowId || typeof flowId !== 'string') {
+      throw new Error('The "flowId" argument must be provided and must be a string.')
+    }
+
+    if (!triggerId || typeof triggerId !== 'string') {
+      throw new Error('The "triggerId" argument must be provided and must be a string.')
+    }
+
+    if (data !== undefined && !Utils.isObject(data)) {
+      throw new Error('The "data" argument must be an object.')
+    }
+
+    return this.app.request.post({
+      url : `${this.app.urls.automationFlow()}/${flowId}/trigger/${triggerId}/activate`,
+      data: data || {},
     })
   }
 }
