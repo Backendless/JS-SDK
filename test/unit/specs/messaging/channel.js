@@ -391,6 +391,43 @@ describe('<Messaging> Channel', function() {
 
   })
 
+  describe('Delete', () => {
+    it('deletes the specified channel', async () => {
+      const req1 = prepareMockRequest()
+
+      await Backendless.Messaging.deleteChannel(channelName)
+
+      expect(req1).to.deep.include({
+        method: 'DELETE',
+        path: `${APP_PATH}/messaging/channels/${channelName}`,
+      })
+    })
+
+    it('fails when channelName is invalid', async () => {
+      const errorMsg = 'Channel Name must be provided and must be a string.'
+
+      await expect( Backendless.Messaging.deleteChannel()).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel(undefined)).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel(null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel(true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel(false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel(0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel(123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel('')).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel({})).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel([])).to.eventually.be.rejectedWith(errorMsg)
+      await expect( Backendless.Messaging.deleteChannel(() => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+    it('fails when channelName has a slash char', async () => {
+      const errorMsg = 'Channel Name can not contain slash chars'
+
+      await expect(Backendless.Messaging.deleteChannel('/channelName')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Messaging.deleteChannel('channel/Name')).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Messaging.deleteChannel('channelName/')).to.eventually.be.rejectedWith(errorMsg)
+    })
+  })
+
   describe('Connection', () => {
     it('can join and leave the channel', async () => {
       const sub1Promise = rtClient.getNext_SUB_ON() // PUB_SUB_CONNECT

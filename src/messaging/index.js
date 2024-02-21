@@ -54,6 +54,14 @@ export default class Messaging {
     })
   }
 
+  async deleteChannel(channelName) {
+    validateChannelName(channelName)
+
+    return this.app.request.delete({
+      url: this.app.urls.messagingChannelName(channelName),
+    })
+  }
+
   async pushWithTemplate(templateName, templateValues) {
     if (!templateName || typeof templateName !== 'string') {
       throw new Error('Push Template Name must be provided and must be a string.')

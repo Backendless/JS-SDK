@@ -219,6 +219,14 @@ export default class Urls {
     return `${this.messaging()}/${channel}`
   }
 
+  messagingChannels() {
+    return `${this.messaging()}/channels`
+  }
+
+  messagingChannelName(channelName) {
+    return `${this.messagingChannels()}/${channelName}`
+  }
+
   messagingMessage(messageId) {
     return `${this.messaging()}/${messageId}`
   }
