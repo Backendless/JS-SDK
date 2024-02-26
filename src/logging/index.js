@@ -165,6 +165,14 @@ export default class Logging {
 }
 
 function convertMessageToString(message) {
+  if (typeof message === 'undefined') {
+    return 'undefined'
+  }
+
+  if (typeof message === 'function') {
+    return Object.prototype.toString.call(message)
+  }
+
   if (typeof message !== 'string') {
     return JSON.stringify(message)
   }

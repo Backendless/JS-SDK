@@ -237,27 +237,29 @@ describe('<Logging>', function() {
     const req = prepareMockRequest({})
 
     logger.debug(0)
+    logger.debug('4')
     logger.debug(123)
     logger.debug(true)
     logger.debug(false)
     logger.debug(null)
     logger.debug(undefined)
     logger.debug(_ => _)
-    logger.debug({foo: 'bar'})
+    logger.debug({ foo: 'bar' })
     logger.debug(['foo', 123, true, false, null, undefined, { bar: 123 }])
 
     await Backendless.Logging.flush()
 
     expect(req.body.map(b => b.message)).to.deep.equal([
       '0',
+      '4',
       '123',
-      "true",
-      "false",
-      "null",
-      undefined,
-      undefined,
-      "{\"foo\":\"bar\"}",
-      "[\"foo\",123,true,false,null,null,{\"bar\":123}]"
+      'true',
+      'false',
+      'null',
+      'undefined',
+      '[object Function]',
+      '{\"foo\":\"bar\"}',
+      '[\"foo\",123,true,false,null,null,{\"bar\":123}]'
     ])
   })
 
