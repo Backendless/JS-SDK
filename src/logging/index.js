@@ -97,11 +97,13 @@ export default class Logging {
   }
 
   push(logger, logLevel, message, exception) {
-    if (typeof message !== 'string') {
-      throw new Error('"message" must be a string')
-    }
-
-    this.messages.push({ logger, message, exception, 'log-level': logLevel, timestamp: Date.now() })
+    this.messages.push({
+      logger,
+      message    : convertMessageToString(message),
+      exception,
+      'log-level': logLevel,
+      timestamp  : Date.now()
+    })
 
     this.checkMessagesLen()
   }
@@ -160,5 +162,20 @@ export default class Logging {
 
     this.checkMessagesLimit()
   }
+}
 
+function convertMessageToString(message) {
+  if (typeof message === 'string') {
+    return message
+  }
+
+  if (typeof message === 'undefined') {
+    return 'undefined'
+  }
+
+  if (typeof message === 'function') {
+    return Object.prototype.toString.call(message)
+  }
+
+  return JSON.stringify(message)
 }
