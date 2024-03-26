@@ -36,12 +36,14 @@ describe('Namespace', function() {
       expect(() => Backendless.appId = 'appId').to.throw()
       expect(() => Backendless.apiKey = 'apiKey').to.throw()
       expect(() => Backendless.appPath = 'appPath').to.throw()
+      expect(() => Backendless.automationPath = 'automationPath').to.throw()
       expect(() => Backendless.standalone = 'standalone').to.throw()
       expect(() => Backendless.device = 'device').to.throw()
 
       expect(Backendless.appId).to.be.equal(APP_ID)
       expect(Backendless.apiKey).to.be.equal(API_KEY)
       expect(Backendless.appPath).to.be.equal(`http://foo.bar/${APP_ID}/${API_KEY}`)
+      expect(Backendless.automationPath).to.be.equal(`http://foo.bar/${APP_ID}/${API_KEY}`)
     })
   })
 
@@ -70,6 +72,32 @@ describe('Namespace', function() {
       expect(app1.apiKey).to.be.equal('apiKey-1')
       expect(app1.appPath).to.be.equal('http://my-server-url.com/appId-1/apiKey-1')
     })
+
+    it('has custom automationServerURL', () => {
+      const app1 = Backendless.initApp({
+        automationServerURL : 'http://my-automation-server-url.com',
+        appId     : 'appId-1',
+        apiKey    : 'apiKey-1',
+        standalone: true
+      })
+
+      expect(app1.appId).to.be.equal('appId-1')
+      expect(app1.apiKey).to.be.equal('apiKey-1')
+      expect(app1.automationPath).to.be.equal('http://my-automation-server-url.com/appId-1/apiKey-1')
+    })
+
+    it('should take default app path as automationServerURL when no value set', () => {
+      const app1 = Backendless.initApp({
+        serverURL : 'http://my-server-url.com',
+        appId     : 'appId-1',
+        apiKey    : 'apiKey-1',
+        standalone: true
+      })
+
+      expect(app1.appId).to.be.equal('appId-1')
+      expect(app1.apiKey).to.be.equal('apiKey-1')
+      expect(app1.automationPath).to.be.equal('http://my-server-url.com/appId-1/apiKey-1')
+    })
   })
 
   describe('Custom Domain', () => {
@@ -81,6 +109,7 @@ describe('Namespace', function() {
       expect(Backendless.apiKey).to.be.equal(null)
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
       expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
+      expect(Backendless.automationPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
       expect(Backendless.apiURI).to.be.equal('/api')
     })
 
@@ -91,6 +120,7 @@ describe('Namespace', function() {
       expect(Backendless.apiKey).to.be.equal(null)
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
       expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
+      expect(Backendless.automationPath).to.be.equal(`${CUSTOM_DOMAIN}/api`)
       expect(Backendless.apiURI).to.be.equal('/api')
     })
 
@@ -100,6 +130,7 @@ describe('Namespace', function() {
 
       expect(Backendless.domain).to.be.equal(CUSTOM_DOMAIN)
       expect(Backendless.appPath).to.be.equal(`${CUSTOM_DOMAIN}/my-api-uri`)
+      expect(Backendless.automationPath).to.be.equal(`${CUSTOM_DOMAIN}/my-api-uri`)
       expect(Backendless.apiURI).to.be.equal('/my-api-uri')
 
       Backendless.apiURI = undefined
@@ -373,6 +404,7 @@ describe('Namespace', function() {
       expect(Backendless.apiKey).to.be.equal(null)
       expect(Backendless.domain).to.be.equal('https://foo.com')
       expect(Backendless.appPath).to.be.equal('https://foo.com/api')
+      expect(Backendless.automationPath).to.be.equal('https://foo.com/api')
       expect(Backendless.apiURI).to.be.equal('/api')
 
       const appIdWarnMsg = 'getter/setter for Backendless.applicationId is deprecated, instead use Backendless.appId'

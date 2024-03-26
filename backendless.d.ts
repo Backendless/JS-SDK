@@ -7,9 +7,11 @@ declare module Backendless {
 
     let debugMode: boolean;
     let serverURL: string;
+    let automationServerURL: string;
     let appId: string;
     let apiKey: string;
     let appPath: string;
+    let automationPath: string;
     let domain: string;
     let apiURI: string;
     let XMLHttpRequest: any;
@@ -35,6 +37,7 @@ declare module Backendless {
         apiKey?: string;
         standalone?: boolean;
         serverURL?: string;
+        automationServerURL?: string;
         domain?: string;
         debugMode?: boolean;
         XMLHttpRequest?: XMLHttpRequest;

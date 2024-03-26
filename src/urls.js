@@ -10,7 +10,7 @@ export default class Urls {
   //automations
 
   automation() {
-    return `${this.root()}/automation`
+    return `${this.app.automationPath}/automation`
   }
 
   automationFlow() {
