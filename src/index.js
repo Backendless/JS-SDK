@@ -6,14 +6,15 @@ import Utils from './utils'
 import Expression from './expression'
 
 const DEFAULT_PROPS = {
-  appId         : null,
-  apiKey        : null,
-  serverURL     : 'https://api.backendless.com',
-  domain        : null,
-  apiURI        : '/api',
-  debugMode     : false,
-  standalone    : false,
-  XMLHttpRequest: typeof XMLHttpRequest !== 'undefined'
+  appId              : null,
+  apiKey             : null,
+  serverURL          : 'https://api.backendless.com',
+  automationServerURL: null,
+  domain             : null,
+  apiURI             : '/api',
+  debugMode          : false,
+  standalone         : false,
+  XMLHttpRequest     : typeof XMLHttpRequest !== 'undefined'
     ? XMLHttpRequest
     : undefined,
 }
@@ -226,8 +227,17 @@ class Backendless {
     return this.__serverURL
   }
 
-  set serverURL(serverURL) {
-    this.__serverURL = serverURL
+  set serverURL(url) {
+    this.__serverURL = url
+  }
+
+  ///--------automationServerURL-------///
+  get automationServerURL() {
+    return this.__automationServerURL
+  }
+
+  set automationServerURL(url) {
+    this.__automationServerURL = url
   }
 
   ///--------domain-------///
@@ -261,6 +271,20 @@ class Backendless {
     throw new Error(
       `Setting '${appPath}' value to Backendless.appPath directly is not possible, ` +
       'instead you must use Backendless.initApp(APP_ID, API_KEY) for setup the value'
+    )
+  }
+
+  get automationPath() {
+    if (!this.automationServerURL) {
+      return this.appPath
+    }
+
+    return [this.automationServerURL, this.appId, this.apiKey].join('/')
+  }
+
+  set automationPath(automationPath) {
+    throw new Error(
+      `Setting '${automationPath}' value to Backendless.automationPath directly is not possible`
     )
   }
 
