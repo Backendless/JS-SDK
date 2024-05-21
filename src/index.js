@@ -148,6 +148,8 @@ class Backendless {
 
     app.__removeService('LocalCache')
 
+    app.appInfoPromise()
+
     const loggingConfig = Object.assign({ loadLevels: true, globalLevel: 'all', levels: {} }, config.logging)
 
     if (app.__hasService('Logging')) {
@@ -164,6 +166,18 @@ class Backendless {
     app.loggingConfig = loggingConfig
 
     return app
+  }
+
+  appInfoPromise() {
+    if (!this.__appInfoPromise) {
+      this.__appInfoPromise = new Promise((resolve, reject) => {
+        this.request.get({ url: this.urls.appInfo() })
+          .then(resolve)
+          .catch(reject);
+      })
+    }
+
+    return this.__appInfoPromise
   }
 
   __hasService(name) {
