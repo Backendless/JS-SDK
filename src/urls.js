@@ -7,6 +7,12 @@ export default class Urls {
     return this.app.appPath
   }
 
+  // app info
+
+  appInfo() {
+    return `${this.root()}/info`
+  }
+
   //automations
 
   automation() {
