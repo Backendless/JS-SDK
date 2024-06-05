@@ -58,7 +58,7 @@ export default class Automations {
     })
   }
 
-  async activateFlowTriggerById(flowId, triggerId, data) {
+  async activateFlowTriggerById(flowId, triggerId, data, executionId) {
     if (!flowId || typeof flowId !== 'string') {
       throw new Error('The "flowId" argument must be provided and must be a string.')
     }
@@ -71,9 +71,20 @@ export default class Automations {
       throw new Error('The "data" argument must be an object.')
     }
 
+    if (executionId !== undefined && (typeof executionId !== 'string' || !executionId)) {
+      throw new Error('The "executionId" argument must be a non-empty string.')
+    }
+
+    const query = {}
+
+    if (executionId) {
+      query.executionId = executionId
+    }
+
     return this.app.request.post({
-      url : `${this.app.urls.automationFlow()}/${flowId}/trigger/${triggerId}/activate`,
-      data: data || {},
+      url  : `${this.app.urls.automationFlow()}/${flowId}/trigger/${triggerId}/activate`,
+      data : data || {},
+      query: query,
     })
   }
 }
