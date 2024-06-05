@@ -71,13 +71,13 @@ export default class Automations {
       throw new Error('The "data" argument must be an object.')
     }
 
-    if (executionId !== undefined && typeof executionId !== 'string') {
-      throw new Error('The "executionId" argument must be a string.')
+    if (executionId !== undefined && (typeof executionId !== 'string' || !executionId)) {
+      throw new Error('The "executionId" argument must not be an empty string.')
     }
 
     const query = {}
 
-    if (executionId !== undefined) {
+    if (executionId) {
       query.executionId = executionId
     }
 

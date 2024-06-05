@@ -276,7 +276,7 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when execution id is invalid', async () => {
-      const errorMsg = 'The "executionId" argument must be a string.'
+      const errorMsg = 'The "executionId" argument must not be an empty string.'
 
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, true)).to.eventually.be.rejectedWith(errorMsg)
@@ -285,6 +285,7 @@ describe('<Automations> Basic', function() {
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, 123)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, [])).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, '')).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 
