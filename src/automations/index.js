@@ -72,7 +72,7 @@ export default class Automations {
     }
 
     if (executionId !== undefined && (typeof executionId !== 'string' || !executionId)) {
-      throw new Error('The "executionId" argument must not be an empty string.')
+      throw new Error('The "executionId" argument must be a non-empty string.')
     }
 
     const query = {}
