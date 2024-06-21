@@ -615,7 +615,7 @@ declare module Backendless {
         function activateFlow(flowName: string, initialData?: object): Promise<void>
         function activateFlowById(flowId: string, initialData?: object): Promise<void>
         function activateFlowTrigger(flowName: string, triggerName: string, data?: object): Promise<void>
-        function activateFlowTriggerById(flowId: string, triggerId: string, data?: object, executionId?: string): Promise<void>
+        function activateFlowTriggerById(flowId: string, triggerId: string, data?: object, execution?: string): Promise<void>
     }
 
     /**

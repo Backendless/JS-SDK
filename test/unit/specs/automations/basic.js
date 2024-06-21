@@ -9,6 +9,8 @@ describe('<Automations> Basic', function() {
   const FLOW_NAME = 'FlowName'
   const FLOW_ID = 'FlowID'
   const EXECUTION_ID = 'ExecutionID'
+  const EXECUTION_ANY = 'activateAny'
+  const EXECUTION_ALL = 'activateAll'
   const TRIGGER_NAME = 'TriggerName'
   const TRIGGER_ID = 'TriggerID'
 
@@ -200,10 +202,14 @@ describe('<Automations> Basic', function() {
       const req1 = prepareMockRequest()
       const req2 = prepareMockRequest()
       const req3 = prepareMockRequest()
+      const req4 = prepareMockRequest()
+      const req5 = prepareMockRequest()
 
       await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID)
       await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' })
       await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' }, EXECUTION_ID)
+      await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' }, EXECUTION_ANY)
+      await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' }, EXECUTION_ALL)
 
       expect(req1).to.deep.include({
         method: 'POST',
@@ -222,6 +228,22 @@ describe('<Automations> Basic', function() {
       expect(req3).to.deep.include({
         method: 'POST',
         path  : `${APP_PATH}/automation/flow/${ FLOW_ID }/trigger/${ TRIGGER_ID }/activate?executionId=ExecutionID`,
+        body  : {
+          name: 'Nick',
+        }
+      })
+
+      expect(req4).to.deep.include({
+        method: 'POST',
+        path  : `${APP_PATH}/automation/flow/${ FLOW_ID }/trigger/${ TRIGGER_ID }/activate?activateAny=true`,
+        body  : {
+          name: 'Nick',
+        }
+      })
+
+      expect(req5).to.deep.include({
+        method: 'POST',
+        path  : `${APP_PATH}/automation/flow/${ FLOW_ID }/trigger/${ TRIGGER_ID }/activate?activateAll=true`,
         body  : {
           name: 'Nick',
         }
@@ -276,7 +298,8 @@ describe('<Automations> Basic', function() {
     })
 
     it('fails when execution id is invalid', async () => {
-      const errorMsg = 'The "executionId" argument must be a non-empty string.'
+      // eslint-disable-next-line
+      const errorMsg = 'The "execution" argument must be a non-empty string and must be one of this values: "activateAny", "activateAll" or executionId.'
 
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, true)).to.eventually.be.rejectedWith(errorMsg)
