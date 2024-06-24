@@ -74,7 +74,7 @@ export default class Automations {
     if (execution !== undefined && (typeof execution !== 'string' || !execution)) {
       throw new Error(
         // eslint-disable-next-line
-        'The "execution" argument must be a non-empty string and must be one of this values: "activateAny", "activateAll" or executionId.'
+        'The "execution" argument must be a non-empty string and must be one of this values: "activateAny", "activateAll" or Execution ID.'
       )
     }
 

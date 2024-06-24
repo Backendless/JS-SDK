@@ -299,7 +299,7 @@ describe('<Automations> Basic', function() {
 
     it('fails when execution id is invalid', async () => {
       // eslint-disable-next-line
-      const errorMsg = 'The "execution" argument must be a non-empty string and must be one of this values: "activateAny", "activateAll" or executionId.'
+      const errorMsg = 'The "execution" argument must be a non-empty string and must be one of this values: "activateAny", "activateAll" or Execution ID.'
 
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, null)).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, true)).to.eventually.be.rejectedWith(errorMsg)
