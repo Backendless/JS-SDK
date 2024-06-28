@@ -612,7 +612,7 @@ declare module Backendless {
          * @type: Function
          */
 
-        type Execution = 'activateAny' | 'activateAll' | string
+        type Execution = 'any' | 'all' | string
 
         function activateFlow(flowName: string, initialData?: object): Promise<void>
         function activateFlowById(flowId: string, initialData?: object): Promise<void>

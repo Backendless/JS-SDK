@@ -74,27 +74,14 @@ export default class Automations {
     if (execution !== undefined && (typeof execution !== 'string' || !execution)) {
       throw new Error(
         // eslint-disable-next-line
-        'The "execution" argument must be a non-empty string and must be one of this values: "activateAny", "activateAll" or Execution ID.'
+        'The "execution" argument must be a non-empty string and must be one of this values: "any", "all" or Execution ID.'
       )
-    }
-
-    const query = {}
-
-    switch (execution) {
-      case 'activateAny':
-        query.activateAny = true
-        break
-      case 'activateAll':
-        query.activateAll = true
-        break
-      default:
-        query.executionId = execution
     }
 
     return this.app.request.post({
       url  : `${this.app.urls.automationFlow()}/${flowId}/trigger/${triggerId}/activate`,
       data : data || {},
-      query: query,
+      query: { execution },
     })
   }
 }
