@@ -168,12 +168,12 @@ class Backendless {
     return app
   }
 
-  appInfoPromise() {
-    if (!this.__appInfoPromise) {
+  appInfoPromise(reset) {
+    if (reset || !this.__appInfoPromise) {
       this.__appInfoPromise = new Promise((resolve, reject) => {
         this.request.get({ url: this.urls.appInfo() })
           .then(resolve)
-          .catch(reject);
+          .catch(reject)
       })
     }
 

@@ -24,8 +24,8 @@ export default class RT extends BackendlessRTClient {
         }
       },
 
-      getAppInfo: async () => {
-        return await app.appInfoPromise()
+      hostResolver(){
+        return app.appInfoPromise().then(({ rtURL }) => rtURL)
       },
 
       socketConfigTransform: async socketConfig => {
