@@ -51,7 +51,7 @@ describe('<Users> Emails', function() {
 
     expect(req1).to.deep.include({
       method : 'POST',
-      path   : `${APP_PATH}/users/resendconfirmation/foo@bar.com`,
+      path   : `${APP_PATH}/users/resendconfirmation/foo%40bar.com`,
       headers: {},
       body   : undefined
     })
@@ -110,7 +110,7 @@ describe('<Users> Emails', function() {
 
     expect(req1).to.deep.include({
       method : 'POST',
-      path   : `${APP_PATH}/users/createEmailConfirmationURL/foo@bar.com`,
+      path   : `${APP_PATH}/users/createEmailConfirmationURL/foo%40bar.com`,
       headers: {},
       body   : undefined
     })
