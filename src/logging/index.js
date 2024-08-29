@@ -39,9 +39,9 @@ export default class Logging {
   }
 
   loadLoggingLevels() {
-    this.app.request
-      .get({ url: this.app.urls.loggingLevels() })
-      .then(loggersList => {
+    this.app.appInfoPromise()
+      .then(appInfo => {
+        const { loggers: loggersList } = appInfo
         const loggers = {}
 
         loggersList.forEach(logger => {
