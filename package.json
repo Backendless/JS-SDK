@@ -91,7 +91,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.21.5",
-    "backendless-request": "^0.7.5",
+    "backendless-request": "^0.7.9",
     "backendless-rt-client": "0.3.0"
   }
 }
