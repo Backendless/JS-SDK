@@ -17,6 +17,10 @@ export default class Urls {
     return `${this.automation()}/flow`
   }
 
+  automationFlowExecutionContext() {
+    return `${this.automation()}/flow/execution-context`
+  }
+
   automationFlowTrigger() {
     return `${this.automationFlow()}/trigger`
   }
