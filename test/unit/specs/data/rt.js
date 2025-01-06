@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import Backendless, { forTest, prepareMockRequest, createMockRTServer, Utils } from '../../helpers/sandbox'
+import Backendless, { forTest, createMockRTServer, Utils } from '../../helpers/sandbox'
 
 describe('<Data> RT', function() {
 
@@ -11,6 +11,7 @@ describe('<Data> RT', function() {
 
   const tableName = 'TEST_TABLE_NAME'
   const relationColumnName = 'TEST_REL_COLUMN_NAME'
+  const rtURL = 'http://localhost:12345'
 
   let rtClient
 
@@ -20,7 +21,9 @@ describe('<Data> RT', function() {
   beforeEach(async () => {
     rtClient = await createMockRTServer()
 
-    prepareMockRequest(rtClient.host)
+    Backendless.appInfoPromise = chai.spy(() =>
+      Promise.resolve({ rtURL })
+    )
 
     dataStore = Backendless.Data.of(tableName)
     rtHandlers = dataStore.rt()

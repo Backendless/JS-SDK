@@ -11,6 +11,7 @@ describe('<Messaging> Channel', function() {
 
   const channelName = 'TEST_CHANNEL_NAME'
   const message = 'TEST_MESSAGE'
+  const rtURL = 'http://localhost:12345'
 
   const fakeResult = { foo: 123 }
 
@@ -22,7 +23,9 @@ describe('<Messaging> Channel', function() {
   beforeEach(async () => {
     rtClient = await createMockRTServer()
 
-    prepareMockRequest(rtClient.host)
+    Backendless.appInfoPromise = chai.spy(() =>
+      Promise.resolve({ rtURL })
+    )
 
     channel = Backendless.Messaging.subscribe(channelName)
 
