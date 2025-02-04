@@ -1529,12 +1529,13 @@ function testAutomations() {
     const flowId: string = 'id';
     const triggerName: string = 'str';
     const triggerId: string = 'id';
+    const execution: string = 'id';
     let promiseObject: Promise<void>;
 
     promiseObject = Backendless.Automations.activateFlow(flowName, obj);
     promiseObject = Backendless.Automations.activateFlowById(flowId, obj);
     promiseObject = Backendless.Automations.activateFlowTrigger(flowName, triggerName, obj);
-    promiseObject = Backendless.Automations.activateFlowTriggerById(flowId, triggerId, obj);
+    promiseObject = Backendless.Automations.activateFlowTriggerById(flowId, triggerId, obj, execution);
 }
 
 function testMessaging() {

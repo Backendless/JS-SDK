@@ -8,6 +8,9 @@ describe('<Automations> Basic', function() {
 
   const FLOW_NAME = 'FlowName'
   const FLOW_ID = 'FlowID'
+  const EXECUTION_ID = 'ExecutionID'
+  const EXECUTION_ANY = 'any'
+  const EXECUTION_ALL = 'all'
   const TRIGGER_NAME = 'TriggerName'
   const TRIGGER_ID = 'TriggerID'
 
@@ -198,8 +201,15 @@ describe('<Automations> Basic', function() {
     it('success', async () => {
       const req1 = prepareMockRequest()
       const req2 = prepareMockRequest()
+      const req3 = prepareMockRequest()
+      const req4 = prepareMockRequest()
+      const req5 = prepareMockRequest()
+
       await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID)
       await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' })
+      await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' }, EXECUTION_ID)
+      await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' }, EXECUTION_ANY)
+      await Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, { name: 'Nick' }, EXECUTION_ALL)
 
       expect(req1).to.deep.include({
         method: 'POST',
@@ -210,6 +220,30 @@ describe('<Automations> Basic', function() {
       expect(req2).to.deep.include({
         method: 'POST',
         path  : `${APP_PATH}/automation/flow/${ FLOW_ID }/trigger/${ TRIGGER_ID }/activate`,
+        body  : {
+          name: 'Nick',
+        }
+      })
+
+      expect(req3).to.deep.include({
+        method: 'POST',
+        path  : `${APP_PATH}/automation/flow/${ FLOW_ID }/trigger/${ TRIGGER_ID }/activate?execution=ExecutionID`,
+        body  : {
+          name: 'Nick',
+        }
+      })
+
+      expect(req4).to.deep.include({
+        method: 'POST',
+        path  : `${APP_PATH}/automation/flow/${ FLOW_ID }/trigger/${ TRIGGER_ID }/activate?execution=any`,
+        body  : {
+          name: 'Nick',
+        }
+      })
+
+      expect(req5).to.deep.include({
+        method: 'POST',
+        path  : `${APP_PATH}/automation/flow/${ FLOW_ID }/trigger/${ TRIGGER_ID }/activate?execution=all`,
         body  : {
           name: 'Nick',
         }
@@ -261,6 +295,20 @@ describe('<Automations> Basic', function() {
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, '')).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, [])).to.eventually.be.rejectedWith(errorMsg)
       await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+    })
+
+    it('fails when execution id is invalid', async () => {
+      // eslint-disable-next-line
+      const errorMsg = 'The "execution" argument must be a non-empty string and must be one of this values: "any", "all" or Execution ID.'
+
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, null)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, true)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, false)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, 0)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, 123)).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, [])).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, () => ({}))).to.eventually.be.rejectedWith(errorMsg)
+      await expect(Backendless.Automations.activateFlowTriggerById(FLOW_ID, TRIGGER_ID, {}, '')).to.eventually.be.rejectedWith(errorMsg)
     })
   })
 
