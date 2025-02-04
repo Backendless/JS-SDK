@@ -81,7 +81,7 @@
     "nyc": "^15.1.0",
     "request": "^2.88.2",
     "rimraf": "^3.0.2",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.5.1",
     "terser-webpack-plugin": "^2.3.8",
     "typescript": "^4.5.4",
     "watch": "^1.0.2",
@@ -90,8 +90,8 @@
     "webpack-cli": "^5.0.2"
   },
   "dependencies": {
-    "@babel/runtime": "^7.21.5",
-    "backendless-request": "^0.7.1",
-    "backendless-rt-client": "0.3.0"
+    "@babel/runtime": "^7.26.7",
+    "backendless-request": "^0.8.0",
+    "backendless-rt-client": "0.5.0"
   }
 }
