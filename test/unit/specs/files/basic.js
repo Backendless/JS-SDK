@@ -689,14 +689,14 @@ describe('<Files> Basic', function() {
 
       expect(req1).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/files/test/path/`,
+        path   : `${APP_PATH}/files/test/path`,
         headers: {},
         body   : undefined
       })
 
       expect(req2).to.deep.include({
         method : 'POST',
-        path   : `${APP_PATH}/files/test/path/`,
+        path   : `${APP_PATH}/files/test/path`,
         headers: {},
         body   : undefined
       })

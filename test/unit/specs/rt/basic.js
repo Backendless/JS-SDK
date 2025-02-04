@@ -1,11 +1,13 @@
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
+import spies from 'chai-spies'
 import { describe, it } from 'mocha'
+
+chai.use(spies)
 
 import Backendless, {
   forTest,
   prepareMockRequest,
   createMockRTServer,
-  APP_PATH,
   API_KEY,
   Utils
 } from '../../helpers/sandbox'
@@ -19,12 +21,17 @@ describe('<RT> Basic', function() {
   let rtClient
 
   const channelName = 'TEST_CHANNEL_NAME'
+  const host = 'http://localhost:12345'
 
   describe('with AppID and API Key', function() {
     const backendlessApp = Backendless
 
     before(async () => {
       rtClient = await createMockRTServer()
+
+      backendlessApp.appInfoPromise = chai.spy(() =>
+        Promise.resolve({ rtURL: host })
+      )
     })
 
     after(async () => {
@@ -33,8 +40,8 @@ describe('<RT> Basic', function() {
       rtClient.stop()
     })
 
-    it('lookup', async () => {
-      const req1 = prepareMockRequest(rtClient.host)
+    it('connect and subscribe', async () => {
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
 
       backendlessApp.Messaging.subscribe(channelName)
 
@@ -46,17 +53,13 @@ describe('<RT> Basic', function() {
       expect(con1.userToken).to.be.equal(null)
       expect(con1.clientId).to.be.a('string')
 
-      expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${APP_PATH}/rt/lookup`,
-        headers: {},
-        body   : undefined
-      })
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
-    it('lookup with user token', async () => {
+    it('connected with user token', async () => {
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
+
       prepareMockRequest({ objectId: 'test-id', 'user-token': 'test-token-1' })
-      prepareMockRequest(rtClient.host)
 
       await backendlessApp.UserService.login('login', 'password')
 
@@ -67,12 +70,11 @@ describe('<RT> Basic', function() {
       expect(con1.apiKey).to.be.equal(API_KEY)
       expect(con1.userToken).to.be.equal('test-token-1')
       expect(con1.clientId).to.be.a('string')
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('reconnects after changing debug mode', async () => {
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest(rtClient.host)
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
 
       backendlessApp.Messaging.subscribe(channelName)
 
@@ -90,6 +92,10 @@ describe('<RT> Basic', function() {
         .to.be.equal(con2.clientId)
         .to.be.equal(con3.clientId)
 
+      expect(con1.connectionId)
+        .to.not.equal(con2.connectionId)
+        .to.not.equal(con3.connectionId)
+
       expect(con1.apiKey).to.be.equal(API_KEY)
       expect(con1.userToken).to.be.equal(null)
       expect(con1.clientId).to.be.a('string')
@@ -101,10 +107,13 @@ describe('<RT> Basic', function() {
       expect(con3.apiKey).to.be.equal(API_KEY)
       expect(con3.userToken).to.be.equal(null)
       expect(con3.clientId).to.be.a('string')
+
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('updates connection user-token after login/logout', async () => {
-      prepareMockRequest(rtClient.host)
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
+
       prepareMockRequest({ objectId: 'test-id-1', 'user-token': 'test-token-1' })
       prepareMockRequest({ objectId: 'test-id-2', 'user-token': 'test-token-2' })
       prepareMockRequest()
@@ -144,11 +153,12 @@ describe('<RT> Basic', function() {
       expect(met1.id).to.be.not.equal(met2.id)
       expect(met1.id).to.be.not.equal(met3.id)
       expect(met2.id).to.be.not.equal(met3.id)
+
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('should update connection user-token after setCurrentUserToken', async () => {
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest()
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
 
       backendlessApp.Messaging.subscribe(channelName)
 
@@ -173,6 +183,8 @@ describe('<RT> Basic', function() {
       expect(met2.id).to.be.a('string')
       expect(met2.name).to.be.equal('SET_USER_TOKEN')
       expect(met2.options).to.be.eql({ userToken: null })
+
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('should not set user-token after setCurrentUserToken', async () => {
@@ -196,6 +208,10 @@ describe('<RT> Basic', function() {
 
     before(async () => {
       rtClient = await createMockRTServer(rtAppId)
+
+      backendlessApp.appInfoPromise = chai.spy(() =>
+        Promise.resolve({ appId: rtAppId, apiKey: rtAPIKey, rtURL: host })
+      )
     })
 
     afterEach(async () => {
@@ -208,9 +224,8 @@ describe('<RT> Basic', function() {
       rtClient.stop()
     })
 
-    it('lookup', async () => {
-      const req1 = prepareMockRequest(rtClient.host)
-      const req2 = prepareMockRequest({ appId: rtAppId, apiKey: rtAPIKey })
+    it('connected', async () => {
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
 
       backendlessApp.Messaging.subscribe(channelName)
 
@@ -222,25 +237,13 @@ describe('<RT> Basic', function() {
       expect(con1.userToken).to.be.equal(null)
       expect(con1.clientId).to.be.a('string')
 
-      expect(req1).to.deep.include({
-        method : 'GET',
-        path   : `${domain}/api/rt/lookup`,
-        headers: {},
-        body   : undefined
-      })
-
-      expect(req2).to.deep.include({
-        method : 'GET',
-        path   : `${domain}/api/info`,
-        headers: {},
-        body   : undefined
-      })
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
-    it('lookup with user token', async () => {
+    it('connection with user token', async () => {
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
+
       prepareMockRequest({ objectId: 'test-id', 'user-token': 'test-token-1' })
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest({ appId: rtAppId, apiKey: rtAPIKey })
 
       await backendlessApp.UserService.login('login', 'password')
 
@@ -251,15 +254,12 @@ describe('<RT> Basic', function() {
       expect(con1.apiKey).to.be.equal(rtAPIKey)
       expect(con1.userToken).to.be.equal('test-token-1')
       expect(con1.clientId).to.be.a('string')
+
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('reconnects after changing debug mode', async () => {
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest({ appId: rtAppId, apiKey: rtAPIKey })
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest({ appId: rtAppId, apiKey: rtAPIKey })
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest({ appId: rtAppId, apiKey: rtAPIKey })
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
 
       backendlessApp.Messaging.subscribe(channelName)
 
@@ -277,6 +277,10 @@ describe('<RT> Basic', function() {
         .to.be.equal(con2.clientId)
         .to.be.equal(con3.clientId)
 
+      expect(con1.connectionId)
+        .to.not.equal(con2.connectionId)
+        .to.not.equal(con3.connectionId)
+
       expect(con1.apiKey).to.be.equal(rtAPIKey)
       expect(con1.userToken).to.be.equal(null)
       expect(con1.clientId).to.be.a('string')
@@ -288,11 +292,13 @@ describe('<RT> Basic', function() {
       expect(con3.apiKey).to.be.equal(rtAPIKey)
       expect(con3.userToken).to.be.equal(null)
       expect(con3.clientId).to.be.a('string')
+
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('updates connection user-token after login/logout', async () => {
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest({ appId: rtAppId, apiKey: rtAPIKey })
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
+
       prepareMockRequest({ objectId: 'test-id-1', 'user-token': 'test-token-1' })
       prepareMockRequest({ objectId: 'test-id-2', 'user-token': 'test-token-2' })
       prepareMockRequest()
@@ -332,11 +338,13 @@ describe('<RT> Basic', function() {
       expect(met1.id).to.be.not.equal(met2.id)
       expect(met1.id).to.be.not.equal(met3.id)
       expect(met2.id).to.be.not.equal(met3.id)
+
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('should update connection user-token after setCurrentUserToken', async () => {
-      prepareMockRequest(rtClient.host)
-      prepareMockRequest({ appId: rtAppId, apiKey: rtAPIKey })
+      expect(backendlessApp.appInfoPromise).to.not.have.been.called
+
       prepareMockRequest()
 
       backendlessApp.Messaging.subscribe(channelName)
@@ -362,6 +370,8 @@ describe('<RT> Basic', function() {
       expect(met2.id).to.be.a('string')
       expect(met2.name).to.be.equal('SET_USER_TOKEN')
       expect(met2.options).to.be.eql({ userToken: null })
+
+      expect(backendlessApp.appInfoPromise).to.have.been.called
     })
 
     it('should not set user-token after setCurrentUserToken', async () => {
