@@ -95,7 +95,9 @@ export function createMockRTServer(appId = APP_ID) {
     socket.on(RTSocketEvents.SUB_ON, data => onMessage(RTSocketEvents.SUB_ON, data))
     socket.on(RTSocketEvents.SUB_OFF, data => onMessage(RTSocketEvents.SUB_OFF, data))
 
-    onMessage(RTSocketEvents.CONNECT, { apiKey, clientId, userToken: userToken === 'null' ? null : userToken })
+    onMessage(RTSocketEvents.CONNECT, {
+      apiKey, clientId, userToken: userToken === 'null' ? null : userToken, connectionId: socket.id
+    })
   })
 
   const emit = (type, data) => {

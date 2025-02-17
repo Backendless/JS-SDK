@@ -570,16 +570,20 @@ describe('<Logging>', function() {
   })
 
   it('should apply log levels to logging config', async () => {
-    prepareMockRequest([
-      {
-        name : loggerName,
-        level: 'FATAL'
-      },
-      {
-        name : 'Global logger',
-        level: 'ERROR'
-      }
-    ])
+    Backendless.appInfoPromise = chai.spy(() =>
+      Promise.resolve({
+        loggers: [
+          {
+            name : loggerName,
+            level: 'FATAL'
+          },
+          {
+            name : 'Global logger',
+            level: 'ERROR'
+          }
+        ]
+      })
+    )
 
     Backendless.initApp({
       appId  : APP_ID,
@@ -620,16 +624,20 @@ describe('<Logging>', function() {
   })
 
   it('should ignore all logs when global is OFF', async () => {
-    prepareMockRequest([
-      {
-        name : loggerName,
-        level: 'INFO'
-      },
-      {
-        name : 'Global logger',
-        level: 'OFF'
-      }
-    ])
+    Backendless.appInfoPromise = chai.spy(() =>
+      Promise.resolve({
+        loggers: [
+          {
+            name : loggerName,
+            level: 'INFO'
+          },
+          {
+            name : 'Global logger',
+            level: 'OFF'
+          }
+        ]
+      })
+    )
 
     Backendless.initApp({
       appId  : APP_ID,
