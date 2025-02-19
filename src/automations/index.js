@@ -29,10 +29,7 @@ export default class Automations {
     }
 
     return this.app.request.get({
-      url  : this.app.urls.automationFlowExecutionContext(),
-      query: {
-        executionId,
-      }
+      url  : this.app.urls.automationFlowExecutionContext(executionId),
     })
   }
 

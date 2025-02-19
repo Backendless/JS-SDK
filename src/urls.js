@@ -23,8 +23,8 @@ export default class Urls {
     return `${this.automation()}/flow`
   }
 
-  automationFlowExecutionContext() {
-    return `${this.automation()}/flow/execution-context`
+  automationFlowExecutionContext(executionId) {
+    return `${this.automation()}/flow/execution-context/${executionId}`
   }
 
   automationFlowTrigger() {
