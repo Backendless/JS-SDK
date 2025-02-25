@@ -23,6 +23,16 @@ export default class Automations {
     })
   }
 
+  async loadFlowExecutionContext(executionId) {
+    if (!executionId || typeof executionId !== 'string') {
+      throw new Error('The "executionId" argument must be provided and must be a string.')
+    }
+
+    return this.app.request.get({
+      url  : this.app.urls.automationFlowExecutionContext(executionId),
+    })
+  }
+
   async activateFlowById(flowId, initialData) {
     if (!flowId || typeof flowId !== 'string') {
       throw new Error('The "flowId" argument must be provided and must be a string.')
