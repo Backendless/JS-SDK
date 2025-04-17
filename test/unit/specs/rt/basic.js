@@ -201,13 +201,17 @@ describe('<RT> Basic', function() {
     const rtAppId = 'rt-app-id'
     const rtAPIKey = 'rt-api-key'
 
-    const backendlessApp = Backendless.initApp({
-      domain,
-      standalone: true,
-    })
+    let backendlessApp
 
     before(async () => {
       rtClient = await createMockRTServer(rtAppId)
+    })
+
+    beforeEach(async () => {
+      backendlessApp = Backendless.initApp({
+        domain,
+        standalone: true,
+      })
 
       backendlessApp.appInfoPromise = chai.spy(() =>
         Promise.resolve({ appId: rtAppId, apiKey: rtAPIKey, rtURL: host })

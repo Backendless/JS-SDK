@@ -213,6 +213,8 @@ describe('<Logging>', function() {
   })
 
   it('doesnt throw an error if the message is not a string', async () => {
+    prepareMockRequest({})
+
     async function check(method) {
       expect(() => logger[method](0)).to.not.throw()
       expect(() => logger[method](123)).to.not.throw()
@@ -231,6 +233,8 @@ describe('<Logging>', function() {
     await check('error')
     await check('fatal')
     await check('trace')
+
+    await Backendless.Logging.flush()
   })
 
   it('converts non-string values to strings', async () => {
@@ -324,8 +328,16 @@ describe('<Logging>', function() {
   })
 
   it('should try to send next time if it was failed', async () => {
+    // eslint-disable-next-line no-console
+    const _nativeConsoleError = console.error
+
+    // eslint-disable-next-line no-console
+    const spyConsoleError = console.error = chai.spy()
+
+    const error = new Error('Test Error')
+
     const req1 = prepareMockRequest(() => {
-      throw new Error('Test Error')
+      throw error
     })
 
     const req2 = prepareMockRequest()
@@ -357,14 +369,30 @@ describe('<Logging>', function() {
       { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 2', timestamp: req1.body[1].timestamp },
       { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 3', timestamp: req2.body[2].timestamp }
     ])
+
+    expect(spyConsoleError).to.have.been.called.exactly(1)
+
+    expect(spyConsoleError).on.nth(1).be.called.with('Could not flush log messages immediately: ', error)
+
+    // eslint-disable-next-line no-console
+    console.error = _nativeConsoleError
   })
 
   it('should keep messages if they were not sent #1', async () => {
+    // eslint-disable-next-line no-console
+    const _nativeConsoleError = console.error
+
+    // eslint-disable-next-line no-console
+    const spyConsoleError = console.error = chai.spy()
+
+    const error1 = new Error('Test Error1')
+    const error2 = new Error('Test Error2')
+
     const req1 = prepareMockRequest(() => {
-      throw new Error('Test Error1')
+      throw error1
     })
     const req2 = prepareMockRequest(() => {
-      throw new Error('Test Error2')
+      throw error2
     })
     const req3 = prepareMockRequest()
 
@@ -406,14 +434,31 @@ describe('<Logging>', function() {
       { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 5', timestamp: req3.body[4].timestamp },
       { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 6', timestamp: req3.body[5].timestamp },
     ])
+
+    expect(spyConsoleError).to.have.been.called.exactly(2)
+
+    expect(spyConsoleError).on.nth(1).be.called.with('Could not flush log messages immediately: ', error1)
+    expect(spyConsoleError).on.nth(2).be.called.with('Could not flush log messages immediately: ', error2)
+
+    // eslint-disable-next-line no-console
+    console.error = _nativeConsoleError
   })
 
   it('should keep messages if they were not sent #2', async () => {
+    // eslint-disable-next-line no-console
+    const _nativeConsoleError = console.error
+
+    // eslint-disable-next-line no-console
+    const spyConsoleError = console.error = chai.spy()
+
+    const error1 = new Error('Test Error1')
+    const error2 = new Error('Test Error2')
+
     const req1 = prepareMockRequest(() => {
-      throw new Error('Test Error1')
+      throw error1
     })
     const req2 = prepareMockRequest(() => {
-      throw new Error('Test Error2')
+      throw error2
     })
     const req3 = prepareMockRequest()
 
@@ -461,6 +506,14 @@ describe('<Logging>', function() {
       { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 7', timestamp: req3.body[5].timestamp },
       { 'log-level': 'DEBUG', 'logger': loggerName, 'message': 'debug message - 8', timestamp: req3.body[6].timestamp },
     ])
+
+    expect(spyConsoleError).to.have.been.called.exactly(2)
+
+    expect(spyConsoleError).on.nth(1).be.called.with('Could not flush log messages immediately: ', error1)
+    expect(spyConsoleError).on.nth(2).be.called.with('Could not flush log messages immediately: ', error2)
+
+    // eslint-disable-next-line no-console
+    console.error = _nativeConsoleError
   })
 
   it('should send 100 messages by default', async () => {

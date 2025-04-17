@@ -78,17 +78,20 @@ export default class Logging {
 
       this.messages = []
 
-      this.flushRequest = this.app.request
-        .put({
-          url : this.app.urls.logging(),
-          data: messages
-        })
-        .catch(error => {
-          this.messages = [...messages, ...this.messages]
+      this.flushRequest = Promise.resolve()
+        .then(() => {
+          return this.app.request
+            .put({
+              url : this.app.urls.logging(),
+              data: messages
+            })
+            .catch(error => {
+              this.messages = [...messages, ...this.messages]
 
-          this.checkMessagesLimit()
+              this.checkMessagesLimit()
 
-          throw error
+              throw error
+            })
         })
         .finally(() => delete this.flushRequest)
     }
@@ -116,6 +119,10 @@ export default class Logging {
     this.checkMessagesLenTimer = setTimeout(() => {
       if (this.messages.length >= this.numOfMessages) {
         this.flush()
+          .catch(error => {
+            // eslint-disable-next-line no-console
+            console.error('Could not flush log messages immediately: ', error)
+          })
       } else {
         this.startFlushInterval()
       }
@@ -130,7 +137,13 @@ export default class Logging {
 
   startFlushInterval() {
     if (!this.flushInterval) {
-      this.flushInterval = setTimeout(() => this.flush(), this.timeFrequency * 1000)
+      this.flushInterval = setTimeout(() => {
+        this.flush()
+          .catch(error => {
+            // eslint-disable-next-line no-console
+            console.error('Could not flush log messages with timer: ', error)
+          })
+      }, this.timeFrequency * 1000)
     }
   }
 

@@ -4,6 +4,13 @@ export default class Urls {
   }
 
   root() {
+    if (!this.app.appPath) {
+      throw new Error(
+        'Backendless API is not configured, make sure you run Backendless.initApp(...) ' +
+        'before the operation'
+      )
+    }
+
     return this.app.appPath
   }
 

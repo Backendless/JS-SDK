@@ -278,7 +278,11 @@ class Backendless {
       return this.domain + this.apiURI
     }
 
-    return [this.serverURL, this.appId, this.apiKey].join('/')
+    if (this.appId && this.apiKey) {
+      return [this.serverURL, this.appId, this.apiKey].join('/')
+    }
+
+    return null
   }
 
   set appPath(appPath) {
