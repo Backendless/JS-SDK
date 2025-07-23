@@ -177,6 +177,12 @@ class Backendless {
       })
     }
 
+    this.__appInfoPromise
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error('could not load backendless app info', error)
+      })
+
     return this.__appInfoPromise
   }
 
