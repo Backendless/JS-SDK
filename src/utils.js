@@ -63,6 +63,12 @@ const Utils = {
 
   isObject(obj) {
     return obj != null && obj.constructor.name === 'Object'
+  },
+
+  getWindowNavigator() {
+    return typeof __test_navigator !== 'undefined'
+      ? __test_navigator
+      : global.navigator
   }
 }
 

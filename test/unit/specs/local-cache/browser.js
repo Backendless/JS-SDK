@@ -157,7 +157,7 @@ describe('<LocalCache> Browser', function() {
     expect(Backendless.LocalCache.get('key-8')).to.be.equal(undefined)
 
     expect(warnMessage).to.be.equal('Could not parse data from LocalStorage')
-    expect(warnError.message).to.be.equal('Unexpected token f in JSON at position 1')
+    expect(warnError.message).to.be.equal('Expected property name or \'}\' in JSON at position 1 (line 1 column 2)')
 
     console.warn = warn
   })

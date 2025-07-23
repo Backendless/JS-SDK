@@ -30,16 +30,10 @@ describe('Browser', function() {
   })
 
   describe('User Agent', () => {
-    let prevNavigator
+    let navigator
 
     beforeEach(() => {
-      prevNavigator = global.navigator
-
-      global.navigator = {}
-    })
-
-    afterEach(() => {
-      global.navigator = prevNavigator
+      navigator = global.__test_navigator = {}
     })
 
     it('navigator has userAgent', () => {

@@ -7,7 +7,7 @@ describe('<Users> <Utils>', function() {
   describe('Client User Locale', function() {
 
     it('return undefined when navigator is non-existent', () => {
-      global.navigator = undefined
+      global.__test_navigator = null
 
       const locale = Backendless.UserService.Utils.getClientUserLocale()
 
@@ -15,7 +15,7 @@ describe('<Users> <Utils>', function() {
     })
 
     it('return language code when navigator languages is not empty', () => {
-      global.navigator = {
+      global.__test_navigator = {
         languages      : ['en-EN','ek-EK'],
         userLanguage   : 'ds-DS',
         language       : 'ms-MS',
@@ -29,7 +29,7 @@ describe('<Users> <Utils>', function() {
     })
 
     it('return language code when navigator languages is undefined', () => {
-      global.navigator = {
+      global.__test_navigator = {
         languages      : [],
         userLanguage   : 'ds-DS',
         language       : 'ms-MS',
@@ -41,7 +41,7 @@ describe('<Users> <Utils>', function() {
 
       expect(locale1).to.be.eql('ds')
 
-      global.navigator.languages = undefined
+      global.__test_navigator.languages = undefined
 
       const locale2 = Backendless.UserService.Utils.getClientUserLocale()
 
@@ -50,7 +50,7 @@ describe('<Users> <Utils>', function() {
     })
 
     it('return language code when navigator userLanguage is undefined', () => {
-      global.navigator = {
+      global.__test_navigator = {
         language       : 'ms-MS',
         browserLanguage: 'es-ES',
         systemLanguage : 'ru-RU',
@@ -62,7 +62,7 @@ describe('<Users> <Utils>', function() {
     })
 
     it('return language code when navigator userLanguage is undefined', () => {
-      global.navigator = {
+      global.__test_navigator = {
         browserLanguage: 'es-ES',
         systemLanguage : 'ru-RU',
       }
@@ -73,7 +73,7 @@ describe('<Users> <Utils>', function() {
     })
 
     it('return language code when navigator browserLanguage is undefined', () => {
-      global.navigator = {
+      global.__test_navigator = {
         systemLanguage : 'ru-RU',
       }
 
@@ -83,7 +83,7 @@ describe('<Users> <Utils>', function() {
     })
 
     it('return empty string when navigator systemLanguage is undefined', () => {
-      global.navigator = {}
+      global.__test_navigator = {}
 
       const locale = Backendless.UserService.Utils.getClientUserLocale()
 

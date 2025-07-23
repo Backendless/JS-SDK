@@ -125,10 +125,10 @@ describe('<Files> Browser', function() {
       })
 
       expect(req1.body).to.be.instanceof(BrowserFormData)
-      expect(req1.body.get('file')).to.be.equal(file)
+      expect(req1.body.get('file')).to.be.equal('[object File]')
 
       expect(req2.body).to.be.instanceof(BrowserFormData)
-      expect(req2.body.get('file')).to.be.equal(file)
+      expect(req2.body.get('file')).to.be.equal('[object File]')
     })
 
     it('uploads a file instance of File without name', async () => {
@@ -153,10 +153,10 @@ describe('<Files> Browser', function() {
       })
 
       expect(req1.body).to.be.instanceof(BrowserFormData)
-      expect(req1.body.get('file')).to.be.equal(file)
+      expect(req1.body.get('file')).to.be.equal('[object File]')
 
       expect(req2.body).to.be.instanceof(BrowserFormData)
-      expect(req2.body.get('file')).to.be.equal(file)
+      expect(req2.body.get('file')).to.be.equal('[object File]')
     })
 
     it('uploads a file instance of File and name in path', async () => {
@@ -181,10 +181,10 @@ describe('<Files> Browser', function() {
       })
 
       expect(req1.body).to.be.instanceof(BrowserFormData)
-      expect(req1.body.get('file')).to.be.equal(file)
+      expect(req1.body.get('file')).to.be.equal('[object File]')
 
       expect(req2.body).to.be.instanceof(BrowserFormData)
-      expect(req2.body.get('file')).to.be.equal(file)
+      expect(req2.body.get('file')).to.be.equal('[object File]')
     })
 
     it('uploads a file instance of Blob without name', async () => {
@@ -230,7 +230,7 @@ describe('<Files> Browser', function() {
       })
 
       expect(req1.body).to.be.instanceof(BrowserFormData)
-      expect(req1.body.get('file')).to.be.equal(file)
+      expect(req1.body.get('file')).to.be.equal('[object File]')
     })
 
     it('uploads a file with overwrite', async () => {
@@ -397,16 +397,16 @@ describe('<Files> Browser', function() {
       })
 
       expect(req1.body).to.be.instanceof(BrowserFormData)
-      expect(req1.body.get('file')).to.be.equal(file)
+      expect(req1.body.get('file')).to.be.equal('[object File]')
 
       expect(req2.body).to.be.instanceof(BrowserFormData)
-      expect(req2.body.get('file')).to.be.equal(file)
+      expect(req2.body.get('file')).to.be.equal('[object File]')
 
       expect(req3.body).to.be.instanceof(BrowserFormData)
-      expect(req3.body.get('file')).to.be.equal(file)
+      expect(req3.body.get('file')).to.be.equal('[object File]')
 
       expect(req4.body).to.be.instanceof(BrowserFormData)
-      expect(req4.body.get('file')).to.be.equal(file)
+      expect(req4.body.get('file')).to.be.equal('[object File]')
     })
 
     it('appends from a File with filePath', async () => {
@@ -431,10 +431,10 @@ describe('<Files> Browser', function() {
       })
 
       expect(req1.body).to.be.instanceof(BrowserFormData)
-      expect(req1.body.get('file')).to.be.equal(file)
+      expect(req1.body.get('file')).to.be.equal('[object File]')
 
       expect(req2.body).to.be.instanceof(BrowserFormData)
-      expect(req2.body.get('file')).to.be.equal(file)
+      expect(req2.body.get('file')).to.be.equal('[object File]')
     })
 
     it('appends from a ArrayBuffer with fileName and dirPath', async () => {

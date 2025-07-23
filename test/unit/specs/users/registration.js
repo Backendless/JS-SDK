@@ -110,8 +110,8 @@ describe('<Users> Registration', function() {
   })
 
   it('register new users with blUserLocale from the Navigator', async () => {
-    const check = async (navigator) => {
-      global.navigator = navigator
+    const check = async navigator => {
+      global.__test_navigator = navigator
 
       const userObject = getTestUserObject()
 

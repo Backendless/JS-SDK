@@ -1,6 +1,10 @@
+import Utils from '../utils'
+
 export const UsersUtils = {
   getClientUserLocale() {
-    if (typeof navigator === 'undefined') {
+    const navigator = Utils.getWindowNavigator()
+
+    if (typeof navigator === 'undefined' || !navigator) {
       return
     }
 

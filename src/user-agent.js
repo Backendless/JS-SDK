@@ -4,6 +4,8 @@ export function getUserAgent() {
   let ua = 'NodeJS'
 
   if (Utils.isBrowser) {
+    const navigator = Utils.getWindowNavigator()
+
     ua = navigator.userAgent ? navigator.userAgent.toLowerCase() : 'hybrid-app'
   }
 
