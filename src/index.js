@@ -21,12 +21,7 @@ const DEFAULT_PROPS = {
 
 const STATELESS_PROPS = ['appId', 'apiKey', 'domain']
 
-const root = (
-  (typeof self === 'object' && self.self === self && self) ||
-  (typeof global === 'object' && global.global === global && global)
-)
-
-const previousBackendless = root && root.Backendless
+const previousBackendless = Utils.globalScope && Utils.globalScope.Backendless
 
 const showLegacyDataWarning = () => {
   if (!showLegacyDataWarning.isShown) {
@@ -173,6 +168,15 @@ class Backendless {
       this.__appInfoPromise = new Promise((resolve, reject) => {
         this.request.get({ url: this.urls.appInfo() })
           .then(resolve)
+          .catch(error => {
+            if (error.code === 3064) {
+              this.setCurrentUserToken(null)
+
+              return this.request.get({ url: this.urls.appInfo() })
+            }
+
+            throw error
+          })
           .catch(reject)
       })
     }
@@ -379,8 +383,8 @@ class Backendless {
   }
 
   noConflict() {
-    if (root) {
-      root.Backendless = previousBackendless
+    if (Utils.globalScope) {
+      Utils.globalScope.Backendless = previousBackendless
     }
 
     return this
@@ -572,8 +576,8 @@ class Backendless {
 
 const backendless = new Backendless(DEFAULT_PROPS)
 
-if (root) {
-  root.Backendless = backendless
+if (Utils.globalScope) {
+  Utils.globalScope.Backendless = backendless
 }
 
 exports = module.exports = backendless
