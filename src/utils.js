@@ -6,7 +6,8 @@ const Utils = {
 
   globalScope: (
     (typeof self === 'object' && self.self === self && self) ||
-    (typeof global === 'object' && global.global === global && global)
+    (typeof global === 'object' && global.global === global && global) ||
+    (typeof globalThis === 'object' && globalThis)
   ),
 
   castArray(value) {
@@ -66,9 +67,15 @@ const Utils = {
   },
 
   getWindowNavigator() {
-    return typeof __test_navigator !== 'undefined'
-      ? __test_navigator
-      : global.navigator
+    if (typeof __test_navigator !== 'undefined') {
+      return __test_navigator
+    }
+
+    if (typeof navigator !== 'undefined') {
+      return navigator
+    }
+
+    return Utils.globalScope && Utils.globalScope.navigator
   }
 }
 
