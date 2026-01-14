@@ -22,6 +22,50 @@ describe('<Users> Emails', function() {
     })
   })
 
+  it('sends correct request to restore password with spec chars', async () => {
+    const req1 = prepareMockRequest()
+    const req2 = prepareMockRequest()
+    const req3 = prepareMockRequest()
+    const req4 = prepareMockRequest()
+    const req5 = prepareMockRequest()
+    const req6 = prepareMockRequest()
+    const req7 = prepareMockRequest()
+    const req8 = prepareMockRequest()
+    const req9 = prepareMockRequest()
+
+    await Backendless.UserService.restorePassword('@__test') // req1
+    await Backendless.UserService.restorePassword(':__test') // req2
+    await Backendless.UserService.restorePassword('/__test') // req3
+    await Backendless.UserService.restorePassword('#__test') // req4
+    await Backendless.UserService.restorePassword('?__test') // req5
+    await Backendless.UserService.restorePassword('=__test') // req6
+    await Backendless.UserService.restorePassword('$__test') // req7
+    await Backendless.UserService.restorePassword('&__test') // req8
+    await Backendless.UserService.restorePassword('+__test') // req9
+
+    expect(req1).to.deep.equal(r(req1, '%40__test')) // @
+    expect(req2).to.deep.equal(r(req2, '%3A__test')) // :
+    expect(req3).to.deep.equal(r(req3, '%2F__test')) // /
+    expect(req4).to.deep.equal(r(req4, '%23__test')) // #
+    expect(req5).to.deep.equal(r(req5, '%3F__test')) // ?
+    expect(req6).to.deep.equal(r(req6, '%3D__test')) // =
+    expect(req7).to.deep.equal(r(req7, '%24__test')) // $
+    expect(req8).to.deep.equal(r(req8, '%26__test')) // &
+    expect(req9).to.deep.equal(r(req9, '%2B__test')) // +
+
+    function r(req, uri) {
+      return {
+        method    : 'GET',
+        path      : `${APP_PATH}/users/restorepassword/${uri}`,
+        headers   : {},
+        body      : undefined,
+        encoding  : 'utf8',
+        responseFn: req.responseFn
+      }
+    }
+
+  })
+
   it('fails when there is an incorrect email is passed in the request to restore password', async () => {
     const errorMsg = 'Email Address must be provided and must be a string.'
 
@@ -155,6 +199,5 @@ describe('<Users> Emails', function() {
 
     await expect(Backendless.UserService.createEmailConfirmationURL('')).to.eventually.be.rejectedWith(errorMsg)
   })
-
 
 })
