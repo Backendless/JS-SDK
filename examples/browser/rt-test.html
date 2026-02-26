@@ -84,6 +84,7 @@
   </div>
   <div style="align-self: flex-end;">
     <button class="success" onclick="initApp()">Init App</button>
+    <span id="init-status" style="font-size: 12px; margin-left: 6px; color: #ff6b6b;">Not initialized</span>
   </div>
 </div>
 
@@ -295,16 +296,19 @@ function saveConfig(appId, apiKey, serverUrl, rtHost) {
 function loadConfig() {
   try {
     const raw = localStorage.getItem(LS_KEY)
-    if (!raw) return
+    if (!raw) return false
     const cfg = JSON.parse(raw)
     if (cfg.appId) document.getElementById('cfg-appId').value = cfg.appId
     if (cfg.apiKey) document.getElementById('cfg-apiKey').value = cfg.apiKey
     if (cfg.serverUrl) document.getElementById('cfg-serverUrl').value = cfg.serverUrl
     if (cfg.rtHost) document.getElementById('cfg-rtHost').value = cfg.rtHost
-  } catch (e) { /* ignore */ }
+    return !!(cfg.appId && cfg.apiKey)
+  } catch (e) { return false }
 }
 
-loadConfig()
+if (loadConfig()) {
+  initApp()
+}
 
 // ── Init ──
 function initApp() {
@@ -354,6 +358,10 @@ function initApp() {
     log('log-conn', 'Reconnect attempt #' + attempt + ' in ' + timeout + 'ms', 'info')
   })
 
+  const statusEl = document.getElementById('init-status')
+  statusEl.textContent = 'Initialized'
+  statusEl.style.color = '#6bff6b'
+
   log('log-conn', 'App initialized: ' + appId, 'success')
 }
 
@@ -391,7 +399,7 @@ function getChannel() {
   const name = document.getElementById('msg-channel').value.trim()
   if (!name) { log('log-msg', 'Channel name is required', 'error'); return null }
 
-  if (!channel || channel.channelName !== name) {
+  if (!channel || channel.options.name !== name) {
     if (channel) channel.leave()
     channel = Backendless.Messaging.subscribe(name)
 
@@ -428,7 +436,7 @@ function msgSubscribe() {
 
 function msgLeave() {
   if (channel) {
-    const name = channel.channelName
+    const name = channel.options.name
     channel.leave()
     channel = null
     log('log-msg', 'Left channel "' + name + '"', 'warn')
@@ -442,7 +450,7 @@ async function msgPublish() {
   if (!ch) return
   const text = document.getElementById('msg-text').value
   try {
-    const result = await Backendless.Messaging.publish(ch.channelName, text)
+    const result = await ch.publish(text)
     log('log-msg', 'Published: ' + JSON.stringify(result), 'success')
   } catch (e) {
     log('log-msg', 'Publish error: ' + (e.message || e), 'error')
