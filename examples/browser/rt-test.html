@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Backendless RT Test Page</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace; background: #1a1a2e; color: #e0e0e0; padding: 16px; }
+    h1 { color: #00d4ff; margin-bottom: 12px; font-size: 20px; }
+    h2 { color: #ff6b6b; margin-bottom: 8px; font-size: 15px; border-bottom: 1px solid #333; padding-bottom: 4px; }
+    h3 { color: #ffd93d; margin: 8px 0 4px; font-size: 13px; }
+
+    .config-bar {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      background: #16213e; padding: 10px; border-radius: 6px; margin-bottom: 12px;
+    }
+    .config-bar label { font-size: 12px; color: #aaa; }
+    .config-bar input { background: #0f3460; border: 1px solid #444; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px; width: 280px; }
+    .config-bar input.short { width: 160px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .panel { background: #16213e; border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    .full-width { grid-column: 1 / -1; }
+
+    button {
+      background: #0f3460; border: 1px solid #555; color: #00d4ff; padding: 4px 10px;
+      border-radius: 4px; cursor: pointer; font-size: 12px; margin: 2px;
+    }
+    button:hover { background: #1a4a7a; }
+    button.danger { color: #ff6b6b; }
+    button.success { color: #6bff6b; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    input, select { background: #0f3460; border: 1px solid #444; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+    input.wide { width: 200px; }
+
+    .log {
+      background: #0a0a1a; border: 1px solid #333; border-radius: 4px;
+      padding: 6px; margin-top: 6px; max-height: 200px; overflow-y: auto;
+      font-size: 11px; line-height: 1.5;
+    }
+    .log-entry { border-bottom: 1px solid #1a1a2e; padding: 2px 0; word-break: break-all; }
+    .log-entry.error { color: #ff6b6b; }
+    .log-entry.success { color: #6bff6b; }
+    .log-entry.info { color: #00d4ff; }
+    .log-entry.warn { color: #ffd93d; }
+    .log-time { color: #666; margin-right: 6px; }
+
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+    .status-dot.connected { background: #6bff6b; }
+    .status-dot.disconnected { background: #ff6b6b; }
+    .status-dot.connecting { background: #ffd93d; }
+
+    .row { display: flex; gap: 6px; align-items: center; margin: 4px 0; flex-wrap: wrap; }
+    .controls { margin: 6px 0; }
+
+    .badge {
+      display: inline-block; background: #0f3460; padding: 2px 6px;
+      border-radius: 3px; font-size: 11px; margin: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Backendless RT Test Page</h1>
+
+<!-- Config Bar -->
+<div class="config-bar">
+  <div>
+    <label>APP ID</label><br>
+    <input id="cfg-appId" value="7E25B48A-05FA-0B5D-FFAE-63CC0AC26C00">
+  </div>
+  <div>
+    <label>API KEY</label><br>
+    <input id="cfg-apiKey" value="F640121C-CD82-46BF-8129-EBA286EC7793">
+  </div>
+  <div>
+    <label>Server URL</label><br>
+    <input id="cfg-serverUrl" class="short" value="https://api.backendless.com">
+  </div>
+  <div>
+    <label>RT Server (optional)</label><br>
+    <input id="cfg-rtHost" class="short" placeholder="e.g. http://localhost:5300">
+  </div>
+  <div style="align-self: flex-end;">
+    <button class="success" onclick="initApp()">Init App</button>
+    <span id="init-status" style="font-size: 12px; margin-left: 6px; color: #ff6b6b;">Not initialized</span>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- 1. Connection Management -->
+  <div class="panel">
+    <h2>Connection Management</h2>
+    <div class="row">
+      <span>Status: <span class="status-dot disconnected" id="conn-dot"></span><span id="conn-status">Disconnected</span></span>
+      <span class="badge" id="conn-id">ID: —</span>
+    </div>
+    <div class="controls">
+      <button onclick="rtConnect()">Connect</button>
+      <button onclick="rtDisconnect()" class="danger">Disconnect</button>
+      <button onclick="rtGetConnectionId()">Get Connection ID</button>
+      <button onclick="rtTerminate()" class="danger">Terminate</button>
+    </div>
+    <div class="log" id="log-conn"></div>
+  </div>
+
+  <!-- 2. Messaging / Pub-Sub -->
+  <div class="panel">
+    <h2>Messaging (Pub/Sub)</h2>
+    <div class="row">
+      <label>Channel:</label>
+      <input id="msg-channel" value="TestChannel" class="wide">
+      <button onclick="msgSubscribe()">Subscribe</button>
+      <button onclick="msgLeave()" class="danger">Leave</button>
+    </div>
+    <h3>Publish</h3>
+    <div class="row">
+      <input id="msg-text" value="Hello RT!" class="wide" placeholder="Message text">
+      <button onclick="msgPublish()">Publish</button>
+    </div>
+    <h3>Commands</h3>
+    <div class="row">
+      <input id="msg-cmd-type" value="MY_CMD" placeholder="Command type">
+      <input id="msg-cmd-data" value='{"foo":"bar"}' placeholder="JSON data">
+      <button onclick="msgSendCommand()">Send</button>
+    </div>
+    <div class="log" id="log-msg"></div>
+  </div>
+
+  <!-- 3. Data RT -->
+  <div class="panel">
+    <h2>Data Service RT</h2>
+    <div class="row">
+      <label>Table:</label>
+      <input id="data-table" value="TestTable" class="wide">
+      <button onclick="dataSubscribeAll()">Subscribe All</button>
+      <button onclick="dataUnsubscribeAll()" class="danger">Unsubscribe All</button>
+    </div>
+    <div class="row">
+      <label>Where:</label>
+      <input id="data-where" placeholder="optional where clause" class="wide">
+    </div>
+    <h3>Subscribe To</h3>
+    <div class="controls">
+      <button onclick="dataSub('create')">Create</button>
+      <button onclick="dataSub('update')">Update</button>
+      <button onclick="dataSub('delete')">Delete</button>
+      <button onclick="dataSub('upsert')">Upsert</button>
+      <button onclick="dataSub('bulkCreate')">Bulk Create</button>
+      <button onclick="dataSub('bulkUpdate')">Bulk Update</button>
+      <button onclick="dataSub('bulkDelete')">Bulk Delete</button>
+      <button onclick="dataSub('bulkUpsert')">Bulk Upsert</button>
+    </div>
+    <h3>CRUD Operations</h3>
+    <div class="row">
+      <input id="data-obj" value='{"name":"test","age":25}' class="wide" placeholder="JSON object">
+      <button class="success" onclick="dataCreate()">Create</button>
+      <button onclick="dataUpdate()">Update</button>
+      <button class="danger" onclick="dataDelete()">Delete</button>
+    </div>
+    <div class="row">
+      <label>objectId:</label>
+      <input id="data-objectId" placeholder="for update/delete" class="wide">
+    </div>
+    <div class="log" id="log-data"></div>
+  </div>
+
+  <!-- 4. Shared Objects (RSO) -->
+  <div class="panel">
+    <h2>Shared Objects (RSO)</h2>
+    <div class="row">
+      <label>Name:</label>
+      <input id="rso-name" value="TestRSO" class="wide">
+      <button onclick="rsoConnect()">Connect</button>
+      <button onclick="rsoDisconnect()" class="danger">Disconnect</button>
+    </div>
+    <h3>Get / Set / Clear</h3>
+    <div class="row">
+      <input id="rso-key" value="myKey" placeholder="Key">
+      <input id="rso-value" value="myValue" placeholder="Value (string/JSON)">
+      <button onclick="rsoGet()">Get</button>
+      <button class="success" onclick="rsoSet()">Set</button>
+      <button class="danger" onclick="rsoClear()">Clear</button>
+    </div>
+    <h3>Commands</h3>
+    <div class="row">
+      <input id="rso-cmd-type" value="MY_RSO_CMD" placeholder="Command type">
+      <input id="rso-cmd-data" value='{"action":"ping"}' placeholder="JSON data">
+      <button onclick="rsoSendCommand()">Send</button>
+    </div>
+    <h3>Invoke</h3>
+    <div class="row">
+      <input id="rso-method" value="testMethod" placeholder="Method name">
+      <input id="rso-args" value='["arg1","arg2"]' placeholder="JSON args array">
+      <button onclick="rsoInvoke()">Invoke</button>
+    </div>
+    <div class="log" id="log-rso"></div>
+  </div>
+
+  <!-- 5. Relations RT -->
+  <div class="panel">
+    <h2>Relations RT</h2>
+    <div class="row">
+      <label>Table:</label>
+      <input id="rel-table" value="TestTable" class="wide">
+    </div>
+    <div class="row">
+      <label>Relation Column:</label>
+      <input id="rel-column" value="relatedItems" class="wide">
+    </div>
+    <div class="row">
+      <label>Parent objectId:</label>
+      <input id="rel-parentId" placeholder="objectId of parent" class="wide">
+    </div>
+    <div class="controls">
+      <button onclick="relSub('addRelation')">Add Relation</button>
+      <button onclick="relSub('setRelation')">Set Relation</button>
+      <button onclick="relSub('deleteRelation')">Delete Relation</button>
+      <button onclick="relUnsubAll()" class="danger">Unsubscribe All</button>
+    </div>
+    <div class="log" id="log-rel"></div>
+  </div>
+
+  <!-- 6. Global Log -->
+  <div class="panel">
+    <h2>Global Event Log</h2>
+    <div class="controls">
+      <button onclick="clearLog('log-global')">Clear</button>
+      <button onclick="clearAllLogs()" class="danger">Clear All Logs</button>
+    </div>
+    <div class="log" id="log-global" style="max-height: 300px;"></div>
+  </div>
+
+</div>
+
+<script src="../../dist/backendless.js"></script>
+<script>
+// ── State ──
+let channel = null
+let dataRT = null
+let rso = null
+const dataListeners = {}
+const relListeners = {}
+
+// ── Logging ──
+function log(targetId, msg, type) {
+  const el = document.getElementById(targetId)
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false, fractionalSecondDigits: 3 })
+  const entry = document.createElement('div')
+  entry.className = 'log-entry ' + (type || '')
+  entry.innerHTML = '<span class="log-time">' + time + '</span>' + escapeHtml(typeof msg === 'string' ? msg : JSON.stringify(msg, null, 1))
+  el.appendChild(entry)
+  el.scrollTop = el.scrollHeight
+
+  // mirror to global
+  if (targetId !== 'log-global') {
+    log('log-global', '[' + targetId.replace('log-', '').toUpperCase() + '] ' + (typeof msg === 'string' ? msg : JSON.stringify(msg)), type)
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str
+  return div.innerHTML
+}
+
+function clearLog(id) {
+  document.getElementById(id).innerHTML = ''
+}
+
+function clearAllLogs() {
+  document.querySelectorAll('.log').forEach(el => el.innerHTML = '')
+}
+
+function tryParseJson(str) {
+  try { return JSON.parse(str) } catch (e) { return str }
+}
+
+// ── Connection Status ──
+function setConnStatus(status) {
+  const dot = document.getElementById('conn-dot')
+  const label = document.getElementById('conn-status')
+  dot.className = 'status-dot ' + status
+  label.textContent = status.charAt(0).toUpperCase() + status.slice(1)
+}
+
+// ── LocalStorage ──
+const LS_KEY = 'bl-rt-test-config'
+
+function saveConfig(appId, apiKey, serverUrl, rtHost) {
+  localStorage.setItem(LS_KEY, JSON.stringify({ appId, apiKey, serverUrl, rtHost }))
+}
+
+function loadConfig() {
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) return false
+    const cfg = JSON.parse(raw)
+    if (cfg.appId) document.getElementById('cfg-appId').value = cfg.appId
+    if (cfg.apiKey) document.getElementById('cfg-apiKey').value = cfg.apiKey
+    if (cfg.serverUrl) document.getElementById('cfg-serverUrl').value = cfg.serverUrl
+    if (cfg.rtHost) document.getElementById('cfg-rtHost').value = cfg.rtHost
+    return !!(cfg.appId && cfg.apiKey)
+  } catch (e) { return false }
+}
+
+if (loadConfig()) {
+  initApp()
+}
+
+// ── Init ──
+function initApp() {
+  const appId = document.getElementById('cfg-appId').value.trim()
+  const apiKey = document.getElementById('cfg-apiKey').value.trim()
+  const serverUrl = document.getElementById('cfg-serverUrl').value.trim()
+  const rtHost = document.getElementById('cfg-rtHost').value.trim()
+
+  if (!appId || !apiKey) {
+    log('log-conn', 'APP ID and API KEY are required', 'error')
+    return
+  }
+
+  saveConfig(appId, apiKey, serverUrl, rtHost)
+
+  Backendless.serverURL = serverUrl
+  Backendless.debugMode = true
+  Backendless.initApp(appId, apiKey)
+
+  if (rtHost) {
+    Backendless.RT.setConfig({ host: rtHost })
+  }
+
+  // connection listeners
+  Backendless.RT.addConnectingEventListener(() => {
+    setConnStatus('connecting')
+    log('log-conn', 'Connecting...', 'warn')
+  })
+
+  Backendless.RT.addConnectEventListener(() => {
+    setConnStatus('connected')
+    log('log-conn', 'Connected', 'success')
+    rtGetConnectionId()
+  })
+
+  Backendless.RT.addDisconnectEventListener(reason => {
+    setConnStatus('disconnected')
+    log('log-conn', 'Disconnected: ' + (reason || 'unknown'), 'warn')
+    document.getElementById('conn-id').textContent = 'ID: —'
+  })
+
+  Backendless.RT.addConnectErrorEventListener(error => {
+    log('log-conn', 'Connect Error: ' + (error.message || error), 'error')
+  })
+
+  Backendless.RT.addReconnectAttemptEventListener((attempt, timeout) => {
+    log('log-conn', 'Reconnect attempt #' + attempt + ' in ' + timeout + 'ms', 'info')
+  })
+
+  const statusEl = document.getElementById('init-status')
+  statusEl.textContent = 'Initialized'
+  statusEl.style.color = '#6bff6b'
+
+  log('log-conn', 'App initialized: ' + appId, 'success')
+}
+
+// ── Connection Management ──
+function rtConnect() {
+  Backendless.RT.connect()
+  log('log-conn', 'connect() called', 'info')
+}
+
+function rtDisconnect() {
+  Backendless.RT.disconnect()
+  log('log-conn', 'disconnect() called', 'info')
+}
+
+function rtTerminate() {
+  channel = null
+  dataRT = null
+  rso = null
+  Backendless.RT.terminate()
+  log('log-conn', 'terminate() called — all subscriptions removed', 'warn')
+}
+
+async function rtGetConnectionId() {
+  try {
+    const id = await Backendless.RT.getConnectionId()
+    document.getElementById('conn-id').textContent = 'ID: ' + (id || '—')
+    log('log-conn', 'Connection ID: ' + id, 'info')
+  } catch (e) {
+    log('log-conn', 'getConnectionId error: ' + e.message, 'error')
+  }
+}
+
+// ── Messaging ──
+function getChannel() {
+  const name = document.getElementById('msg-channel').value.trim()
+  if (!name) { log('log-msg', 'Channel name is required', 'error'); return null }
+
+  if (!channel || channel.options.name !== name) {
+    if (channel) channel.leave()
+    channel = Backendless.Messaging.subscribe(name)
+
+    channel.addConnectListener(() => {
+      log('log-msg', 'Channel "' + name + '" connected', 'success')
+    })
+
+    channel.addMessageListener(msg => {
+      log('log-msg', 'MSG: ' + JSON.stringify(msg), 'info')
+    }, err => {
+      log('log-msg', 'MSG error: ' + (err.message || err), 'error')
+    })
+
+    channel.addCommandListener(cmd => {
+      log('log-msg', 'CMD: ' + JSON.stringify(cmd), 'info')
+    }, err => {
+      log('log-msg', 'CMD error: ' + (err.message || err), 'error')
+    })
+
+    channel.addUserStatusListener(status => {
+      log('log-msg', 'USER STATUS: ' + JSON.stringify(status), 'warn')
+    }, err => {
+      log('log-msg', 'USER STATUS error: ' + (err.message || err), 'error')
+    })
+  }
+
+  return channel
+}
+
+function msgSubscribe() {
+  const ch = getChannel()
+  if (ch) log('log-msg', 'Subscribed to "' + ch.channelName + '"', 'success')
+}
+
+function msgLeave() {
+  if (channel) {
+    const name = channel.options.name
+    channel.leave()
+    channel = null
+    log('log-msg', 'Left channel "' + name + '"', 'warn')
+  } else {
+    log('log-msg', 'No active channel', 'error')
+  }
+}
+
+async function msgPublish() {
+  const ch = getChannel()
+  if (!ch) return
+  const text = document.getElementById('msg-text').value
+  try {
+    const result = await ch.publish(text)
+    log('log-msg', 'Published: ' + JSON.stringify(result), 'success')
+  } catch (e) {
+    log('log-msg', 'Publish error: ' + (e.message || e), 'error')
+  }
+}
+
+function msgSendCommand() {
+  const ch = getChannel()
+  if (!ch) return
+  const type = document.getElementById('msg-cmd-type').value
+  const data = tryParseJson(document.getElementById('msg-cmd-data').value)
+  ch.send(type, data)
+  log('log-msg', 'Command sent: ' + type, 'success')
+}
+
+// ── Data RT ──
+function getDataRT() {
+  const table = document.getElementById('data-table').value.trim()
+  if (!table) { log('log-data', 'Table name is required', 'error'); return null }
+
+  if (!dataRT || dataRT._tableName !== table) {
+    if (dataRT) dataRT.removeAllListeners()
+    const store = Backendless.Data.of(table)
+    dataRT = store.rt()
+    dataRT._tableName = table
+    dataRT._store = store
+  }
+
+  return dataRT
+}
+
+const DATA_LISTENER_MAP = {
+  create:     { add: 'addCreateListener',     remove: 'removeCreateListener' },
+  update:     { add: 'addUpdateListener',     remove: 'removeUpdateListener' },
+  delete:     { add: 'addDeleteListener',     remove: 'removeDeleteListener' },
+  upsert:     { add: 'addUpsertListener',     remove: 'removeUpsertListener' },
+  bulkCreate: { add: 'addBulkCreateListener', remove: 'removeBulkCreateListener' },
+  bulkUpdate: { add: 'addBulkUpdateListener', remove: 'removeBulkUpdateListener' },
+  bulkDelete: { add: 'addBulkDeleteListener', remove: 'removeBulkDeleteListener' },
+  bulkUpsert: { add: 'addBulkUpsertListener', remove: 'removeBulkUpsertListener' },
+}
+
+function dataSub(type) {
+  const rt = getDataRT()
+  if (!rt) return
+  const where = document.getElementById('data-where').value.trim() || undefined
+  const map = DATA_LISTENER_MAP[type]
+
+  const callback = obj => {
+    log('log-data', '[' + type.toUpperCase() + '] ' + JSON.stringify(obj), 'info')
+  }
+  const onError = err => {
+    log('log-data', '[' + type.toUpperCase() + ' ERR] ' + (err.message || err), 'error')
+  }
+
+  const key = type + ':' + (where || '')
+  if (dataListeners[key]) {
+    log('log-data', 'Already subscribed to ' + type + (where ? ' (where: ' + where + ')' : ''), 'warn')
+    return
+  }
+
+  if (where) {
+    rt[map.add](where, callback, onError)
+  } else {
+    rt[map.add](callback, onError)
+  }
+
+  dataListeners[key] = { callback, type, map }
+  log('log-data', 'Subscribed to ' + type + (where ? ' (where: ' + where + ')' : ''), 'success')
+}
+
+function dataSubscribeAll() {
+  ;['create', 'update', 'delete', 'upsert'].forEach(t => dataSub(t))
+}
+
+function dataUnsubscribeAll() {
+  const rt = getDataRT()
+  if (!rt) return
+  rt.removeAllListeners()
+  Object.keys(dataListeners).forEach(k => delete dataListeners[k])
+  log('log-data', 'All data listeners removed', 'warn')
+}
+
+async function dataCreate() {
+  const rt = getDataRT()
+  if (!rt) return
+  const obj = tryParseJson(document.getElementById('data-obj').value)
+  try {
+    const result = await rt._store.save(obj)
+    document.getElementById('data-objectId').value = result.objectId
+    log('log-data', 'Created: ' + JSON.stringify(result), 'success')
+  } catch (e) {
+    log('log-data', 'Create error: ' + (e.message || e), 'error')
+  }
+}
+
+async function dataUpdate() {
+  const rt = getDataRT()
+  if (!rt) return
+  const obj = tryParseJson(document.getElementById('data-obj').value)
+  const objectId = document.getElementById('data-objectId').value.trim()
+  if (!objectId) { log('log-data', 'objectId required for update', 'error'); return }
+  obj.objectId = objectId
+  try {
+    const result = await rt._store.save(obj)
+    log('log-data', 'Updated: ' + JSON.stringify(result), 'success')
+  } catch (e) {
+    log('log-data', 'Update error: ' + (e.message || e), 'error')
+  }
+}
+
+async function dataDelete() {
+  const rt = getDataRT()
+  if (!rt) return
+  const objectId = document.getElementById('data-objectId').value.trim()
+  if (!objectId) { log('log-data', 'objectId required for delete', 'error'); return }
+  try {
+    const result = await rt._store.remove(objectId)
+    log('log-data', 'Deleted: ' + JSON.stringify(result), 'success')
+  } catch (e) {
+    log('log-data', 'Delete error: ' + (e.message || e), 'error')
+  }
+}
+
+// ── Relations RT ──
+function relSub(type) {
+  const table = document.getElementById('rel-table').value.trim()
+  const column = document.getElementById('rel-column').value.trim()
+  const parentId = document.getElementById('rel-parentId').value.trim()
+
+  if (!table || !column) { log('log-rel', 'Table and relation column required', 'error'); return }
+
+  const store = Backendless.Data.of(table)
+  const rt = store.rt()
+
+  const parents = parentId ? [{ objectId: parentId }] : undefined
+  const key = type + ':' + column + ':' + (parentId || '*')
+
+  if (relListeners[key]) {
+    log('log-rel', 'Already subscribed to ' + type + ' on ' + column, 'warn')
+    return
+  }
+
+  const callback = data => {
+    log('log-rel', '[' + type.toUpperCase() + '] ' + JSON.stringify(data), 'info')
+  }
+  const onError = err => {
+    log('log-rel', '[' + type.toUpperCase() + ' ERR] ' + (err.message || err), 'error')
+  }
+
+  const methodMap = {
+    addRelation:    'addAddRelationListener',
+    setRelation:    'addSetRelationListener',
+    deleteRelation: 'addDeleteRelationListener',
+  }
+
+  if (parents) {
+    rt[methodMap[type]](column, parents, callback, onError)
+  } else {
+    rt[methodMap[type]](column, callback, onError)
+  }
+
+  relListeners[key] = { rt, callback }
+  log('log-rel', 'Subscribed to ' + type + ' on "' + column + '"' + (parentId ? ' (parent: ' + parentId + ')' : ''), 'success')
+}
+
+function relUnsubAll() {
+  Object.keys(relListeners).forEach(key => {
+    const { rt } = relListeners[key]
+    rt.removeAllListeners()
+    delete relListeners[key]
+  })
+  log('log-rel', 'All relation listeners removed', 'warn')
+}
+
+// ── Shared Objects ──
+function rsoConnect() {
+  const name = document.getElementById('rso-name').value.trim()
+  if (!name) { log('log-rso', 'RSO name is required', 'error'); return }
+
+  if (rso) {
+    rso.removeAllListeners()
+  }
+
+  rso = Backendless.SharedObject.connect(name)
+
+  rso.addConnectListener(() => {
+    log('log-rso', 'RSO "' + name + '" connected', 'success')
+  })
+
+  rso.addChangesListener(data => {
+    log('log-rso', 'CHANGE: ' + JSON.stringify(data), 'info')
+  }, err => {
+    log('log-rso', 'CHANGE error: ' + (err.message || err), 'error')
+  })
+
+  rso.addClearListener(data => {
+    log('log-rso', 'CLEARED: ' + JSON.stringify(data), 'warn')
+  }, err => {
+    log('log-rso', 'CLEAR error: ' + (err.message || err), 'error')
+  })
+
+  rso.addCommandListener(cmd => {
+    log('log-rso', 'CMD: ' + JSON.stringify(cmd), 'info')
+  }, err => {
+    log('log-rso', 'CMD error: ' + (err.message || err), 'error')
+  })
+
+  rso.addUserStatusListener(status => {
+    log('log-rso', 'USER STATUS: ' + JSON.stringify(status), 'warn')
+  }, err => {
+    log('log-rso', 'USER STATUS error: ' + (err.message || err), 'error')
+  })
+
+  // set invocation target so remote invoke calls our methods
+  rso.setInvocationTarget({
+    testMethod: function() {
+      const args = Array.from(arguments)
+      log('log-rso', 'INVOKED testMethod(' + JSON.stringify(args) + ')', 'info')
+      return 'ok'
+    }
+  })
+
+  log('log-rso', 'Connecting to RSO "' + name + '"...', 'info')
+}
+
+function rsoDisconnect() {
+  if (rso) {
+    rso.removeAllListeners()
+    rso = null
+    log('log-rso', 'RSO disconnected', 'warn')
+  } else {
+    log('log-rso', 'No active RSO', 'error')
+  }
+}
+
+async function rsoGet() {
+  if (!rso) { log('log-rso', 'Connect to RSO first', 'error'); return }
+  const key = document.getElementById('rso-key').value.trim()
+  try {
+    const val = await rso.get(key || undefined)
+    log('log-rso', 'GET ' + (key || '(all)') + ': ' + JSON.stringify(val), 'success')
+  } catch (e) {
+    log('log-rso', 'GET error: ' + (e.message || e), 'error')
+  }
+}
+
+async function rsoSet() {
+  if (!rso) { log('log-rso', 'Connect to RSO first', 'error'); return }
+  const key = document.getElementById('rso-key').value.trim()
+  const value = tryParseJson(document.getElementById('rso-value').value)
+  if (!key) { log('log-rso', 'Key is required for set', 'error'); return }
+  try {
+    await rso.set(key, value)
+    log('log-rso', 'SET ' + key + ' = ' + JSON.stringify(value), 'success')
+  } catch (e) {
+    log('log-rso', 'SET error: ' + (e.message || e), 'error')
+  }
+}
+
+async function rsoClear() {
+  if (!rso) { log('log-rso', 'Connect to RSO first', 'error'); return }
+  try {
+    await rso.clear()
+    log('log-rso', 'CLEARED', 'success')
+  } catch (e) {
+    log('log-rso', 'CLEAR error: ' + (e.message || e), 'error')
+  }
+}
+
+function rsoSendCommand() {
+  if (!rso) { log('log-rso', 'Connect to RSO first', 'error'); return }
+  const type = document.getElementById('rso-cmd-type').value
+  const data = tryParseJson(document.getElementById('rso-cmd-data').value)
+  rso.send(type, data)
+  log('log-rso', 'Command sent: ' + type, 'success')
+}
+
+async function rsoInvoke() {
+  if (!rso) { log('log-rso', 'Connect to RSO first', 'error'); return }
+  const method = document.getElementById('rso-method').value.trim()
+  const args = tryParseJson(document.getElementById('rso-args').value)
+  if (!method) { log('log-rso', 'Method name required', 'error'); return }
+  try {
+    const argsArray = Array.isArray(args) ? args : [args]
+    const result = await rso.invoke(method, ...argsArray)
+    log('log-rso', 'INVOKE result: ' + JSON.stringify(result), 'success')
+  } catch (e) {
+    log('log-rso', 'INVOKE error: ' + (e.message || e), 'error')
+  }
+}
+</script>
+</body>
+</html>

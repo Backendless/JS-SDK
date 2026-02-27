@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS-SDK Test CORS</title>
+</head>
+<script src="../../dist/backendless.js"></script>
+<body>
+
+<script>
+  const APP_ID = '7E25B48A-05FA-0B5D-FFAE-63CC0AC26C00'
+  const API_KEY = 'F640121C-CD82-46BF-8129-EBA286EC7793'
+  Backendless.serverURL = 'https://api.backendless.com'
+  Backendless.debugMode=true
+  async function run() {
+    Backendless.initApp(APP_ID, API_KEY)
+    // Backendless.initApp("https://nativeweight-dev.backendless.app")
+    // Backendless.Users.login('vladimir.upirov.test@gmail.com', '123456', true)
+
+    // const rtHandlers = Backendless.Data.of('backendless_test').rt()
+
+
+    // await Backendless.Logging.getLogger( "MyChannel" ).info('test');
+
+    // var channel = Backendless.Messaging.subscribe( "MyChannel" );
+    //
+    // function onMessage( stringMessage ) {
+    //   console.log( stringMessage )
+    // }
+    //
+    // function onError( error ) {
+    //   console.error( error )
+    // }
+
+    // channel.addMessageListener( onMessage, onError );
+    // Backendless.initApp(APP_ID, API_KEY)
+    // Backendless.UserService.setCurrentUser({ objectId:'xxx-xxx-xxx', 'user-token': 'USER_TOKEN' })
+    //
+    // setTimeout(()=>{
+    // Backendless.Messaging.publish("MyChannel", 'hello')
+    //   .then(function(response) {
+    //     console.log(response)
+    //   })
+    //   .catch(function(error) {
+    //     console.error(error)
+    //   })
+    // },2000)
+  }
+
+  run()
+  // run()
+  // run()
+</script>
+</body>
+</html>

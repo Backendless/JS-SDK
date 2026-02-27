@@ -46,11 +46,13 @@ export const RTMethodTypes = {
 export function createMockRTServer(appId = APP_ID) {
   const server = require('http').createServer()
 
-  const io = require('socket.io')({ path: `/${appId}` })
+  const { Server } = require('socket.io')
 
-  io.attach(server, {
+  const io = new Server(server, {
+    path        : `/${appId}`,
     pingInterval: 10000,
     pingTimeout : 5000,
+    cors        : { origin: true, credentials: true },
   })
 
   const receivedEvents = {}

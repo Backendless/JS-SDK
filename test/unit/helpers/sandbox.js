@@ -82,7 +82,6 @@ export {
 let mockRequests = []
 
 wrapRequest(Request)
-wrapRequest(RTClient.Request)
 
 function wrapRequest(R) {
   const nativeRequestSend = R.send

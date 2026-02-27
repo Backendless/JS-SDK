@@ -13,3 +13,4 @@ es
 
 coverage/
 .nyc_output/
+/test/tsd.js

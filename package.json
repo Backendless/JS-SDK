@@ -29,8 +29,8 @@
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
     "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack --mode production",
-    "bannerize": "bannerize ./dist/*.js --banner=./banner.ejs",
-    "prepare": "npm run build && npm run bannerize"
+    "analyze": "cross-env BABEL_ENV=commonjs NODE_ENV=development ANALYZE=true webpack",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -67,7 +67,6 @@
     "babel-plugin-istanbul": "^6.0.0",
     "babelify": "^10.0.0",
     "backendless-console-sdk": "^2.21.1",
-    "bannerize": "^1.1.4",
     "browserify": "^17.0.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
@@ -79,19 +78,19 @@
     "jsdom": "^22.1.0",
     "mocha": "^8.4.0",
     "nyc": "^15.1.0",
-    "request": "^2.88.2",
     "rimraf": "^3.0.2",
-    "socket.io": "^2.5.1",
+    "socket.io": "^4.8.1",
     "terser-webpack-plugin": "^2.3.8",
     "typescript": "^4.5.4",
     "watch": "^1.0.2",
     "watchify": "^4.0.0",
     "webpack": "^5.81.0",
+    "webpack-bundle-analyzer": "^5.2.0",
     "webpack-cli": "^5.0.2"
   },
   "dependencies": {
     "@babel/runtime": "^7.26.7",
     "backendless-request": "^0.9.0",
-    "backendless-rt-client": "0.5.0"
+    "backendless-rt-client": "^1.0.2"
   }
 }
