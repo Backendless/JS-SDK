@@ -1,9 +1,11 @@
 'use strict';
 
 const TerserPlugin = require('terser-webpack-plugin')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const path = require('path')
 
 const isProd = process.env.NODE_ENV === 'production'
+const isAnalyze = process.env.ANALYZE === 'true'
 
 module.exports = {
   devtool: isProd ? false : 'source-map',
@@ -46,6 +48,8 @@ module.exports = {
       },
     })],
   },
+
+  plugins: isAnalyze ? [new BundleAnalyzerPlugin()] : [],
 
   output: {
     library      : 'Backendless',

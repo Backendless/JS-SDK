@@ -29,6 +29,7 @@
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack",
     "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack --mode production",
+    "analyze": "cross-env BABEL_ENV=commonjs NODE_ENV=development ANALYZE=true webpack",
     "bannerize": "bannerize ./dist/*.js --banner=./banner.ejs",
     "prepare": "npm run build && npm run bannerize"
   },
@@ -87,11 +88,12 @@
     "watch": "^1.0.2",
     "watchify": "^4.0.0",
     "webpack": "^5.81.0",
+    "webpack-bundle-analyzer": "^5.2.0",
     "webpack-cli": "^5.0.2"
   },
   "dependencies": {
     "@babel/runtime": "^7.26.7",
     "backendless-request": "^0.9.0",
-    "backendless-rt-client": "1.0.1"
+    "backendless-rt-client": "1.0.2"
   }
 }
